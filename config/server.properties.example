@@ -1,0 +1,5 @@
+# Copy to server.properties and keep real credentials out of version control.
+chat.server.port=5050
+spring.datasource.url=jdbc:postgresql://localhost:5432/chat_system
+spring.datasource.username=chat_app
+spring.datasource.password=change-me

@@ -1,0 +1,3 @@
+# Copied to client.properties for both desktop applications.
+chat.server.host=localhost
+chat.server.port=5050

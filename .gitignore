@@ -1,0 +1,32 @@
+# Maven and compiled output
+target/
+*.class
+
+# Generated releases
+release/
+
+# Local configuration and secrets (examples remain tracked)
+client.properties
+server.properties
+*.local.properties
+.env
+.env.*
+
+# Logs
+*.log
+logs/
+
+# IDE and OS files
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local verification tools
+.tools/

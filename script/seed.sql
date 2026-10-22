@@ -1,0 +1,2 @@
+-- Optional seed-data placeholder.
+-- No seed data is required for the initial PING/PONG foundation.

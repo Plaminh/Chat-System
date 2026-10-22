@@ -1,0 +1,102 @@
+# Java Desktop Chat System
+
+A clean foundation for a university Java final project. Two Java Swing desktop clients communicate with one non-web Spring Boot backend through newline-delimited JSON over TCP. PostgreSQL access is isolated in the server. The current scope is infrastructure and PING/PONG connectivity—not a completed chat product.
+
+## Technology stack
+
+- Java 21, Maven, JUnit 5
+- Swing and FlatLaf; JFreeChart is available to the admin client
+- Spring Boot in non-web mode, Java `ServerSocket`, Spring JDBC
+- PostgreSQL JDBC, Jackson, BCrypt
+
+No REST, WebSocket, JPA/Hibernate, JavaFX, or client-side database access is used.
+
+## Modules and dependencies
+
+```text
+admin-client ─┐
+user-client  ─┼──> common
+server       ─┘
+```
+
+- `common`: envelopes, protocol enums, framing utilities, and limits
+- `admin-client`: executable Admin Swing application
+- `user-client`: executable User Swing application
+- `server`: executable non-web Spring Boot TCP server and JDBC configuration
+
+The clients never depend on `server`, and `common` contains no UI, database, or Spring code.
+
+## Layout
+
+```text
+chat-system/
+├── common/
+├── admin-client/
+├── user-client/
+├── server/
+├── config/             # tracked examples
+├── script/             # database placeholders
+├── scripts/package.ps1
+└── docs/
+```
+
+Source code follows the standard `src/main/java`, `src/main/resources`, and `src/test/java` Maven layout. Reserved packages contain only documentation until their features are specified.
+
+## Prerequisites and build
+
+Install a Java 21 JDK and Apache Maven 3.9+ and ensure `java` and `mvn` are on `PATH`.
+
+```powershell
+mvn clean verify
+```
+
+Tests are headless and do not need PostgreSQL or external services. They cover request JSON round trips, handler PING/PONG, malformed JSON, and a real localhost TCP exchange on a dynamically selected port.
+
+To build a distributable directory:
+
+```powershell
+./scripts/package.ps1
+```
+
+This produces `release/admin.jar`, `release/user.jar`, and `release/server.jar`. Existing configuration in `release` is preserved, so local credentials are not overwritten.
+
+## Configuration
+
+Run packaged applications with `release` as the working directory. The packaging script creates these files from safe examples on their first run:
+
+- `client.properties`: `chat.server.host` and `chat.server.port`
+- `server.properties`: `chat.server.port` and `spring.datasource.*`
+
+Edit `server.properties` with the PostgreSQL address, database, username, and password. Do not commit it. PING/PONG does not require tables or a live database connection. `script/schema.sql` and `script/seed.sql` are deliberately documented placeholders.
+
+Override configuration locations without rebuilding:
+
+```powershell
+java '-Dchat.server.config=C:/secure/chat-server.properties' -jar server.jar
+java '-Dchat.client.config=C:/secure/chat-client.properties' -jar admin.jar
+java '-Dchat.client.config=C:/secure/chat-client.properties' -jar user.jar
+```
+
+## Run and test connectivity
+
+From `release`, start the server first, then either client in a separate terminal:
+
+```powershell
+java -jar server.jar
+java -jar admin.jar
+java -jar user.jar
+```
+
+Click **Test server connection**. The client sends a `PING` request in one UTF-8 JSON line, and the status changes to `connected (PONG)` when the correlated response arrives. The default endpoint is `localhost:5050`.
+
+## Current status
+
+Implemented: executable application entry points, FlatLaf windows, nonblocking client connection checks, bounded concurrent TCP handling, maximum message size enforcement, malformed-message responses, safe cleanup and graceful shutdown, external configuration, Spring JDBC infrastructure, packaging, and automated foundation tests.
+
+Intentionally deferred: accounts, authentication/authorization, conversations, message delivery, friends, groups, admin statistics/charts, database tables and CRUD, email, and LLM integration. Their packages are reserved without fake implementations.
+
+## Architecture notes
+
+- TCP framing is newline-delimited JSON; a TCP read is never treated as a complete message by itself.
+- Server push messages use `EventEnvelope`, while request replies use `ResponseEnvelope` and retain the request ID.
+- The simplest configuration assumption is one shared client endpoint file for both desktop clients.

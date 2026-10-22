@@ -1,0 +1,2 @@
+-- Placeholder for the future Chat System schema.
+-- Tables will be introduced only after the business rules are finalized.
