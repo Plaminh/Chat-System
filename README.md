@@ -100,3 +100,19 @@ Intentionally deferred: accounts, authentication/authorization, conversations, m
 - TCP framing is newline-delimited JSON; a TCP read is never treated as a complete message by itself.
 - Server push messages use `EventEnvelope`, while request replies use `ResponseEnvelope` and retain the request ID.
 - The simplest configuration assumption is one shared client endpoint file for both desktop clients.
+
+## Spec-Driven Development
+
+The project uses the official GitHub Spec Kit to turn approved requirements into reviewed specifications, plans, and tasks before implementation. Shared Spec Kit infrastructure is stored in `.specify/`; future feature artifacts are created by the Spec Kit workflow rather than manually invented in advance. Project rules are defined in `.specify/memory/constitution.md`.
+
+Codex discovers the installed skills under `.agents/skills/`. Invoke them in Codex chat using names such as `$speckit-constitution`, `$speckit-specify`, `$speckit-clarify`, `$speckit-plan`, `$speckit-tasks`, `$speckit-analyze`, and `$speckit-implement`. Run one stage at a time and review its output before continuing; do not start implementation until the specification, plan, and tasks are approved.
+
+For team work, create `feature/*` branches from `dev`, keep specification artifacts with their feature changes, merge reviewed and verified work into `dev`, and reserve `main` for stable submission versions. Spec Kit does not replace the existing Git workflow and must not perform branch, commit, push, or merge operations without explicit developer direction.
+
+Verify the setup from the repository root:
+
+```powershell
+specify version
+specify check
+mvn clean verify
+```
