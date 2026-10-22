@@ -116,3 +116,16 @@ specify version
 specify check
 mvn clean verify
 ```
+
+## Formatting and AI guardrails
+
+Java formatting is configured centrally in the parent POM with Spotless and Google Java Format. Formatting is intentionally independent of the normal Maven lifecycle:
+
+```powershell
+mvn spotless:check
+mvn spotless:apply
+```
+
+Use `spotless:check` to report differences. Run `spotless:apply` only when reformatting is explicitly intended because it rewrites Java source files. Root `.editorconfig` defines encoding, line endings, whitespace, and indentation defaults for editors.
+
+Codex follows the repository rules in `AGENTS.md`. Those concise operational guardrails complement the authoritative Spec Kit constitution in `.specify/memory/constitution.md`; they do not replace or duplicate the full constitution.
