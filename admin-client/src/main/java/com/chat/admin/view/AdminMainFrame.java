@@ -322,14 +322,14 @@ public final class AdminMainFrame extends JFrame {
             BorderFactory.createMatteBorder(0, 0, 1, 0, AdminUIStyle.BORDER_COLOR),
             BorderFactory.createEmptyBorder(12, 20, 12, 20)));
 
-    JPanel leftTitles = new JPanel(new GridLayout(2, 1, 0, 2));
+    JPanel leftTitles = new JPanel(new BorderLayout(0, 2));
     leftTitles.setOpaque(false);
     headerBreadcrumbLabel.setFont(AdminUIStyle.FONT_SMALL);
     headerBreadcrumbLabel.setForeground(AdminUIStyle.TEXT_MUTED);
     headerTitleLabel.setFont(AdminUIStyle.FONT_TITLE);
     headerTitleLabel.setForeground(AdminUIStyle.TEXT_PRIMARY);
-    leftTitles.add(headerBreadcrumbLabel);
-    leftTitles.add(headerTitleLabel);
+    leftTitles.add(headerBreadcrumbLabel, BorderLayout.NORTH);
+    leftTitles.add(headerTitleLabel, BorderLayout.SOUTH);
 
     JPanel rightInfo = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 4));
     rightInfo.setOpaque(false);

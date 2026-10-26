@@ -60,7 +60,7 @@ description: "Task list for Admin Client User Interface (Version 1)"
 ### Implementation for User Story 1
 
 - [x] T007 [US1] Implement `AdminMainFrame` (1280x800 frame, `#0F172A` dark sidebar with Oversight & Analytics navigation items, top header bar, clean status footer without DevOps noise, and central `CardLayout` container) in `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java` (Commit #1: `feat(admin): create admin main frame with modern sidebar navigation`)
-- [ ] T008 [US1] Implement `AdminLoginDialog` (centered modal dialog with username input, password input with show/hide toggle, required-field validation, mock admin check, and sign-in button) in `admin-client/src/main/java/com/chat/admin/view/AdminLoginDialog.java` and wire startup in `admin-client/src/main/java/com/chat/admin/AdminApplication.java` (Commit #2: `feat(admin): implement admin login dialog with validation`)
+- [x] T008 [US1] Implement `AdminLoginDialog` (centered modal dialog with username input, password input with show/hide toggle, required-field validation, mock admin check, and sign-in button) in `admin-client/src/main/java/com/chat/admin/view/AdminLoginDialog.java` and wire startup in `admin-client/src/main/java/com/chat/admin/AdminApplication.java` (Commit #2: `feat(admin): implement admin login dialog with validation`)
 
 **Checkpoint**: At this point, User Story 1 (Commits #1 and #2) is fully functional and testable independently.
 
