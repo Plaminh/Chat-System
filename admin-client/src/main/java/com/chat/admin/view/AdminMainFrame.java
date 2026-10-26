@@ -1,5 +1,7 @@
 package com.chat.admin.view;
 
+import com.chat.admin.chart.ActivityChartPanel;
+import com.chat.admin.chart.RegistrationChartPanel;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.view.AdminUIStyle.NavIconType;
 import java.awt.BorderLayout;
@@ -18,6 +20,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -414,10 +417,74 @@ public final class AdminMainFrame extends JFrame {
         cardContainer.add(new FriendStatsPanel(), CARD_FRIENDS);
       } else if (CARD_ACTIVITY.equals(key)) {
         cardContainer.add(new UserActivityPanel(), CARD_ACTIVITY);
+      } else if (CARD_CHARTS.equals(key)) {
+        cardContainer.add(buildVisualChartsView(), CARD_CHARTS);
       } else {
         cardContainer.add(createOverviewPlaceholderCard(entry.getValue()), key);
       }
     }
+  }
+
+  private JPanel buildVisualChartsView() {
+    JPanel root = new JPanel(new BorderLayout(0, 14));
+    root.setBackground(AdminUIStyle.CANVAS_BG);
+
+    RegistrationChartPanel registrationChartPanel = new RegistrationChartPanel();
+    ActivityChartPanel activityChartPanel = new ActivityChartPanel();
+
+    JPanel topToolbar = AdminUIStyle.createCardPanel(new BorderLayout(12, 0));
+    JPanel leftInfo = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+    leftInfo.setOpaque(false);
+    JLabel infoLabel =
+        new JLabel(
+            "Annual Analytics Dashboard — Compare 12-month New Registrations (Bar) & Active App Users (Line)");
+    infoLabel.setFont(AdminUIStyle.FONT_BODY_BOLD);
+    infoLabel.setForeground(AdminUIStyle.TEXT_PRIMARY);
+    leftInfo.add(infoLabel);
+
+    JPanel rightControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+    rightControls.setOpaque(false);
+    JLabel syncYearLbl = new JLabel("Sync Both Charts to Year:");
+    syncYearLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
+    syncYearLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+
+    JComboBox<Integer> globalYearCombo = new JComboBox<>(new Integer[] {2024, 2025, 2026});
+    globalYearCombo.setFont(AdminUIStyle.FONT_BODY_BOLD);
+    globalYearCombo.setSelectedItem(2025);
+    globalYearCombo.addActionListener(
+        e -> {
+          Integer year = (Integer) globalYearCombo.getSelectedItem();
+          if (year != null) {
+            registrationChartPanel.setSelectedYear(year);
+            activityChartPanel.setSelectedYear(year);
+          }
+        });
+
+    JButton refreshBothBtn = AdminUIStyle.createPrimaryButton("Refresh Both Charts");
+    refreshBothBtn.addActionListener(
+        e -> {
+          Integer year = (Integer) globalYearCombo.getSelectedItem();
+          if (year != null) {
+            registrationChartPanel.setSelectedYear(year);
+            activityChartPanel.setSelectedYear(year);
+          }
+        });
+
+    rightControls.add(syncYearLbl);
+    rightControls.add(globalYearCombo);
+    rightControls.add(refreshBothBtn);
+
+    topToolbar.add(leftInfo, BorderLayout.WEST);
+    topToolbar.add(rightControls, BorderLayout.EAST);
+
+    JPanel chartsGrid = new JPanel(new GridLayout(1, 2, 16, 0));
+    chartsGrid.setOpaque(false);
+    chartsGrid.add(registrationChartPanel);
+    chartsGrid.add(activityChartPanel);
+
+    root.add(topToolbar, BorderLayout.NORTH);
+    root.add(chartsGrid, BorderLayout.CENTER);
+    return root;
   }
 
   private JPanel createOverviewPlaceholderCard(String title) {

@@ -172,8 +172,8 @@ description: "Task list for Admin Client User Interface (Version 1)"
 
 ### Implementation for User Story 9
 
-- [ ] T016 [P] [US9] Implement `RegistrationChartPanel` (JFreeChart 12-month vertical Bar Chart for new user registrations by selected year with `#3B82F6` bar styling and value labels) in `admin-client/src/main/java/com/chat/admin/chart/RegistrationChartPanel.java`
-- [ ] T017 [P] [US9] Implement `ActivityChartPanel` (JFreeChart 12-month Line Chart for active users opening the app by selected year with `#10B981` line styling and point markers) in `admin-client/src/main/java/com/chat/admin/chart/ActivityChartPanel.java` and wire both charts into `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java` (Commit #10: `feat(admin): implement registration and activity statistics charts using JFreeChart`)
+- [x] T016 [P] [US9] Implement `RegistrationChartPanel` (JFreeChart 12-month vertical Bar Chart for new user registrations by selected year with `#3B82F6` bar styling and value labels) in `admin-client/src/main/java/com/chat/admin/chart/RegistrationChartPanel.java`
+- [x] T017 [P] [US9] Implement `ActivityChartPanel` (JFreeChart 12-month Line Chart for active users opening the app by selected year with `#10B981` line styling and point markers) in `admin-client/src/main/java/com/chat/admin/chart/ActivityChartPanel.java` and wire both charts into `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java` (Commit #10: `feat(admin): implement registration and activity statistics charts using JFreeChart`)
 
 **Checkpoint**: All 9 User Stories and all 10 planned commits are complete and independently functional.
 
