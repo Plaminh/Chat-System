@@ -116,7 +116,7 @@ description: "Task list for Admin Client User Interface (Version 1)"
 
 ### Implementation for User Story 5
 
-- [ ] T012 [US5] Implement `SpamReportPanel` (date range filter `From Date` to `To Date` with inverted-date validation, username search filter, sort by Time or Username, spam reports `JTable`, and "Lock Offending Account" button) in `admin-client/src/main/java/com/chat/admin/view/SpamReportPanel.java` and register in `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java` (Commit #6: `feat(admin): implement spam report management panel with account ban action`)
+- [x] T012 [US5] Implement `SpamReportPanel` (date range filter `From Date` to `To Date` with inverted-date validation, username search filter, sort by Time or Username, spam reports `JTable`, and "Lock Offending Account" button) in `admin-client/src/main/java/com/chat/admin/view/SpamReportPanel.java` and register in `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java` (Commit #6: `feat(admin): implement spam report management panel with account ban action`)
 
 **Checkpoint**: User Story 5 (Commit #6) is independently functional.
 

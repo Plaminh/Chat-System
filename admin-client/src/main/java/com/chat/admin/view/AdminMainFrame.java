@@ -406,6 +406,8 @@ public final class AdminMainFrame extends JFrame {
         cardContainer.add(new UserManagementPanel(), CARD_USERS);
       } else if (CARD_GROUPS.equals(key)) {
         cardContainer.add(new GroupManagementPanel(), CARD_GROUPS);
+      } else if (CARD_SPAM.equals(key)) {
+        cardContainer.add(new SpamReportPanel(), CARD_SPAM);
       } else {
         cardContainer.add(createOverviewPlaceholderCard(entry.getValue()), key);
       }
