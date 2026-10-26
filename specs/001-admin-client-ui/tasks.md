@@ -102,7 +102,7 @@ description: "Task list for Admin Client User Interface (Version 1)"
 
 ### Implementation for User Story 4
 
-- [ ] T011 [US4] Implement `GroupManagementPanel` (search by group name, sort by Name or Creation Date, left `JTable` of groups, and right Master-Detail roster inspector displaying all members and `Group Admin` vs `Member` role badges) in `admin-client/src/main/java/com/chat/admin/view/GroupManagementPanel.java` and register in `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java` (Commit #5: `feat(admin): implement group management panel with member and admin viewer`)
+- [x] T011 [US4] Implement `GroupManagementPanel` (search by group name, sort by Name or Creation Date, left `JTable` of groups, and right Master-Detail roster inspector displaying all members and `Group Admin` vs `Member` role badges) in `admin-client/src/main/java/com/chat/admin/view/GroupManagementPanel.java` and register in `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java` (Commit #5: `feat(admin): implement group management panel with member and admin viewer`)
 
 **Checkpoint**: User Story 4 (Commit #5) is independently functional.
 

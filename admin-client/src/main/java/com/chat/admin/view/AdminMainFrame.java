@@ -401,10 +401,13 @@ public final class AdminMainFrame extends JFrame {
 
   private void registerDefaultCards() {
     for (Map.Entry<String, String> entry : navTitles.entrySet()) {
-      if (CARD_USERS.equals(entry.getKey())) {
+      String key = entry.getKey();
+      if (CARD_USERS.equals(key)) {
         cardContainer.add(new UserManagementPanel(), CARD_USERS);
+      } else if (CARD_GROUPS.equals(key)) {
+        cardContainer.add(new GroupManagementPanel(), CARD_GROUPS);
       } else {
-        cardContainer.add(createOverviewPlaceholderCard(entry.getValue()), entry.getKey());
+        cardContainer.add(createOverviewPlaceholderCard(entry.getValue()), key);
       }
     }
   }
