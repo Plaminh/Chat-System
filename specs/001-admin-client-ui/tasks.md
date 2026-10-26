@@ -88,7 +88,7 @@ description: "Task list for Admin Client User Interface (Version 1)"
 
 ### Implementation for User Story 3
 
-- [ ] T010 [US3] Implement `UserDetailHistoryDialog` (modal dialog with user profile header and 2 tabs: Tab 1 chronological Login History table showing `Timestamp`, `Username`, `Full Name` with Selected User / All Users filter; Tab 2 Friend Network with `Direct Friends` and `Friends-of-Friends` KPI cards and direct friends table) in `admin-client/src/main/java/com/chat/admin/view/UserDetailHistoryDialog.java` and wire action in `admin-client/src/main/java/com/chat/admin/view/UserManagementPanel.java` (Commit #4: `feat(admin): implement user login history and friend network detail dialog`)
+- [x] T010 [US3] Implement `UserDetailHistoryDialog` (modal dialog with user profile header and 2 tabs: Tab 1 chronological Login History table showing `Timestamp`, `Username`, `Full Name` with Selected User / All Users filter; Tab 2 Friend Network with `Direct Friends` and `Friends-of-Friends` KPI cards and direct friends table) in `admin-client/src/main/java/com/chat/admin/view/UserDetailHistoryDialog.java` and wire action in `admin-client/src/main/java/com/chat/admin/view/UserManagementPanel.java` (Commit #4: `feat(admin): implement user login history and friend network detail dialog`)
 
 **Checkpoint**: User Story 3 (Commit #4) is independently functional.
 

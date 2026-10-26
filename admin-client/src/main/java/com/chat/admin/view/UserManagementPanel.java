@@ -587,18 +587,9 @@ public final class UserManagementPanel extends JPanel {
               if (historyInspectorCallback != null) {
                 historyInspectorCallback.accept(user);
               } else {
-                JOptionPane.showMessageDialog(
-                    this,
-                    "Selected user: @"
-                        + user.getUsername()
-                        + " ("
-                        + user.getFullName()
-                        + ")\nDirect Friends: "
-                        + user.getDirectFriendCount()
-                        + " | Friends-of-Friends: "
-                        + user.getFriendsOfFriendsCount(),
-                    "User Inspection Summary",
-                    JOptionPane.INFORMATION_MESSAGE);
+                Frame owner = (Frame) SwingUtilities.getWindowAncestor(this);
+                UserDetailHistoryDialog dialog = new UserDetailHistoryDialog(owner, user);
+                dialog.setVisible(true);
               }
             });
   }
