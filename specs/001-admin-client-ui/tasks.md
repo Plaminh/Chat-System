@@ -74,7 +74,7 @@ description: "Task list for Admin Client User Interface (Version 1)"
 
 ### Implementation for User Story 2
 
-- [ ] T009 [US2] Implement `UserManagementPanel` (search box, status filter dropdown, sort selector by Full Name or Created Date, 8-column `JTable` with `Active`/`Locked` pill badges, bottom action bar with Add, Edit, Delete, Lock/Unlock, Reset Password, and View History/Friends buttons + validated form dialogs) in `admin-client/src/main/java/com/chat/admin/view/UserManagementPanel.java` and register in `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java` (Commit #3: `feat(admin): implement user management panel with search and action triggers`)
+- [x] T009 [US2] Implement `UserManagementPanel` (search box, status filter dropdown, sort selector by Full Name or Created Date, 8-column `JTable` with `Active`/`Locked` pill badges, bottom action bar with Add, Edit, Delete, Lock/Unlock, Reset Password, and View History/Friends buttons + validated form dialogs) in `admin-client/src/main/java/com/chat/admin/view/UserManagementPanel.java` and register in `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java` (Commit #3: `feat(admin): implement user management panel with search and action triggers`)
 
 **Checkpoint**: At this point, User Stories 1 AND 2 (Commit #3) work independently.
 
