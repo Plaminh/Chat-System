@@ -130,7 +130,7 @@ description: "Task list for Admin Client User Interface (Version 1)"
 
 ### Implementation for User Story 6
 
-- [ ] T013 [US6] Implement `NewRegistrationPanel` (start/end date inputs `YYYY-MM-DD` with date range validation, quick range buttons, name search filter, sort by Name or Registration Time, total registrations summary badge, and results `JTable`) in `admin-client/src/main/java/com/chat/admin/view/NewRegistrationPanel.java` and register in `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java` (Commit #7: `feat(admin): implement new user registration panel with date range filter`)
+- [x] T013 [US6] Implement `NewRegistrationPanel` (start/end date inputs `YYYY-MM-DD` with date range validation, quick range buttons, name search filter, sort by Name or Registration Time, total registrations summary badge, and results `JTable`) in `admin-client/src/main/java/com/chat/admin/view/NewRegistrationPanel.java` and register in `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java` (Commit #7: `feat(admin): implement new user registration panel with date range filter`)
 
 **Checkpoint**: User Story 6 (Commit #7) is independently functional.
 
