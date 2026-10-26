@@ -183,9 +183,9 @@ description: "Task list for Admin Client User Interface (Version 1)"
 
 **Purpose**: Final build verification, code formatting check, screenshot generation, and AI transparency log update.
 
-- [ ] T018 Run `mvn clean test-compile` and `mvn spotless:check` from repository root to validate zero compile or formatting errors
-- [ ] T019 [P] Capture runtime screenshots of all 10 Admin UI screens into `docs/screenshots/admin/` for the Version 1 report
-- [ ] T020 [P] Record AI-assisted design and implementation summary in `AI-LOG.md`
+- [x] T018 Run `mvn clean test-compile` and `mvn spotless:check` from repository root to validate zero compile or formatting errors
+- [x] T019 [P] Capture runtime screenshots of all 10 Admin UI screens into `docs/screenshots/admin/` for the Version 1 report
+- [x] T020 [P] Record AI-assisted design and implementation summary in `AI-LOG.md`
 
 ---
 
