@@ -158,7 +158,7 @@ description: "Task list for Admin Client User Interface (Version 1)"
 
 ### Implementation for User Story 8
 
-- [ ] T015 [US8] Implement `UserActivityPanel` (date range inputs `From Date` - `To Date`, name filter, sort selector by Name or Created Date, Activity count comparison filter `All` / `=` / `>` / `<` with integer validation, summary KPI cards, and `JTable` showing Username, Full Name, Created Date, App Opens, Chatted Individuals, and Chatted Groups) in `admin-client/src/main/java/com/chat/admin/view/UserActivityPanel.java` and register in `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java` (Commit #9: `feat(admin): implement user activity panel with custom activity filters`)
+- [x] T015 [US8] Implement `UserActivityPanel` (date range inputs `From Date` - `To Date`, name filter, sort selector by Name or Created Date, Activity count comparison filter `All` / `=` / `>` / `<` with integer validation, summary KPI cards, and `JTable` showing Username, Full Name, Created Date, App Opens, Chatted Individuals, and Chatted Groups) in `admin-client/src/main/java/com/chat/admin/view/UserActivityPanel.java` and register in `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java` (Commit #9: `feat(admin): implement user activity panel with custom activity filters`)
 
 **Checkpoint**: User Story 8 (Commit #9) is independently functional.
 

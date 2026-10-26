@@ -412,6 +412,8 @@ public final class AdminMainFrame extends JFrame {
         cardContainer.add(new NewRegistrationPanel(), CARD_NEW_USERS);
       } else if (CARD_FRIENDS.equals(key)) {
         cardContainer.add(new FriendStatsPanel(), CARD_FRIENDS);
+      } else if (CARD_ACTIVITY.equals(key)) {
+        cardContainer.add(new UserActivityPanel(), CARD_ACTIVITY);
       } else {
         cardContainer.add(createOverviewPlaceholderCard(entry.getValue()), key);
       }
