@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_blank" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-tertiary-fixed-variant":"#005236","outline-variant":"#c2c6d6","error":"#ba1a1a","on-tertiary-container":"#f5fff6","tertiary-fixed-dim":"#4edea3","on-tertiary-fixed":"#002113","on-secondary-fixed":"#131b2e","primary-fixed":"#d8e2ff","on-secondary-container":"#5c647a","surface-container":"#e5eeff","on-secondary":"#ffffff","surface-dim":"#cbdbf5","on-secondary-fixed-variant":"#3f465c","secondary":"#565e74","error-container":"#ffdad6","on-primary":"#ffffff","inverse-on-surface":"#eaf1ff","on-background":"#0b1c30","surface":"#f8f9ff","tertiary-fixed":"#6ffbbe","surface-container-lowest":"#ffffff","on-tertiary":"#ffffff","primary-container":"#2170e4","on-primary-fixed-variant":"#004395","surface-bright":"#f8f9ff","on-surface":"#0b1c30","tertiary-container":"#00855b","on-surface-variant":"#424754","outline":"#727785","secondary-fixed-dim":"#bec6e0","surface-container-highest":"#d3e4fe","on-error-container":"#93000a","primary":"#0058be","surface-variant":"#d3e4fe","background":"#f8f9ff","tertiary":"#006947","on-primary-container":"#fefcff","surface-container-high":"#dce9ff","surface-container-low":"#eff4ff","inverse-primary":"#adc6ff","secondary-fixed":"#dae2fd","surface-tint":"#005ac2","on-primary-fixed":"#001a42","secondary-container":"#dae2fd","inverse-surface":"#213145","primary-fixed-dim":"#adc6ff","on-error":"#ffffff"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"margin":"1rem","space-xs":"0.25rem","gutter":"1rem","space-xxs":"0.125rem","space-sm":"0.5rem","gutter-dense":"0.5rem","space-xl":"1.5rem","space-lg":"1rem","space-md":"0.75rem"},"fontFamily":{"body-md-medium":["Inter"],"body-md":["Inter"],"code-sm":["JetBrains Mono"],"headline-lg":["Inter"],"headline-sm":["Inter"],"headline-md":["Inter"],"label-md":["Inter"],"label-sm":["Inter"],"code-xs":["JetBrains Mono"],"body-sm":["Inter"]},"fontSize":{"body-md-medium":["13px",{"lineHeight":"18px","fontWeight":"500"}],"body-md":["13px",{"lineHeight":"18px","fontWeight":"400"}],"code-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"headline-lg":["18px",{"lineHeight":"24px","letterSpacing":"-0.015em","fontWeight":"600"}],"headline-sm":["14px",{"lineHeight":"20px","fontWeight":"600"}],"headline-md":["16px",{"lineHeight":"22px","letterSpacing":"-0.01em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"500"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.02em","fontWeight":"500"}],"code-xs":["11px",{"lineHeight":"14px","fontWeight":"500"}],"body-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><main class="w-full min-h-screen flex items-center justify-center p-space-lg"><div class="flex flex-col w-full items-center justify-center p-space-md select-none relative">
+<!-- Subtle Desktop Canvas Grid Ambient Background -->
+<div class="absolute inset-0 pointer-events-none opacity-40 bg-[radial-gradient(#565e74_1px,transparent_1px)] [background-size:16px_16px]"></div>
+<!-- Ambient Glow Behind Desktop Dialog Frame -->
+<div class="absolute w-[480px] h-[480px] bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Authentic Desktop FlatLaf Modal Dialog Window (approx 440px x auto) -->
+<div class="relative w-full max-w-[440px] bg-surface-container-lowest rounded-xl shadow-2xl overflow-hidden flex flex-col z-10 transition-all duration-200">
+<!-- Titlebar: Native Desktop Window Header -->
+<div class="h-10 bg-inverse-surface text-inverse-on-surface px-space-md flex items-center justify-between select-none">
+<div class="flex items-center gap-space-xs min-w-0">
+<span class="material-symbols-outlined text-primary-fixed text-headline-sm" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<span class="font-label-md text-label-md text-inverse-on-surface truncate">Chat Admin Console - Authentication</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<div class="h-4 px-space-xs bg-surface-container/20 rounded flex items-center gap-1 text-code-xs font-code-xs text-surface-container-high">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed"></span>
+<span>v1.0.4-Laf</span>
+</div>
+<button class="w-6 h-6 rounded flex items-center justify-center text-inverse-on-surface/70 hover:bg-error hover:text-on-error transition-colors ml-1" id="windowCloseBtn" title="Close Window">
+<span class="material-symbols-outlined text-[15px]">close</span>
+</button>
+</div>
+</div>
+<!-- Dialog Body Container -->
+<div class="p-space-xl flex flex-col bg-surface-container-lowest">
+<!-- Inside Header: Minimalist Shield/Lock Badge & Titles -->
+<div class="flex flex-col items-center text-center mb-space-lg">
+<div class="relative mb-space-sm">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[26px]" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container shadow">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">lock</span>
+</div>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">Chat Admin Console</h1>
+<p class="font-body-sm text-body-sm text-secondary mt-space-xxs max-w-[340px]">
+          Sign in to access system administration, gateway router &amp; user telemetry
+        </p>
+</div>
+<!-- Server Gateway Selector Badge / Bar -->
+<div class="mb-space-md p-space-xs bg-surface-container-low rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span>
+<span class="font-code-xs text-code-xs text-secondary uppercase tracking-wider">Target Node:</span>
+<span class="font-code-sm text-code-sm text-on-surface font-semibold">127.0.0.1:8080</span>
+</div>
+<div class="relative">
+<button class="flex items-center gap-1 font-label-sm text-label-sm bg-surface-container text-on-surface px-space-xs py-0.5 rounded shadow-sm hover:bg-surface-variant transition-colors" id="clusterToggleBtn">
+<span>Cluster: Localhost TCP</span>
+<span class="material-symbols-outlined text-[14px]">expand_more</span>
+</button>
+<!-- Dropdown Flyout -->
+<div class="hidden absolute right-0 mt-1 w-56 bg-surface-container-lowest rounded-lg shadow-xl p-space-xs z-30 font-label-sm text-label-sm" id="clusterDropdown">
+<div class="p-space-xs text-secondary font-code-xs uppercase tracking-wider">Select Gateway Node</div>
+<button class="w-full text-left px-space-xs py-1.5 rounded bg-surface-container-high text-primary flex items-center justify-between">
+<span class="font-medium font-body-sm text-body-sm">Localhost TCP 8080</span>
+<span class="font-code-xs text-code-xs text-tertiary">Active</span>
+</button>
+<button class="w-full text-left px-space-xs py-1.5 rounded hover:bg-surface-container-low text-on-surface flex items-center justify-between">
+<span class="font-body-sm text-body-sm">Staging West (10.0.4.12)</span>
+<span class="font-code-xs text-code-xs text-secondary">32ms</span>
+</button>
+<button class="w-full text-left px-space-xs py-1.5 rounded hover:bg-surface-container-low text-on-surface flex items-center justify-between">
+<span class="font-body-sm text-body-sm">Prod Primary Gateway</span>
+<span class="font-code-xs text-code-xs text-secondary">Locked</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Authentication Form -->
+<form class="flex flex-col gap-space-md" id="adminLoginForm" onsubmit="event.preventDefault(); triggerLogin();">
+<!-- Field 1: Identifier -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface flex items-center justify-between" for="usernameInput">
+<span>Operator Identity</span>
+<span class="font-code-xs text-code-xs text-secondary">LDAP / Local</span>
+</label>
+<div class="relative flex items-center bg-surface-container-low rounded-lg shadow-inner focus-within:bg-surface-container-lowest focus-within:shadow-md transition-all">
+<div class="absolute left-2.5 text-secondary flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-[17px]">badge</span>
+</div>
+<input class="w-full h-8 pl-8 pr-3 bg-transparent text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none" id="usernameInput" placeholder="admin@chatsystem.org or username" required="" type="text" value="sysadmin@campus.edu"/>
+</div>
+</div>
+<!-- Field 2: Password -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface" for="passwordInput">Secret Token</label>
+<span class="font-code-xs text-code-xs text-tertiary-container flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px]">verified_user</span>
+              Argon2id Encrypted
+            </span>
+</div>
+<div class="relative flex items-center bg-surface-container-low rounded-lg shadow-inner focus-within:bg-surface-container-lowest focus-within:shadow-md transition-all">
+<div class="absolute left-2.5 text-secondary flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-[17px]">key</span>
+</div>
+<input class="w-full h-8 pl-8 pr-8 bg-transparent text-on-surface font-code-sm text-code-sm placeholder:text-outline focus:outline-none tracking-widest" id="passwordInput" placeholder="Enter master admin password" required="" type="password" value="ClusterSecKey99#"/>
+<button class="absolute right-2 text-secondary hover:text-on-surface transition-colors flex items-center p-0.5 rounded" id="togglePasswordBtn" title="Toggle visibility" type="button">
+<span class="material-symbols-outlined text-[17px]" id="passwordEyeIcon">visibility</span>
+</button>
+</div>
+</div>
+<!-- Two-column row: Remember Checkbox & Recovery -->
+<div class="flex items-center justify-between pt-space-xxs">
+<label class="flex items-center gap-space-xs cursor-pointer select-none">
+<input checked="" class="w-4 h-4 rounded bg-surface-container-low text-primary accent-primary cursor-pointer" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Remember on workstation</span>
+</label>
+<a class="font-label-sm text-label-sm text-primary hover:text-primary-container hover:underline transition-colors" href="#">
+            Forgot credentials?
+          </a>
+</div>
+<!-- Primary Action Button -->
+<button class="mt-space-xs h-9 w-full bg-primary hover:bg-primary-container text-on-primary font-body-md-medium text-body-md-medium rounded-lg shadow flex items-center justify-center gap-space-xs transition-all active:scale-[0.99]" id="signInBtn" type="submit">
+<span id="signInLabel">Sign In to Admin Console</span>
+<span class="material-symbols-outlined text-[18px]" id="signInIcon">arrow_forward</span>
+</button>
+</form>
+<!-- Network Test Bar / Sub-Action -->
+<div class="mt-space-md pt-space-xs flex items-center justify-between bg-surface-container-low/60 rounded px-space-xs py-1 text-code-xs font-code-xs">
+<button class="text-secondary hover:text-primary flex items-center gap-1 transition-colors group" id="testConnBtn" type="button">
+<span class="material-symbols-outlined text-[14px] text-tertiary-container group-hover:rotate-180 transition-transform">wifi_tethering</span>
+<span>Test TCP Connection:</span>
+<span class="text-tertiary font-semibold font-code-xs text-code-xs" id="pingStatus">Ping: OK 4ms</span>
+</button>
+<span class="text-secondary flex items-center gap-0.5 font-code-xs text-code-xs">
+<span class="material-symbols-outlined text-[13px] text-secondary">schedule</span>
+          RTP: 0.1% loss
+        </span>
+</div>
+</div>
+<!-- Security Watermark & Verification Banner -->
+<div class="bg-surface-container-high px-space-lg py-space-sm flex items-center justify-between text-secondary">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+<div class="flex flex-col">
+<span class="font-code-xs text-code-xs font-semibold text-on-surface">Restricted Access • Univ Chat v1.0</span>
+<span class="font-code-xs text-code-xs text-secondary">All administrative commands are cryptographically audited</span>
+</div>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-lowest px-space-xs py-0.5 rounded shadow-sm">
+<span class="material-symbols-outlined text-[13px] text-tertiary">lock</span>
+<span class="font-code-xs text-code-xs text-on-surface font-medium">TLS 1.3</span>
+</div>
+</div>
+</div>
+<!-- Client-side Interactive Behaviors -->
+<script>
+    // Password visibility toggle
+    const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+    const passwordInput = document.getElementById('passwordInput');
+    const passwordEyeIcon = document.getElementById('passwordEyeIcon');
+
+    if (togglePasswordBtn && passwordInput && passwordEyeIcon) {
+      togglePasswordBtn.addEventListener('click', () => {
+        const isPassword = passwordInput.getAttribute('type') === 'password';
+        passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+        passwordEyeIcon.textContent = isPassword ? 'visibility_off' : 'visibility';
+      });
+    }
+
+    // Cluster dropdown toggle
+    const clusterToggleBtn = document.getElementById('clusterToggleBtn');
+    const clusterDropdown = document.getElementById('clusterDropdown');
+
+    if (clusterToggleBtn && clusterDropdown) {
+      clusterToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clusterDropdown.classList.toggle('hidden');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!clusterDropdown.contains(e.target)) {
+          clusterDropdown.classList.add('hidden');
+        }
+      });
+    }
+
+    // Ping tester simulation
+    const testConnBtn = document.getElementById('testConnBtn');
+    const pingStatus = document.getElementById('pingStatus');
+
+    if (testConnBtn && pingStatus) {
+      testConnBtn.addEventListener('click', () => {
+        pingStatus.textContent = 'Probing...';
+        pingStatus.className = 'text-primary font-semibold font-code-xs text-code-xs';
+        setTimeout(() => {
+          const lat = Math.floor(Math.random() * 4) + 2;
+          pingStatus.textContent = `Ping: OK ${lat}ms`;
+          pingStatus.className = 'text-tertiary font-semibold font-code-xs text-code-xs';
+        }, 320);
+      });
+    }
+
+    // Authentication form trigger
+    function triggerLogin() {
+      const btn = document.getElementById('signInBtn');
+      const label = document.getElementById('signInLabel');
+      const icon = document.getElementById('signInIcon');
+
+      if (!btn || !label || !icon) return;
+
+      label.textContent = 'Authenticating Socket...';
+      icon.textContent = 'progress_activity';
+      icon.classList.add('animate-spin');
+      btn.classList.add('opacity-80', 'pointer-events-none');
+
+      setTimeout(() => {
+        label.textContent = 'Connected (Admin)';
+        icon.classList.remove('animate-spin');
+        icon.textContent = 'check_circle';
+        btn.classList.replace('bg-primary', 'bg-tertiary-container');
+        btn.classList.replace('hover:bg-primary-container', 'hover:bg-tertiary');
+      }, 750);
+    }
+
+    // Close button visual feedback
+    const windowCloseBtn = document.getElementById('windowCloseBtn');
+    if (windowCloseBtn) {
+      windowCloseBtn.addEventListener('click', () => {
+        const dialog = windowCloseBtn.closest('.bg-surface-container-lowest');
+        if (dialog) {
+          dialog.classList.add('scale-95', 'opacity-70');
+          setTimeout(() => {
+            dialog.classList.remove('scale-95', 'opacity-70');
+          }, 200);
+        }
+      });
+    }
+  </script>
+</div></main></body></html>

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-tertiary-fixed-variant":"#005236","outline-variant":"#c2c6d6","error":"#ba1a1a","on-tertiary-container":"#f5fff6","tertiary-fixed-dim":"#4edea3","on-tertiary-fixed":"#002113","on-secondary-fixed":"#131b2e","primary-fixed":"#d8e2ff","on-secondary-container":"#5c647a","surface-container":"#e5eeff","on-secondary":"#ffffff","surface-dim":"#cbdbf5","on-secondary-fixed-variant":"#3f465c","secondary":"#565e74","error-container":"#ffdad6","on-primary":"#ffffff","inverse-on-surface":"#eaf1ff","on-background":"#0b1c30","surface":"#f8f9ff","tertiary-fixed":"#6ffbbe","surface-container-lowest":"#ffffff","on-tertiary":"#ffffff","primary-container":"#2170e4","on-primary-fixed-variant":"#004395","surface-bright":"#f8f9ff","on-surface":"#0b1c30","tertiary-container":"#00855b","on-surface-variant":"#424754","outline":"#727785","secondary-fixed-dim":"#bec6e0","surface-container-highest":"#d3e4fe","on-error-container":"#93000a","primary":"#0058be","surface-variant":"#d3e4fe","background":"#f8f9ff","tertiary":"#006947","on-primary-container":"#fefcff","surface-container-high":"#dce9ff","surface-container-low":"#eff4ff","inverse-primary":"#adc6ff","secondary-fixed":"#dae2fd","surface-tint":"#005ac2","on-primary-fixed":"#001a42","secondary-container":"#dae2fd","inverse-surface":"#213145","primary-fixed-dim":"#adc6ff","on-error":"#ffffff"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"margin":"1rem","space-xs":"0.25rem","gutter":"1rem","space-xxs":"0.125rem","space-sm":"0.5rem","gutter-dense":"0.5rem","space-xl":"1.5rem","space-lg":"1rem","space-md":"0.75rem"},"fontFamily":{"body-md-medium":["Inter"],"body-md":["Inter"],"code-sm":["JetBrains Mono"],"headline-lg":["Inter"],"headline-sm":["Inter"],"headline-md":["Inter"],"label-md":["Inter"],"label-sm":["Inter"],"code-xs":["JetBrains Mono"],"body-sm":["Inter"]},"fontSize":{"body-md-medium":["13px",{"lineHeight":"18px","fontWeight":"500"}],"body-md":["13px",{"lineHeight":"18px","fontWeight":"400"}],"code-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"headline-lg":["18px",{"lineHeight":"24px","letterSpacing":"-0.015em","fontWeight":"600"}],"headline-sm":["14px",{"lineHeight":"20px","fontWeight":"600"}],"headline-md":["16px",{"lineHeight":"22px","letterSpacing":"-0.01em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"500"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.02em","fontWeight":"500"}],"code-xs":["11px",{"lineHeight":"14px","fontWeight":"500"}],"body-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><div class="fixed top-0 left-0 right-0 h-10 bg-inverse-surface text-inverse-on-surface flex items-center justify-between px-space-md z-50 select-none shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-sm"><div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-error/80"></div><div class="w-3 h-3 rounded-full bg-secondary-fixed-dim/80"></div><div class="w-3 h-3 rounded-full bg-tertiary-fixed-dim/80"></div></div><div class="h-4 w-px bg-outline-variant/30 mx-space-xs"></div><img alt="ChatAdmin Desktop Logo" class="h-5 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UtwILttLScA6ig29dwN2RNevX1r3CdLlGD5--j39LRHrPblJgcIm9Dau-wgk3-4S9AXuNRlv07dDzJPRXXj-7YledMZnI9_OjAapAxxoz-LtJDHPOE8JKDaDxTvgGKQFFTM6Mvg4prsTTFPESiQFghEFJ61pGv5AK7k3jqkFX83hs3_yNQ0cNRRDuX9WTGlom8i27N_ZTdnb9tlLq7qO98cWsNPkYPcfB78NclNsxc3xFudG-Y43r0Vg"/><span class="font-label-sm text-label-sm text-inverse-on-surface/90 font-medium tracking-wide">ChatAdmin Console v1.0 - [Production Cluster]</span></div><div class="flex items-center gap-space-md font-code-xs text-code-xs text-inverse-on-surface/70"><span class="flex items-center gap-1"><span class="inline-block w-1.5 h-1.5 rounded-full bg-tertiary-fixed"></span>TCP Live</span><span>PID: 48921</span></div></div><aside class="fixed left-0 top-10 bottom-0 w-60 bg-inverse-surface text-inverse-on-surface flex flex-col z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="p-space-md bg-inverse-surface/95 flex flex-col gap-space-sm"><div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-inverse-on-surface font-semibold">ChatAdmin</span><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-fixed opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary-fixed"></span></span></div><span class="font-code-xs text-code-xs text-secondary-fixed bg-surface-container-highest/20 px-1.5 py-0.5 rounded">Suite</span></div><div class="flex items-center gap-space-sm p-space-xs bg-surface-container-highest/10 rounded-lg"><div class="w-7 h-7 rounded bg-primary-container text-on-primary-container flex items-center justify-center font-code-xs text-code-xs font-semibold">SA</div><div class="flex-1 min-w-0"><div class="font-label-sm text-label-sm text-inverse-on-surface truncate font-medium">SysAdmin</div><div class="flex items-center gap-1 font-label-sm text-label-sm text-tertiary-fixed"><span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed"></span>Online</div></div></div></div><nav class="flex-1 overflow-y-auto px-space-xs py-space-sm space-y-space-md" data-active-classes="bg-primary-container text-on-primary-container font-body-md-medium"><div class="space-y-space-xxs"><div class="px-space-sm font-label-sm text-label-sm text-inverse-on-surface/50 uppercase tracking-wider font-semibold">Oversight</div><a aria-current="page" class="flex items-center justify-between px-space-sm py-1.5 rounded-lg transition-colors bg-primary-container text-on-primary-container font-body-md-medium" data-path="user-directory" href="#"><span class="flex items-center gap-space-sm font-body-md text-body-md"><span class="material-symbols-outlined text-[16px]">group</span>User Directory</span></a><a class="flex items-center justify-between px-space-sm py-1.5 rounded-lg text-inverse-on-surface/80 hover:bg-surface-container-highest/15 hover:text-inverse-on-surface transition-colors" data-path="group-chats" href="#"><span class="flex items-center gap-space-sm font-body-md text-body-md"><span class="material-symbols-outlined text-[16px]">forum</span>Group Chats</span></a><a class="flex items-center justify-between px-space-sm py-1.5 rounded-lg text-inverse-on-surface/80 hover:bg-surface-container-highest/15 hover:text-inverse-on-surface transition-colors" data-path="spam-reports" href="#"><span class="flex items-center gap-space-sm font-body-md text-body-md"><span class="material-symbols-outlined text-[16px]">report</span>Spam Reports</span><span class="font-code-xs text-code-xs bg-error text-on-error px-1.5 py-0.2 rounded-full font-medium">3</span></a></div><div class="space-y-space-xxs"><div class="px-space-sm font-label-sm text-label-sm text-inverse-on-surface/50 uppercase tracking-wider font-semibold">Analytics &amp; Intelligence</div><a class="flex items-center px-space-sm py-1.5 rounded-lg text-inverse-on-surface/80 hover:bg-surface-container-highest/15 hover:text-inverse-on-surface transition-colors" data-path="new-registrations" href="#"><span class="flex items-center gap-space-sm font-body-md text-body-md"><span class="material-symbols-outlined text-[16px]">person_add</span>New Registrations</span></a><a class="flex items-center px-space-sm py-1.5 rounded-lg text-inverse-on-surface/80 hover:bg-surface-container-highest/15 hover:text-inverse-on-surface transition-colors" data-path="friend-statistics" href="#"><span class="flex items-center gap-space-sm font-body-md text-body-md"><span class="material-symbols-outlined text-[16px]">hub</span>Friend Statistics</span></a><a class="flex items-center px-space-sm py-1.5 rounded-lg text-inverse-on-surface/80 hover:bg-surface-container-highest/15 hover:text-inverse-on-surface transition-colors" data-path="activity-metrics" href="#"><span class="flex items-center gap-space-sm font-body-md text-body-md"><span class="material-symbols-outlined text-[16px]">monitoring</span>Activity Metrics</span></a><a class="flex items-center px-space-sm py-1.5 rounded-lg text-inverse-on-surface/80 hover:bg-surface-container-highest/15 hover:text-inverse-on-surface transition-colors" data-path="visual-charts" href="#"><span class="flex items-center gap-space-sm font-body-md text-body-md"><span class="material-symbols-outlined text-[16px]">bar_chart</span>Visual Charts</span></a></div></nav><div class="p-space-xs bg-inverse-surface/95 space-y-space-xxs"><a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded-lg text-inverse-on-surface/80 hover:bg-surface-container-highest/15 hover:text-inverse-on-surface transition-colors" data-path="system-preferences" href="#"><span class="material-symbols-outlined text-[16px]">settings</span><span class="font-body-md text-body-md">System Preferences</span></a><a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded-lg text-error-container hover:bg-error/20 hover:text-error-container transition-colors" data-path="login" href="#"><span class="material-symbols-outlined text-[16px]">logout</span><span class="font-body-md text-body-md">Sign Out</span></a></div></aside><div class="pl-60"><header class="fixed top-10 left-60 right-0 h-12 bg-surface/90 backdrop-blur-md z-30 shadow-[0_1px_8px_rgba(0,0,0,0.04)] flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs font-label-md text-label-md text-on-surface-variant"><span class="hover:text-on-surface cursor-pointer">Console</span><span class="material-symbols-outlined text-[14px]">chevron_right</span><span class="text-on-surface font-medium">Cluster 01</span></div><div class="h-4 w-px bg-outline-variant/40"></div><div class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1 rounded-lg w-72"><span class="material-symbols-outlined text-outline text-[16px]">search</span><span class="font-body-sm text-body-sm text-outline flex-1 select-none">Search console...</span><kbd class="font-code-xs text-code-xs bg-surface-container px-1 py-0.5 rounded text-on-surface-variant">Ctrl+K</kbd></div></div><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-xs font-code-xs text-code-xs text-on-surface-variant bg-surface-container-low px-space-sm py-1 rounded"><span class="material-symbols-outlined text-[14px] text-primary">schedule</span><span>2025-05-18 14:32:08 UTC</span></div><div class="relative flex items-center justify-center cursor-pointer text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-error"></span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="relative pt-22 pb-7 min-h-screen bg-surface px-space-lg"><div class="flex flex-col w-full relative">
+<!-- Workspace Background View (Dimmed/Blurred context underneath modal) -->
+<div class="w-full space-y-space-md opacity-40 pointer-events-none select-none filter blur-[1px]">
+<!-- Workspace Action Bar -->
+<div class="flex items-center justify-between bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-center gap-space-md">
+<span class="font-headline-md text-headline-md text-on-surface">User Directory &amp; Topology</span>
+<span class="font-label-sm text-label-sm bg-surface-container px-2 py-0.5 rounded text-on-surface-variant font-code-xs">CLUSTER_DB_PROD</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="w-48 h-8 bg-surface-container-low rounded-lg"></div>
+<div class="w-24 h-8 bg-primary rounded-lg"></div>
+</div>
+</div>
+<!-- Underlying Table Skeleton -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm space-y-space-sm">
+<div class="h-8 bg-surface-container-low rounded w-full"></div>
+<div class="h-10 bg-surface-container rounded-lg w-full"></div>
+<div class="h-10 bg-surface-container-lowest rounded-lg w-full"></div>
+<div class="h-10 bg-surface-container-low rounded-lg w-full"></div>
+<div class="h-10 bg-surface-container rounded-lg w-full"></div>
+<div class="h-10 bg-surface-container-lowest rounded-lg w-full"></div>
+</div>
+</div>
+<!-- Modal Backdrop Overlay -->
+<div class="fixed inset-0 top-10 left-60 bg-inverse-surface/40 backdrop-blur-sm z-40 flex items-center justify-center p-space-lg">
+<!-- Desktop Modal Container (720px max-width, elevated level 3 shadow) -->
+<div class="w-full max-w-[740px] bg-surface-container-lowest rounded-xl shadow-2xl flex flex-col overflow-hidden max-h-[901px]">
+<!-- Desktop Window Titlebar -->
+<div class="h-10 bg-surface-container-high px-space-md flex items-center justify-between select-none">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">terminal</span>
+<span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">User Inspection &amp; Telemetry - @alex_turner</span>
+<span class="font-code-xs text-code-xs px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">PID: 9021</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" title="Minimize">
+<span class="material-symbols-outlined text-[15px]">minimize</span>
+</button>
+<button class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" title="Maximize">
+<span class="material-symbols-outlined text-[14px]">crop_square</span>
+</button>
+<button class="w-6 h-6 rounded flex items-center justify-center text-error hover:bg-error-container hover:text-on-error-container transition-colors" onclick="window.location.hash='#'" title="Close">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+</div>
+<!-- User Header Banner Card -->
+<div class="bg-surface-container-low p-space-md flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<div class="relative">
+<img class="w-12 h-12 rounded-xl object-cover shadow-sm" data-alt="Portrait photo of Alex Turner, a 28-year-old student researcher with short brown hair and wireless glasses, soft natural daylight, minimalist academic library background with cool slate and teal undertones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJrPuQuNZ-LVFFqMWIXdi1GOGTZoJv2B_ONTT_z0j_PiwpzZNtbRpBU1ofCbtfOekBjf2t8bHg9Dj3fMONwMUB3YaicdwTv8kVMWV7d2u-OgOaQ64L0xKRZ1QzSRFFOYD7U9fwHnpmTQGss2u1K56m66_mm_ytBMLWeOWDAZdbUq00lG0wWfp11_vKGdNzyBfhaItIVHZ3rHJyzW0G8Rb01PSZgQTD6orRYb2kl1y9ZkJ9bgOIz_f_"/>
+<span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-tertiary-container rounded-full ring-2 ring-surface-container-lowest flex items-center justify-center">
+<span class="w-1.5 h-1.5 bg-on-tertiary rounded-full"></span>
+</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-md text-headline-md text-on-surface font-semibold">Alex Turner</span>
+<span class="font-label-sm text-label-sm text-primary font-code-xs bg-primary-fixed/40 px-1.5 py-0.2 rounded">@alex_turner</span>
+</div>
+<div class="flex items-center gap-space-sm text-on-surface-variant font-body-sm text-body-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-outline">mail</span>
+                alex.turner@univ.edu
+              </span>
+<span>•</span>
+<span class="font-code-xs text-code-xs text-outline">Dept. Computer Science</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end gap-1.5">
+<div class="flex items-center gap-space-xs">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-tertiary-container/15 text-tertiary font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+              Status: Active
+            </span>
+<span class="font-code-xs text-code-xs bg-surface-container text-on-surface-variant px-2 py-0.5 rounded font-medium">#USR-10842</span>
+</div>
+<span class="font-code-xs text-code-xs text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">calendar_today</span>
+            Registered: Jan 15, 2024
+          </span>
+</div>
+</div>
+<!-- Segmented Tab Navigation -->
+<div class="flex items-center px-space-md bg-surface-container-lowest shadow-sm gap-space-xs select-none">
+<button class="flex items-center gap-space-xs py-2.5 px-space-md font-label-md text-label-md transition-colors relative text-primary font-semibold" id="tab-login-btn" onclick="switchTab('login')">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span>Login History &amp; Sessions</span>
+<span class="font-code-xs text-code-xs bg-primary-fixed text-on-primary-fixed px-1.5 py-0.2 rounded-full ml-1 font-bold">342</span>
+<div class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" id="tab-login-indicator"></div>
+</button>
+<button class="flex items-center gap-space-xs py-2.5 px-space-md font-label-md text-label-md transition-colors relative text-on-surface-variant hover:text-on-surface" id="tab-network-btn" onclick="switchTab('network')">
+<span class="material-symbols-outlined text-[16px]">hub</span>
+<span>Friend Network &amp; Topology</span>
+<span class="font-code-xs text-code-xs bg-surface-container text-on-surface-variant px-1.5 py-0.2 rounded-full ml-1">18</span>
+<div class="absolute bottom-0 left-0 right-0 h-0.5 bg-transparent" id="tab-network-indicator"></div>
+</button>
+</div>
+<!-- Modal Body (Scrollable Workspace) -->
+<div class="flex-1 overflow-y-auto p-space-md space-y-space-md bg-surface">
+<!-- ==================== TAB A: LOGIN HISTORY ==================== -->
+<div class="space-y-space-md" id="tab-login-content">
+<!-- Quick Metric Stats Row -->
+<div class="grid grid-cols-4 gap-space-sm">
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm flex flex-col">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold">Total Logins</span>
+<span class="font-headline-lg text-headline-lg text-on-surface font-semibold mt-0.5">342</span>
+<span class="font-code-xs text-code-xs text-tertiary flex items-center gap-0.5 mt-1">
+<span class="material-symbols-outlined text-[12px]">trending_up</span>+14% this month
+              </span>
+</div>
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm flex flex-col">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold">Failed Attempts</span>
+<span class="font-headline-lg text-headline-lg text-on-surface font-semibold mt-0.5">0</span>
+<span class="font-code-xs text-code-xs text-tertiary flex items-center gap-0.5 mt-1">
+<span class="material-symbols-outlined text-[12px]">verified_user</span>Clean record
+              </span>
+</div>
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm flex flex-col">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold">Last Active</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold mt-0.5">12 mins ago</span>
+<span class="font-code-xs text-code-xs text-primary flex items-center gap-0.5 mt-1">
+<span class="material-symbols-outlined text-[12px]">sensors</span>Port 58921 Open
+              </span>
+</div>
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm flex flex-col">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold">Primary Device</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold mt-0.5 truncate">macOS / Chrome</span>
+<span class="font-code-xs text-code-xs text-outline truncate mt-1">Sonoma 14.4.1 (x86_64)</span>
+</div>
+</div>
+<!-- Chronological Audit Table View -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden">
+<div class="bg-surface-container-low px-space-md py-2 flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">manage_search</span>
+                Telemetry Audit Stream
+              </span>
+<span class="font-code-xs text-code-xs text-outline">Displaying last 4 raw sessions</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-md text-body-md border-collapse">
+<thead>
+<tr class="bg-surface-container-low/70 text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<th class="py-2 px-space-md font-semibold">Timestamp (UTC)</th>
+<th class="py-2 px-space-md font-semibold">IP Address</th>
+<th class="py-2 px-space-md font-semibold">Interface / Client</th>
+<th class="py-2 px-space-md font-semibold">Platform</th>
+<th class="py-2 px-space-md font-semibold text-right">Result</th>
+</tr>
+</thead>
+<tbody class="divide-y-0 text-on-surface font-body-sm text-body-sm">
+<!-- Row 1 -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors">
+<td class="py-2.5 px-space-md font-code-xs text-code-xs text-on-surface flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                      2025-05-18 14:18:22
+                    </td>
+<td class="py-2.5 px-space-md font-code-xs text-code-xs text-primary font-medium">192.168.1.104</td>
+<td class="py-2.5 px-space-md">
+<span class="inline-flex items-center gap-1 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-outline">desktop_windows</span>
+                        Desktop Client (FlatLaf)
+                      </span>
+</td>
+<td class="py-2.5 px-space-md text-on-surface-variant">macOS Sonoma</td>
+<td class="py-2.5 px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-container/15 text-tertiary font-code-xs text-code-xs font-semibold">
+<span class="w-1 h-1 rounded-full bg-tertiary"></span>
+                        Success
+                      </span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="bg-surface-container-low/40 hover:bg-surface-container-low transition-colors">
+<td class="py-2.5 px-space-md font-code-xs text-code-xs text-on-surface flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                      2025-05-17 09:42:15
+                    </td>
+<td class="py-2.5 px-space-md font-code-xs text-code-xs text-on-surface-variant">192.168.1.104</td>
+<td class="py-2.5 px-space-md">
+<span class="inline-flex items-center gap-1 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-outline">desktop_windows</span>
+                        Desktop Client (FlatLaf)
+                      </span>
+</td>
+<td class="py-2.5 px-space-md text-on-surface-variant">macOS Sonoma</td>
+<td class="py-2.5 px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-container/15 text-tertiary font-code-xs text-code-xs font-semibold">
+                        Success
+                      </span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors">
+<td class="py-2.5 px-space-md font-code-xs text-code-xs text-on-surface flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                      2025-05-16 19:11:04
+                    </td>
+<td class="py-2.5 px-space-md font-code-xs text-code-xs text-on-surface-variant">74.125.21.9</td>
+<td class="py-2.5 px-space-md">
+<span class="inline-flex items-center gap-1 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-outline">language</span>
+                        Web Client
+                      </span>
+</td>
+<td class="py-2.5 px-space-md text-on-surface-variant">Chrome 124.0</td>
+<td class="py-2.5 px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-container/15 text-tertiary font-code-xs text-code-xs font-semibold">
+                        Success
+                      </span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="bg-surface-container-low/40 hover:bg-surface-container-low transition-colors">
+<td class="py-2.5 px-space-md font-code-xs text-code-xs text-on-surface flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                      2025-05-15 11:05:48
+                    </td>
+<td class="py-2.5 px-space-md font-code-xs text-code-xs text-on-surface-variant">192.168.1.104</td>
+<td class="py-2.5 px-space-md">
+<span class="inline-flex items-center gap-1 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-outline">desktop_windows</span>
+                        Desktop Client
+                      </span>
+</td>
+<td class="py-2.5 px-space-md text-on-surface-variant">macOS Sonoma</td>
+<td class="py-2.5 px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-container/15 text-tertiary font-code-xs text-code-xs font-semibold">
+                        Success
+                      </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Network & Socket Sparkline Mini Strip -->
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-tertiary text-[18px]">wifi_tethering</span>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface font-medium">Socket Latency &amp; Packet Quality</div>
+<div class="font-code-xs text-code-xs text-outline">Zero frame drops detected across current TCP socket thread</div>
+</div>
+</div>
+<!-- Lightweight SVG latency line chart -->
+<div class="w-40 h-8 flex items-center">
+<svg class="w-full h-6 text-tertiary" fill="none" viewbox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 16L20 18L40 12L60 14L80 6L100 8L120 4L140 7L160 3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+<circle class="fill-current text-tertiary" cx="160" cy="3" r="2.5"></circle>
+</svg>
+</div>
+</div>
+</div>
+<!-- ==================== TAB B: FRIEND NETWORK & TOPOLOGY ==================== -->
+<div class="hidden space-y-space-md" id="tab-network-content">
+<!-- Topology High-Level Metrics -->
+<div class="grid grid-cols-2 gap-space-sm">
+<div class="bg-surface-container-lowest p-space-md rounded-lg shadow-sm flex items-center justify-between">
+<div>
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold">Direct Friends</span>
+<div class="font-headline-lg text-headline-lg text-on-surface font-bold mt-0.5">18 Users</div>
+<span class="font-code-xs text-code-xs text-tertiary">All accounts active &amp; verified</span>
+</div>
+<div class="w-10 h-10 rounded-lg bg-primary-fixed/50 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">group</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-lg shadow-sm flex items-center justify-between">
+<div>
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold">Extended Topology</span>
+<div class="font-headline-lg text-headline-lg text-on-surface font-bold mt-0.5">142 Extended</div>
+<span class="font-code-xs text-code-xs text-secondary">Friends-of-Friends Reach</span>
+</div>
+<div class="w-10 h-10 rounded-lg bg-secondary-fixed/50 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</div>
+</div>
+</div>
+<!-- Top Direct Peers List -->
+<div class="space-y-space-xs">
+<div class="flex items-center justify-between px-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Top Mutual Connections</span>
+<span class="font-code-xs text-code-xs text-outline">Ordered by graph cluster weight</span>
+</div>
+<!-- Friend Card 1: Sarah Connor -->
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm flex items-center justify-between hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm min-w-0">
+<img class="w-9 h-9 rounded-lg object-cover" data-alt="Close-up avatar of Sarah Connor, a student with dark curly hair wearing navy blazer in modern university lab lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASrjpfX4gEf_xUOWr2cTURAXFXLG-ZV2Zc-tnXPtw0CoeXz2k7jeD-tvAMjW0gDATahMTYl4hCewpnVYe9WF3_jFpqvrKvbpbofTGQuBm2AD9V1VrM4IGRYF926npKLwNhN79zq1Luu32O7nXSbmVwBjQKfanAYy6S2y8NxPh-AwYSpyh0oPWsz3xGKfY63Zj08LDCNbC9G8D5-BnWCiuEnQP1yEkKhLg36vfCipMyC_D_ioF34see"/>
+<div class="min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-body-md-medium text-body-md-medium text-on-surface font-semibold truncate">Sarah Connor</span>
+<span class="font-code-xs text-code-xs text-outline">@sarah_c</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-tertiary">hub</span>
+<span>8 mutual peers</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="font-code-xs text-code-xs bg-surface-container text-on-surface-variant px-2 py-0.5 rounded font-medium">Graph Weight 0.84</span>
+<button class="w-7 h-7 rounded flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest/20 hover:text-primary transition-colors" title="Inspect Sarah">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- Friend Card 2: David Kim -->
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm flex items-center justify-between hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm min-w-0">
+<img class="w-9 h-9 rounded-lg object-cover" data-alt="Avatar portrait of David Kim, a young professional software engineer with stylish dark hair in sleek tech workspace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxqejv47F_rnKP4PecQOFdKkceGklppwz2HsKq9eN3Z8cpNpRrBF_nu92hB0ajjTxlwcoP_QXAamtB1l4zgFgpZvfM9IFuYbQtMEEER-7Kg5eDcx4KmHm0Ck8IBMAetcNd9pGib7Stzto9L5Z6_tmnJpN55BL-8WQp-Hm_ivqhPPqjf6EYaqEMp83ci8AfIEpu6J7Ystilol0QHqYi_zpNqr2zJM7ZlIMCKM9LNCX0WscXa9VC8D8F"/>
+<div class="min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-body-md-medium text-body-md-medium text-on-surface font-semibold truncate">David Kim</span>
+<span class="font-code-xs text-code-xs text-outline">@david_k</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-tertiary">hub</span>
+<span>5 mutual peers</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="font-code-xs text-code-xs bg-surface-container text-on-surface-variant px-2 py-0.5 rounded font-medium">Graph Weight 0.62</span>
+<button class="w-7 h-7 rounded flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest/20 hover:text-primary transition-colors" title="Inspect David">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- Friend Card 3: Elena Rostova -->
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm flex items-center justify-between hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm min-w-0">
+<img class="w-9 h-9 rounded-lg object-cover" data-alt="Profile photo of Elena Rostova, university student researcher with blonde hair tied back, bright clean background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAehhGc4xpjn3O2y1biovbvr52HlmPzSHP-Sb2zbv-uFBlcB_Xz1SSzc5tk6Fi4rf2J0DhYxQa79m-ZpXOTMJeUzH0hIaDNOlHXdldNNy2A_uBLfAarw3Z95Zrpe6n-GrAAm1vuPnZh6AGfk6E0oTiVY2QD6PiDqfnK_sCXdhL8Y3JjDepXNjescyxppnSLwGLLU60KDyNy3M70K9HfwNtU9CVDcAGha_JmArxqwLvnOa_6Q2zgZ1Qm"/>
+<div class="min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-body-md-medium text-body-md-medium text-on-surface font-semibold truncate">Elena Rostova</span>
+<span class="font-code-xs text-code-xs text-outline">@elena_r</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-tertiary">hub</span>
+<span>12 mutual peers</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="font-code-xs text-code-xs bg-surface-container text-on-surface-variant px-2 py-0.5 rounded font-medium">Graph Weight 0.95</span>
+<button class="w-7 h-7 rounded flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest/20 hover:text-primary transition-colors" title="Inspect Elena">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Network Cluster Visual Map Container -->
+<div class="bg-surface-container-low p-space-sm rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">schema</span>
+<div>
+<div class="font-body-md-medium text-body-md-medium text-on-surface font-semibold">Graph Cluster: CS-Cohort-2024</div>
+<div class="font-code-xs text-code-xs text-outline">Density: 0.42 • Centrality Rank #4 within department cluster</div>
+</div>
+</div>
+<span class="font-code-xs text-code-xs text-primary font-medium hover:underline cursor-pointer">Open Full Graph →</span>
+</div>
+</div>
+</div>
+<!-- Desktop Modal Footer Bar -->
+<div class="h-14 bg-surface-container-high px-space-md flex items-center justify-between select-none">
+<!-- Secondary utility triggers -->
+<div class="flex items-center gap-space-xs">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:bg-surface-container transition-colors shadow-sm" onclick="exportAuditCSV()">
+<span class="material-symbols-outlined text-[15px] text-primary">download</span>
+<span>Export CSV</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:bg-surface-container transition-colors shadow-sm" onclick="window.print()">
+<span class="material-symbols-outlined text-[15px] text-outline">print</span>
+<span>Print Log</span>
+</button>
+</div>
+<!-- Primary dismissal / action button -->
+<div class="flex items-center gap-space-sm">
+<span class="font-code-xs text-code-xs text-outline">ESC to dismiss</span>
+<button class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-medium hover:bg-primary/90 transition-colors shadow-sm" onclick="dismissModal()">
+<span>Close Window</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  function switchTab(tabId) {
+    const loginContent = document.getElementById('tab-login-content');
+    const networkContent = document.getElementById('tab-network-content');
+    const loginBtn = document.getElementById('tab-login-btn');
+    const networkBtn = document.getElementById('tab-network-btn');
+    const loginInd = document.getElementById('tab-login-indicator');
+    const networkInd = document.getElementById('tab-network-indicator');
+
+    if (tabId === 'login') {
+      loginContent.classList.remove('hidden');
+      networkContent.classList.add('hidden');
+      
+      loginBtn.classList.add('text-primary', 'font-semibold');
+      loginBtn.classList.remove('text-on-surface-variant');
+      loginInd.classList.add('bg-primary');
+      loginInd.classList.remove('bg-transparent');
+
+      networkBtn.classList.remove('text-primary', 'font-semibold');
+      networkBtn.classList.add('text-on-surface-variant');
+      networkInd.classList.remove('bg-primary');
+      networkInd.classList.add('bg-transparent');
+    } else {
+      loginContent.classList.add('hidden');
+      networkContent.classList.remove('hidden');
+
+      networkBtn.classList.add('text-primary', 'font-semibold');
+      networkBtn.classList.remove('text-on-surface-variant');
+      networkInd.classList.add('bg-primary');
+      networkInd.classList.remove('bg-transparent');
+
+      loginBtn.classList.remove('text-primary', 'font-semibold');
+      loginBtn.classList.add('text-on-surface-variant');
+      loginInd.classList.remove('bg-primary');
+      loginInd.classList.add('bg-transparent');
+    }
+  }
+
+  function exportAuditCSV() {
+    const csvContent = "data:text/csv;charset=utf-8,Timestamp,IP,Client,Platform,Result\n" +
+      "2025-05-18 14:18:22,192.168.1.104,Desktop Client,macOS Sonoma,Success\n" +
+      "2025-05-17 09:42:15,192.168.1.104,Desktop Client,macOS Sonoma,Success\n" +
+      "2025-05-16 19:11:04,74.125.21.9,Web Client,Chrome 124.0,Success\n" +
+      "2025-05-15 11:05:48,192.168.1.104,Desktop Client,macOS Sonoma,Success";
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "audit_log_alex_turner.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function dismissModal() {
+    const backdrop = document.querySelector('.fixed.inset-0');
+    if (backdrop) {
+      backdrop.style.display = 'none';
+    }
+  }
+
+  // Keyboard shortcut listener for native desktop feel (Esc to dismiss)
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      dismissModal();
+    }
+  });
+</script></main><footer class="fixed bottom-0 left-60 right-0 h-7 bg-surface-container text-on-surface-variant z-30 flex items-center justify-between px-space-md font-code-xs text-code-xs select-none shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-tertiary"></span>Connected to localhost:8080 (TCP Socket)</span><span>|</span><span>DB: PostgreSQL 16</span><span>|</span><span>Latency: 4ms</span></div><div class="flex items-center gap-space-md"><span>Threads: 32</span><span>|</span><span>JVM Memory: 412MB / 1024MB</span></div></footer></div></body></html>
