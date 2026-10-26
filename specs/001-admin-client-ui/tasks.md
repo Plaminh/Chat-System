@@ -144,7 +144,7 @@ description: "Task list for Admin Client User Interface (Version 1)"
 
 ### Implementation for User Story 7
 
-- [ ] T014 [US7] Implement `FriendStatsPanel` (name filter, sort selector by Name or Created Date, Direct Friends comparison filter `All` / `=` / `>` / `<` with non-negative integer validation, summary KPI cards, and full-width `JTable` showing Username, Full Name, Created Date, Direct Friends, and Friends-of-Friends) in `admin-client/src/main/java/com/chat/admin/view/FriendStatsPanel.java` and register in `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java` (Commit #8: `feat(admin): implement friend statistics panel with comparison filters`)
+- [x] T014 [US7] Implement `FriendStatsPanel` (name filter, sort selector by Name or Created Date, Direct Friends comparison filter `All` / `=` / `>` / `<` with non-negative integer validation, summary KPI cards, and full-width `JTable` showing Username, Full Name, Created Date, Direct Friends, and Friends-of-Friends) in `admin-client/src/main/java/com/chat/admin/view/FriendStatsPanel.java` and register in `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java` (Commit #8: `feat(admin): implement friend statistics panel with comparison filters`)
 
 **Checkpoint**: User Story 7 (Commit #8) is independently functional.
 
