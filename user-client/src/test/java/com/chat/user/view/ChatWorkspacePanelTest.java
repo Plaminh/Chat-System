@@ -1,10 +1,15 @@
 package com.chat.user.view;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.chat.user.model.Conversation;
+import java.awt.Component;
+import java.awt.Container;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 
 class ChatWorkspacePanelTest {
@@ -43,5 +48,56 @@ class ChatWorkspacePanelTest {
 
     assertEquals(initialCount, panel.getSelectedConversation().messages().size());
     assertTrue(panel.getFeedbackLabel().getText().contains("Nhập nội dung"));
+  }
+
+  @Test
+  void contextualActionsUseConfiguredHandlers() {
+    ChatWorkspacePanel panel =
+        new ChatWorkspacePanel(ChatWorkspacePanel.createSampleConversations(), "alex.morgan");
+    AtomicInteger historyCalls = new AtomicInteger();
+    List<Conversation> reported = new ArrayList<>();
+    List<String> assistedDrafts = new ArrayList<>();
+    panel.setActionHandlers(historyCalls::incrementAndGet, reported::add, assistedDrafts::add);
+    panel.getComposer().setText("draft to assist");
+
+    findButton(panel, "Tìm lịch sử").doClick();
+    findButton(panel, "Báo cáo").doClick();
+    findButton(panel, "Trợ lý soạn thảo").doClick();
+
+    assertEquals(1, historyCalls.get());
+    assertEquals(panel.getSelectedConversation(), reported.get(0));
+    assertEquals("draft to assist", assistedDrafts.get(0));
+  }
+
+  @Test
+  void openingUnknownFriendCreatesLocalConversation() {
+    ChatWorkspacePanel panel =
+        new ChatWorkspacePanel(ChatWorkspacePanel.createSampleConversations(), "alex.morgan");
+
+    panel.openConversationFor("new.friend", "New Friend");
+
+    assertEquals("new.friend", panel.getSelectedConversation().username());
+    assertTrue(panel.getSelectedConversation().messages().isEmpty());
+  }
+
+  private javax.swing.JButton findButton(Container container, String text) {
+    javax.swing.JButton button = findButtonRecursively(container, text);
+    assertNotNull(button);
+    return button;
+  }
+
+  private javax.swing.JButton findButtonRecursively(Container container, String text) {
+    for (Component component : container.getComponents()) {
+      if (component instanceof javax.swing.JButton button && button.getText().equals(text)) {
+        return button;
+      }
+      if (component instanceof Container nested) {
+        javax.swing.JButton found = findButtonRecursively(nested, text);
+        if (found != null) {
+          return found;
+        }
+      }
+    }
+    return null;
   }
 }

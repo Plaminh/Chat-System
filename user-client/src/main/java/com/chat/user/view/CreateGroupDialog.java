@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.IntStream;
 import java.util.function.Consumer;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -39,15 +40,35 @@ public final class CreateGroupDialog extends JPanel {
 
   public CreateGroupDialog(
       UserProfile creator, List<UserProfile> directory, Consumer<GroupConversation> createdHandler) {
+    this(creator, directory, List.of(), createdHandler);
+  }
+
+  public CreateGroupDialog(
+      UserProfile creator,
+      List<UserProfile> directory,
+      List<UserProfile> preselectedMembers,
+      Consumer<GroupConversation> createdHandler) {
     super(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
     this.creator = Objects.requireNonNull(creator, "creator");
     this.directory = new ArrayList<>(Objects.requireNonNull(directory, "directory"));
+    Objects.requireNonNull(preselectedMembers, "preselectedMembers");
     this.createdHandler = Objects.requireNonNull(createdHandler, "createdHandler");
-    participantList =
-        new JList<>(
-            this.directory.stream()
-                .filter(profile -> !profile.username().equalsIgnoreCase(creator.username()))
-                .toArray(UserProfile[]::new));
+    List<UserProfile> selectableUsers =
+        this.directory.stream()
+            .filter(profile -> !profile.username().equalsIgnoreCase(creator.username()))
+            .toList();
+    participantList = new JList<>(selectableUsers.toArray(UserProfile[]::new));
+    int[] selectedIndices =
+        IntStream.range(0, selectableUsers.size())
+            .filter(
+                index ->
+                    preselectedMembers.stream()
+                        .anyMatch(
+                            selected ->
+                                selected.username()
+                                    .equalsIgnoreCase(selectableUsers.get(index).username())))
+            .toArray();
+    participantList.setSelectedIndices(selectedIndices);
     buildContent();
   }
 

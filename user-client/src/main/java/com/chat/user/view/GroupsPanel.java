@@ -2,7 +2,6 @@ package com.chat.user.view;
 
 import com.chat.user.component.UserUiTheme;
 import com.chat.user.model.GroupConversation;
-import com.chat.user.model.GroupMember;
 import com.chat.user.model.UserProfile;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -87,6 +86,10 @@ public final class GroupsPanel extends JPanel {
     renderGroups();
   }
 
+  public void startGroupCreationWith(UserProfile selectedMember) {
+    openCreateDialog(List.of(Objects.requireNonNull(selectedMember, "selectedMember")));
+  }
+
   private void buildContent() {
     setBackground(UserUiTheme.CANVAS_BG);
     setBorder(BorderFactory.createEmptyBorder(
@@ -110,10 +113,14 @@ public final class GroupsPanel extends JPanel {
   }
 
   private void openCreateDialog() {
+    openCreateDialog(List.of());
+  }
+
+  private void openCreateDialog(List<UserProfile> preselectedMembers) {
     List<UserProfile> allowedDirectory =
         directory.stream().filter(profile -> !isBlocked(profile.username())).toList();
     CreateGroupDialog dialog =
-        new CreateGroupDialog(currentUser, allowedDirectory, this::addGroup);
+        new CreateGroupDialog(currentUser, allowedDirectory, preselectedMembers, this::addGroup);
     dialog.createDialog(javax.swing.SwingUtilities.getWindowAncestor(this)).setVisible(true);
   }
 

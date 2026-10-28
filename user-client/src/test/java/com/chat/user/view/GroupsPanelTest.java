@@ -43,6 +43,17 @@ class GroupsPanelTest {
   }
 
   @Test
+  void groupCreationCanStartWithSearchResultPreselected() {
+    UserProfile creator = profile("creator", "Creator");
+    UserProfile selected = profile("member", "Member");
+    CreateGroupDialog dialog =
+        new CreateGroupDialog(
+            creator, List.of(creator, selected), List.of(selected), group -> {});
+
+    assertEquals(List.of(selected), dialog.getParticipantList().getSelectedValuesList());
+  }
+
+  @Test
   void memberRoleAndRemovalActionsUpdateLocalGroupOnlyAfterConfirmation() {
     UserProfile creator = profile("creator", "Creator");
     UserProfile other = profile("member", "Member");

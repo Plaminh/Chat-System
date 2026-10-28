@@ -72,6 +72,7 @@ public final class ChatHistorySearchPanel extends JPanel {
   private final Map<SearchResult, JCheckBox> selectionByResult = new LinkedHashMap<>();
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.LEFT);
   private List<SearchResult> visibleResults = List.of();
+  private Runnable backHandler = () -> showFeedback("Quay lại cuộc trò chuyện từ điều hướng.", UserUiTheme.TEXT_MUTED);
 
   public ChatHistorySearchPanel(
       List<Conversation> conversations,
@@ -102,6 +103,10 @@ public final class ChatHistorySearchPanel extends JPanel {
 
   JLabel getFeedbackLabel() {
     return feedbackLabel;
+  }
+
+  public void setBackHandler(Runnable backHandler) {
+    this.backHandler = Objects.requireNonNull(backHandler, "backHandler");
   }
 
   void selectResult(SearchResult result) {
@@ -197,8 +202,11 @@ public final class ChatHistorySearchPanel extends JPanel {
         event -> applySelectedMessageAction(ChatHistoryActions.Action.UNSEND));
     JButton clearHistory = UserUiTheme.createSecondaryButton("Xóa lịch sử cuộc trò chuyện");
     clearHistory.addActionListener(event -> clearCurrentHistory());
+    JButton back = UserUiTheme.createSecondaryButton("Quay lại trò chuyện");
+    back.addActionListener(event -> backHandler.run());
     JPanel actionsRow = new JPanel(new FlowLayout(FlowLayout.LEFT, UserUiTheme.SPACE_XS, 0));
     actionsRow.setOpaque(false);
+    actionsRow.add(back);
     actionsRow.add(deleteForMe);
     actionsRow.add(unsend);
     actionsRow.add(clearHistory);

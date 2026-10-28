@@ -7,12 +7,12 @@ import com.chat.user.model.Conversation;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
@@ -38,6 +38,9 @@ public final class ChatWorkspacePanel extends JPanel {
   private final JLabel conversationTitle = new JLabel("Cuộc trò chuyện");
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.LEFT);
   private Conversation selectedConversation;
+  private Runnable historySearchHandler = this::showUnavailableAction;
+  private Consumer<Conversation> reportHandler = conversation -> showUnavailableAction();
+  private Consumer<String> writingAssistHandler = draft -> showUnavailableAction();
 
   public ChatWorkspacePanel(List<Conversation> conversations, String currentUsername) {
     super(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
@@ -95,12 +98,62 @@ public final class ChatWorkspacePanel extends JPanel {
     return selectedConversation;
   }
 
+  List<Conversation> getConversations() {
+    return List.copyOf(conversations);
+  }
+
   JPanel getMessageList() {
     return messageList;
   }
 
   JLabel getFeedbackLabel() {
     return feedbackLabel;
+  }
+
+  public void setActionHandlers(
+      Runnable historySearchHandler,
+      Consumer<Conversation> reportHandler,
+      Consumer<String> writingAssistHandler) {
+    this.historySearchHandler = Objects.requireNonNull(historySearchHandler, "historySearchHandler");
+    this.reportHandler = Objects.requireNonNull(reportHandler, "reportHandler");
+    this.writingAssistHandler = Objects.requireNonNull(writingAssistHandler, "writingAssistHandler");
+  }
+
+  public void openConversationFor(String username, String displayName) {
+    Conversation conversation =
+        conversations.stream()
+            .filter(candidate -> candidate.username().equalsIgnoreCase(username))
+            .findFirst()
+            .orElseGet(
+                () -> {
+                  Conversation created =
+                      new Conversation(
+                          "direct-" + UUID.randomUUID(), username, displayName, List.of());
+                  conversations.add(created);
+                  return created;
+                });
+    renderConversationList();
+    conversationList.setSelectedValue(conversation, true);
+  }
+
+  public void openSearchResult(ChatHistorySearchPanel.SearchResult result) {
+    Objects.requireNonNull(result, "result");
+    openConversationFor(result.conversation().username(), result.conversation().displayName());
+    for (java.awt.Component component : messageList.getComponents()) {
+      if (component instanceof MessageBubble bubble
+          && result.message().messageId().equals(bubble.getClientProperty("messageId"))) {
+        messageList.scrollRectToVisible(bubble.getBounds());
+        break;
+      }
+    }
+  }
+
+  public void setDraftText(String draft) {
+    composer.setText(Objects.requireNonNull(draft, "draft"));
+  }
+
+  public String getDraftText() {
+    return composer.getText();
   }
 
   void sendSampleMessage() {
@@ -207,8 +260,24 @@ public final class ChatWorkspacePanel extends JPanel {
     JLabel sampleBadge = new JLabel("Bản mẫu");
     sampleBadge.setFont(UserUiTheme.FONT_SMALL);
     sampleBadge.setForeground(UserUiTheme.TEXT_MUTED);
+    JButton historySearch = UserUiTheme.createSecondaryButton("Tìm lịch sử");
+    historySearch.addActionListener(event -> historySearchHandler.run());
+    JButton report = UserUiTheme.createSecondaryButton("Báo cáo");
+    report.addActionListener(
+        event -> {
+          if (selectedConversation == null) {
+            feedbackLabel.setText("Chọn cuộc trò chuyện trước khi báo cáo.");
+            return;
+          }
+          reportHandler.accept(selectedConversation);
+        });
+    JPanel headerActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, UserUiTheme.SPACE_XS, 0));
+    headerActions.setOpaque(false);
+    headerActions.add(sampleBadge);
+    headerActions.add(historySearch);
+    headerActions.add(report);
     header.add(conversationTitle, BorderLayout.WEST);
-    header.add(sampleBadge, BorderLayout.EAST);
+    header.add(headerActions, BorderLayout.EAST);
 
     messageList.setLayout(new javax.swing.BoxLayout(messageList, javax.swing.BoxLayout.Y_AXIS));
     messageList.setBackground(UserUiTheme.CANVAS_BG);
@@ -226,9 +295,12 @@ public final class ChatWorkspacePanel extends JPanel {
     composer.setText("");
     JButton sendButton = UserUiTheme.createPrimaryButton("Gửi mẫu");
     sendButton.addActionListener(event -> sendSampleMessage());
+    JButton assistButton = UserUiTheme.createSecondaryButton("Trợ lý soạn thảo");
+    assistButton.addActionListener(event -> writingAssistHandler.accept(composer.getText()));
     JPanel composeActions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     composeActions.setOpaque(false);
     composeActions.add(feedbackLabel);
+    composeActions.add(assistButton);
     composeActions.add(sendButton);
 
     JPanel composerPane = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
@@ -261,6 +333,11 @@ public final class ChatWorkspacePanel extends JPanel {
       selectedConversation = null;
       renderMessages();
     }
+  }
+
+  private void showUnavailableAction() {
+    feedbackLabel.setText("Tác vụ này chưa được kết nối.");
+    feedbackLabel.setForeground(UserUiTheme.TEXT_MUTED);
   }
 
   private void renderMessages() {

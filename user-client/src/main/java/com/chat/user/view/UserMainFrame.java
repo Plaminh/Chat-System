@@ -2,17 +2,27 @@ package com.chat.user.view;
 
 import com.chat.user.component.UserNavigationSidebar;
 import com.chat.user.component.UserUiTheme;
+import com.chat.user.model.Conversation;
+import com.chat.user.model.FriendEntry;
+import com.chat.user.model.GroupConversation;
+import com.chat.user.model.UserProfile;
 import com.chat.user.model.UserSessionState;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
@@ -41,7 +51,11 @@ public final class UserMainFrame extends JPanel {
   private final UserNavigationSidebar navigationSidebar =
       new UserNavigationSidebar(this::showDestination);
   private final Map<Destination, JComponent> views = new EnumMap<>(Destination.class);
+  private final Set<String> blockedUsernames = new HashSet<>();
+  private final List<UserProfile> knownProfiles = new ArrayList<>();
   private final JLabel headerTitle = new JLabel();
+  private ChatWorkspacePanel chatWorkspace;
+  private GroupsPanel groupsPanel;
   private Destination activeDestination;
 
   public UserMainFrame(UserSessionState sessionState) {
@@ -52,6 +66,7 @@ public final class UserMainFrame extends JPanel {
     for (Destination destination : Destination.values()) {
       registerView(destination, createPlaceholder(destination));
     }
+    installSampleViews();
     showDestination(Destination.CHATS);
   }
 
@@ -84,6 +99,10 @@ public final class UserMainFrame extends JPanel {
 
   UserNavigationSidebar getNavigationSidebar() {
     return navigationSidebar;
+  }
+
+  javax.swing.JButton getNavigationButton(Destination destination) {
+    return navigationSidebar.getButton(destination);
   }
 
   JComponent getRegisteredView(Destination destination) {
@@ -128,6 +147,180 @@ public final class UserMainFrame extends JPanel {
     header.add(headerTitle, BorderLayout.WEST);
     header.add(right, BorderLayout.EAST);
     return header;
+  }
+
+  private void installSampleViews() {
+    UserProfile currentUser = sessionState.getProfile();
+    List<FriendEntry> friends = FriendsPanel.createSampleFriends();
+    List<UserProfile> directory = FriendRequestsSearchPanel.createSampleDirectory();
+    knownProfiles.addAll(directory);
+    for (FriendEntry friend : friends) {
+      if (knownProfiles.stream()
+          .noneMatch(profile -> profile.username().equalsIgnoreCase(friend.username()))) {
+        knownProfiles.add(friend.profile());
+      }
+    }
+
+    chatWorkspace =
+        new ChatWorkspacePanel(
+            ChatWorkspacePanel.createSampleConversations(), currentUser.username());
+    chatWorkspace.setActionHandlers(
+        this::openHistorySearch, this::openSpamReport, this::openWritingAssist);
+
+    FriendsPanel friendsPanel =
+        new FriendsPanel(
+            friends,
+            blockedUsernames,
+            this::confirmFriendAction,
+            friend -> openChat(friend.username(), friend.fullName()));
+    FriendRequestsSearchPanel requestsPanel =
+        new FriendRequestsSearchPanel(
+            FriendRequestsSearchPanel.createSampleRequests(),
+            directory,
+            blockedUsernames,
+            profile -> openChat(profile.username(), profile.fullName()),
+            profile -> {
+              showDestination(Destination.GROUPS);
+              groupsPanel.startGroupCreationWith(profile);
+            });
+    List<GroupConversation> sampleGroups =
+        GroupsPanel.createSampleGroups(currentUser, directory);
+    groupsPanel =
+        new GroupsPanel(
+            currentUser,
+            sampleGroups,
+            directory,
+            blockedUsernames,
+            this::confirmGroupMemberAction,
+            this::openGroupChat);
+    ProfileSettingsPanel profilePanel = new ProfileSettingsPanel(sessionState);
+
+    registerView(Destination.CHATS, chatWorkspace);
+    registerView(Destination.FRIENDS, friendsPanel);
+    registerView(Destination.REQUESTS, requestsPanel);
+    registerView(Destination.GROUPS, groupsPanel);
+    registerView(Destination.PROFILE, profilePanel);
+  }
+
+  private void openChat(String username, String displayName) {
+    chatWorkspace.openConversationFor(username, displayName);
+    showChatWorkspace();
+  }
+
+  private void openGroupChat(GroupConversation group) {
+    GroupChatPanel groupChat = new GroupChatPanel(group, sessionState.getProfile().username());
+    groupChat.setBackHandler(
+        () -> {
+          registerView(Destination.GROUPS, groupsPanel);
+          showDestination(Destination.GROUPS);
+        });
+    registerView(Destination.GROUPS, groupChat);
+    showDestination(Destination.GROUPS);
+  }
+
+  private void openHistorySearch() {
+    ChatHistorySearchPanel historyPanel =
+        new ChatHistorySearchPanel(
+            chatWorkspace.getConversations(),
+            chatWorkspace.getSelectedConversation(),
+            this::navigateToSearchResult,
+            this::confirmHistoryAction);
+    historyPanel.setBackHandler(this::showChatWorkspace);
+    registerView(Destination.CHATS, historyPanel);
+    showDestination(Destination.CHATS);
+  }
+
+  private void navigateToSearchResult(ChatHistorySearchPanel.SearchResult result) {
+    chatWorkspace.openSearchResult(result);
+    showChatWorkspace();
+  }
+
+  private void showChatWorkspace() {
+    registerView(Destination.CHATS, chatWorkspace);
+    showDestination(Destination.CHATS);
+  }
+
+  private void openSpamReport(Conversation conversation) {
+    if (conversation.messages().isEmpty()) {
+      JOptionPane.showMessageDialog(
+          this,
+          "Chỉ có thể báo cáo tài khoản đã có tương tác trong cuộc trò chuyện mẫu.",
+          "Chưa đủ điều kiện báo cáo",
+          JOptionPane.INFORMATION_MESSAGE);
+      return;
+    }
+    UserProfile reportedUser =
+        knownProfiles.stream()
+            .filter(profile -> profile.username().equalsIgnoreCase(conversation.username()))
+            .findFirst()
+            .orElseGet(
+                () ->
+                    new UserProfile(
+                        conversation.username(),
+                        conversation.displayName(),
+                        conversation.username() + "@example.test",
+                        "Sample address",
+                        LocalDate.of(2000, 1, 1),
+                        "Not specified"));
+    new SpamReportDialog(reportedUser, true)
+        .createDialog(javax.swing.SwingUtilities.getWindowAncestor(this))
+        .setVisible(true);
+  }
+
+  private void openWritingAssist(String draft) {
+    new WritingAssistDialog(draft, chatWorkspace::setDraftText)
+        .createDialog(javax.swing.SwingUtilities.getWindowAncestor(this))
+        .setVisible(true);
+  }
+
+  private boolean confirmFriendAction(
+      FriendEntry friend, FriendsPanel.RelationshipAction action) {
+    String actionLabel = action == FriendsPanel.RelationshipAction.BLOCK ? "chặn" : "hủy kết bạn";
+    return JOptionPane.showConfirmDialog(
+            this,
+            "Bạn có chắc muốn "
+                + actionLabel
+                + " @"
+                + friend.username()
+                + " trong dữ liệu mẫu?",
+            "Xác nhận thao tác",
+            JOptionPane.YES_NO_OPTION)
+        == JOptionPane.YES_OPTION;
+  }
+
+  private boolean confirmHistoryAction(
+      ChatHistorySearchPanel.ActionConfirmation confirmation) {
+    String message =
+        switch (confirmation.action()) {
+          case DELETE_FOR_ME ->
+              "Ẩn "
+                  + confirmation.messageCount()
+                  + " tin nhắn khỏi giao diện mẫu của bạn?";
+          case UNSEND ->
+              "Đánh dấu "
+                  + confirmation.messageCount()
+                  + " tin nhắn là đã thu hồi trong giao diện mẫu?";
+          case CLEAR_HISTORY ->
+              "Xóa lịch sử mẫu của cuộc trò chuyện này trong phiên hiện tại?";
+        };
+    return JOptionPane.showConfirmDialog(
+            this, message, "Xác nhận thao tác mẫu", JOptionPane.YES_NO_OPTION)
+        == JOptionPane.YES_OPTION;
+  }
+
+  private boolean confirmGroupMemberAction(
+      GroupConversation group, GroupMembersDialog.MemberAction action) {
+    if (action != GroupMembersDialog.MemberAction.REMOVE) {
+      return true;
+    }
+    return JOptionPane.showConfirmDialog(
+            this,
+            "Xóa thành viên khỏi nhóm mẫu "
+                + group.name()
+                + "? Thay đổi chỉ tồn tại trong phiên hiện tại.",
+            "Xác nhận xóa thành viên",
+            JOptionPane.YES_NO_OPTION)
+        == JOptionPane.YES_OPTION;
   }
 
   private JComponent createPlaceholder(Destination destination) {

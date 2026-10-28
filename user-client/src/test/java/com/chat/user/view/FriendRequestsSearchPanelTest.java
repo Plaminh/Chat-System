@@ -60,7 +60,11 @@ class FriendRequestsSearchPanelTest {
   }
 
   private void clickButton(FriendRequestsSearchPanel panel, String text) {
-    findButton(panel, text).doClick();
+    javax.swing.JButton button = findButton(panel, text);
+    if (button == null) {
+      throw new AssertionError("Button not found: " + text);
+    }
+    button.doClick();
   }
 
   private javax.swing.JButton findButton(java.awt.Container container, String text) {
@@ -75,6 +79,6 @@ class FriendRequestsSearchPanelTest {
         }
       }
     }
-    throw new AssertionError("Button not found: " + text);
+    return null;
   }
 }

@@ -207,3 +207,11 @@ Kept: Draft preservation until acceptance, deterministic local fixtures, and use
 Changed: Added `WritingAssistDialog` with suggestion/revision modes, local preview generation, explicit accept callback, discard behavior, focused tests, and marked T015 complete.
 Rejected: Calling an LLM/API, sending draft text externally, or claiming AI processing occurred.
 By hand: Review preview copy and confirm whether future live assistance requires separate privacy and provider decisions.
+
+## 2026-10-28 — Integrate User Client UI Version 1
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Integrate the completed User UI screens, wire contextual actions and navigation, and verify the end-to-end sample flows.
+Kept: Swing/FlatLaf, local sample state, existing four-module boundaries, and explicit mock-only behavior.
+Changed: Connected Chats, Friends, Requests/Search, Groups, and Profile in `UserMainFrame`; wired chat-history search/results, report and writing-assistance dialogs, group chat/back navigation, and group creation from a selected search result. Added integration/regression coverage and fixed recursive test-button lookup helpers.
+Rejected: Live authentication, TCP messaging, persistence, email, LLM calls, or claims of real encryption/report submission.
+By hand: Reviewed the integration and test results. The VS Code test runner passed all 43 tests; direct `javac --release 21` compilation of the integrated workspace and `git diff --check` passed. Maven verification and GUI launch were not completed because Maven and a Maven wrapper are unavailable; the Java launch tool consequently failed at its Maven build step. No implemented-UI screenshots were created. T016 remains open until Maven verification and visual acceptance evidence can be completed.

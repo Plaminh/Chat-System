@@ -27,6 +27,11 @@ public final class GroupChatPanel extends JPanel {
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.LEFT);
   private final JLabel encryptionPlaceholder =
       new JLabel("Mã hóa: chỉ là nhãn giao diện mẫu, chưa được kích hoạt.");
+  private Runnable backHandler =
+      () -> {
+        feedbackLabel.setText("Chọn Hội nhóm trong thanh điều hướng để quay lại.");
+        feedbackLabel.setForeground(UserUiTheme.TEXT_MUTED);
+      };
 
   public GroupChatPanel(GroupConversation group, String currentUsername) {
     super(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
@@ -55,6 +60,10 @@ public final class GroupChatPanel extends JPanel {
 
   JLabel getFeedbackLabel() {
     return feedbackLabel;
+  }
+
+  public void setBackHandler(Runnable backHandler) {
+    this.backHandler = Objects.requireNonNull(backHandler, "backHandler");
   }
 
   void sendSampleMessage() {
@@ -98,7 +107,13 @@ public final class GroupChatPanel extends JPanel {
     encryptionPlaceholder.setFont(UserUiTheme.FONT_SMALL);
     encryptionPlaceholder.setForeground(UserUiTheme.TEXT_MUTED);
     header.add(groupName, BorderLayout.WEST);
-    header.add(encryptionPlaceholder, BorderLayout.EAST);
+    JButton back = UserUiTheme.createSecondaryButton("Quay lại hội nhóm");
+    back.addActionListener(event -> backHandler.run());
+    JPanel headerActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, UserUiTheme.SPACE_XS, 0));
+    headerActions.setOpaque(false);
+    headerActions.add(encryptionPlaceholder);
+    headerActions.add(back);
+    header.add(headerActions, BorderLayout.EAST);
 
     messageList.setLayout(new javax.swing.BoxLayout(messageList, javax.swing.BoxLayout.Y_AXIS));
     messageList.setBackground(UserUiTheme.CANVAS_BG);

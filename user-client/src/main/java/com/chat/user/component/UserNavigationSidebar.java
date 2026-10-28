@@ -60,7 +60,7 @@ public final class UserNavigationSidebar extends JPanel {
     }
   }
 
-  JButton getButton(Destination destination) {
+  public JButton getButton(Destination destination) {
     return buttons.get(destination);
   }
 

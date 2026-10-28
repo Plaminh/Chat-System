@@ -16,6 +16,7 @@ public final class MessageBubble extends JPanel {
 
   public MessageBubble(ChatMessage message, boolean ownMessage) {
     super(new FlowLayout(ownMessage ? FlowLayout.RIGHT : FlowLayout.LEFT, 0, UserUiTheme.SPACE_XS));
+    putClientProperty("messageId", message.messageId());
     Color background = ownMessage ? UserUiTheme.PRIMARY : UserUiTheme.SURFACE_WHITE;
     Color foreground = ownMessage ? Color.WHITE : UserUiTheme.TEXT_PRIMARY;
 

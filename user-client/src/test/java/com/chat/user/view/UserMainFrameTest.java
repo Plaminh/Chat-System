@@ -1,6 +1,7 @@
 package com.chat.user.view;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 
@@ -14,16 +15,21 @@ class UserMainFrameTest {
     UserMainFrame frame = new UserMainFrame(UserSessionState.createSample());
 
     assertEquals(UserMainFrame.Destination.CHATS, frame.getActiveDestination());
-    for (UserMainFrame.Destination destination : UserMainFrame.Destination.values()) {
-      assertNotNull(frame.getRegisteredView(destination));
-    }
+    assertInstanceOf(ChatWorkspacePanel.class, frame.getRegisteredView(UserMainFrame.Destination.CHATS));
+    assertInstanceOf(FriendsPanel.class, frame.getRegisteredView(UserMainFrame.Destination.FRIENDS));
+    assertInstanceOf(
+        FriendRequestsSearchPanel.class,
+        frame.getRegisteredView(UserMainFrame.Destination.REQUESTS));
+    assertInstanceOf(GroupsPanel.class, frame.getRegisteredView(UserMainFrame.Destination.GROUPS));
+    assertInstanceOf(
+        ProfileSettingsPanel.class, frame.getRegisteredView(UserMainFrame.Destination.PROFILE));
   }
 
   @Test
   void navigationButtonsChangeActiveDestination() {
     UserMainFrame frame = new UserMainFrame(UserSessionState.createSample());
 
-    frame.getNavigationSidebar().getButton(UserMainFrame.Destination.FRIENDS).doClick();
+    frame.getNavigationButton(UserMainFrame.Destination.FRIENDS).doClick();
 
     assertEquals(UserMainFrame.Destination.FRIENDS, frame.getActiveDestination());
   }
