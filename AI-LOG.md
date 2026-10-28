@@ -175,3 +175,11 @@ Kept: Search over local sample messages, confirmation before destructive actions
 Changed: Added current/global history search, result navigation callbacks, selection-based Delete for Me and Unsend, confirmed Clear Conversation History, action model, focused tests, and marked T011 complete.
 Rejected: Claiming server-side deletion, cross-user visibility, retention, or message withdrawal.
 By hand: Review the three action confirmations and their neutral sample wording before future backend integration.
+
+## 2026-10-28 — Implement group creation and management
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Begin US4 with sample groups, participant validation, membership management, and role display.
+Kept: In-memory group/member state, minimum one additional participant, and local-only management actions.
+Changed: Added `GroupConversation`, `GroupMember`, group listing/creation, member management dialog with add/remove/admin controls, focused tests, and marked T012 complete.
+Rejected: Group persistence, invitations over the network, organization features, or real encryption claims.
+By hand: Review group membership controls and role semantics against the required group workflows.
