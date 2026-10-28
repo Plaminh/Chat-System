@@ -111,3 +111,11 @@ Kept: Admin-aligned desktop chrome, the five approved User navigation destinatio
 Changed: Added the headless-testable `UserMainFrame` workspace panel, `UserNavigationSidebar`, and navigation/registration tests; marked T003 complete.
 Rejected: Adding live networking, business logic, or a new UI framework.
 By hand: Review the sidebar and workspace composition against the approved User mockups when replacing placeholders with screens.
+
+## 2026-10-28 — Implement User sample sign-in flow
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Continue Phase 5 with the User sign-in screen, required-field checks, sample workspace entry, and application startup wiring.
+Kept: Sample-only sign-in with no credential verification or persistence; removed the starter connection-test screen from the User startup path without changing `SocketClient`.
+Changed: Added `LoginPanel`, required-field feedback, password-buffer clearing, navigation into `UserMainFrame`, focused tests, and FlatLaf startup wiring; marked T004 complete.
+Rejected: Calling the TCP PING helper from the sign-in flow or claiming authentication succeeded.
+By hand: Review the login layout and language against the approved login screenshot; registration and recovery links will be wired to their dialogs in the next tasks.
