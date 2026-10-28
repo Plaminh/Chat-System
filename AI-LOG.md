@@ -159,3 +159,11 @@ Kept: Sample-only request state, shared blocked usernames, and local navigation 
 Changed: Added `FriendRequest` statuses, request filtering/accept/decline, user search with explicit empty states, chat/group selection callbacks, focused tests, and marked T009 complete.
 Rejected: Live account lookup, network friend requests, or surfacing blocked accounts in search results.
 By hand: Review request and search controls against the approved discovery screen.
+
+## 2026-10-28 — Implement personal chat workspace
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Begin US3 with personal conversation state, sample history, and a local composer.
+Kept: In-memory ordered messages, sample-only send behavior, and no TCP delivery claim.
+Changed: Added `Conversation`, `ChatMessage`, `MessageBubble`, the split conversation/chat workspace, sample fixtures, focused tests, and marked T010 complete.
+Rejected: Live message delivery, attachments, persistence, or protocol changes.
+By hand: Review the chat split layout and message bubble appearance against the approved chat screenshot.
