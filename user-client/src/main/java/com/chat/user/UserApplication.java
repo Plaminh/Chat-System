@@ -3,6 +3,7 @@ package com.chat.user;
 import com.chat.user.component.UserUiTheme;
 import com.chat.user.model.UserSessionState;
 import com.chat.user.view.LoginPanel;
+import com.chat.user.view.RegistrationDialog;
 import com.chat.user.view.UserMainFrame;
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.Dimension;
@@ -32,7 +33,7 @@ public final class UserApplication {
         new LoginPanel(
             sessionState,
             () -> showWorkspace(frame, sessionState),
-            () -> showPendingMessage(frame, "Đăng ký tài khoản"),
+            () -> showRegistrationDialog(frame),
             () -> showPendingMessage(frame, "Khôi phục mật khẩu"));
     frame.setContentPane(loginPanel);
     frame.setVisible(true);
@@ -43,6 +44,10 @@ public final class UserApplication {
     frame.setTitle("Trò Chuyện Việt");
     frame.revalidate();
     frame.repaint();
+  }
+
+  private static void showRegistrationDialog(JFrame frame) {
+    new RegistrationDialog().createDialog(frame).setVisible(true);
   }
 
   private static void showPendingMessage(JFrame frame, String action) {

@@ -119,3 +119,11 @@ Kept: Sample-only sign-in with no credential verification or persistence; remove
 Changed: Added `LoginPanel`, required-field feedback, password-buffer clearing, navigation into `UserMainFrame`, focused tests, and FlatLaf startup wiring; marked T004 complete.
 Rejected: Calling the TCP PING helper from the sign-in flow or claiming authentication succeeded.
 By hand: Review the login layout and language against the approved login screenshot; registration and recovery links will be wired to their dialogs in the next tasks.
+
+## 2026-10-28 — Add sample account registration dialog
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Continue US1 with registration, required-field validation, and local sample submission/cancellation.
+Kept: The project account fields, no extra organization/security features, no account persistence, and no password storage.
+Changed: Added the registration form/dialog surface with email/date/password-confirmation validation, local profile preview, cancellation, focused tests, and login-link wiring; marked T005 complete.
+Rejected: Creating a real account, applying an unspecified password policy, or saving credentials.
+By hand: Review the registration field list and validate it against the project specification before connecting any future backend.
