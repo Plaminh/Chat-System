@@ -199,3 +199,11 @@ Kept: Required report reason, identified target account, and a clearly local-onl
 Changed: Added `SpamReportDialog` with prior-interaction and required-reason checks, focused tests, and marked T014 complete.
 Rejected: Automatic blocking, report storage, server submission, or claims that a moderator received the report.
 By hand: Review the report form wording and any future report categories with the project owner.
+
+## 2026-10-28 — Add writing-assistance preview
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Complete US5 with sample suggestion/revision previews and explicit accept/discard.
+Kept: Draft preservation until acceptance, deterministic local fixtures, and user control over insertion.
+Changed: Added `WritingAssistDialog` with suggestion/revision modes, local preview generation, explicit accept callback, discard behavior, focused tests, and marked T015 complete.
+Rejected: Calling an LLM/API, sending draft text externally, or claiming AI processing occurred.
+By hand: Review preview copy and confirm whether future live assistance requires separate privacy and provider decisions.

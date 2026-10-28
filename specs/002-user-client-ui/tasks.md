@@ -92,7 +92,7 @@
 ### Implementation for User Story 5
 
 - [X] T014 [P] [US5] Implement a spam-report dialog tied to an account with prior sample chat interaction, require a reason, and show sample-only confirmation in `user-client/src/main/java/com/chat/user/view/SpamReportDialog.java`; add focused coverage in `user-client/src/test/java/com/chat/user/view/SpamReportDialogTest.java` (Commit: `feat(user): add spam report dialog`)
-- [ ] T015 [P] [US5] Implement writing-assistance suggestion/revision previews with explicit accept/discard behavior and no provider call in `user-client/src/main/java/com/chat/user/view/WritingAssistDialog.java`; add focused coverage in `user-client/src/test/java/com/chat/user/view/WritingAssistDialogTest.java` (Commit: `feat(user): add writing assistance preview`)
+- [X] T015 [P] [US5] Implement writing-assistance suggestion/revision previews with explicit accept/discard behavior and no provider call in `user-client/src/main/java/com/chat/user/view/WritingAssistDialog.java`; add focused coverage in `user-client/src/test/java/com/chat/user/view/WritingAssistDialogTest.java` (Commit: `feat(user): add writing assistance preview`)
 
 **Checkpoint**: Story 5 flows preserve user control and do not imply a report or LLM request reached an external service.
 
