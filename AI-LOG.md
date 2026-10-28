@@ -127,3 +127,11 @@ Kept: The project account fields, no extra organization/security features, no ac
 Changed: Added the registration form/dialog surface with email/date/password-confirmation validation, local profile preview, cancellation, focused tests, and login-link wiring; marked T005 complete.
 Rejected: Creating a real account, applying an unspecified password policy, or saving credentials.
 By hand: Review the registration field list and validate it against the project specification before connecting any future backend.
+
+## 2026-10-28 — Add sample password recovery dialog
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Continue US1 with a validated password-recovery form and sample-only response.
+Kept: Email-based input, neutral feedback, no generated password display, and no email integration.
+Changed: Added the recovery form/dialog, email validation, explicit no-email-sent confirmation, focused tests, and login-link wiring; marked T006 complete.
+Rejected: Generating or exposing a password, sending email, or asserting that a live recovery request occurred.
+By hand: Review the neutral recovery wording against the project’s later account-recovery policy before any server integration.

@@ -3,12 +3,12 @@ package com.chat.user;
 import com.chat.user.component.UserUiTheme;
 import com.chat.user.model.UserSessionState;
 import com.chat.user.view.LoginPanel;
+import com.chat.user.view.PasswordRecoveryDialog;
 import com.chat.user.view.RegistrationDialog;
 import com.chat.user.view.UserMainFrame;
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.Dimension;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
@@ -34,7 +34,7 @@ public final class UserApplication {
             sessionState,
             () -> showWorkspace(frame, sessionState),
             () -> showRegistrationDialog(frame),
-            () -> showPendingMessage(frame, "Khôi phục mật khẩu"));
+            () -> showRecoveryDialog(frame));
     frame.setContentPane(loginPanel);
     frame.setVisible(true);
   }
@@ -50,11 +50,7 @@ public final class UserApplication {
     new RegistrationDialog().createDialog(frame).setVisible(true);
   }
 
-  private static void showPendingMessage(JFrame frame, String action) {
-    JOptionPane.showMessageDialog(
-        frame,
-        action + " sẽ được mở từ màn hình tương ứng.",
-        "Tác vụ mẫu",
-        JOptionPane.INFORMATION_MESSAGE);
+  private static void showRecoveryDialog(JFrame frame) {
+    new PasswordRecoveryDialog().createDialog(frame).setVisible(true);
   }
 }
