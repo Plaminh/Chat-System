@@ -135,3 +135,11 @@ Kept: Email-based input, neutral feedback, no generated password display, and no
 Changed: Added the recovery form/dialog, email validation, explicit no-email-sent confirmation, focused tests, and login-link wiring; marked T006 complete.
 Rejected: Generating or exposing a password, sending email, or asserting that a live recovery request occurred.
 By hand: Review the neutral recovery wording against the project’s later account-recovery policy before any server integration.
+
+## 2026-10-28 — Add User profile and password settings
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Complete the US1 profile-editing and password-change sample flows.
+Kept: Only required User account fields, username as a stable identity, in-memory profile updates, and no password storage or expiry/security claims.
+Changed: Added editable profile fields with save/cancel restoration, a separate password-change dialog with confirmation validation, focused tests, and password-dialog launch from Profile; marked T007 complete.
+Rejected: Adding mockup-only phone, organization, bio, password-expiry, 2FA, or device-security content, and claiming any real password change.
+By hand: Review profile-field scope against the approved project account model.
