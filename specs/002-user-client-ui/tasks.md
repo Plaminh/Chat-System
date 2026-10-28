@@ -25,7 +25,7 @@
 **Purpose**: Build the shared presentation state and workspace shell required by every signed-in journey.
 
 - [X] T002 Create the signed-in sample profile and session state in `user-client/src/main/java/com/chat/user/model/UserProfile.java` and `user-client/src/main/java/com/chat/user/model/UserSessionState.java`; include only project-required account fields, keep all state in memory, and add focused coverage in `user-client/src/test/java/com/chat/user/model/UserSessionStateTest.java` (Commit: `feat(user): add sample profile and session state`)
-- [ ] T003 Create the shared desktop navigation shell with destinations for Chats, Friends, Requests/Search, Groups, and Profile in `user-client/src/main/java/com/chat/user/view/UserMainFrame.java` and `user-client/src/main/java/com/chat/user/component/UserNavigationSidebar.java`; follow the Admin-aligned dark navy/blue chrome, leave feature panels registerable without server access, and add focused coverage in `user-client/src/test/java/com/chat/user/view/UserMainFrameTest.java` (Commit: `feat(user): add main workspace navigation shell`)
+- [X] T003 Create the shared desktop navigation shell with destinations for Chats, Friends, Requests/Search, Groups, and Profile in `user-client/src/main/java/com/chat/user/view/UserMainFrame.java` and `user-client/src/main/java/com/chat/user/component/UserNavigationSidebar.java`; follow the Admin-aligned dark navy/blue chrome, leave feature panels registerable without server access, and add focused coverage in `user-client/src/test/java/com/chat/user/view/UserMainFrameTest.java` (Commit: `feat(user): add main workspace navigation shell`)
 
 **Checkpoint**: Shared User theme, sample session, and navigable workspace shell are available; no screen depends on a live server.
 

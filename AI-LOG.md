@@ -103,3 +103,11 @@ Kept: Only project-required account fields, in-memory sample state, and no passw
 Changed: Added immutable `UserProfile`, `UserSessionState` with a clearly synthetic sample profile, and `UserSessionStateTest`; marked T002 complete.
 Rejected: Adding persistence, authentication credentials, or server/protocol behavior.
 By hand: Review the sample fields and session flow when connecting the account screens.
+
+## 2026-10-28 — Add User workspace navigation shell
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Continue Phase 5 with a shared User workspace shell and navigable feature destinations.
+Kept: Admin-aligned desktop chrome, the five approved User navigation destinations, in-memory presentation state, and replaceable feature panels.
+Changed: Added the headless-testable `UserMainFrame` workspace panel, `UserNavigationSidebar`, and navigation/registration tests; marked T003 complete.
+Rejected: Adding live networking, business logic, or a new UI framework.
+By hand: Review the sidebar and workspace composition against the approved User mockups when replacing placeholders with screens.
