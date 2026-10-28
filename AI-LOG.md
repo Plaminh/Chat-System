@@ -48,3 +48,34 @@ Changed: Adjusted layout details and stripped unnecessary infrastructure metrics
 Rejected: Direct database connections or backend business logic in Version 1.
 By hand: Reviewed each screen step-by-step, verified the packaged `admin.jar`, and approved each commit on `feature/admin-ui-v1`.
 
+## 2026-10-28 — Plan User Client UI Version 1
+Tool: AI assistant (Copilot SDK in VS Code).
+Asked for: Read `project.txt` and `Plan_Admin_UI_Version_1.md`, then create a corresponding Version 1 implementation plan for the User Client UI.
+Kept: The project's User requirements, Java 21/Swing/FlatLaf stack, client/server boundaries, mock-only Version 1 scope, and the Admin plan's staged workflow and screen-by-screen decomposition.
+Changed: Added `docs/Plan_User_UI_Version_1.md` with a 14-part UI breakdown covering account, friends, search, direct/group chat, spam reporting, and mock LLM assistance; documented unresolved chat deletion, email, LLM-key, and encryption boundaries without deciding new backend policy.
+Rejected: Implementing UI code, adding dependencies/modules, connecting to PostgreSQL or TCP, or integrating SMTP, Groq, or cryptography as part of this documentation task.
+By hand: The developer remains responsible for reviewing the proposed screen breakdown, mockups, and any future implementation.
+
+## 2026-10-28 — Specify User Client UI Version 1
+Tool: AI assistant (Copilot SDK in VS Code).
+Asked for: Complete Phase 1 of the User UI plan by analyzing the project requirements, defining user journeys/screen scope, and preparing visual-design prompts.
+Kept: The scope and constraints in `project.txt`, the User UI plan, and the project constitution; preserved the requirement that client UI remain separate from server persistence and that mock behavior not be represented as live functionality.
+Changed: Created `specs/002-user-client-ui/spec.md`, its requirements quality checklist, and `prompt_Stitch.md`; recorded `specs/002-user-client-ui` as the active Spec Kit feature directory.
+Rejected: Creating/switching branches, implementing screens, resolving unspecified deletion semantics, integrating email/LLM/networking/encryption, or changing project modules and dependencies.
+By hand: The developer remains responsible for reviewing and approving the feature scope and design prompts before Phase 2.
+
+## 2026-10-28 — Prepare Stitch prompt to align User UI with Admin UI
+Tool: AI assistant (Copilot SDK in VS Code).
+Asked for: Prepare a prompt for the Stitch design agent to visually refine generated User screens so they match the completed Admin UI; place the prompt in a temporary Markdown file beside `project.txt` for later removal.
+Kept: Existing User screen scope and mockup requirements; used the completed Admin workspace and login screenshots as visual references and preserved the distinction between Admin and User features.
+Changed: Added temporary root-level `PROMPT_STITCH_USER_UI_ALIGN_ADMIN_TEMP.md` with a master visual-alignment prompt, usage instructions, and focused prompts for account, workspace/friends, chat, groups, and dialogs.
+Rejected: Editing the Stitch project directly, changing User requirements, or implementing application code.
+By hand: The developer will attach the Admin reference screenshots in Stitch, apply the prompts to the existing User screens, review the results, and remove the temporary prompt file when it is no longer needed.
+
+## 2026-10-28 — Document User mockup handoff steps
+Tool: AI assistant (Copilot SDK in VS Code).
+Asked for: Correct the earlier six-folder example and write a Markdown guide for saving the 12 User UI screens as `code.html`, `screen.png`, and `DESIGN.md` inside the User mockup folder already created by the developer.
+Kept: The existing six User mockup category folders and the requirement to preserve all 12 project User function groups.
+Changed: Added `docs/mockups/002-user-client-ui/HUONG_DAN_LUU_12_SCREENS.md`, clarifying that the six existing folders are categories and documenting how to store each of 12 screen handoffs as a nested folder with the three required files.
+Rejected: Renaming or deleting existing mockup folders, creating Stitch exports, or assuming that six categories mean only six screens.
+By hand: The developer will export the 12 final screen mockups from Stitch and verify each three-file handoff.

@@ -1,0 +1,470 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"tertiary-fixed":"#ffdbcc","inverse-surface":"#27313f","on-surface":"#121c2a","surface-container-low":"#eff4ff","primary-fixed-dim":"#c3c0ff","surface-container-lowest":"#ffffff","secondary":"#505f76","secondary-fixed":"#d3e4fe","on-background":"#121c2a","error":"#ba1a1a","bubble-received":"#F1F5F9","on-tertiary-fixed":"#351000","on-secondary-fixed-variant":"#38485d","status-destructive":"#DC2626","on-primary-fixed":"#0f0069","on-primary":"#ffffff","surface-bright":"#f8f9ff","status-online":"#16A34A","background":"#f8f9ff","on-tertiary":"#ffffff","surface-variant":"#d9e3f6","on-error":"#ffffff","on-secondary-container":"#54647a","surface-tint":"#4d44e3","secondary-container":"#d0e1fb","on-primary-fixed-variant":"#3323cc","surface-card":"#FFFFFF","outline-variant":"#c7c4d8","on-surface-variant":"#464555","on-tertiary-fixed-variant":"#7b2f00","on-secondary-fixed":"#0b1c30","on-error-container":"#93000a","surface":"#f8f9ff","tertiary":"#7e3000","on-tertiary-container":"#ffd2be","on-secondary":"#ffffff","on-primary-container":"#dad7ff","canvas-bg":"#F5F7FB","border-subtle":"#E2E8F0","tertiary-container":"#a44100","surface-dim":"#d0dbed","primary-fixed":"#e2dfff","primary-container":"#4f46e5","surface-container-highest":"#d9e3f6","surface-container-high":"#dee9fc","bubble-sent":"#4F46E5","status-pending":"#D97706","primary":"#3525cd","surface-container":"#e6eeff","error-container":"#ffdad6","inverse-on-surface":"#eaf1ff","outline":"#777587","inverse-primary":"#c3c0ff","secondary-fixed-dim":"#b7c8e1","tertiary-fixed-dim":"#ffb695"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"margin":"1.5rem","space-md":"1rem","space-xs":"0.25rem","space-lg":"1.5rem","gutter":"1rem","space-xl":"2rem","space-sm":"0.5rem"},"fontFamily":{"label-md":["Be Vietnam Pro"],"headline-md":["Be Vietnam Pro"],"headline-lg":["Be Vietnam Pro"],"label-sm":["Be Vietnam Pro"],"caption":["Be Vietnam Pro"],"headline-xl":["Be Vietnam Pro"],"body-md":["Be Vietnam Pro"],"body-lg":["Be Vietnam Pro"],"body-sm":["Be Vietnam Pro"]},"fontSize":{"label-md":["13px",{"lineHeight":"18px","letterSpacing":"0.01em","fontWeight":"600"}],"headline-md":["16px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-lg":["20px",{"lineHeight":"28px","letterSpacing":"-0.015em","fontWeight":"600"}],"label-sm":["11px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"600"}],"caption":["12px",{"lineHeight":"16px","fontWeight":"400"}],"headline-xl":["24px",{"lineHeight":"32px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"body-lg":["15px",{"lineHeight":"24px","fontWeight":"400"}],"body-sm":["13px",{"lineHeight":"18px","fontWeight":"400"}]}}}};</script></head><body class="bg-canvas-bg font-body-md text-on-surface select-none"><header class="fixed top-0 left-0 right-0 h-10 bg-[#0B1320] text-slate-300 z-50 flex items-center justify-between px-4 border-b border-[#1E293B]"><div class="flex items-center gap-2"><div class="w-5 h-5 rounded bg-[#2563EB] flex items-center justify-center"><span class="material-symbols-outlined text-white text-[13px]">forum</span></div><span class="text-[13px] text-slate-100 font-semibold tracking-tight">Trò Chuyện Việt</span><span class="text-[11px] px-1.5 py-0.5 rounded bg-[#1E293B] text-slate-400 border border-[#334155]/50 font-mono">v1.0 (FlatLaf Desktop Theme)</span></div><div class="flex items-center -mr-2"><button class="w-9 h-8 inline-flex items-center justify-center text-slate-400 hover:bg-[#1E293B] hover:text-slate-200 transition-colors" title="Thu nhỏ" type="button"><span class="material-symbols-outlined text-[15px]">remove</span></button><button class="w-9 h-8 inline-flex items-center justify-center text-slate-400 hover:bg-[#1E293B] hover:text-slate-200 transition-colors" title="Mở rộng" type="button"><span class="material-symbols-outlined text-[14px]">crop_square</span></button><button class="w-9 h-8 inline-flex items-center justify-center text-slate-400 hover:bg-red-600 hover:text-white transition-colors" title="Đóng" type="button"><span class="material-symbols-outlined text-[15px]">close</span></button></div></header><aside class="fixed left-0 top-10 bottom-0 w-[72px] bg-[#0F172A] border-r border-[#1E293B] z-40 flex flex-col items-center justify-between py-3"><div class="flex flex-col items-center w-full gap-2"><div class="w-10 h-10 rounded-lg bg-[#2563EB] flex items-center justify-center shadow-sm mb-1"><span class="material-symbols-outlined text-white text-[20px]">chat</span></div><div class="w-8 h-[1px] bg-[#334155]/60 my-1"></div><nav class="flex flex-col items-center gap-1.5 w-full px-2"><a class="relative flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:text-white hover:bg-[#1E293B] transition-colors" data-path="tin-nhan" href="#" title="Tin nhắn"><span class="material-symbols-outlined text-[20px]">chat_bubble</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500"></span></a><a class="relative flex items-center justify-center w-10 h-10 rounded-lg bg-[#2563EB] text-white transition-colors shadow-sm" data-path="danh-ba" href="#" title="Bạn bè &amp; Danh bạ"><span class="material-symbols-outlined text-[20px]">contacts</span></a><a class="relative flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:text-white hover:bg-[#1E293B] transition-colors" data-path="loi-moi-ket-ban" href="#" title="Lời mời kết bạn"><span class="material-symbols-outlined text-[20px]">person_add</span><span class="absolute top-1 right-1 px-1 py-0.2 rounded-full bg-red-500 text-white font-semibold text-[9px] leading-tight">3</span></a><a class="relative flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:text-white hover:bg-[#1E293B] transition-colors" data-path="nhom" href="#" title="Nhóm làm việc"><span class="material-symbols-outlined text-[20px]">group</span></a></nav></div><div class="flex flex-col items-center gap-2 w-full px-2"><a class="flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:text-white hover:bg-[#1E293B] transition-colors" data-path="cai-dat" href="#" title="Cài đặt hệ thống"><span class="material-symbols-outlined text-[20px]">settings</span></a><a class="flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:bg-red-500/20 hover:text-red-400 transition-colors" data-path="dang-xuat" href="#" title="Đăng xuất tài khoản"><span class="material-symbols-outlined text-[20px]">logout</span></a><div class="w-8 h-[1px] bg-[#334155]/60 my-1"></div><div class="relative group cursor-pointer" title="Lê Mai Anh (@maianh_le - Trực tuyến)"><div class="w-9 h-9 rounded-full bg-[#1E293B] border border-[#334155] flex items-center justify-center text-slate-200 text-xs font-semibold">MA</div><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-[#0F172A]"></span></div></div></aside><div class="pl-[72px]"><main class="relative pt-10 min-h-screen bg-canvas-bg"><div class="flex flex-col w-full h-[calc(100vh-2.5rem)] bg-[#F1F5F9]">
+  <!-- Interactive Sub-shell Grid: Left Directory Sub-Nav + Main Content Area -->
+  <div class="flex flex-1 w-full overflow-hidden">
+    <!-- CONTACT SUB-NAV (Directory Column) -->
+    <aside class="w-72 flex-shrink-0 bg-white border-r border-[#CBD5E1] flex flex-col shadow-sm z-10"><div class="flex flex-col items-center w-full gap-2"><div class="w-10 h-10 rounded-lg bg-[#2563EB] flex items-center justify-center shadow-sm mb-1"><span class="material-symbols-outlined text-white text-[20px]">chat</span></div><div class="w-8 h-[1px] bg-[#334155]/60 my-1"></div><nav class="flex flex-col items-center gap-1.5 w-full px-2"><a class="relative flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:text-white hover:bg-[#1E293B] transition-colors" data-path="tin-nhan" href="#" title="Tin nhắn"><span class="material-symbols-outlined text-[20px]">chat_bubble</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500"></span></a><a class="relative flex items-center justify-center w-10 h-10 rounded-lg bg-[#2563EB] text-white transition-colors shadow-sm" data-path="danh-ba" href="#" title="Bạn bè &amp; Danh bạ"><span class="material-symbols-outlined text-[20px]">contacts</span></a><a class="relative flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:text-white hover:bg-[#1E293B] transition-colors" data-path="loi-moi-ket-ban" href="#" title="Lời mời kết bạn"><span class="material-symbols-outlined text-[20px]">person_add</span><span class="absolute top-1 right-1 px-1 py-0.2 rounded-full bg-red-500 text-white font-semibold text-[9px] leading-tight">3</span></a><a class="relative flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:text-white hover:bg-[#1E293B] transition-colors" data-path="nhom" href="#" title="Nhóm làm việc"><span class="material-symbols-outlined text-[20px]">group</span></a></nav></div><div class="flex flex-col items-center gap-2 w-full px-2"><a class="flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:text-white hover:bg-[#1E293B] transition-colors" data-path="cai-dat" href="#" title="Cài đặt hệ thống"><span class="material-symbols-outlined text-[20px]">settings</span></a><a class="flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:bg-red-500/20 hover:text-red-400 transition-colors" data-path="dang-xuat" href="#" title="Đăng xuất tài khoản"><span class="material-symbols-outlined text-[20px]">logout</span></a><div class="w-8 h-[1px] bg-[#334155]/60 my-1"></div><div class="relative group cursor-pointer" title="Lê Mai Anh (@maianh_le - Trực tuyến)"><div class="w-9 h-9 rounded-full bg-[#1E293B] border border-[#334155] flex items-center justify-center text-slate-200 text-xs font-semibold">MA</div><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-[#0F172A]"></span></div></div></aside>
+
+    <!-- MAIN CONTENT WORKSPACE -->
+    <main class="flex-1 flex flex-col overflow-y-auto px-5 py-4 bg-[#F1F5F9]">
+      <!-- Admin Breadcrumb & Top Bar -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 mb-3 border-b border-[#CBD5E1]"><div><div class="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium mb-1"><span class="">Hệ thống</span><span class="material-symbols-outlined text-[13px]">chevron_right</span><span class="">Bạn bè</span><span class="material-symbols-outlined text-[13px]">chevron_right</span><span class="text-[#2563EB] font-semibold">Quản lý bạn bè</span><span class="text-slate-300 mx-1">|</span><span class="text-[11px] px-1.5 py-0.2 rounded bg-slate-200 text-slate-700 font-mono">Phiên bảo mật: TLS 1.3</span></div><div class="flex items-center gap-2"><h1 class="text-[18px] text-[#0F172A] font-bold tracking-tight">Quản lý bạn bè</h1><span class="px-2 py-0.5 rounded bg-blue-50 text-[#2563EB] border border-blue-200 text-[11px] font-medium">Toàn bộ danh bạ</span><span class="text-[11px] text-slate-400">•</span><span class="text-[12px] text-slate-500">128 người bạn</span><span class="flex items-center gap-1 text-[12px] text-emerald-600 font-semibold"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>34 đang trực tuyến</span></div></div><div class="flex items-center gap-2"><div class="relative"><input class="w-52 h-8 pl-8 pr-3 bg-white border border-[#CBD5E1] rounded text-[12px] text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#2563EB] shadow-xs" placeholder="Lọc danh sách theo tên..." type="text"><span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[15px]">filter_list</span></div><button class="h-8 px-3 rounded bg-white hover:bg-slate-50 border border-[#CBD5E1] text-slate-700 text-[12px] font-medium flex items-center gap-1.5 transition-colors shadow-xs"><span class="material-symbols-outlined text-[#2563EB] text-[16px]">group_add</span><span class="">Tạo nhóm mới</span></button><button class="h-8 px-3 rounded bg-[#2563EB] hover:bg-blue-700 text-white text-[12px] font-medium flex items-center gap-1.5 transition-colors shadow-xs"><span class="material-symbols-outlined text-[16px]">add</span><span class="">Thêm bạn bè</span></button></div></div>
+
+      <!-- Active Online Quick Carousel (Admin Strip) -->
+      <section class="bg-white rounded border border-[#CBD5E1] p-3 shadow-xs mb-4">
+        <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-100">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <h3 class="text-[13px] text-[#0F172A] font-semibold">Bạn bè đang hoạt động</h3>
+            <span class="text-[11px] text-slate-400">(34 người)</span>
+          </div>
+          <button class="text-[#2563EB] text-[11px] font-semibold hover:underline flex items-center gap-0.5">
+            <span class="">Xem toàn bộ</span>
+            <span class="material-symbols-outlined text-[13px]">chevron_right</span>
+          </button>
+        </div>
+        <div class="flex items-center gap-3 overflow-x-auto pb-0.5 pt-0.5">
+          <!-- Active Online 1 -->
+          <div class="flex flex-col items-center flex-shrink-0 cursor-pointer group w-16 text-center" onclick="showQuickChat('Nguyễn Hà Linh')">
+            <div class="relative mb-1">
+              <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 border border-blue-200 flex items-center justify-center font-bold text-[12px] group-hover:border-[#2563EB] transition-colors">
+                HL
+              </div>
+              <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white"></span>
+            </div>
+            <span class="text-[11px] text-slate-800 font-medium truncate w-14 group-hover:text-[#2563EB]">Hà Linh</span>
+            <span class="text-[10px] text-emerald-600 font-medium">Online</span>
+          </div>
+          <!-- Active Online 2 -->
+          <div class="flex flex-col items-center flex-shrink-0 cursor-pointer group w-16 text-center" onclick="showQuickChat('Trần Hoàng Nam')">
+            <div class="relative mb-1">
+              <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center justify-center font-bold text-[12px] group-hover:border-[#2563EB] transition-colors">
+                HN
+              </div>
+              <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white"></span>
+            </div>
+            <span class="text-[11px] text-slate-800 font-medium truncate w-14 group-hover:text-[#2563EB]">Hoàng Nam</span>
+            <span class="text-[10px] text-slate-400">3p trước</span>
+          </div>
+          <!-- Active Online 3 -->
+          <div class="flex flex-col items-center flex-shrink-0 cursor-pointer group w-16 text-center" onclick="showQuickChat('Lê Mai Anh')">
+            <div class="relative mb-1">
+              <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 flex items-center justify-center font-bold text-[12px] group-hover:border-[#2563EB] transition-colors">
+                MA
+              </div>
+              <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white"></span>
+            </div>
+            <span class="text-[11px] text-slate-800 font-medium truncate w-14 group-hover:text-[#2563EB]">Mai Anh</span>
+            <span class="text-[10px] text-emerald-600 font-medium">Online</span>
+          </div>
+          <!-- Active Online 4 -->
+          <div class="flex flex-col items-center flex-shrink-0 cursor-pointer group w-16 text-center" onclick="showQuickChat('Phạm Gia Huy')">
+            <div class="relative mb-1">
+              <div class="w-10 h-10 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-200 flex items-center justify-center font-bold text-[12px] group-hover:border-[#2563EB] transition-colors">
+                GH
+              </div>
+              <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white"></span>
+            </div>
+            <span class="text-[11px] text-slate-800 font-medium truncate w-14 group-hover:text-[#2563EB]">Gia Huy</span>
+            <span class="text-[10px] text-slate-400">15p trước</span>
+          </div>
+          <!-- Active Online 5 -->
+          <div class="flex flex-col items-center flex-shrink-0 cursor-pointer group w-16 text-center" onclick="showQuickChat('Đặng Thu Trang')">
+            <div class="relative mb-1">
+              <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-800 border border-rose-200 flex items-center justify-center font-bold text-[12px] group-hover:border-[#2563EB] transition-colors">
+                TT
+              </div>
+              <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white"></span>
+            </div>
+            <span class="text-[11px] text-slate-800 font-medium truncate w-14 group-hover:text-[#2563EB]">Thu Trang</span>
+            <span class="text-[10px] text-emerald-600 font-medium">Online</span>
+          </div>
+          <!-- Quick Action -->
+          <div class="h-9 w-[1px] bg-slate-200 mx-1 flex-shrink-0"></div>
+          <button class="flex flex-col items-center justify-center flex-shrink-0 w-20 h-14 rounded border border-dashed border-[#CBD5E1] hover:border-[#2563EB] bg-[#F8FAFC] hover:bg-blue-50/50 text-[#2563EB] transition-all p-1 group">
+            <span class="material-symbols-outlined text-[18px] mb-0.5">forum</span>
+            <span class="text-[10px] font-semibold text-slate-700 group-hover:text-[#2563EB]">Tạo nhóm chat</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Main Directory Controls: Status Filter Tabs -->
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-1.5">
+          <button class="px-3 py-1.5 rounded bg-white border border-[#CBD5E1] text-[#2563EB] text-[12px] font-semibold shadow-xs flex items-center gap-1.5">
+            <span class="">Tất cả bạn bè</span>
+            <span class="px-1.5 py-0.2 rounded bg-blue-100 text-[#2563EB] text-[10px] font-bold">128</span>
+          </button>
+          <button class="px-3 py-1.5 rounded bg-transparent hover:bg-white text-slate-600 border border-transparent hover:border-[#CBD5E1] text-[12px] font-medium transition-all flex items-center gap-1.5">
+            <span class="">Bạn bè trực tuyến</span>
+            <span class="px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-700 text-[10px] font-bold">34</span>
+          </button>
+          <button class="px-3 py-1.5 rounded bg-transparent hover:bg-white text-slate-600 border border-transparent hover:border-[#CBD5E1] text-[12px] font-medium transition-all flex items-center gap-1.5">
+            <span class="">Mới kết bạn gần đây</span>
+            <span class="px-1.5 py-0.2 rounded bg-slate-200 text-slate-700 text-[10px] font-semibold">5</span>
+          </button>
+        </div>
+        <div class="flex items-center gap-1 text-slate-500 text-[11px]">
+          <span class="material-symbols-outlined text-[15px]">sort_by_alpha</span>
+          <span class="">Sắp xếp: Tên (A - Z)</span>
+        </div>
+      </div>
+
+      <!-- FRIEND CARDS GRID: 4-6px radius, white cards, 1px border (#CBD5E1) -->
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-3 pb-6">
+        <!-- Card 1: Nguyễn Hà Linh -->
+        <div class="bg-white rounded border border-[#CBD5E1] p-3 shadow-xs hover:border-[#94A3B8] transition-colors relative flex flex-col justify-between">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="relative flex-shrink-0">
+                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 border border-blue-200 flex items-center justify-center font-bold text-[13px]">
+                  HL
+                </div>
+                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white" title="Đang trực tuyến"></span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <h4 class="text-[13px] text-[#0F172A] font-semibold truncate">Nguyễn Hà Linh</h4>
+                  <span class="material-symbols-outlined text-[#2563EB] text-[15px]" title="Tài khoản đã xác thực">verified</span>
+                </div>
+                <p class="text-[11px] text-slate-400">@halinh.design</p>
+                <div class="flex items-center gap-1.5 mt-0.5 text-[11px] text-slate-600">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  <span class="truncate">Đang hoạt động • Thiết kế sản phẩm UI/UX</span>
+                </div>
+              </div>
+            </div>
+            <!-- Context Dropdown Trigger -->
+            <div class="relative">
+              <button class="w-7 h-7 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors" onclick="toggleContextMenu('menu-1')">
+                <span class="material-symbols-outlined text-[18px]">more_vert</span>
+              </button>
+              <div class="hidden absolute right-0 top-8 w-44 bg-white border border-[#CBD5E1] rounded shadow-lg py-1 z-30" id="menu-1">
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-slate-700 hover:bg-slate-50 flex items-center gap-2" onclick="viewProfile('Nguyễn Hà Linh')">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">account_circle</span>
+                  <span class="">Xem hồ sơ</span>
+                </button>
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-slate-700 hover:bg-slate-50 flex items-center gap-2" onclick="openConfirmDialog('unfriend', 'Nguyễn Hà Linh')">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">person_remove</span>
+                  <span class="">Hủy kết bạn</span>
+                </button>
+                <div class="h-[1px] bg-slate-100 my-1"></div>
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-red-600 hover:bg-red-50 flex items-center gap-2" onclick="openConfirmDialog('block', 'Nguyễn Hà Linh')">
+                  <span class="material-symbols-outlined text-[16px]">block</span>
+                  <span class="">Chặn người dùng</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between pt-2.5 mt-2.5 border-t border-slate-100">
+            <span class="text-[11px] text-slate-400">Bạn bè từ tháng 04/2023</span>
+            <div class="flex items-center gap-1.5">
+              <button class="h-7 px-2.5 rounded bg-white hover:bg-slate-50 border border-[#CBD5E1] text-slate-700 text-[11px] font-medium flex items-center gap-1 transition-colors" title="Bắt đầu cuộc gọi thoại">
+                <span class="material-symbols-outlined text-[14px] text-slate-500">call</span>
+                <span class="">Gọi</span>
+              </button>
+              <button class="h-7 px-3 rounded bg-[#2563EB] hover:bg-blue-700 text-white text-[11px] font-medium flex items-center gap-1 transition-colors shadow-xs" title="Mở cuộc trò chuyện ngay">
+                <span class="material-symbols-outlined text-[14px]">chat</span>
+                <span class="">Nhắn tin</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Trần Hoàng Nam -->
+        <div class="bg-white rounded border border-[#CBD5E1] p-3 shadow-xs hover:border-[#94A3B8] transition-colors relative flex flex-col justify-between">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="relative flex-shrink-0">
+                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center justify-center font-bold text-[13px]">
+                  HN
+                </div>
+                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white" title="Đang trực tuyến"></span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <h4 class="text-[13px] text-[#0F172A] font-semibold truncate">Trần Hoàng Nam</h4>
+                </div>
+                <p class="text-[11px] text-slate-400">@namtran_saas</p>
+                <div class="flex items-center gap-1.5 mt-0.5 text-[11px] text-slate-600">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  <span class="truncate">Đang trực tuyến • Tech Lead tại VNPAY</span>
+                </div>
+              </div>
+            </div>
+            <div class="relative">
+              <button class="w-7 h-7 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors" onclick="toggleContextMenu('menu-2')">
+                <span class="material-symbols-outlined text-[18px]">more_vert</span>
+              </button>
+              <div class="hidden absolute right-0 top-8 w-44 bg-white border border-[#CBD5E1] rounded shadow-lg py-1 z-30" id="menu-2">
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-slate-700 hover:bg-slate-50 flex items-center gap-2" onclick="viewProfile('Trần Hoàng Nam')">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">account_circle</span>
+                  <span class="">Xem hồ sơ</span>
+                </button>
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-slate-700 hover:bg-slate-50 flex items-center gap-2" onclick="openConfirmDialog('unfriend', 'Trần Hoàng Nam')">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">person_remove</span>
+                  <span class="">Hủy kết bạn</span>
+                </button>
+                <div class="h-[1px] bg-slate-100 my-1"></div>
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-red-600 hover:bg-red-50 flex items-center gap-2" onclick="openConfirmDialog('block', 'Trần Hoàng Nam')">
+                  <span class="material-symbols-outlined text-[16px]">block</span>
+                  <span class="">Chặn người dùng</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between pt-2.5 mt-2.5 border-t border-slate-100">
+            <span class="text-[11px] text-slate-400">Bạn bè từ tháng 01/2024</span>
+            <div class="flex items-center gap-1.5">
+              <button class="h-7 px-2.5 rounded bg-white hover:bg-slate-50 border border-[#CBD5E1] text-slate-700 text-[11px] font-medium flex items-center gap-1 transition-colors">
+                <span class="material-symbols-outlined text-[14px] text-slate-500">call</span>
+                <span class="">Gọi</span>
+              </button>
+              <button class="h-7 px-3 rounded bg-[#2563EB] hover:bg-blue-700 text-white text-[11px] font-medium flex items-center gap-1 transition-colors shadow-xs">
+                <span class="material-symbols-outlined text-[14px]">chat</span>
+                <span class="">Nhắn tin</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Vũ Minh Thảo (Offline) -->
+        <div class="bg-white rounded border border-[#CBD5E1] p-3 shadow-xs hover:border-[#94A3B8] transition-colors relative flex flex-col justify-between">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="relative flex-shrink-0">
+                <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-700 border border-slate-300 flex items-center justify-center font-bold text-[13px]">
+                  MT
+                </div>
+                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-slate-400 border border-white" title="Ngoại tuyến"></span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <h4 class="text-[13px] text-[#0F172A] font-semibold truncate">Vũ Minh Thảo</h4>
+                </div>
+                <p class="text-[11px] text-slate-400">@thaovu_pm</p>
+                <div class="flex items-center gap-1.5 mt-0.5 text-[11px] text-slate-500">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                  <span class="truncate">Truy cập 10 phút trước • Quản lý dự án</span>
+                </div>
+              </div>
+            </div>
+            <div class="relative">
+              <button class="w-7 h-7 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors" onclick="toggleContextMenu('menu-3')">
+                <span class="material-symbols-outlined text-[18px]">more_vert</span>
+              </button>
+              <div class="hidden absolute right-0 top-8 w-44 bg-white border border-[#CBD5E1] rounded shadow-lg py-1 z-30" id="menu-3">
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-slate-700 hover:bg-slate-50 flex items-center gap-2" onclick="viewProfile('Vũ Minh Thảo')">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">account_circle</span>
+                  <span class="">Xem hồ sơ</span>
+                </button>
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-slate-700 hover:bg-slate-50 flex items-center gap-2" onclick="openConfirmDialog('unfriend', 'Vũ Minh Thảo')">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">person_remove</span>
+                  <span class="">Hủy kết bạn</span>
+                </button>
+                <div class="h-[1px] bg-slate-100 my-1"></div>
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-red-600 hover:bg-red-50 flex items-center gap-2" onclick="openConfirmDialog('block', 'Vũ Minh Thảo')">
+                  <span class="material-symbols-outlined text-[16px]">block</span>
+                  <span class="">Chặn người dùng</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between pt-2.5 mt-2.5 border-t border-slate-100">
+            <span class="text-[11px] text-slate-400">Bạn bè từ tháng 11/2023</span>
+            <div class="flex items-center gap-1.5">
+              <button class="h-7 px-2.5 rounded bg-white hover:bg-slate-50 border border-[#CBD5E1] text-slate-700 text-[11px] font-medium flex items-center gap-1 transition-colors">
+                <span class="material-symbols-outlined text-[14px] text-slate-500">call</span>
+                <span class="">Gọi</span>
+              </button>
+              <button class="h-7 px-3 rounded bg-[#2563EB] hover:bg-blue-700 text-white text-[11px] font-medium flex items-center gap-1 transition-colors shadow-xs">
+                <span class="material-symbols-outlined text-[14px]">chat</span>
+                <span class="">Nhắn tin</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Lê Mai Anh (Online) -->
+        <div class="bg-white rounded border border-[#CBD5E1] p-3 shadow-xs hover:border-[#94A3B8] transition-colors relative flex flex-col justify-between">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="relative flex-shrink-0">
+                <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 flex items-center justify-center font-bold text-[13px]">
+                  MA
+                </div>
+                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white" title="Đang trực tuyến"></span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <h4 class="text-[13px] text-[#0F172A] font-semibold truncate">Lê Mai Anh</h4>
+                  <span class="px-1.5 py-0.2 bg-slate-100 text-slate-700 border border-slate-200 text-[10px] rounded font-semibold">Cùng công ty</span>
+                </div>
+                <p class="text-[11px] text-slate-400">@maianh_le</p>
+                <div class="flex items-center gap-1.5 mt-0.5 text-[11px] text-slate-600">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  <span class="truncate">Đang hoạt động • Chuyên viên nhân sự</span>
+                </div>
+              </div>
+            </div>
+            <div class="relative">
+              <button class="w-7 h-7 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors" onclick="toggleContextMenu('menu-4')">
+                <span class="material-symbols-outlined text-[18px]">more_vert</span>
+              </button>
+              <div class="hidden absolute right-0 top-8 w-44 bg-white border border-[#CBD5E1] rounded shadow-lg py-1 z-30" id="menu-4">
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-slate-700 hover:bg-slate-50 flex items-center gap-2" onclick="viewProfile('Lê Mai Anh')">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">account_circle</span>
+                  <span class="">Xem hồ sơ</span>
+                </button>
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-slate-700 hover:bg-slate-50 flex items-center gap-2" onclick="openConfirmDialog('unfriend', 'Lê Mai Anh')">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">person_remove</span>
+                  <span class="">Hủy kết bạn</span>
+                </button>
+                <div class="h-[1px] bg-slate-100 my-1"></div>
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-red-600 hover:bg-red-50 flex items-center gap-2" onclick="openConfirmDialog('block', 'Lê Mai Anh')">
+                  <span class="material-symbols-outlined text-[16px]">block</span>
+                  <span class="">Chặn người dùng</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between pt-2.5 mt-2.5 border-t border-slate-100">
+            <span class="text-[11px] text-slate-400">Bạn bè từ tháng 08/2022</span>
+            <div class="flex items-center gap-1.5">
+              <button class="h-7 px-2.5 rounded bg-white hover:bg-slate-50 border border-[#CBD5E1] text-slate-700 text-[11px] font-medium flex items-center gap-1 transition-colors">
+                <span class="material-symbols-outlined text-[14px] text-slate-500">call</span>
+                <span class="">Gọi</span>
+              </button>
+              <button class="h-7 px-3 rounded bg-[#2563EB] hover:bg-blue-700 text-white text-[11px] font-medium flex items-center gap-1 transition-colors shadow-xs">
+                <span class="material-symbols-outlined text-[14px]">chat</span>
+                <span class="">Nhắn tin</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5: Phạm Gia Huy (Online) -->
+        <div class="bg-white rounded border border-[#CBD5E1] p-3 shadow-xs hover:border-[#94A3B8] transition-colors relative flex flex-col justify-between">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="relative flex-shrink-0">
+                <div class="w-10 h-10 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-200 flex items-center justify-center font-bold text-[13px]">
+                  GH
+                </div>
+                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white" title="Đang trực tuyến"></span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <h4 class="text-[13px] text-[#0F172A] font-semibold truncate">Phạm Gia Huy</h4>
+                </div>
+                <p class="text-[11px] text-slate-400">@huypham_art</p>
+                <div class="flex items-center gap-1.5 mt-0.5 text-[11px] text-slate-600">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  <span class="truncate">Đang vẽ Concept Art • Freelancer</span>
+                </div>
+              </div>
+            </div>
+            <div class="relative">
+              <button class="w-7 h-7 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors" onclick="toggleContextMenu('menu-5')">
+                <span class="material-symbols-outlined text-[18px]">more_vert</span>
+              </button>
+              <div class="hidden absolute right-0 top-8 w-44 bg-white border border-[#CBD5E1] rounded shadow-lg py-1 z-30" id="menu-5">
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-slate-700 hover:bg-slate-50 flex items-center gap-2" onclick="viewProfile('Phạm Gia Huy')">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">account_circle</span>
+                  <span class="">Xem hồ sơ</span>
+                </button>
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-slate-700 hover:bg-slate-50 flex items-center gap-2" onclick="openConfirmDialog('unfriend', 'Phạm Gia Huy')">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">person_remove</span>
+                  <span class="">Hủy kết bạn</span>
+                </button>
+                <div class="h-[1px] bg-slate-100 my-1"></div>
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-red-600 hover:bg-red-50 flex items-center gap-2" onclick="openConfirmDialog('block', 'Phạm Gia Huy')">
+                  <span class="material-symbols-outlined text-[16px]">block</span>
+                  <span class="">Chặn người dùng</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between pt-2.5 mt-2.5 border-t border-slate-100">
+            <span class="text-[11px] text-slate-400">Bạn bè từ tháng 02/2024</span>
+            <div class="flex items-center gap-1.5">
+              <button class="h-7 px-2.5 rounded bg-white hover:bg-slate-50 border border-[#CBD5E1] text-slate-700 text-[11px] font-medium flex items-center gap-1 transition-colors">
+                <span class="material-symbols-outlined text-[14px] text-slate-500">call</span>
+                <span class="">Gọi</span>
+              </button>
+              <button class="h-7 px-3 rounded bg-[#2563EB] hover:bg-blue-700 text-white text-[11px] font-medium flex items-center gap-1 transition-colors shadow-xs">
+                <span class="material-symbols-outlined text-[14px]">chat</span>
+                <span class="">Nhắn tin</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 6: Đỗ Hoàng Bách (Offline) -->
+        <div class="bg-white rounded border border-[#CBD5E1] p-3 shadow-xs hover:border-[#94A3B8] transition-colors relative flex flex-col justify-between">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="relative flex-shrink-0">
+                <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-700 border border-slate-300 flex items-center justify-center font-bold text-[13px]">
+                  HB
+                </div>
+                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-slate-400 border border-white" title="Ngoại tuyến"></span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <h4 class="text-[13px] text-[#0F172A] font-semibold truncate">Đỗ Hoàng Bách</h4>
+                </div>
+                <p class="text-[11px] text-slate-400">@bachhoang_fin</p>
+                <div class="flex items-center gap-1.5 mt-0.5 text-[11px] text-slate-500">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                  <span class="truncate">Truy cập hôm qua • Chuyên viên Tài chính</span>
+                </div>
+              </div>
+            </div>
+            <div class="relative">
+              <button class="w-7 h-7 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors" onclick="toggleContextMenu('menu-6')">
+                <span class="material-symbols-outlined text-[18px]">more_vert</span>
+              </button>
+              <div class="hidden absolute right-0 top-8 w-44 bg-white border border-[#CBD5E1] rounded shadow-lg py-1 z-30" id="menu-6">
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-slate-700 hover:bg-slate-50 flex items-center gap-2" onclick="viewProfile('Đỗ Hoàng Bách')">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">account_circle</span>
+                  <span class="">Xem hồ sơ</span>
+                </button>
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-slate-700 hover:bg-slate-50 flex items-center gap-2" onclick="openConfirmDialog('unfriend', 'Đỗ Hoàng Bách')">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">person_remove</span>
+                  <span class="">Hủy kết bạn</span>
+                </button>
+                <div class="h-[1px] bg-slate-100 my-1"></div>
+                <button class="w-full px-3 py-1.5 text-left text-[12px] text-red-600 hover:bg-red-50 flex items-center gap-2" onclick="openConfirmDialog('block', 'Đỗ Hoàng Bách')">
+                  <span class="material-symbols-outlined text-[16px]">block</span>
+                  <span class="">Chặn người dùng</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between pt-2.5 mt-2.5 border-t border-slate-100">
+            <span class="text-[11px] text-slate-400">Bạn bè từ tháng 05/2023</span>
+            <div class="flex items-center gap-1.5">
+              <button class="h-7 px-2.5 rounded bg-white hover:bg-slate-50 border border-[#CBD5E1] text-slate-700 text-[11px] font-medium flex items-center gap-1 transition-colors">
+                <span class="material-symbols-outlined text-[14px] text-slate-500">call</span>
+                <span class="">Gọi</span>
+              </button>
+              <button class="h-7 px-3 rounded bg-[#2563EB] hover:bg-blue-700 text-white text-[11px] font-medium flex items-center gap-1 transition-colors shadow-xs">
+                <span class="material-symbols-outlined text-[14px]">chat</span>
+                <span class="">Nhắn tin</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Bottom Admin Status Bar -->
+  <footer class="h-7 bg-[#0F172A] border-t border-[#1E293B] text-slate-400 text-[11px] px-4 flex items-center justify-between flex-shrink-0 z-20"><div class="flex items-center gap-3"><span class="flex items-center gap-1.5 text-slate-300"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Trạng thái kết nối: Sẵn sàng (Ping: 18ms)</span><span class="text-slate-600">|</span><span class="">Phiên làm việc bảo mật (TLS 1.3 / E2E)</span></div><div class="flex items-center gap-3"><span class="">Client UI Version 1.0 (FlatLaf Desktop Theme)</span><span class="text-slate-600">|</span><span class="font-mono text-slate-400">v1.0.0-desktop</span></div></footer>
+</div></main></div>
+
+
+
+</body></html>

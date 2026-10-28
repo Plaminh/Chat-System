@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_blank" name="shell-type"/>
+<title>Trò Chuyện Việt — Cổng Đăng Nhập</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background": "#f8f9ff",
+            "surface": "#f8f9ff",
+            "primary": "#2563eb",
+            "primary-hover": "#1d4ed8",
+            "navy-header": "#0f172a",
+            "navy-header-border": "#1e293b",
+            "window-border": "#cbd5e1",
+            "input-border": "#cbd5e1",
+            "input-focus": "#2563eb",
+            "status-bg": "#eff4fb",
+            "status-border": "#e2e8f0"
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#F1F5F9] text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
+<!-- Desktop Canvas Frame / Viewport Simulation 1280x800 -->
+<div class="w-full max-w-[1280px] h-[800px] max-h-[90vh] bg-gradient-to-br from-[#F1F5F9] to-[#F8FAFC] border border-slate-300/70 rounded-lg shadow-2xl overflow-hidden flex flex-col items-center justify-center relative">
+<!-- Desktop Background Pattern / Subtle Ambient Grid -->
+<div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#0f172a_1px,transparent_1px)] [background-size:16px_16px]"></div>
+<!-- Centered Desktop Window / Dialog (Admin Client Aligned Style) -->
+<div class="relative w-[460px] bg-white rounded-md border border-[#CBD5E1] shadow-[0_12px_32px_-8px_rgba(15,23,42,0.18),0_4px_12px_-2px_rgba(15,23,42,0.08)] overflow-hidden flex flex-col z-10 animate-fade-in">
+<!-- Dark Desktop Window Titlebar / Header -->
+<div class="h-9 bg-[#0F172A] border-b border-[#1E293B] px-3 flex items-center justify-between select-none">
+<!-- Left: Logo & Window Title -->
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded bg-blue-600/90 flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[12px] leading-none">forum</span>
+</div>
+<span class="text-[12px] font-semibold text-slate-200 tracking-tight">Trò Chuyện Việt — Cổng Đăng Nhập</span>
+</div>
+<!-- Right: Version & Window Controls -->
+<div class="flex items-center gap-3">
+<span class="text-[11px] font-mono text-slate-400 font-medium">v1.0-Desktop</span>
+<div class="flex items-center gap-1.5 ml-1">
+<button aria-label="Minimize" class="w-2.5 h-2.5 rounded-full bg-slate-600 hover:bg-slate-500 transition-colors focus:outline-none"></button>
+<button aria-label="Maximize" class="w-2.5 h-2.5 rounded-full bg-slate-600 hover:bg-slate-500 transition-colors focus:outline-none"></button>
+<button aria-label="Close" class="w-2.5 h-2.5 rounded-full bg-rose-500/80 hover:bg-rose-500 transition-colors focus:outline-none"></button>
+</div>
+</div>
+</div>
+<!-- Main Form Interior Surface -->
+<div class="p-7 bg-white flex flex-col">
+<!-- Brand Header Section -->
+<div class="flex flex-col items-center text-center mb-6">
+<div class="w-13 h-13 p-2.5 mb-3 rounded-lg bg-blue-50 border border-blue-200/80 flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined text-[28px] text-blue-600">
+              chat_bubble
+            </span>
+</div>
+<h1 class="text-[18px] font-bold text-slate-900 tracking-tight">
+            Trò Chuyện Việt
+          </h1>
+<p class="text-[13px] text-slate-500 mt-1 leading-snug">
+            Đăng nhập vào tài khoản cá nhân để tiếp tục trao đổi
+          </p>
+</div>
+<!-- Login Form -->
+<form class="flex flex-col gap-3.5" onsubmit="event.preventDefault();">
+<!-- Account / Email Field -->
+<div class="flex flex-col gap-1 text-left">
+<label class="text-[12.5px] font-semibold text-slate-700" for="login-account">
+              Tên đăng nhập hoặc Email
+            </label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-2.5 text-slate-400 text-[17px] pointer-events-none select-none">
+                alternate_email
+              </span>
+<input class="w-full h-9 pl-8 pr-3 rounded bg-white border border-[#CBD5E1] text-[13px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-colors" id="login-account" placeholder="vd: nguyen.van.a@example.com" type="text" value="nguyen.van.a@example.com"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="flex flex-col gap-1 text-left">
+<label class="text-[12.5px] font-semibold text-slate-700" for="login-password">
+              Mật khẩu
+            </label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-2.5 text-slate-400 text-[17px] pointer-events-none select-none">
+                lock
+              </span>
+<input class="w-full h-9 pl-8 pr-9 rounded bg-white border border-[#CBD5E1] text-[13px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-colors font-mono tracking-wider" id="login-password" placeholder="••••••••" type="password" value="MatKhauBaoMat2024!"/>
+<button aria-label="Hiện hoặc ẩn mật khẩu" class="absolute right-1.5 p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors flex items-center justify-center focus:outline-none" id="toggle-pwd-btn" type="button">
+<span class="material-symbols-outlined text-[17px]" id="eye-icon">
+                  visibility_off
+                </span>
+</button>
+</div>
+</div>
+<!-- Options row (Remember me & Forgot Password) -->
+<div class="flex items-center justify-between pt-0.5 select-none">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="w-3.5 h-3.5 rounded border-[#CBD5E1] text-[#2563EB] focus:ring-[#2563EB] focus:ring-offset-0 cursor-pointer" type="checkbox"/>
+<span class="text-[12px] text-slate-600 font-medium">
+                Ghi nhớ đăng nhập trên thiết bị này
+              </span>
+</label>
+<a class="text-[12px] font-semibold text-[#2563EB] hover:text-blue-700 hover:underline transition-colors" href="#">
+              Quên mật khẩu?
+            </a>
+</div>
+<!-- Submit Button -->
+<button class="w-full h-[38px] mt-2 rounded bg-[#2563EB] hover:bg-[#1D4ED8] active:bg-[#1E40AF] text-white text-[13px] font-semibold tracking-wide shadow-xs transition-colors flex items-center justify-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1" type="submit">
+<span>Đăng nhập</span>
+<span class="material-symbols-outlined text-[16px] font-semibold">
+              arrow_forward
+            </span>
+</button>
+</form>
+<!-- Divider -->
+<div class="relative my-4 flex items-center justify-center">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full h-[1px] bg-slate-200"></div>
+</div>
+<span class="relative bg-white px-2.5 text-[11px] font-medium uppercase tracking-wider text-slate-400 select-none">
+            Hoặc
+          </span>
+</div>
+<!-- Registration link -->
+<div class="flex items-center justify-center gap-1.5 text-center">
+<span class="text-[12.5px] text-slate-600">
+            Chưa có tài khoản?
+          </span>
+<a class="text-[12.5px] font-semibold text-[#2563EB] hover:text-blue-700 hover:underline transition-colors" href="#">
+            Đăng ký ngay
+          </a>
+</div>
+</div>
+<!-- Window Bottom Status Bar / Footer Strip -->
+<div class="bg-[#EFF4FB] border-t border-[#E2E8F0] px-4 py-2 flex items-center justify-center gap-1.5 text-center">
+<span class="material-symbols-outlined text-[13px] text-slate-500">
+          info
+        </span>
+<span class="text-[11.5px] text-slate-600 font-medium">
+          Phiên bản thử nghiệm giao diện v1.0 • Trò Chuyện Việt Desktop Client (Dữ liệu mô phỏng)
+        </span>
+</div>
+</div>
+</div>
+<!-- Interactive script for password visibility toggle -->
+<script>
+    (function() {
+      const pwdInput = document.getElementById('login-password');
+      const toggleBtn = document.getElementById('toggle-pwd-btn');
+      const eyeIcon = document.getElementById('eye-icon');
+
+      if (toggleBtn && pwdInput && eyeIcon) {
+        toggleBtn.addEventListener('click', function() {
+          const isPassword = pwdInput.getAttribute('type') === 'password';
+          pwdInput.setAttribute('type', isPassword ? 'text' : 'password');
+          eyeIcon.textContent = isPassword ? 'visibility' : 'visibility_off';
+        });
+      }
+    })();
+  </script>
+</body></html>
