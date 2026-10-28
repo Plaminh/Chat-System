@@ -183,3 +183,11 @@ Kept: In-memory group/member state, minimum one additional participant, and loca
 Changed: Added `GroupConversation`, `GroupMember`, group listing/creation, member management dialog with add/remove/admin controls, focused tests, and marked T012 complete.
 Rejected: Group persistence, invitations over the network, organization features, or real encryption claims.
 By hand: Review group membership controls and role semantics against the required group workflows.
+
+## 2026-10-28 — Implement User group chat screen
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Complete US4 with a group message view, local composer, member roles, and a clear encryption placeholder.
+Kept: Sample-only messages, current group membership roles, and no cryptographic implementation.
+Changed: Added `GroupChatPanel`, group message rendering and local composition, role summary, explicit non-functional encryption wording, focused tests, and marked T013 complete.
+Rejected: Real E2EE, key management, live group delivery, or unsupported server semantics.
+By hand: Review the group chat split layout and placeholder wording against the approved group-chat screen.

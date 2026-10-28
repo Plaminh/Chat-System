@@ -79,7 +79,7 @@
 ### Implementation for User Story 4
 
 - [X] T012 [US4] Add group/member presentation models and implement the group list, create-group flow requiring at least one other username, rename/add/remove/admin controls, and member-role view in `user-client/src/main/java/com/chat/user/model/GroupConversation.java`, `user-client/src/main/java/com/chat/user/model/GroupMember.java`, `user-client/src/main/java/com/chat/user/view/GroupsPanel.java`, `user-client/src/main/java/com/chat/user/view/CreateGroupDialog.java`, and `user-client/src/main/java/com/chat/user/view/GroupMembersDialog.java`; add focused coverage in `user-client/src/test/java/com/chat/user/view/GroupsPanelTest.java` (Commit: `feat(user): implement group creation and management`)
-- [ ] T013 [US4] Implement the group conversation message view and composer, show group administrator/member roles, and mark encryption as a visual non-functional placeholder in `user-client/src/main/java/com/chat/user/view/GroupChatPanel.java`; add focused coverage in `user-client/src/test/java/com/chat/user/view/GroupChatPanelTest.java` (Commit: `feat(user): implement group chat screen`)
+- [X] T013 [US4] Implement the group conversation message view and composer, show group administrator/member roles, and mark encryption as a visual non-functional placeholder in `user-client/src/main/java/com/chat/user/view/GroupChatPanel.java`; add focused coverage in `user-client/src/test/java/com/chat/user/view/GroupChatPanelTest.java` (Commit: `feat(user): implement group chat screen`)
 
 **Checkpoint**: Story 4 group controls are sample-only, enforce the minimum-other-member rule, and do not claim cryptographic protection.
 
