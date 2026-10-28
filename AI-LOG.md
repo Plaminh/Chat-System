@@ -191,3 +191,11 @@ Kept: Sample-only messages, current group membership roles, and no cryptographic
 Changed: Added `GroupChatPanel`, group message rendering and local composition, role summary, explicit non-functional encryption wording, focused tests, and marked T013 complete.
 Rejected: Real E2EE, key management, live group delivery, or unsupported server semantics.
 By hand: Review the group chat split layout and placeholder wording against the approved group-chat screen.
+
+## 2026-10-28 — Add sample spam-report dialog
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Begin US5 with an account report form available only for a prior sample conversation.
+Kept: Required report reason, identified target account, and a clearly local-only submission result.
+Changed: Added `SpamReportDialog` with prior-interaction and required-reason checks, focused tests, and marked T014 complete.
+Rejected: Automatic blocking, report storage, server submission, or claims that a moderator received the report.
+By hand: Review the report form wording and any future report categories with the project owner.
