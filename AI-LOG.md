@@ -95,3 +95,11 @@ Kept: Admin-aligned navy/blue colors, Java Swing/FlatLaf, existing module bounda
 Changed: Added shared User UI color, spacing, typography, card, button, and text-field styling tokens in `UserUiTheme.java`; marked T001 complete.
 Rejected: Adding dependencies or changing the Admin client, protocol, server, or database.
 By hand: Review the visual styling against the approved User screenshots while implementing the screens.
+
+## 2026-10-28 — Add User sample profile and session
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Continue Phase 5 with the foundational User profile/session model and focused test coverage.
+Kept: Only project-required account fields, in-memory sample state, and no password storage or network integration.
+Changed: Added immutable `UserProfile`, `UserSessionState` with a clearly synthetic sample profile, and `UserSessionStateTest`; marked T002 complete.
+Rejected: Adding persistence, authentication credentials, or server/protocol behavior.
+By hand: Review the sample fields and session flow when connecting the account screens.
