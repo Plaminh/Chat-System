@@ -79,3 +79,11 @@ Kept: The existing six User mockup category folders and the requirement to prese
 Changed: Added `docs/mockups/002-user-client-ui/HUONG_DAN_LUU_12_SCREENS.md`, clarifying that the six existing folders are categories and documenting how to store each of 12 screen handoffs as a nested folder with the three required files.
 Rejected: Renaming or deleting existing mockup folders, creating Stitch exports, or assuming that six categories mean only six screens.
 By hand: The developer will export the 12 final screen mockups from Stitch and verify each three-file handoff.
+
+## 2026-10-28 — Plan and task User Client UI Version 1
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit plan/tasks workflows.
+Asked for: Complete Phase 4 using the 12 User mockups and approved User requirements; produce implementation planning, design artifacts, and an executable task list without implementing application code.
+Kept: The existing four-module architecture, Java 21/Swing/FlatLaf stack, User mockup content, project constitution, and the agreed sample-only Version 1 boundary.
+Changed: Generated `specs/002-user-client-ui/plan.md`, `research.md`, `data-model.md`, `contracts/ui-components.md`, `quickstart.md`, and `tasks.md`; mapped all 12 approved screens and grouped implementation work under the five feature user stories with focused test and per-task commit guidance.
+Rejected: Modifying Java sources, adding dependencies/modules, extending the protocol, changing database schemas, integrating live services, or creating commits/pushing as part of this planning phase.
+By hand: The developer remains responsible for reviewing and approving the plan/tasks before implementation; each future task and commit must be reviewed.
