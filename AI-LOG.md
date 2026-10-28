@@ -87,3 +87,11 @@ Kept: The existing four-module architecture, Java 21/Swing/FlatLaf stack, User m
 Changed: Generated `specs/002-user-client-ui/plan.md`, `research.md`, `data-model.md`, `contracts/ui-components.md`, `quickstart.md`, and `tasks.md`; mapped all 12 approved screens and grouped implementation work under the five feature user stories with focused test and per-task commit guidance.
 Rejected: Modifying Java sources, adding dependencies/modules, extending the protocol, changing database schemas, integrating live services, or creating commits/pushing as part of this planning phase.
 By hand: The developer remains responsible for reviewing and approving the plan/tasks before implementation; each future task and commit must be reviewed.
+
+## 2026-10-28 — Implement User UI shared theme
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Begin Phase 5 of the User Client UI Version 1 implementation.
+Kept: Admin-aligned navy/blue colors, Java Swing/FlatLaf, existing module boundaries, and sample-only scope.
+Changed: Added shared User UI color, spacing, typography, card, button, and text-field styling tokens in `UserUiTheme.java`; marked T001 complete.
+Rejected: Adding dependencies or changing the Admin client, protocol, server, or database.
+By hand: Review the visual styling against the approved User screenshots while implementing the screens.
