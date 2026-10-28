@@ -151,3 +151,11 @@ Kept: In-memory friend state, project-required identity details, and explicit lo
 Changed: Added `FriendEntry`, searchable friends panel with online-only filtering, confirmation-gated unfriend/block, shared blocked-username state, focused tests, and marked T008 complete.
 Rejected: Live presence, network actions, or modifying server-side friend relationships.
 By hand: Review the sample names and relationships against the approved friend-list design.
+
+## 2026-10-28 — Add User friend requests and search
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Continue US2 with request decisions and blocked-aware search by username/full name.
+Kept: Sample-only request state, shared blocked usernames, and local navigation callbacks.
+Changed: Added `FriendRequest` statuses, request filtering/accept/decline, user search with explicit empty states, chat/group selection callbacks, focused tests, and marked T009 complete.
+Rejected: Live account lookup, network friend requests, or surfacing blocked accounts in search results.
+By hand: Review request and search controls against the approved discovery screen.

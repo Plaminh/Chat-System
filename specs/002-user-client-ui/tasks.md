@@ -53,7 +53,7 @@
 ### Implementation for User Story 2
 
 - [X] T008 [US2] Add friend presentation state and implement the friends list with name filtering, online/offline and online-only views, open-chat action, and confirmed local unfriend/block actions in `user-client/src/main/java/com/chat/user/model/FriendEntry.java`, `user-client/src/main/java/com/chat/user/view/FriendsPanel.java`, and `user-client/src/test/java/com/chat/user/view/FriendsPanelTest.java` (Commit: `feat(user): implement friends list and relationship actions`)
-- [ ] T009 [US2] Implement incoming friend-request filtering/accept/decline and username/full-name search that omits accounts blocked by the current user in `user-client/src/main/java/com/chat/user/model/FriendRequest.java` and `user-client/src/main/java/com/chat/user/view/FriendRequestsSearchPanel.java`; add focused coverage in `user-client/src/test/java/com/chat/user/view/FriendRequestsSearchPanelTest.java` (Commit: `feat(user): add friend requests and user search`)
+- [X] T009 [US2] Implement incoming friend-request filtering/accept/decline and username/full-name search that omits accounts blocked by the current user in `user-client/src/main/java/com/chat/user/model/FriendRequest.java` and `user-client/src/main/java/com/chat/user/view/FriendRequestsSearchPanel.java`; add focused coverage in `user-client/src/test/java/com/chat/user/view/FriendRequestsSearchPanelTest.java` (Commit: `feat(user): add friend requests and user search`)
 
 **Checkpoint**: Story 2 can be exercised with sample profiles without authentication/network dependencies.
 
