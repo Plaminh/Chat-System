@@ -143,3 +143,11 @@ Kept: Only required User account fields, username as a stable identity, in-memor
 Changed: Added editable profile fields with save/cancel restoration, a separate password-change dialog with confirmation validation, focused tests, and password-dialog launch from Profile; marked T007 complete.
 Rejected: Adding mockup-only phone, organization, bio, password-expiry, 2FA, or device-security content, and claiming any real password change.
 By hand: Review profile-field scope against the approved project account model.
+
+## 2026-10-28 — Implement User friends list
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Begin US2 with sample friends, filtering, presence, chat navigation, and confirmed relationship actions.
+Kept: In-memory friend state, project-required identity details, and explicit local-only actions.
+Changed: Added `FriendEntry`, searchable friends panel with online-only filtering, confirmation-gated unfriend/block, shared blocked-username state, focused tests, and marked T008 complete.
+Rejected: Live presence, network actions, or modifying server-side friend relationships.
+By hand: Review the sample names and relationships against the approved friend-list design.
