@@ -167,3 +167,11 @@ Kept: In-memory ordered messages, sample-only send behavior, and no TCP delivery
 Changed: Added `Conversation`, `ChatMessage`, `MessageBubble`, the split conversation/chat workspace, sample fixtures, focused tests, and marked T010 complete.
 Rejected: Live message delivery, attachments, persistence, or protocol changes.
 By hand: Review the chat split layout and message bubble appearance against the approved chat screenshot.
+
+## 2026-10-28 — Add chat history search and local actions
+Tool: AI assistant (Copilot SDK in VS Code), Spec Kit implementation workflow.
+Asked for: Complete US3 history search, result navigation, and the three distinct conversation/message actions.
+Kept: Search over local sample messages, confirmation before destructive actions, and neutral local-only semantics.
+Changed: Added current/global history search, result navigation callbacks, selection-based Delete for Me and Unsend, confirmed Clear Conversation History, action model, focused tests, and marked T011 complete.
+Rejected: Claiming server-side deletion, cross-user visibility, retention, or message withdrawal.
+By hand: Review the three action confirmations and their neutral sample wording before future backend integration.

@@ -26,4 +26,11 @@ public record ChatMessage(
     return new ChatMessage(
         messageId, senderUsername, content, sentAt, removedForCurrentUser, true);
   }
+
+  public String displayContent() {
+    if (removedForCurrentUser) {
+      return "";
+    }
+    return unsent ? "Tin nhắn đã được thu hồi trong bản mẫu." : content;
+  }
 }
