@@ -225,14 +225,7 @@ public final class FriendStatsPanel extends JPanel {
     footerSummaryLabel.setFont(AdminUIStyle.FONT_BODY_BOLD);
     footerSummaryLabel.setForeground(AdminUIStyle.TEXT_PRIMARY);
 
-    JLabel specNote =
-        new JLabel(
-            "Requirement 1.2.7 — Direct Friends & Friends-of-Friends with (=, >, <) comparison");
-    specNote.setFont(AdminUIStyle.FONT_SMALL);
-    specNote.setForeground(AdminUIStyle.TEXT_MUTED);
-
     bar.add(footerSummaryLabel, BorderLayout.CENTER);
-    bar.add(specNote, BorderLayout.EAST);
     return bar;
   }
 

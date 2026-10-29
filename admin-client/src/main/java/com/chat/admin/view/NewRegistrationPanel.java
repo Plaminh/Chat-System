@@ -231,13 +231,7 @@ public final class NewRegistrationPanel extends JPanel {
     footerSummaryLabel.setFont(AdminUIStyle.FONT_BODY_BOLD);
     footerSummaryLabel.setForeground(AdminUIStyle.TEXT_PRIMARY);
 
-    JLabel hintLabel =
-        new JLabel("Requirement 1.2.5 — Filter by date range & name, sort by name or creation time");
-    hintLabel.setFont(AdminUIStyle.FONT_SMALL);
-    hintLabel.setForeground(AdminUIStyle.TEXT_MUTED);
-
     bar.add(footerSummaryLabel, BorderLayout.CENTER);
-    bar.add(hintLabel, BorderLayout.EAST);
     return bar;
   }
 

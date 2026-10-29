@@ -293,14 +293,7 @@ public final class UserActivityPanel extends JPanel {
     footerSummaryLabel.setFont(AdminUIStyle.FONT_BODY_BOLD);
     footerSummaryLabel.setForeground(AdminUIStyle.TEXT_PRIMARY);
 
-    JLabel specNote =
-        new JLabel(
-            "Requirement 1.2.8 — Active Users, App Opens, Chatted Individuals & Chatted Groups");
-    specNote.setFont(AdminUIStyle.FONT_SMALL);
-    specNote.setForeground(AdminUIStyle.TEXT_MUTED);
-
     bar.add(footerSummaryLabel, BorderLayout.CENTER);
-    bar.add(specNote, BorderLayout.EAST);
     return bar;
   }
 
