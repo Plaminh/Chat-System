@@ -455,19 +455,8 @@ public final class AdminMainFrame extends JFrame {
           }
         });
 
-    JButton refreshBothBtn = AdminUIStyle.createPrimaryButton("Refresh Both Charts");
-    refreshBothBtn.addActionListener(
-        e -> {
-          Integer year = (Integer) globalYearCombo.getSelectedItem();
-          if (year != null) {
-            registrationChartPanel.setSelectedYear(year);
-            activityChartPanel.setSelectedYear(year);
-          }
-        });
-
     rightControls.add(syncYearLbl);
     rightControls.add(globalYearCombo);
-    rightControls.add(refreshBothBtn);
 
     topToolbar.add(leftInfo, BorderLayout.WEST);
     topToolbar.add(rightControls, BorderLayout.EAST);

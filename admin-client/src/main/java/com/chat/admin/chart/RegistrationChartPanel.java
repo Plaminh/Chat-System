@@ -10,7 +10,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.text.NumberFormat;
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -68,6 +67,13 @@ public final class RegistrationChartPanel extends JPanel {
             updateChartForYear(selected);
           }
         });
+    dataStore.addChangeListener(
+        () -> {
+          Integer selected = (Integer) yearCombo.getSelectedItem();
+          if (selected != null) {
+            updateChartForYear(selected);
+          }
+        });
 
     updateChartForYear(2025);
   }
@@ -99,18 +105,8 @@ public final class RegistrationChartPanel extends JPanel {
     yearLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
     yearLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
 
-    JButton refreshBtn = AdminUIStyle.createSecondaryButton("Refresh");
-    refreshBtn.addActionListener(
-        e -> {
-          Integer selected = (Integer) yearCombo.getSelectedItem();
-          if (selected != null) {
-            updateChartForYear(selected);
-          }
-        });
-
     controls.add(yearLbl);
     controls.add(yearCombo);
-    controls.add(refreshBtn);
 
     header.add(titleBox, BorderLayout.WEST);
     header.add(controls, BorderLayout.EAST);
