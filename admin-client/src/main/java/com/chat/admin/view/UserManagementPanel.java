@@ -375,11 +375,10 @@ public final class UserManagementPanel extends JPanel {
     JTextField addressInput =
         new JTextField(isEdit ? existingUser.getAddress() : "TP.HCM", 20);
     JTextField dobInput =
-        new JTextField(
+        AdminUIStyle.createDateField(
             isEdit
                 ? existingUser.getDateOfBirth().format(AdminUIStyle.DATE_FMT)
-                : "2002-01-15",
-            20);
+                : "2002/01/15");
     JComboBox<String> genderInput =
         new JComboBox<>(new String[] {"Male", "Female", "Other"});
     if (isEdit) {
@@ -391,7 +390,7 @@ public final class UserManagementPanel extends JPanel {
       "Full Name (*):",
       "Email Address (*):",
       "Address (*):",
-      "Date of Birth (YYYY-MM-DD):",
+      "Date of Birth (YYYY/MM/DD):",
       "Gender:"
     };
     java.awt.Component[] fields = {
@@ -411,7 +410,9 @@ public final class UserManagementPanel extends JPanel {
 
       gbc.gridx = 1;
       gbc.weightx = 0.65;
-      fields[i].setFont(AdminUIStyle.FONT_BODY);
+      if (fields[i] != dobInput) {
+        fields[i].setFont(AdminUIStyle.FONT_BODY);
+      }
       form.add(fields[i], gbc);
     }
 
@@ -437,7 +438,7 @@ public final class UserManagementPanel extends JPanel {
               || fullName.isEmpty()
               || email.isEmpty()
               || address.isEmpty()
-              || dobStr.isEmpty()) {
+              || AdminUIStyle.isDateMaskBlank(dobStr)) {
             JOptionPane.showMessageDialog(
                 dialog,
                 "All fields marked with (*) are required.",
@@ -455,8 +456,13 @@ public final class UserManagementPanel extends JPanel {
           }
           LocalDate dob;
           try {
-            dob = LocalDate.parse(dobStr, AdminUIStyle.DATE_FMT);
+            if (!AdminUIStyle.isDateMaskComplete(dobStr)) {
+              throw new DateTimeParseException("Incomplete date mask", dobStr, 0);
+            }
+            dob = LocalDate.parse(dobStr, AdminUIStyle.DATE_INPUT_FMT);
             if (!dob.isBefore(LocalDate.now())) {
+              AdminUIStyle.setDateFieldError(
+                  dobInput, true, "Date of birth must be in the past");
               JOptionPane.showMessageDialog(
                   dialog,
                   "Date of birth must be in the past.",
@@ -464,10 +470,15 @@ public final class UserManagementPanel extends JPanel {
                   JOptionPane.ERROR_MESSAGE);
               return;
             }
+            AdminUIStyle.setDateFieldError(dobInput, false, null);
           } catch (DateTimeParseException ex) {
+            AdminUIStyle.setDateFieldError(
+                dobInput, true, "Invalid calendar date: " + dobStr);
             JOptionPane.showMessageDialog(
                 dialog,
-                "Invalid Date of Birth format. Please use YYYY-MM-DD.",
+                "Invalid Date of Birth ('"
+                    + dobStr
+                    + "'). Please enter a valid calendar date in YYYY/MM/DD format.",
                 "Validation Error",
                 JOptionPane.ERROR_MESSAGE);
             return;

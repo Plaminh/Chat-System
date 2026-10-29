@@ -7,7 +7,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -15,7 +14,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -45,8 +43,8 @@ public final class NewRegistrationPanel extends JPanel {
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField nameSearchField =
       AdminUIStyle.createSearchField("Filter by full name or username...", 18);
-  private final JTextField startDateField = AdminUIStyle.createDateField("2025-01-01");
-  private final JTextField endDateField = AdminUIStyle.createDateField("2025-12-31");
+  private final JTextField startDateField = AdminUIStyle.createDateField("2025/01/01");
+  private final JTextField endDateField = AdminUIStyle.createDateField("2025/12/31");
   private final JComboBox<String> sortCombo =
       AdminUIStyle.createComboBox(
           new String[] {
@@ -67,7 +65,7 @@ public final class NewRegistrationPanel extends JPanel {
 
   private final JLabel matchingRegistrationsValueLabel = new JLabel("0 accounts");
   private final JLabel activeSignupsValueLabel = new JLabel("0 active");
-  private final JLabel activeDateWindowValueLabel = new JLabel("2025-01-01 → 2025-12-31");
+  private final JLabel activeDateWindowValueLabel = new JLabel("2025/01/01 → 2025/12/31");
   private final JLabel footerSummaryLabel = new JLabel("Showing 0 newly registered accounts");
 
   public NewRegistrationPanel() {
@@ -144,14 +142,14 @@ public final class NewRegistrationPanel extends JPanel {
     presetLbl.setForeground(AdminUIStyle.TEXT_MUTED);
 
     JButton q1Btn = AdminUIStyle.createSecondaryButton("Q1 2025");
-    q1Btn.addActionListener(e -> setDateRange("2025-01-01", "2025-03-31"));
+    q1Btn.addActionListener(e -> setDateRange("2025/01/01", "2025/03/31"));
 
     JButton mayBtn = AdminUIStyle.createSecondaryButton("May 2025");
-    mayBtn.addActionListener(e -> setDateRange("2025-05-01", "2025-05-31"));
+    mayBtn.addActionListener(e -> setDateRange("2025/05/01", "2025/05/31"));
 
     JButton fullYearBtn = AdminUIStyle.createSecondaryButton("All 2025–2026");
     fullYearBtn.addActionListener(
-        e -> setDateRange("2025-01-01", LocalDate.now().format(AdminUIStyle.DATE_FMT)));
+        e -> setDateRange("2025/01/01", LocalDate.now().format(AdminUIStyle.DATE_FMT)));
 
     rightPresets.add(presetLbl);
     rightPresets.add(q1Btn);
@@ -180,7 +178,7 @@ public final class NewRegistrationPanel extends JPanel {
     resetBtn.addActionListener(
         e -> {
           nameSearchField.setText("");
-          startDateField.setText("2025-01-01");
+          startDateField.setText("2025/01/01");
           endDateField.setText(LocalDate.now().format(AdminUIStyle.DATE_FMT));
           sortCombo.setSelectedIndex(0);
           applyFiltersAndRefresh(false);
@@ -262,47 +260,24 @@ public final class NewRegistrationPanel extends JPanel {
     nameSearchField.getDocument().addDocumentListener(docListener);
     startDateField.getDocument().addDocumentListener(docListener);
     endDateField.getDocument().addDocumentListener(docListener);
+    AdminUIStyle.attachDateFieldValidationTriggers(
+        startDateField, () -> applyFiltersAndRefresh(true));
+    AdminUIStyle.attachDateFieldValidationTriggers(
+        endDateField, () -> applyFiltersAndRefresh(true));
     sortCombo.addActionListener(e -> applyFiltersAndRefresh(false));
   }
 
   private void applyFiltersAndRefresh(boolean showValidationAlert) {
-    LocalDate startDate = null;
-    LocalDate endDate = null;
-    String startText = startDateField.getText() == null ? "" : startDateField.getText().trim();
-    String endText = endDateField.getText() == null ? "" : endDateField.getText().trim();
-
-    if ((!startText.isEmpty() && startText.length() != 10)
-        || (!endText.isEmpty() && endText.length() != 10)) {
+    LocalDate[] dateRange =
+        AdminUIStyle.parseAndValidateDateRange(
+            this, startDateField, endDateField, showValidationAlert);
+    if (dateRange == null) {
       return;
     }
-
-    try {
-      if (!startText.isEmpty()) {
-        startDate = LocalDate.parse(startText, AdminUIStyle.DATE_FMT);
-      }
-      if (!endText.isEmpty()) {
-        endDate = LocalDate.parse(endText, AdminUIStyle.DATE_FMT);
-      }
-      if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
-        if (showValidationAlert) {
-          JOptionPane.showMessageDialog(
-              this,
-              "Start Date cannot be later than End Date.",
-              "Invalid Date Range",
-              JOptionPane.WARNING_MESSAGE);
-        }
-        return;
-      }
-    } catch (DateTimeParseException ex) {
-      if (showValidationAlert) {
-        JOptionPane.showMessageDialog(
-            this,
-            "Invalid date format. Please use YYYY-MM-DD (e.g. 2025-01-01).",
-            "Invalid Date Format",
-            JOptionPane.ERROR_MESSAGE);
-      }
-      return;
-    }
+    LocalDate startDate = dateRange[0];
+    LocalDate endDate = dateRange[1];
+    String startText = startDate == null ? "" : startDate.format(AdminUIStyle.DATE_FMT);
+    String endText = endDate == null ? "" : endDate.format(AdminUIStyle.DATE_FMT);
 
     String query =
         nameSearchField.getText() == null ? "" : nameSearchField.getText().trim().toLowerCase();

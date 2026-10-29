@@ -13,23 +13,34 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.RenderingHints;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.geom.Path2D;
+import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.util.Objects;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
+import javax.swing.text.MaskFormatter;
 
 /**
  * Shared Desktop Admin Studio design tokens, programmatic Java2D vector icons, and reusable Swing
@@ -77,11 +88,13 @@ public final class AdminUIStyle {
   public static final Font FONT_BADGE = new Font("SansSerif", Font.BOLD, 11);
   public static final Font FONT_MONO = new Font("Monospaced", Font.PLAIN, 12);
 
-  public static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+  public static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+  public static final DateTimeFormatter DATE_INPUT_FMT =
+      DateTimeFormatter.ofPattern("uuuu/MM/dd").withResolverStyle(ResolverStyle.STRICT);
   public static final DateTimeFormatter DATETIME_FMT =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+      DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
   public static final DateTimeFormatter FULL_DATETIME_FMT =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+      DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
   private AdminUIStyle() {}
 
@@ -223,11 +236,187 @@ public final class AdminUIStyle {
   }
 
   public static JTextField createDateField(String initialValue) {
-    JTextField field = new JTextField(initialValue, 11);
+    MaskFormatter formatter;
+    try {
+      formatter = new MaskFormatter("####/##/##");
+      formatter.setPlaceholderCharacter('_');
+    } catch (ParseException ex) {
+      throw new IllegalStateException("Invalid date mask pattern", ex);
+    }
+
+    JFormattedTextField field =
+        new JFormattedTextField(formatter) {
+          @Override
+          public void setText(String t) {
+            putClientProperty("AdminUI.lastAlertKey", null);
+            putClientProperty("JComponent.outline", null);
+            setForeground(TEXT_PRIMARY);
+            if (t == null || t.isBlank()) {
+              super.setText("____/__/__");
+            } else {
+              super.setText(t.trim().replace('-', '/'));
+            }
+          }
+        };
+    field.setFocusLostBehavior(JFormattedTextField.PERSIST);
+    field.setColumns(11);
     field.setFont(FONT_MONO);
     field.setPreferredSize(new Dimension(Math.max(field.getPreferredSize().width, 118), 34));
-    field.putClientProperty("JTextField.placeholderText", "YYYY-MM-DD");
+    field.setToolTipText("Format: yyyy/MM/dd (e.g. 2025/05/01)");
+    field.setText(initialValue);
     return field;
+  }
+
+  public static boolean isDateMaskBlank(String raw) {
+    if (raw == null) {
+      return true;
+    }
+    String trimmed = raw.trim();
+    return trimmed.isEmpty() || "____/__/__".equals(trimmed);
+  }
+
+  public static boolean isDateMaskComplete(String raw) {
+    if (raw == null) {
+      return false;
+    }
+    String trimmed = raw.trim();
+    return trimmed.length() == 10 && !trimmed.contains("_");
+  }
+
+  public static void setDateFieldError(JTextField field, boolean hasError, String tooltip) {
+    field.putClientProperty("JComponent.outline", hasError ? "error" : null);
+    field.setForeground(hasError ? DANGER_TEXT : TEXT_PRIMARY);
+    field.setToolTipText(
+        hasError && tooltip != null ? tooltip : "Format: yyyy/MM/dd (e.g. 2025/05/01)");
+    if (!hasError) {
+      field.putClientProperty("AdminUI.lastAlertKey", null);
+    }
+    field.repaint();
+  }
+
+  public static void showDateValidationErrorOnce(
+      Component parent, JComponent field, String alertKey, String message, String title) {
+    Object prev = field.getClientProperty("AdminUI.lastAlertKey");
+    if (Objects.equals(prev, alertKey)) {
+      return;
+    }
+    field.putClientProperty("AdminUI.lastAlertKey", alertKey);
+    SwingUtilities.invokeLater(
+        () -> JOptionPane.showMessageDialog(parent, message, title, JOptionPane.ERROR_MESSAGE));
+  }
+
+  /**
+   * Validates a pair of masked date fields ({@code yyyy/MM/dd}). Highlights invalid fields with a
+   * red outline and displays a non-duplicate error dialog when a complete date is invalid, when a
+   * partial date is left incomplete on Enter/focus-loss, or when {@code fromDate > toDate}.
+   *
+   * @return a 2-element array {@code [fromDate, toDate]} when valid, or {@code null} if filtering
+   *     should be aborted.
+   */
+  public static LocalDate[] parseAndValidateDateRange(
+      Component parent,
+      JTextField fromField,
+      JTextField toField,
+      boolean checkIncomplete) {
+    LocalDate fromDate = parseSingleMaskedDate(parent, fromField, "Start Date", checkIncomplete);
+    if (Boolean.TRUE.equals(fromField.getClientProperty("AdminUI.abortFilter"))) {
+      return null;
+    }
+    LocalDate toDate = parseSingleMaskedDate(parent, toField, "End Date", checkIncomplete);
+    if (Boolean.TRUE.equals(toField.getClientProperty("AdminUI.abortFilter"))) {
+      return null;
+    }
+
+    if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+      String fromRaw = fromField.getText().trim();
+      String toRaw = toField.getText().trim();
+      String rangeKey = "range:" + fromRaw + ">" + toRaw;
+      fromField.putClientProperty("JComponent.outline", "error");
+      toField.putClientProperty("JComponent.outline", "error");
+      fromField.setForeground(DANGER_TEXT);
+      toField.setForeground(DANGER_TEXT);
+      Object prevRangeKey = toField.getClientProperty("AdminUI.lastRangeAlertKey");
+      if (!Objects.equals(prevRangeKey, rangeKey)) {
+        toField.putClientProperty("AdminUI.lastRangeAlertKey", rangeKey);
+        SwingUtilities.invokeLater(
+            () ->
+                JOptionPane.showMessageDialog(
+                    parent,
+                    "Start Date (" + fromRaw + ") cannot be later than End Date (" + toRaw + ").",
+                    "Invalid Date Range",
+                    JOptionPane.ERROR_MESSAGE));
+      }
+      return null;
+    }
+
+    toField.putClientProperty("AdminUI.lastRangeAlertKey", null);
+    return new LocalDate[] {fromDate, toDate};
+  }
+
+  private static LocalDate parseSingleMaskedDate(
+      Component parent, JTextField field, String label, boolean checkIncomplete) {
+    String raw = field.getText() == null ? "" : field.getText().trim();
+    if (isDateMaskBlank(raw)) {
+      setDateFieldError(field, false, null);
+      field.putClientProperty("AdminUI.abortFilter", false);
+      return null;
+    }
+    if (!isDateMaskComplete(raw)) {
+      if (checkIncomplete) {
+        field.putClientProperty("JComponent.outline", "error");
+        field.setForeground(DANGER_TEXT);
+        field.setToolTipText("Incomplete date. Use yyyy/MM/dd (e.g. 2025/05/01)");
+        showDateValidationErrorOnce(
+            parent,
+            field,
+            "incomplete:" + raw,
+            label
+                + " ('"
+                + raw
+                + "') is incomplete. Please enter all digits in yyyy/MM/dd format (e.g. 2025/05/01).",
+            "Incomplete Date");
+      } else {
+        setDateFieldError(field, false, null);
+      }
+      field.putClientProperty("AdminUI.abortFilter", true);
+      return null;
+    }
+
+    try {
+      LocalDate parsed = LocalDate.parse(raw, DATE_INPUT_FMT);
+      setDateFieldError(field, false, null);
+      field.putClientProperty("AdminUI.abortFilter", false);
+      return parsed;
+    } catch (DateTimeParseException ex) {
+      field.putClientProperty("JComponent.outline", "error");
+      field.setForeground(DANGER_TEXT);
+      field.setToolTipText("Invalid calendar date: " + raw);
+      showDateValidationErrorOnce(
+          parent,
+          field,
+          "invalid:" + raw,
+          label
+              + " ('"
+              + raw
+              + "') is not a valid calendar date. Please check the year, month (01-12), and day.",
+          "Invalid Date");
+      field.putClientProperty("AdminUI.abortFilter", true);
+      return null;
+    }
+  }
+
+  public static void attachDateFieldValidationTriggers(
+      JTextField field, Runnable onCommitOrFocusLost) {
+    field.addActionListener(e -> onCommitOrFocusLost.run());
+    field.addFocusListener(
+        new FocusAdapter() {
+          @Override
+          public void focusLost(FocusEvent e) {
+            if (!e.isTemporary()) {
+              onCommitOrFocusLost.run();
+            }
+          }
+        });
   }
 
   public static <T> JComboBox<T> createComboBox(T[] items) {

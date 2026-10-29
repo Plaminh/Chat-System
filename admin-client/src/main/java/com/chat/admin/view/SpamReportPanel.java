@@ -8,7 +8,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -45,8 +44,8 @@ public final class SpamReportPanel extends JPanel {
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField usernameFilterField =
       AdminUIStyle.createSearchField("Filter by reported or reporting username...", 15);
-  private final JTextField fromDateField = AdminUIStyle.createDateField("2025-01-01");
-  private final JTextField toDateField = AdminUIStyle.createDateField("2025-12-31");
+  private final JTextField fromDateField = AdminUIStyle.createDateField("2025/01/01");
+  private final JTextField toDateField = AdminUIStyle.createDateField("2025/12/31");
   private final JComboBox<String> sortCombo =
       AdminUIStyle.createComboBox(
           new String[] {
@@ -147,8 +146,8 @@ public final class SpamReportPanel extends JPanel {
     resetBtn.addActionListener(
         e -> {
           usernameFilterField.setText("");
-          fromDateField.setText("2025-01-01");
-          toDateField.setText("2025-12-31");
+          fromDateField.setText("2025/01/01");
+          toDateField.setText("2025/12/31");
           sortCombo.setSelectedIndex(0);
           applyFiltersAndRefresh(false);
         });
@@ -222,6 +221,10 @@ public final class SpamReportPanel extends JPanel {
     usernameFilterField.getDocument().addDocumentListener(docListener);
     fromDateField.getDocument().addDocumentListener(docListener);
     toDateField.getDocument().addDocumentListener(docListener);
+    AdminUIStyle.attachDateFieldValidationTriggers(
+        fromDateField, () -> applyFiltersAndRefresh(true));
+    AdminUIStyle.attachDateFieldValidationTriggers(
+        toDateField, () -> applyFiltersAndRefresh(true));
     sortCombo.addActionListener(e -> applyFiltersAndRefresh(false));
 
     reportTable
@@ -235,43 +238,14 @@ public final class SpamReportPanel extends JPanel {
   }
 
   private void applyFiltersAndRefresh(boolean showValidationAlert) {
-    LocalDate fromDate = null;
-    LocalDate toDate = null;
-    String fromText = fromDateField.getText() == null ? "" : fromDateField.getText().trim();
-    String toText = toDateField.getText() == null ? "" : toDateField.getText().trim();
-
-    if ((!fromText.isEmpty() && fromText.length() != 10)
-        || (!toText.isEmpty() && toText.length() != 10)) {
+    LocalDate[] dateRange =
+        AdminUIStyle.parseAndValidateDateRange(
+            this, fromDateField, toDateField, showValidationAlert);
+    if (dateRange == null) {
       return;
     }
-
-    try {
-      if (!fromText.isEmpty()) {
-        fromDate = LocalDate.parse(fromText, AdminUIStyle.DATE_FMT);
-      }
-      if (!toText.isEmpty()) {
-        toDate = LocalDate.parse(toText, AdminUIStyle.DATE_FMT);
-      }
-      if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
-        if (showValidationAlert) {
-          JOptionPane.showMessageDialog(
-              this,
-              "Start Date ('From') cannot be later than End Date ('To').",
-              "Invalid Date Range",
-              JOptionPane.WARNING_MESSAGE);
-        }
-        return;
-      }
-    } catch (DateTimeParseException ex) {
-      if (showValidationAlert) {
-        JOptionPane.showMessageDialog(
-            this,
-            "Invalid date format. Please use YYYY-MM-DD (e.g. 2025-05-01).",
-            "Invalid Date Format",
-            JOptionPane.ERROR_MESSAGE);
-      }
-      return;
-    }
+    LocalDate fromDate = dateRange[0];
+    LocalDate toDate = dateRange[1];
 
     String query =
         usernameFilterField.getText() == null

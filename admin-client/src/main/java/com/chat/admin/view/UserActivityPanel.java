@@ -8,7 +8,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -49,8 +48,8 @@ public final class UserActivityPanel extends JPanel {
   };
 
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
-  private final JTextField fromDateField = AdminUIStyle.createDateField("2025-01-01");
-  private final JTextField toDateField = AdminUIStyle.createDateField("2025-12-31");
+  private final JTextField fromDateField = AdminUIStyle.createDateField("2025/01/01");
+  private final JTextField toDateField = AdminUIStyle.createDateField("2025/12/31");
   private final JTextField nameSearchField =
       AdminUIStyle.createSearchField("Filter by full name or username...", 16);
   private final JComboBox<String> operatorCombo =
@@ -159,14 +158,14 @@ public final class UserActivityPanel extends JPanel {
     presetLbl.setForeground(AdminUIStyle.TEXT_MUTED);
 
     JButton mayPresetBtn = AdminUIStyle.createSecondaryButton("May 2025");
-    mayPresetBtn.addActionListener(e -> setDateRange("2025-05-01", "2025-05-31"));
+    mayPresetBtn.addActionListener(e -> setDateRange("2025/05/01", "2025/05/31"));
 
     JButton q1Q2PresetBtn = AdminUIStyle.createSecondaryButton("H1 2025");
-    q1Q2PresetBtn.addActionListener(e -> setDateRange("2025-01-01", "2025-06-30"));
+    q1Q2PresetBtn.addActionListener(e -> setDateRange("2025/01/01", "2025/06/30"));
 
     JButton fullPeriodBtn = AdminUIStyle.createSecondaryButton("All 2025–2026");
     fullPeriodBtn.addActionListener(
-        e -> setDateRange("2025-01-01", LocalDate.now().format(AdminUIStyle.DATE_FMT)));
+        e -> setDateRange("2025/01/01", LocalDate.now().format(AdminUIStyle.DATE_FMT)));
 
     rightPresets.add(presetLbl);
     rightPresets.add(mayPresetBtn);
@@ -207,7 +206,7 @@ public final class UserActivityPanel extends JPanel {
     JButton resetBtn = AdminUIStyle.createSecondaryButton("Reset");
     resetBtn.addActionListener(
         e -> {
-          fromDateField.setText("2025-01-01");
+          fromDateField.setText("2025/01/01");
           toDateField.setText(LocalDate.now().format(AdminUIStyle.DATE_FMT));
           nameSearchField.setText("");
           operatorCombo.setSelectedIndex(0);
@@ -324,6 +323,10 @@ public final class UserActivityPanel extends JPanel {
     nameSearchField.getDocument().addDocumentListener(docListener);
     fromDateField.getDocument().addDocumentListener(docListener);
     toDateField.getDocument().addDocumentListener(docListener);
+    AdminUIStyle.attachDateFieldValidationTriggers(
+        fromDateField, () -> applyFiltersAndRefresh(true));
+    AdminUIStyle.attachDateFieldValidationTriggers(
+        toDateField, () -> applyFiltersAndRefresh(true));
     thresholdField.getDocument().addDocumentListener(docListener);
 
     operatorCombo.addActionListener(
@@ -342,43 +345,16 @@ public final class UserActivityPanel extends JPanel {
   }
 
   private void applyFiltersAndRefresh(boolean showValidationAlert) {
-    LocalDate fromDate = null;
-    LocalDate toDate = null;
-    String fromText = fromDateField.getText() == null ? "" : fromDateField.getText().trim();
-    String toText = toDateField.getText() == null ? "" : toDateField.getText().trim();
-
-    if ((!fromText.isEmpty() && fromText.length() != 10)
-        || (!toText.isEmpty() && toText.length() != 10)) {
+    LocalDate[] dateRange =
+        AdminUIStyle.parseAndValidateDateRange(
+            this, fromDateField, toDateField, showValidationAlert);
+    if (dateRange == null) {
       return;
     }
-
-    try {
-      if (!fromText.isEmpty()) {
-        fromDate = LocalDate.parse(fromText, AdminUIStyle.DATE_FMT);
-      }
-      if (!toText.isEmpty()) {
-        toDate = LocalDate.parse(toText, AdminUIStyle.DATE_FMT);
-      }
-      if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
-        if (showValidationAlert) {
-          JOptionPane.showMessageDialog(
-              this,
-              "Start Date ('From Date') cannot be later than End Date ('To Date').",
-              "Invalid Date Range",
-              JOptionPane.WARNING_MESSAGE);
-        }
-        return;
-      }
-    } catch (DateTimeParseException ex) {
-      if (showValidationAlert) {
-        JOptionPane.showMessageDialog(
-            this,
-            "Invalid date format. Please use YYYY-MM-DD (e.g. 2025-05-01).",
-            "Invalid Date Format",
-            JOptionPane.ERROR_MESSAGE);
-      }
-      return;
-    }
+    LocalDate fromDate = dateRange[0];
+    LocalDate toDate = dateRange[1];
+    String fromText = fromDate == null ? "" : fromDate.format(AdminUIStyle.DATE_FMT);
+    String toText = toDate == null ? "" : toDate.format(AdminUIStyle.DATE_FMT);
 
     int opIdx = operatorCombo.getSelectedIndex();
     Integer threshold = null;
