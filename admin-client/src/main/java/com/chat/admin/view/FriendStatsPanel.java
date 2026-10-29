@@ -44,7 +44,7 @@ public final class FriendStatsPanel extends JPanel {
 
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField nameSearchField =
-      AdminUIStyle.createSearchField("Filter by full name or username...", 18);
+      AdminUIStyle.createSearchField("Filter by full name or username...", 15);
   private final JComboBox<String> operatorCombo =
       AdminUIStyle.createComboBox(
           new String[] {
@@ -121,9 +121,9 @@ public final class FriendStatsPanel extends JPanel {
   }
 
   private JPanel buildFilterToolbar() {
-    JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(10, 0));
+    JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(10, 6));
 
-    JPanel leftControls = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+    JPanel leftControls = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
     leftControls.setOpaque(false);
 
     JLabel nameLbl = new JLabel("Name:");
@@ -144,7 +144,7 @@ public final class FriendStatsPanel extends JPanel {
     leftControls.add(operatorCombo);
     leftControls.add(thresholdField);
 
-    JPanel rightControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+    JPanel rightControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightControls.setOpaque(false);
 
     JButton resetBtn = AdminUIStyle.createSecondaryButton("Reset");
@@ -161,7 +161,7 @@ public final class FriendStatsPanel extends JPanel {
     rightControls.add(sortCombo);
     rightControls.add(resetBtn);
 
-    card.add(leftControls, BorderLayout.WEST);
+    card.add(leftControls, BorderLayout.CENTER);
     card.add(rightControls, BorderLayout.EAST);
     return card;
   }
@@ -231,7 +231,7 @@ public final class FriendStatsPanel extends JPanel {
     specNote.setFont(AdminUIStyle.FONT_SMALL);
     specNote.setForeground(AdminUIStyle.TEXT_MUTED);
 
-    bar.add(footerSummaryLabel, BorderLayout.WEST);
+    bar.add(footerSummaryLabel, BorderLayout.CENTER);
     bar.add(specNote, BorderLayout.EAST);
     return bar;
   }

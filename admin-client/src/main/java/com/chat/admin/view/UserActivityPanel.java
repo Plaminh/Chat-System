@@ -117,7 +117,7 @@ public final class UserActivityPanel extends JPanel {
         AdminUIStyle.createKpiCard(
             "Total App Opens",
             totalAppOpensValueLabel,
-            "Cumulative application launches across filtered users",
+            "Cumulative app launches across filtered users",
             AdminUIStyle.SUCCESS_DOT));
     row.add(
         AdminUIStyle.createKpiCard(
@@ -132,10 +132,10 @@ public final class UserActivityPanel extends JPanel {
     JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(0, 10));
 
     // Top row: Date range filter + quick presets
-    JPanel dateRow = new JPanel(new BorderLayout(10, 0));
+    JPanel dateRow = new JPanel(new BorderLayout(10, 4));
     dateRow.setOpaque(false);
 
-    JPanel leftDateControls = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+    JPanel leftDateControls = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
     leftDateControls.setOpaque(false);
 
     JLabel fromLbl = new JLabel("From Date:");
@@ -151,7 +151,7 @@ public final class UserActivityPanel extends JPanel {
     leftDateControls.add(toLbl);
     leftDateControls.add(toDateField);
 
-    JPanel rightPresets = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
+    JPanel rightPresets = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.RIGHT, 6, 2));
     rightPresets.setOpaque(false);
 
     JLabel presetLbl = new JLabel("Presets:");
@@ -173,14 +173,14 @@ public final class UserActivityPanel extends JPanel {
     rightPresets.add(q1Q2PresetBtn);
     rightPresets.add(fullPeriodBtn);
 
-    dateRow.add(leftDateControls, BorderLayout.WEST);
+    dateRow.add(leftDateControls, BorderLayout.CENTER);
     dateRow.add(rightPresets, BorderLayout.EAST);
 
     // Bottom row: Name search + Activity comparison (=, >, <) + Sort + Reset
-    JPanel bottomRow = new JPanel(new BorderLayout(10, 0));
+    JPanel bottomRow = new JPanel(new BorderLayout(10, 4));
     bottomRow.setOpaque(false);
 
-    JPanel leftFilters = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+    JPanel leftFilters = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
     leftFilters.setOpaque(false);
 
     JLabel nameLbl = new JLabel("Name:");
@@ -201,7 +201,7 @@ public final class UserActivityPanel extends JPanel {
     leftFilters.add(operatorCombo);
     leftFilters.add(thresholdField);
 
-    JPanel rightSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+    JPanel rightSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightSort.setOpaque(false);
 
     JButton resetBtn = AdminUIStyle.createSecondaryButton("Reset");
@@ -220,7 +220,7 @@ public final class UserActivityPanel extends JPanel {
     rightSort.add(sortCombo);
     rightSort.add(resetBtn);
 
-    bottomRow.add(leftFilters, BorderLayout.WEST);
+    bottomRow.add(leftFilters, BorderLayout.CENTER);
     bottomRow.add(rightSort, BorderLayout.EAST);
 
     card.add(dateRow, BorderLayout.NORTH);
@@ -299,7 +299,7 @@ public final class UserActivityPanel extends JPanel {
     specNote.setFont(AdminUIStyle.FONT_SMALL);
     specNote.setForeground(AdminUIStyle.TEXT_MUTED);
 
-    bar.add(footerSummaryLabel, BorderLayout.WEST);
+    bar.add(footerSummaryLabel, BorderLayout.CENTER);
     bar.add(specNote, BorderLayout.EAST);
     return bar;
   }

@@ -117,10 +117,10 @@ public final class NewRegistrationPanel extends JPanel {
     JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(0, 10));
 
     // Top row: Date range inputs + quick range presets
-    JPanel dateRow = new JPanel(new BorderLayout(10, 0));
+    JPanel dateRow = new JPanel(new BorderLayout(10, 4));
     dateRow.setOpaque(false);
 
-    JPanel leftDateControls = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+    JPanel leftDateControls = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
     leftDateControls.setOpaque(false);
 
     JLabel startLbl = new JLabel("Start Date:");
@@ -136,7 +136,7 @@ public final class NewRegistrationPanel extends JPanel {
     leftDateControls.add(endLbl);
     leftDateControls.add(endDateField);
 
-    JPanel rightPresets = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
+    JPanel rightPresets = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.RIGHT, 6, 2));
     rightPresets.setOpaque(false);
 
     JLabel presetLbl = new JLabel("Quick Presets:");
@@ -158,14 +158,14 @@ public final class NewRegistrationPanel extends JPanel {
     rightPresets.add(mayBtn);
     rightPresets.add(fullYearBtn);
 
-    dateRow.add(leftDateControls, BorderLayout.WEST);
+    dateRow.add(leftDateControls, BorderLayout.CENTER);
     dateRow.add(rightPresets, BorderLayout.EAST);
 
     // Bottom row: Name search + Sort selector + Reset
-    JPanel searchSortRow = new JPanel(new BorderLayout(10, 0));
+    JPanel searchSortRow = new JPanel(new BorderLayout(10, 4));
     searchSortRow.setOpaque(false);
 
-    JPanel leftSearch = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+    JPanel leftSearch = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
     leftSearch.setOpaque(false);
     JLabel nameLbl = new JLabel("Filter by Name:");
     nameLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
@@ -173,7 +173,7 @@ public final class NewRegistrationPanel extends JPanel {
     leftSearch.add(nameLbl);
     leftSearch.add(nameSearchField);
 
-    JPanel rightSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+    JPanel rightSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightSort.setOpaque(false);
 
     JButton resetBtn = AdminUIStyle.createSecondaryButton("Reset All");
@@ -189,7 +189,7 @@ public final class NewRegistrationPanel extends JPanel {
     rightSort.add(sortCombo);
     rightSort.add(resetBtn);
 
-    searchSortRow.add(leftSearch, BorderLayout.WEST);
+    searchSortRow.add(leftSearch, BorderLayout.CENTER);
     searchSortRow.add(rightSort, BorderLayout.EAST);
 
     card.add(dateRow, BorderLayout.NORTH);
@@ -236,7 +236,7 @@ public final class NewRegistrationPanel extends JPanel {
     hintLabel.setFont(AdminUIStyle.FONT_SMALL);
     hintLabel.setForeground(AdminUIStyle.TEXT_MUTED);
 
-    bar.add(footerSummaryLabel, BorderLayout.WEST);
+    bar.add(footerSummaryLabel, BorderLayout.CENTER);
     bar.add(hintLabel, BorderLayout.EAST);
     return bar;
   }

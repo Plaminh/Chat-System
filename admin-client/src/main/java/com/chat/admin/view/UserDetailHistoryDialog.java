@@ -284,7 +284,7 @@ public final class UserDetailHistoryDialog extends JDialog {
     JButton closeBtn = AdminUIStyle.createPrimaryButton("Close Window");
     closeBtn.addActionListener(e -> dispose());
 
-    footer.add(hint, BorderLayout.WEST);
+    footer.add(hint, BorderLayout.CENTER);
     footer.add(closeBtn, BorderLayout.EAST);
     return footer;
   }

@@ -55,7 +55,7 @@ public final class UserManagementPanel extends JPanel {
 
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField searchField =
-      AdminUIStyle.createSearchField("Search by username, full name, or email...", 22);
+      AdminUIStyle.createSearchField("Search by username, full name, or email...", 18);
   private final JComboBox<String> statusCombo =
       AdminUIStyle.createComboBox(new String[] {"All Statuses", "Active", "Locked"});
   private final JComboBox<String> sortCombo =
@@ -98,9 +98,9 @@ public final class UserManagementPanel extends JPanel {
   }
 
   private JPanel buildTopFilterToolbar() {
-    JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(12, 0));
+    JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(12, 6));
 
-    JPanel leftFilters = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+    JPanel leftFilters = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 10, 2));
     leftFilters.setOpaque(false);
 
     JLabel searchLbl = new JLabel("Filter:");
@@ -112,7 +112,7 @@ public final class UserManagementPanel extends JPanel {
     leftFilters.add(statusCombo);
     leftFilters.add(sortCombo);
 
-    JPanel rightActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+    JPanel rightActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightActions.setOpaque(false);
 
     JButton resetBtn = AdminUIStyle.createSecondaryButton("Reset");
@@ -130,7 +130,7 @@ public final class UserManagementPanel extends JPanel {
     rightActions.add(resetBtn);
     rightActions.add(addUserBtn);
 
-    card.add(leftFilters, BorderLayout.WEST);
+    card.add(leftFilters, BorderLayout.CENTER);
     card.add(rightActions, BorderLayout.EAST);
     return card;
   }
@@ -141,10 +141,10 @@ public final class UserManagementPanel extends JPanel {
 
     AdminUIStyle.styleTable(userTable);
     userTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    userTable.getColumnModel().getColumn(0).setPreferredWidth(85);
-    userTable.getColumnModel().getColumn(1).setPreferredWidth(115);
-    userTable.getColumnModel().getColumn(2).setPreferredWidth(145);
-    userTable.getColumnModel().getColumn(3).setPreferredWidth(185);
+    userTable.getColumnModel().getColumn(0).setPreferredWidth(95);
+    userTable.getColumnModel().getColumn(1).setPreferredWidth(125);
+    userTable.getColumnModel().getColumn(2).setPreferredWidth(140);
+    userTable.getColumnModel().getColumn(3).setPreferredWidth(180);
     userTable.getColumnModel().getColumn(4).setPreferredWidth(75);
     userTable.getColumnModel().getColumn(5).setPreferredWidth(105);
     userTable.getColumnModel().getColumn(6).setPreferredWidth(145);
@@ -172,14 +172,15 @@ public final class UserManagementPanel extends JPanel {
   }
 
   private JPanel buildBottomActionBar() {
-    JPanel bar = new JPanel(new BorderLayout(12, 0));
+    JPanel bar = new JPanel(new BorderLayout(12, 6));
     bar.setBackground(AdminUIStyle.SIDEBAR_BG);
     bar.setBorder(BorderFactory.createEmptyBorder(10, 16, 10, 16));
 
     selectedUserLabel.setFont(AdminUIStyle.FONT_BODY_BOLD);
     selectedUserLabel.setForeground(Color.WHITE);
+    selectedUserLabel.setMinimumSize(new Dimension(120, 24));
 
-    JPanel actionButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+    JPanel actionButtons = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.RIGHT, 8, 2));
     actionButtons.setOpaque(false);
 
     JButton editBtn = AdminUIStyle.createSecondaryButton("Edit Profile");
@@ -203,7 +204,7 @@ public final class UserManagementPanel extends JPanel {
     actionButtons.add(deleteBtn);
     actionButtons.add(historyBtn);
 
-    bar.add(selectedUserLabel, BorderLayout.WEST);
+    bar.add(selectedUserLabel, BorderLayout.CENTER);
     bar.add(actionButtons, BorderLayout.EAST);
     return bar;
   }

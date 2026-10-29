@@ -44,7 +44,7 @@ public final class SpamReportPanel extends JPanel {
 
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField usernameFilterField =
-      AdminUIStyle.createSearchField("Filter by reported or reporting username...", 18);
+      AdminUIStyle.createSearchField("Filter by reported or reporting username...", 15);
   private final JTextField fromDateField = AdminUIStyle.createDateField("2025-01-01");
   private final JTextField toDateField = AdminUIStyle.createDateField("2025-12-31");
   private final JComboBox<String> sortCombo =
@@ -116,9 +116,9 @@ public final class SpamReportPanel extends JPanel {
   }
 
   private JPanel buildFilterToolbar() {
-    JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(10, 0));
+    JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(10, 6));
 
-    JPanel leftFilters = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+    JPanel leftFilters = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
     leftFilters.setOpaque(false);
 
     JLabel userLbl = new JLabel("Username:");
@@ -140,7 +140,7 @@ public final class SpamReportPanel extends JPanel {
     leftFilters.add(toLbl);
     leftFilters.add(toDateField);
 
-    JPanel rightSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+    JPanel rightSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightSort.setOpaque(false);
 
     JButton resetBtn = AdminUIStyle.createSecondaryButton("Reset");
@@ -156,7 +156,7 @@ public final class SpamReportPanel extends JPanel {
     rightSort.add(sortCombo);
     rightSort.add(resetBtn);
 
-    card.add(leftFilters, BorderLayout.WEST);
+    card.add(leftFilters, BorderLayout.CENTER);
     card.add(rightSort, BorderLayout.EAST);
     return card;
   }
@@ -183,20 +183,20 @@ public final class SpamReportPanel extends JPanel {
   }
 
   private JPanel buildBottomModerationBar() {
-    JPanel bar = new JPanel(new BorderLayout(12, 0));
+    JPanel bar = new JPanel(new BorderLayout(12, 6));
     bar.setBackground(AdminUIStyle.SIDEBAR_BG);
     bar.setBorder(BorderFactory.createEmptyBorder(10, 16, 10, 16));
 
     selectedIncidentLabel.setFont(AdminUIStyle.FONT_BODY_BOLD);
     selectedIncidentLabel.setForeground(Color.WHITE);
 
-    JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+    JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     actions.setOpaque(false);
 
     lockOffenderButton.addActionListener(e -> handleLockOffendingAccount());
     actions.add(lockOffenderButton);
 
-    bar.add(selectedIncidentLabel, BorderLayout.WEST);
+    bar.add(selectedIncidentLabel, BorderLayout.CENTER);
     bar.add(actions, BorderLayout.EAST);
     return bar;
   }

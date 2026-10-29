@@ -90,10 +90,10 @@ public final class RegistrationChartPanel extends JPanel {
 
     JPanel titleBox = new JPanel(new GridLayout(2, 1, 0, 2));
     titleBox.setOpaque(false);
-    JLabel title = new JLabel("Monthly New User Registrations (Req 1.2.6)");
+    JLabel title = new JLabel("Monthly New User Registrations");
     title.setFont(AdminUIStyle.FONT_SUBTITLE);
     title.setForeground(AdminUIStyle.TEXT_PRIMARY);
-    JLabel subtitle = new JLabel("12-month signup distribution by selected calendar year");
+    JLabel subtitle = new JLabel("12-month signup distribution by calendar year");
     subtitle.setFont(AdminUIStyle.FONT_SMALL);
     subtitle.setForeground(AdminUIStyle.TEXT_MUTED);
     titleBox.add(title);
@@ -108,7 +108,7 @@ public final class RegistrationChartPanel extends JPanel {
     controls.add(yearLbl);
     controls.add(yearCombo);
 
-    header.add(titleBox, BorderLayout.WEST);
+    header.add(titleBox, BorderLayout.CENTER);
     header.add(controls, BorderLayout.EAST);
     return header;
   }
@@ -160,6 +160,10 @@ public final class RegistrationChartPanel extends JPanel {
 
     ChartPanel chartPanel = new ChartPanel(barChart);
     chartPanel.setPreferredSize(new Dimension(480, 320));
+    chartPanel.setMinimumDrawWidth(200);
+    chartPanel.setMinimumDrawHeight(150);
+    chartPanel.setMaximumDrawWidth(2000);
+    chartPanel.setMaximumDrawHeight(1500);
     chartPanel.setBackground(AdminUIStyle.SURFACE_WHITE);
     chartPanel.setPopupMenu(null);
     chartPanel.setDomainZoomable(false);
@@ -182,7 +186,7 @@ public final class RegistrationChartPanel extends JPanel {
   }
 
   private JPanel createStatPill(String labelText, JLabel valueLabel, Color valueColor) {
-    JPanel pill = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+    JPanel pill = new JPanel(new GridLayout(2, 1, 0, 2));
     pill.setOpaque(false);
     JLabel title = new JLabel(labelText);
     title.setFont(AdminUIStyle.FONT_SMALL);

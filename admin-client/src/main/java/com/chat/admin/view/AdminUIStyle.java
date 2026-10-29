@@ -4,12 +4,14 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.geom.Path2D;
 import java.time.format.DateTimeFormatter;
@@ -134,7 +136,81 @@ public final class AdminUIStyle {
     card.add(title, BorderLayout.NORTH);
     card.add(valueLabel, BorderLayout.CENTER);
     card.add(sub, BorderLayout.SOUTH);
+    card.setMinimumSize(new Dimension(160, 72));
     return card;
+  }
+
+  /**
+   * Creates a responsive FlowLayout that recalculates its preferred height when components wrap onto
+   * multiple lines during window resizing.
+   */
+  public static FlowLayout createWrapFlowLayout(int align, int hgap, int vgap) {
+    return new FlowLayout(align, hgap, vgap) {
+      @Override
+      public Dimension preferredLayoutSize(Container target) {
+        return computeSize(target, true);
+      }
+
+      @Override
+      public Dimension minimumLayoutSize(Container target) {
+        Dimension min = computeSize(target, false);
+        min.width = 0;
+        return min;
+      }
+
+      private Dimension computeSize(Container target, boolean preferred) {
+        synchronized (target.getTreeLock()) {
+          int targetWidth = target.getSize().width;
+          Container parent = target.getParent();
+          while (targetWidth <= 0 && parent != null) {
+            targetWidth = parent.getSize().width;
+            parent = parent.getParent();
+          }
+          if (targetWidth <= 0) {
+            targetWidth = Integer.MAX_VALUE;
+          }
+          int hgapVal = getHgap();
+          int vgapVal = getVgap();
+          Insets insets = target.getInsets();
+          int horizontalInsetsAndGap = insets.left + insets.right + (hgapVal * 2);
+          int maxWidth = Math.max(100, targetWidth - horizontalInsetsAndGap);
+
+          Dimension dim = new Dimension(0, 0);
+          int rowWidth = 0;
+          int rowHeight = 0;
+          int nmembers = target.getComponentCount();
+
+          for (int i = 0; i < nmembers; i++) {
+            Component m = target.getComponent(i);
+            if (m.isVisible()) {
+              Dimension d = preferred ? m.getPreferredSize() : m.getMinimumSize();
+              if (rowWidth > 0 && rowWidth + hgapVal + d.width > maxWidth) {
+                dim.width = Math.max(dim.width, rowWidth);
+                if (dim.height > 0) {
+                  dim.height += vgapVal;
+                }
+                dim.height += rowHeight;
+                rowWidth = 0;
+                rowHeight = 0;
+              }
+              if (rowWidth != 0) {
+                rowWidth += hgapVal;
+              }
+              rowWidth += d.width;
+              rowHeight = Math.max(rowHeight, d.height);
+            }
+          }
+          dim.width = Math.max(dim.width, rowWidth);
+          if (dim.height > 0) {
+            dim.height += vgapVal;
+          }
+          dim.height += rowHeight;
+          dim.width += horizontalInsetsAndGap;
+          dim.height += insets.top + insets.bottom + vgapVal * 2;
+          return dim;
+        }
+      }
+    };
   }
 
   public static JTextField createSearchField(String placeholder, int columns) {
@@ -163,35 +239,53 @@ public final class AdminUIStyle {
   }
 
   public static JButton createPrimaryButton(String text) {
-    JButton btn = new JButton(text);
+    JButton btn =
+        new JButton(text) {
+          @Override
+          public Dimension getPreferredSize() {
+            Dimension d = super.getPreferredSize();
+            return new Dimension(d.width + 12, Math.max(d.height, 34));
+          }
+        };
     btn.setFont(FONT_BODY_BOLD);
     btn.setBackground(PRIMARY);
     btn.setForeground(Color.WHITE);
     btn.setFocusPainted(false);
     btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    btn.setPreferredSize(new Dimension(btn.getPreferredSize().width + 16, 34));
     return btn;
   }
 
   public static JButton createSecondaryButton(String text) {
-    JButton btn = new JButton(text);
+    JButton btn =
+        new JButton(text) {
+          @Override
+          public Dimension getPreferredSize() {
+            Dimension d = super.getPreferredSize();
+            return new Dimension(d.width + 12, Math.max(d.height, 34));
+          }
+        };
     btn.setFont(FONT_BODY_BOLD);
     btn.setBackground(SURFACE_WHITE);
     btn.setForeground(TEXT_PRIMARY);
     btn.setFocusPainted(false);
     btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    btn.setPreferredSize(new Dimension(btn.getPreferredSize().width + 16, 34));
     return btn;
   }
 
   public static JButton createDangerButton(String text) {
-    JButton btn = new JButton(text);
+    JButton btn =
+        new JButton(text) {
+          @Override
+          public Dimension getPreferredSize() {
+            Dimension d = super.getPreferredSize();
+            return new Dimension(d.width + 12, Math.max(d.height, 34));
+          }
+        };
     btn.setFont(FONT_BODY_BOLD);
     btn.setBackground(DANGER_BTN);
     btn.setForeground(Color.WHITE);
     btn.setFocusPainted(false);
     btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    btn.setPreferredSize(new Dimension(btn.getPreferredSize().width + 16, 34));
     return btn;
   }
 
@@ -266,55 +360,63 @@ public final class AdminUIStyle {
   /** Renders status cells ("Active", "Locked", "Pending", "Group Admin", "Member") as pill badges. */
   public static DefaultTableCellRenderer createStatusBadgeRenderer() {
     return new DefaultTableCellRenderer() {
+      private Color pillBg = new Color(0xF1F5F9);
+      private Color rowBg = SURFACE_WHITE;
+
       @Override
       public Component getTableCellRendererComponent(
           JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         String text = value == null ? "" : value.toString();
-        JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 5));
-        wrapper.setBackground(
-            isSelected ? TABLE_SELECTION_BG : (row % 2 == 0 ? SURFACE_WHITE : TABLE_ALT_ROW));
-
-        JLabel pill =
-            new JLabel(text) {
-              @Override
-              protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(
-                    RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(getBackground());
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 14, 14);
-                g2.dispose();
-                super.paintComponent(g);
-              }
-            };
-        pill.setOpaque(false);
-        pill.setFont(FONT_BADGE);
-        pill.setBorder(BorderFactory.createEmptyBorder(3, 10, 3, 10));
+        super.getTableCellRendererComponent(table, text, isSelected, hasFocus, row, column);
+        rowBg = isSelected ? TABLE_SELECTION_BG : (row % 2 == 0 ? SURFACE_WHITE : TABLE_ALT_ROW);
+        setBackground(rowBg);
+        setFont(FONT_BADGE);
+        setHorizontalAlignment(SwingConstants.CENTER);
+        setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 10));
 
         String lower = text.toLowerCase();
         if (lower.contains("active") || lower.contains("online") || lower.contains("success")) {
-          pill.setBackground(SUCCESS_BG);
-          pill.setForeground(SUCCESS_TEXT);
-          pill.setText("● " + text);
+          pillBg = SUCCESS_BG;
+          setForeground(SUCCESS_TEXT);
+          setText("● " + text);
         } else if (lower.contains("lock") || lower.contains("ban")) {
-          pill.setBackground(DANGER_BG);
-          pill.setForeground(DANGER_TEXT);
-          pill.setText("● " + text);
+          pillBg = DANGER_BG;
+          setForeground(DANGER_TEXT);
+          setText("● " + text);
         } else if (lower.contains("admin")) {
-          pill.setBackground(PRIMARY_SOFT_BG);
-          pill.setForeground(PRIMARY);
-          pill.setText("★ " + text);
+          pillBg = PRIMARY_SOFT_BG;
+          setForeground(PRIMARY);
+          setText("★ " + text);
         } else if (lower.contains("pending")) {
-          pill.setBackground(WARNING_BG);
-          pill.setForeground(WARNING_TEXT);
-          pill.setText("● " + text);
+          pillBg = WARNING_BG;
+          setForeground(WARNING_TEXT);
+          setText("● " + text);
         } else {
-          pill.setBackground(new Color(0xF1F5F9));
-          pill.setForeground(TEXT_SECONDARY);
+          pillBg = new Color(0xF1F5F9);
+          setForeground(TEXT_SECONDARY);
+          setText(text);
         }
+        return this;
+      }
 
-        wrapper.add(pill);
-        return wrapper;
+      @Override
+      protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(rowBg);
+        g2.fillRect(0, 0, getWidth(), getHeight());
+
+        int pillW = Math.min(getWidth() - 12, Math.max(68, getPreferredSize().width));
+        int pillH = Math.min(getHeight() - 10, 24);
+        int x = (getWidth() - pillW) / 2;
+        int y = (getHeight() - pillH) / 2;
+        g2.setColor(pillBg);
+        g2.fillRoundRect(x, y, pillW, pillH, 12, 12);
+        g2.dispose();
+
+        setOpaque(false);
+        super.paintComponent(g);
+        setOpaque(true);
       }
     };
   }

@@ -108,7 +108,7 @@ public final class AdminMainFrame extends JFrame {
 
   private void initFrameLayout() {
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    setMinimumSize(new Dimension(1120, 720));
+    setMinimumSize(new Dimension(980, 660));
     setSize(1280, 800);
     setLocationRelativeTo(null);
 
@@ -358,7 +358,7 @@ public final class AdminMainFrame extends JFrame {
     rightInfo.add(dateBadge);
     rightInfo.add(roleBadge);
 
-    header.add(leftTitles, BorderLayout.WEST);
+    header.add(leftTitles, BorderLayout.CENTER);
     header.add(rightInfo, BorderLayout.EAST);
     return header;
   }
@@ -427,8 +427,8 @@ public final class AdminMainFrame extends JFrame {
     RegistrationChartPanel registrationChartPanel = new RegistrationChartPanel();
     ActivityChartPanel activityChartPanel = new ActivityChartPanel();
 
-    JPanel topToolbar = AdminUIStyle.createCardPanel(new BorderLayout(12, 0));
-    JPanel leftInfo = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+    JPanel topToolbar = AdminUIStyle.createCardPanel(new BorderLayout(12, 6));
+    JPanel leftInfo = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 10, 2));
     leftInfo.setOpaque(false);
     JLabel infoLabel =
         new JLabel(
@@ -437,7 +437,7 @@ public final class AdminMainFrame extends JFrame {
     infoLabel.setForeground(AdminUIStyle.TEXT_PRIMARY);
     leftInfo.add(infoLabel);
 
-    JPanel rightControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+    JPanel rightControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightControls.setOpaque(false);
     JLabel syncYearLbl = new JLabel("Sync Both Charts to Year:");
     syncYearLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
@@ -458,7 +458,7 @@ public final class AdminMainFrame extends JFrame {
     rightControls.add(syncYearLbl);
     rightControls.add(globalYearCombo);
 
-    topToolbar.add(leftInfo, BorderLayout.WEST);
+    topToolbar.add(leftInfo, BorderLayout.CENTER);
     topToolbar.add(rightControls, BorderLayout.EAST);
 
     JPanel chartsGrid = new JPanel(new GridLayout(1, 2, 16, 0));

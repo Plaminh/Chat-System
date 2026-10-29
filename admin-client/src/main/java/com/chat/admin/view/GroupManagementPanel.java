@@ -38,7 +38,7 @@ public final class GroupManagementPanel extends JPanel {
 
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField searchGroupField =
-      AdminUIStyle.createSearchField("Filter group chats by group name...", 22);
+      AdminUIStyle.createSearchField("Filter group chats by group name...", 18);
   private final JComboBox<String> sortCombo =
       AdminUIStyle.createComboBox(
           new String[] {
@@ -65,7 +65,7 @@ public final class GroupManagementPanel extends JPanel {
       AdminUIStyle.createComboBox(
           new String[] {"View: All Group Members", "View: Group Admins Only"});
   private final JTextField memberSearchField =
-      AdminUIStyle.createSearchField("Filter members by name or username...", 15);
+      AdminUIStyle.createSearchField("Filter members by name or username...", 12);
   private final DefaultTableModel memberTableModel =
       new DefaultTableModel(MEMBER_COLUMNS, 0) {
         @Override
@@ -87,9 +87,9 @@ public final class GroupManagementPanel extends JPanel {
   }
 
   private JPanel buildTopFilterToolbar() {
-    JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(12, 0));
+    JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(12, 6));
 
-    JPanel leftControls = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+    JPanel leftControls = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 10, 2));
     leftControls.setOpaque(false);
 
     JLabel filterLbl = new JLabel("Group Filter:");
@@ -100,7 +100,7 @@ public final class GroupManagementPanel extends JPanel {
     leftControls.add(searchGroupField);
     leftControls.add(sortCombo);
 
-    JPanel rightControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+    JPanel rightControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightControls.setOpaque(false);
 
     JButton resetBtn = AdminUIStyle.createSecondaryButton("Reset Filter");
@@ -114,7 +114,7 @@ public final class GroupManagementPanel extends JPanel {
         });
     rightControls.add(resetBtn);
 
-    card.add(leftControls, BorderLayout.WEST);
+    card.add(leftControls, BorderLayout.CENTER);
     card.add(rightControls, BorderLayout.EAST);
     return card;
   }
@@ -122,9 +122,12 @@ public final class GroupManagementPanel extends JPanel {
   private JSplitPane buildSplitWorkspace() {
     JPanel leftPanel = buildLeftGroupListCard();
     JPanel rightPanel = buildRightMemberInspectorCard();
+    leftPanel.setMinimumSize(new Dimension(320, 240));
+    rightPanel.setMinimumSize(new Dimension(300, 240));
 
     JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
     splitPane.setResizeWeight(0.56);
+    splitPane.setContinuousLayout(true);
     splitPane.setDividerSize(10);
     splitPane.setBorder(BorderFactory.createEmptyBorder());
     splitPane.setOpaque(false);
@@ -133,6 +136,7 @@ public final class GroupManagementPanel extends JPanel {
 
   private JPanel buildLeftGroupListCard() {
     JPanel panel = AdminUIStyle.createCardPanel(new BorderLayout(0, 10));
+    panel.setPreferredSize(new Dimension(560, 500));
 
     JPanel header = new JPanel(new BorderLayout());
     header.setOpaque(false);
@@ -146,10 +150,10 @@ public final class GroupManagementPanel extends JPanel {
 
     AdminUIStyle.styleTable(groupTable);
     groupTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    groupTable.getColumnModel().getColumn(0).setPreferredWidth(85);
-    groupTable.getColumnModel().getColumn(1).setPreferredWidth(210);
+    groupTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+    groupTable.getColumnModel().getColumn(1).setPreferredWidth(195);
     groupTable.getColumnModel().getColumn(2).setPreferredWidth(105);
-    groupTable.getColumnModel().getColumn(3).setPreferredWidth(80);
+    groupTable.getColumnModel().getColumn(3).setPreferredWidth(100);
     groupTable.getColumnModel().getColumn(4).setPreferredWidth(95);
 
     panel.add(header, BorderLayout.NORTH);
