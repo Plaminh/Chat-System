@@ -115,8 +115,8 @@ public final class UserManagementPanel extends JPanel {
     JPanel rightActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
     rightActions.setOpaque(false);
 
-    JButton refreshBtn = AdminUIStyle.createSecondaryButton("Refresh");
-    refreshBtn.addActionListener(
+    JButton resetBtn = AdminUIStyle.createSecondaryButton("Reset");
+    resetBtn.addActionListener(
         e -> {
           searchField.setText("");
           statusCombo.setSelectedIndex(0);
@@ -127,7 +127,7 @@ public final class UserManagementPanel extends JPanel {
     JButton addUserBtn = AdminUIStyle.createPrimaryButton("+ Add New User");
     addUserBtn.addActionListener(e -> showAddOrEditUserDialog(null));
 
-    rightActions.add(refreshBtn);
+    rightActions.add(resetBtn);
     rightActions.add(addUserBtn);
 
     card.add(leftFilters, BorderLayout.WEST);

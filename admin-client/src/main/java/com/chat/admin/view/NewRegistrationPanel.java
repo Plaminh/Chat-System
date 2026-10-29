@@ -45,8 +45,8 @@ public final class NewRegistrationPanel extends JPanel {
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField nameSearchField =
       AdminUIStyle.createSearchField("Filter by full name or username...", 18);
-  private final JTextField startDateField = new JTextField("2025-01-01", 9);
-  private final JTextField endDateField = new JTextField("2025-12-31", 9);
+  private final JTextField startDateField = AdminUIStyle.createDateField("2025-01-01");
+  private final JTextField endDateField = AdminUIStyle.createDateField("2025-12-31");
   private final JComboBox<String> sortCombo =
       AdminUIStyle.createComboBox(
           new String[] {
@@ -126,23 +126,15 @@ public final class NewRegistrationPanel extends JPanel {
     JLabel startLbl = new JLabel("Start Date:");
     startLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
     startLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
-    startDateField.setFont(AdminUIStyle.FONT_MONO);
-    startDateField.putClientProperty("JTextField.placeholderText", "YYYY-MM-DD");
 
     JLabel endLbl = new JLabel("End Date:");
     endLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
     endLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
-    endDateField.setFont(AdminUIStyle.FONT_MONO);
-    endDateField.putClientProperty("JTextField.placeholderText", "YYYY-MM-DD");
-
-    JButton applyDateBtn = AdminUIStyle.createPrimaryButton("Apply Date Filter");
-    applyDateBtn.addActionListener(e -> applyFiltersAndRefresh(true));
 
     leftDateControls.add(startLbl);
     leftDateControls.add(startDateField);
     leftDateControls.add(endLbl);
     leftDateControls.add(endDateField);
-    leftDateControls.add(applyDateBtn);
 
     JPanel rightPresets = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
     rightPresets.setOpaque(false);
@@ -274,6 +266,8 @@ public final class NewRegistrationPanel extends JPanel {
           }
         };
     nameSearchField.getDocument().addDocumentListener(docListener);
+    startDateField.getDocument().addDocumentListener(docListener);
+    endDateField.getDocument().addDocumentListener(docListener);
     sortCombo.addActionListener(e -> applyFiltersAndRefresh(false));
   }
 
@@ -282,6 +276,11 @@ public final class NewRegistrationPanel extends JPanel {
     LocalDate endDate = null;
     String startText = startDateField.getText() == null ? "" : startDateField.getText().trim();
     String endText = endDateField.getText() == null ? "" : endDateField.getText().trim();
+
+    if ((!startText.isEmpty() && startText.length() != 10)
+        || (!endText.isEmpty() && endText.length() != 10)) {
+      return;
+    }
 
     try {
       if (!startText.isEmpty()) {

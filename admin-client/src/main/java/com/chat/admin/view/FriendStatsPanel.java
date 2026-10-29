@@ -138,15 +138,11 @@ public final class FriendStatsPanel extends JPanel {
     thresholdField.putClientProperty("JTextField.placeholderText", "Count");
     thresholdField.setEnabled(false);
 
-    JButton applyComparisonBtn = AdminUIStyle.createPrimaryButton("Apply Filter");
-    applyComparisonBtn.addActionListener(e -> applyFiltersAndRefresh(true));
-
     leftControls.add(nameLbl);
     leftControls.add(nameSearchField);
     leftControls.add(friendFilterLbl);
     leftControls.add(operatorCombo);
     leftControls.add(thresholdField);
-    leftControls.add(applyComparisonBtn);
 
     JPanel rightControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
     rightControls.setOpaque(false);

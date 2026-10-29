@@ -49,8 +49,8 @@ public final class UserActivityPanel extends JPanel {
   };
 
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
-  private final JTextField fromDateField = new JTextField("2025-01-01", 9);
-  private final JTextField toDateField = new JTextField("2025-12-31", 9);
+  private final JTextField fromDateField = AdminUIStyle.createDateField("2025-01-01");
+  private final JTextField toDateField = AdminUIStyle.createDateField("2025-12-31");
   private final JTextField nameSearchField =
       AdminUIStyle.createSearchField("Filter by full name or username...", 16);
   private final JComboBox<String> operatorCombo =
@@ -141,23 +141,15 @@ public final class UserActivityPanel extends JPanel {
     JLabel fromLbl = new JLabel("From Date:");
     fromLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
     fromLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
-    fromDateField.setFont(AdminUIStyle.FONT_MONO);
-    fromDateField.putClientProperty("JTextField.placeholderText", "YYYY-MM-DD");
 
     JLabel toLbl = new JLabel("To Date:");
     toLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
     toLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
-    toDateField.setFont(AdminUIStyle.FONT_MONO);
-    toDateField.putClientProperty("JTextField.placeholderText", "YYYY-MM-DD");
-
-    JButton applyDateBtn = AdminUIStyle.createPrimaryButton("Apply Period");
-    applyDateBtn.addActionListener(e -> applyFiltersAndRefresh(true));
 
     leftDateControls.add(fromLbl);
     leftDateControls.add(fromDateField);
     leftDateControls.add(toLbl);
     leftDateControls.add(toDateField);
-    leftDateControls.add(applyDateBtn);
 
     JPanel rightPresets = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
     rightPresets.setOpaque(false);
@@ -203,15 +195,11 @@ public final class UserActivityPanel extends JPanel {
     thresholdField.putClientProperty("JTextField.placeholderText", "Opens");
     thresholdField.setEnabled(false);
 
-    JButton applyCompBtn = AdminUIStyle.createSecondaryButton("Check Threshold");
-    applyCompBtn.addActionListener(e -> applyFiltersAndRefresh(true));
-
     leftFilters.add(nameLbl);
     leftFilters.add(nameSearchField);
     leftFilters.add(activityLbl);
     leftFilters.add(operatorCombo);
     leftFilters.add(thresholdField);
-    leftFilters.add(applyCompBtn);
 
     JPanel rightSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
     rightSort.setOpaque(false);
@@ -341,6 +329,8 @@ public final class UserActivityPanel extends JPanel {
           }
         };
     nameSearchField.getDocument().addDocumentListener(docListener);
+    fromDateField.getDocument().addDocumentListener(docListener);
+    toDateField.getDocument().addDocumentListener(docListener);
     thresholdField.getDocument().addDocumentListener(docListener);
 
     operatorCombo.addActionListener(
@@ -363,6 +353,11 @@ public final class UserActivityPanel extends JPanel {
     LocalDate toDate = null;
     String fromText = fromDateField.getText() == null ? "" : fromDateField.getText().trim();
     String toText = toDateField.getText() == null ? "" : toDateField.getText().trim();
+
+    if ((!fromText.isEmpty() && fromText.length() != 10)
+        || (!toText.isEmpty() && toText.length() != 10)) {
+      return;
+    }
 
     try {
       if (!fromText.isEmpty()) {

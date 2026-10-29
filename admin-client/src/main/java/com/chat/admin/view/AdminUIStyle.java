@@ -146,6 +146,14 @@ public final class AdminUIStyle {
     return field;
   }
 
+  public static JTextField createDateField(String initialValue) {
+    JTextField field = new JTextField(initialValue, 11);
+    field.setFont(FONT_MONO);
+    field.setPreferredSize(new Dimension(Math.max(field.getPreferredSize().width, 118), 34));
+    field.putClientProperty("JTextField.placeholderText", "YYYY-MM-DD");
+    return field;
+  }
+
   public static <T> JComboBox<T> createComboBox(T[] items) {
     JComboBox<T> combo = new JComboBox<>(items);
     combo.setFont(FONT_BODY);

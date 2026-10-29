@@ -45,8 +45,8 @@ public final class SpamReportPanel extends JPanel {
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField usernameFilterField =
       AdminUIStyle.createSearchField("Filter by reported or reporting username...", 18);
-  private final JTextField fromDateField = new JTextField("2025-01-01", 9);
-  private final JTextField toDateField = new JTextField("2025-12-31", 9);
+  private final JTextField fromDateField = AdminUIStyle.createDateField("2025-01-01");
+  private final JTextField toDateField = AdminUIStyle.createDateField("2025-12-31");
   private final JComboBox<String> sortCombo =
       AdminUIStyle.createComboBox(
           new String[] {
@@ -128,17 +128,10 @@ public final class SpamReportPanel extends JPanel {
     JLabel fromLbl = new JLabel("From:");
     fromLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
     fromLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
-    fromDateField.setFont(AdminUIStyle.FONT_MONO);
-    fromDateField.putClientProperty("JTextField.placeholderText", "YYYY-MM-DD");
 
     JLabel toLbl = new JLabel("To:");
     toLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
     toLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
-    toDateField.setFont(AdminUIStyle.FONT_MONO);
-    toDateField.putClientProperty("JTextField.placeholderText", "YYYY-MM-DD");
-
-    JButton applyDateBtn = AdminUIStyle.createPrimaryButton("Filter Date Range");
-    applyDateBtn.addActionListener(e -> applyFiltersAndRefresh(true));
 
     leftFilters.add(userLbl);
     leftFilters.add(usernameFilterField);
@@ -146,7 +139,6 @@ public final class SpamReportPanel extends JPanel {
     leftFilters.add(fromDateField);
     leftFilters.add(toLbl);
     leftFilters.add(toDateField);
-    leftFilters.add(applyDateBtn);
 
     JPanel rightSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
     rightSort.setOpaque(false);
@@ -228,6 +220,8 @@ public final class SpamReportPanel extends JPanel {
           }
         };
     usernameFilterField.getDocument().addDocumentListener(docListener);
+    fromDateField.getDocument().addDocumentListener(docListener);
+    toDateField.getDocument().addDocumentListener(docListener);
     sortCombo.addActionListener(e -> applyFiltersAndRefresh(false));
 
     reportTable
@@ -245,6 +239,11 @@ public final class SpamReportPanel extends JPanel {
     LocalDate toDate = null;
     String fromText = fromDateField.getText() == null ? "" : fromDateField.getText().trim();
     String toText = toDateField.getText() == null ? "" : toDateField.getText().trim();
+
+    if ((!fromText.isEmpty() && fromText.length() != 10)
+        || (!toText.isEmpty() && toText.length() != 10)) {
+      return;
+    }
 
     try {
       if (!fromText.isEmpty()) {
