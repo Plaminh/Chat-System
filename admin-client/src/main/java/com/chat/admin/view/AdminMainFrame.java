@@ -393,12 +393,7 @@ public final class AdminMainFrame extends JFrame {
                     + "   |   Spam Reports: "
                     + store.getSpamReports().size()));
 
-    JLabel rightVersion = new JLabel("University Java Chat System — Admin Client UI (Version 1)");
-    rightVersion.setFont(AdminUIStyle.FONT_SMALL);
-    rightVersion.setForeground(AdminUIStyle.TEXT_MUTED);
-
     footer.add(leftStatus, BorderLayout.WEST);
-    footer.add(rightVersion, BorderLayout.EAST);
     return footer;
   }
 

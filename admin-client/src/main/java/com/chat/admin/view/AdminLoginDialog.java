@@ -6,7 +6,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -56,9 +55,9 @@ public final class AdminLoginDialog extends JDialog {
 
   private void initDialogLayout() {
     setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    setSize(450, 490);
+    setMinimumSize(new Dimension(500, 490));
+    setSize(500, 490);
     setResizable(false);
-    setLocationRelativeTo(getOwner());
 
     JPanel root = new JPanel(new BorderLayout());
     root.setBackground(AdminUIStyle.SURFACE_WHITE);
@@ -70,6 +69,11 @@ public final class AdminLoginDialog extends JDialog {
 
     setContentPane(root);
     getRootPane().setDefaultButton(findSignInButton(root));
+    pack();
+    if (getWidth() < 500) {
+      setSize(500, Math.max(getHeight(), 490));
+    }
+    setLocationRelativeTo(getOwner());
   }
 
   private JPanel buildTopHeaderBanner() {
@@ -239,15 +243,20 @@ public final class AdminLoginDialog extends JDialog {
   }
 
   private JPanel buildSecurityFooter() {
-    JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 10));
+    JPanel footer = new JPanel(new BorderLayout());
     footer.setBackground(AdminUIStyle.PRIMARY_SOFT_BG);
-    footer.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(0xDBEAFE)));
+    footer.setBorder(
+        BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(0xDBEAFE)),
+            BorderFactory.createEmptyBorder(10, 16, 10, 16)));
 
     JLabel lockNote =
-        new JLabel("Restricted Access  •  University Chat System v1.0 (Mock Mode: admin / admin123)");
+        new JLabel(
+            "Restricted Access  •  Chat Admin Console v1.0 (Mock: admin / admin123)",
+            SwingConstants.CENTER);
     lockNote.setFont(AdminUIStyle.FONT_SMALL);
     lockNote.setForeground(AdminUIStyle.TEXT_SECONDARY);
-    footer.add(lockNote);
+    footer.add(lockNote, BorderLayout.CENTER);
     return footer;
   }
 
