@@ -91,3 +91,15 @@ By hand: None. Codex performed the configuration, documentation updates, and ver
 - **Actual test results**: Focused static schema assertions passed. Runtime constraint tests remain scheduled for Phase 12.
 - **Remaining limitations**: Accepting/declining requests and atomic friendship creation are Version 2 transaction responsibilities.
 - **Corresponding commit message**: `feat(db): add friend requests schema`
+
+## 2026-10-30 — Phase 05: Friendships and blocking schema
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Added canonical unordered `friendships` and directed `user_blocks`, including explicit user/request references, self-relationship prevention, duplicate safeguards, and reverse-lookup indexes.
+- **Files changed**: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.
+- **Design decisions**: Required `user_low_id < user_high_id` for friendships; allowed at most one friendship per accepted request; kept blocks directional and independent from friendship/request cleanup policy.
+- **AI-generated changes accepted/rejected**: Accepted relational source facts and canonical pairs. Rejected duplicated bidirectional friendship rows, stored friend counts, and automatic trigger-based block reconciliation.
+- **Validation performed**: Checked five cumulative tables, all relationship foreign keys/delete actions, canonical/self checks, pair/request uniqueness, and four supporting indexes; reviewed `git diff --check` and staged content before commit.
+- **Actual test results**: Focused static schema assertions passed. Runtime duplicate/self-reference tests remain scheduled for Phase 12.
+- **Remaining limitations**: Version 2 must canonicalize IDs and atomically reconcile requests, friendships, and blocks.
+- **Corresponding commit message**: `feat(db): add friendship and blocking schemas`
