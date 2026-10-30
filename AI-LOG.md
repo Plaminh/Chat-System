@@ -103,3 +103,15 @@ By hand: None. Codex performed the configuration, documentation updates, and ver
 - **Actual test results**: Focused static schema assertions passed. Runtime duplicate/self-reference tests remain scheduled for Phase 12.
 - **Remaining limitations**: Version 2 must canonicalize IDs and atomically reconcile requests, friendships, and blocks.
 - **Corresponding commit message**: `feat(db): add friendship and blocking schemas`
+
+## 2026-10-30 — Phase 06: Conversations schema
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Added shared `conversations` metadata for direct and group chats, including conditional name/ownership rules, encryption-status metadata, lifecycle timestamps, and filter indexes.
+- **Files changed**: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.
+- **Design decisions**: Required direct conversations to have no group name/owner and groups to have both; restricted deletion of a group owner until Version 2 transfers or removes ownership; treated encryption as a status flag only.
+- **AI-generated changes accepted/rejected**: Accepted one shared conversation supertype. Rejected separate direct/group message tables, embedded member arrays, E2EE key columns, and automatic timestamp triggers.
+- **Validation performed**: Checked six cumulative tables, type/shape/timestamp constraints, owner foreign-key restriction, encryption default, and three conversation indexes; reviewed `git diff --check` and staged content before commit.
+- **Actual test results**: Focused static schema assertions passed. Runtime shape tests remain scheduled for Phase 12.
+- **Remaining limitations**: Group ownership/admin membership synchronization and effective encryption are Version 2 responsibilities.
+- **Corresponding commit message**: `feat(db): add conversations schema`
