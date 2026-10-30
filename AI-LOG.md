@@ -151,3 +151,15 @@ By hand: None. Codex performed the configuration, documentation updates, and ver
 - **Actual test results**: Focused static schema assertions passed. Runtime uniqueness/visibility tests remain scheduled for Phase 12.
 - **Remaining limitations**: Participant authorization for delete-for-me is a Version 2 transaction rule.
 - **Corresponding commit message**: `feat(db): add message deletion schema`
+
+## 2026-10-30 — Phase 10: Spam reports schema
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Added `spam_reports` with reporter/reported account references, optional message evidence, reason, independent review workflow, reviewer/note fields, resolution time, and moderation indexes.
+- **Files changed**: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.
+- **Design decisions**: Used `SET NULL` to retain moderation history after related account/message deletion; separated report statuses from account lock state; required resolution time only for terminal statuses.
+- **AI-generated changes accepted/rejected**: Accepted nullable retained-audit references and four-state workflow. Rejected an `account_locked` report status, implicit sanctions, self-reporting, and mandatory message evidence.
+- **Validation performed**: Checked eleven cumulative tables, four foreign keys/delete actions, self-report/reason/status/resolution constraints, and five moderation indexes; reviewed `git diff --check` and staged content before commit.
+- **Actual test results**: Focused static schema assertions passed. Runtime workflow and retained-history tests remain scheduled for Phase 12.
+- **Remaining limitations**: Prior-interaction eligibility, reviewer authorization, and sanction transactions are Version 2 responsibilities.
+- **Corresponding commit message**: `feat(db): add spam reports schema`
