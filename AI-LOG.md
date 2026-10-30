@@ -127,3 +127,15 @@ By hand: None. Codex performed the configuration, documentation updates, and ver
 - **Actual test results**: Focused static schema assertions passed. Runtime pair/membership tests remain scheduled for Phase 12.
 - **Remaining limitations**: Parent type, exactly-two direct members, group owner/admin guarantees, and rejoin policy require Version 2 transactions.
 - **Corresponding commit message**: `feat(db): add conversation membership schemas`
+
+## 2026-10-30 — Phase 08: Messages schema
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Added `messages` with conversation/sender references, non-blank body, chronological timestamps, global unsend metadata, and history/search indexes.
+- **Files changed**: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.
+- **Design decisions**: Retained messages when sender accounts are removed by setting authorship null; required recall time before allowing an optional recall actor; added PostgreSQL simple-text GIN search for plaintext V1 content.
+- **AI-generated changes accepted/rejected**: Accepted explicit recall metadata and source body retention. Rejected per-user deletion flags on messages, physical deletion for unsend, message encryption keys, and speculative attachment fields.
+- **Validation performed**: Checked nine cumulative tables, all message foreign-key delete actions, body/unsend constraints, chronological/sender indexes, and GIN search index; reviewed `git diff --check` and staged content before commit.
+- **Actual test results**: Focused static schema assertions passed. Runtime send/unsend and search-index validation remain scheduled for Phase 12.
+- **Remaining limitations**: Sender membership, unsend authorization/window, recalled-body access, and encrypted-message search policy require Version 2 decisions.
+- **Corresponding commit message**: `feat(db): add messages schema`
