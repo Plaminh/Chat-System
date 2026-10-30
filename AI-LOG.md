@@ -199,3 +199,15 @@ By hand: None. Codex performed the configuration, documentation updates, and ver
 - **Actual test results**: PASS — all twelve tables populated (56 total rows), all constraints/foreign keys accepted the data, and identity-sequence checks passed.
 - **Remaining limitations**: Seed data is for local demonstration only; authentication workflows and credential provisioning remain Version 2 responsibilities.
 - **Corresponding commit message**: `feat(db): add development seed data`
+
+## 2026-10-30 — Phase 14: Database initialization
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Added a configurable PowerShell initializer and setup guide for new or explicitly approved empty PostgreSQL databases, with optional fictional seed loading and clear failure handling.
+- **Files changed**: `scripts/init-database.ps1`, `docs/database/SETUP_V1.md`, `docs/database/VALIDATION_V1.md`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.
+- **Design decisions**: Delegated authentication to PostgreSQL; accepted only validated database names/ports; refused existing databases by default; permitted `-UseExistingEmpty` only after counting zero non-system tables; never auto-dropped a database.
+- **AI-generated changes accepted/rejected**: Accepted explicit empty-database opt-in and preserved native tool output. Rejected embedded/password parameters, automatic drop/recreate, silent schema merging, and production migration behavior.
+- **Validation performed**: Parsed the script, scanned for embedded password assignment, and executed new+seed, existing refusal, approved-empty, and nonempty-refusal scenarios in a disposable PostgreSQL 18.4 cluster; cleaned both databases and the cluster.
+- **Actual test results**: PASS — new database produced 12 tables/56 seed rows; default existing refusal left 12 tables unchanged; approved empty database produced 12 tables; nonempty opt-in was refused; cleanup passed.
+- **Remaining limitations**: Backup/restore, migration, production deployment, and secure local credential provisioning are operational responsibilities outside V1.
+- **Corresponding commit message**: `build(db): add PostgreSQL initialization script`

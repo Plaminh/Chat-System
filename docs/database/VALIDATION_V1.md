@@ -114,3 +114,15 @@ The 33 explicit indexes cover case-insensitive account identity/search, account/
 | `user_activity_logs` | 10 |
 
 Identity sequences were advanced past the explicit fixture IDs and a next-value query passed for both users and messages. The data uses fictional names/addresses, reserved `example.test` email addresses, and BCrypt fixture hashes without a published plaintext password. The disposable database/cluster cleanup passed again.
+
+## Phase 14 initialization validation
+
+`scripts/init-database.ps1` passed PowerShell parsing and a scan for embedded password assignment. It was then executed against a fresh disposable PostgreSQL 18.4 cluster:
+
+1. New database plus `-LoadSeed`: PASS — created a UTF-8 database, applied 12 tables, and loaded 56 rows.
+2. Existing nonempty database without opt-in: PASS — refused before changes; table count remained 12.
+3. Existing empty database with `-UseExistingEmpty`: PASS — safety count was zero and 12 tables were applied.
+4. Existing nonempty database with `-UseExistingEmpty`: PASS — refused after detecting 12 user tables.
+5. Cleanup: PASS — both test databases were dropped, the disposable server stopped, and the verified cluster directory removed.
+
+No existing developer database, service, credential store, or normal `localhost:5432` cluster was modified.
