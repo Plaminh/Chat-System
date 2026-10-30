@@ -34,7 +34,7 @@
 
 - [x] T003 [US1] Implement the `users` table, constraints, and indexes in `script/schema.sql`
 - [x] T004 [US1] Implement the `login_history` table, constraints, and indexes in `script/schema.sql`
-- [ ] T005 [US1] Implement the directed `friend_requests` table, lifecycle constraints, duplicate safeguards, and indexes in `script/schema.sql`
+- [x] T005 [US1] Implement the directed `friend_requests` table, lifecycle constraints, duplicate safeguards, and indexes in `script/schema.sql`
 - [ ] T006 [US1] Implement canonical `friendships` and directed `user_blocks` tables with self/duplicate prevention and indexes in `script/schema.sql`
 
 **Checkpoint**: Account and relationship data can be represented without stored calculated metrics.

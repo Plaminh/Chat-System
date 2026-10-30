@@ -79,3 +79,15 @@ By hand: None. Codex performed the configuration, documentation updates, and ver
 - **Actual test results**: Focused static schema assertions passed. Runtime execution remains deferred to the isolated Phase 12 fixture.
 - **Remaining limitations**: Login/logout recording behavior and authentication are Version 2 server work.
 - **Corresponding commit message**: `feat(db): add login history schema`
+
+## 2026-10-30 — Phase 04: Friend requests schema
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Added directed `friend_requests` with sender/receiver references, normalized lifecycle states, response timestamps, self-request prevention, and pending-request duplicate protection.
+- **Files changed**: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.
+- **Design decisions**: Preserved historical final requests while allowing only one pending request for an unordered user pair, preventing simultaneous reverse requests through a partial expression index.
+- **AI-generated changes accepted/rejected**: Accepted the `LEAST`/`GREATEST` pending-pair index. Rejected permanent uniqueness across all request history and extra request-message fields.
+- **Validation performed**: Checked three cumulative tables, both user foreign keys, four allowed states, self-request and response-time constraints, partial unique pending-pair index, and sender/receiver query indexes; reviewed `git diff --check` and staged content before commit.
+- **Actual test results**: Focused static schema assertions passed. Runtime constraint tests remain scheduled for Phase 12.
+- **Remaining limitations**: Accepting/declining requests and atomic friendship creation are Version 2 transaction responsibilities.
+- **Corresponding commit message**: `feat(db): add friend requests schema`
