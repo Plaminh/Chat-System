@@ -211,3 +211,15 @@ By hand: None. Codex performed the configuration, documentation updates, and ver
 - **Actual test results**: PASS — new database produced 12 tables/56 seed rows; default existing refusal left 12 tables unchanged; approved empty database produced 12 tables; nonempty opt-in was refused; cleanup passed.
 - **Remaining limitations**: Backup/restore, migration, production deployment, and secure local credential provisioning are operational responsibilities outside V1.
 - **Corresponding commit message**: `build(db): add PostgreSQL initialization script`
+
+## 2026-10-30 — Phase 15: Final documentation and review
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Completed cross-artifact, schema, seed, initialization, UI compatibility, build, formatting, scope, commit-history, and working-tree review; finalized Spec Kit status and produced the Database V1 completion report.
+- **Files changed**: `docs/database/COMPLETION_REPORT_V1.md`, `specs/003-database-schema-v1/spec.md`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.
+- **Design decisions**: Declared Database V1 ready for technical review while preserving explicit Version 2 boundaries and reporting the unrelated baseline Spotless failure rather than modifying Java source.
+- **AI-generated changes accepted/rejected**: Accepted the evidence-based completion report and final status updates. Rejected unrelated Java formatting, performance claims without benchmarks, Version 2 implementation, remote Git operations, and fabricated test/commit evidence.
+- **Validation performed**: Ran Spec Kit analysis, static schema validation, `mvn clean verify`, `mvn spotless:check`, module/file/table/task/log/commit-history checks, `git diff --check`, staged diff review, and final branch/status inspection.
+- **Actual test results**: PASS — schema static checks (12 tables, 12 PKs, 25 FKs, 34 checks, 33 indexes), prior PostgreSQL runtime/seed/initializer suites, Maven reactor build, and 7 Java tests. FAIL — Spotless found 10 pre-existing formatting violations in `common`; no unrelated formatting was applied.
+- **Remaining limitations**: Baseline Java formatting violations, no PostgreSQL 14–17 matrix, no production-scale benchmark, and all documented Version 2 transaction/runtime responsibilities remain outstanding outside this feature.
+- **Corresponding commit message**: `docs(db): finalize database v1 documentation`
