@@ -50,7 +50,7 @@
 - [x] T007 [US2] Implement the direct/group `conversations` table, ownership/encryption metadata, constraints, and indexes in `script/schema.sql`
 - [x] T008 [US2] Implement `direct_conversations` and `conversation_members` with canonical pairs, roles, join/leave state, history clearing, and indexes in `script/schema.sql`
 - [x] T009 [US2] Implement `messages` with searchable content, sender/conversation references, timestamps, unsend metadata, constraints, and indexes in `script/schema.sql`
-- [ ] T010 [US2] Implement per-user `message_deletions` with uniqueness and indexes in `script/schema.sql`
+- [x] T010 [US2] Implement per-user `message_deletions` with uniqueness and indexes in `script/schema.sql`
 
 **Checkpoint**: Delete-for-me, clear-history, and unsend remain separate persisted facts.
 

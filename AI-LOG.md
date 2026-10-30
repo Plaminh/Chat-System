@@ -139,3 +139,15 @@ By hand: None. Codex performed the configuration, documentation updates, and ver
 - **Actual test results**: Focused static schema assertions passed. Runtime send/unsend and search-index validation remain scheduled for Phase 12.
 - **Remaining limitations**: Sender membership, unsend authorization/window, recalled-body access, and encrypted-message search policy require Version 2 decisions.
 - **Corresponding commit message**: `feat(db): add messages schema`
+
+## 2026-10-30 — Phase 09: Message deletions schema
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Added `message_deletions` for per-user delete-for-me state with explicit message/user ownership, deletion time, and unique deletion records.
+- **Files changed**: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.
+- **Design decisions**: Kept user-specific hiding separate from `messages.unsent_at` and from membership `history_cleared_at`; cascaded records when either their message or user ceases to exist.
+- **AI-generated changes accepted/rejected**: Accepted one junction record per user/message. Rejected a shared deleted flag, duplicate deletion events, and physical message removal.
+- **Validation performed**: Checked ten cumulative tables, message/user cascading foreign keys, unique pair constraint, and user deletion-history index; reviewed `git diff --check` and staged content before commit.
+- **Actual test results**: Focused static schema assertions passed. Runtime uniqueness/visibility tests remain scheduled for Phase 12.
+- **Remaining limitations**: Participant authorization for delete-for-me is a Version 2 transaction rule.
+- **Corresponding commit message**: `feat(db): add message deletion schema`
