@@ -31,3 +31,15 @@ Kept: Parent-level Spotless configuration using Google Java Format, root `.edito
 Changed: Added formatter plugin management and inherited configuration without binding it to compilation or verification; existing Java sources were checked but not automatically reformatted.
 Rejected: Checkstyle, SpotBugs, PMD, SonarQube, Git hooks, CI/CD, additional formatters, application refactoring, and automatic `spotless:apply`.
 By hand: None. Codex performed the configuration, documentation updates, and verification; the developer remains responsible for reviewing and deciding whether to apply reported formatting changes.
+
+## 2026-10-30 — Phase 00: Database V1 planning
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Inspected the target branch, repository governance, four-module architecture, SQL/documentation placeholders, Spec Kit configuration, AI history, and Admin/User UI requirements from read-only Git refs; initialized the Database V1 specification, plan, research, task tracker, quality checklist, and implementation roadmap.
+- **Files changed**: `specs/003-database-schema-v1/spec.md`, `specs/003-database-schema-v1/plan.md`, `specs/003-database-schema-v1/research.md`, `specs/003-database-schema-v1/tasks.md`, `specs/003-database-schema-v1/checklists/requirements.md`, `docs/database/IMPLEMENTATION_PLAN_V1.md`, `AI-LOG.md`.
+- **Design decisions**: Fixed scope at exactly twelve core tables; preserved numeric database identities and UI display-ID mappings; separated recall, per-user deletion, and history clearing; deferred cross-table authorization and E2EE key management to Version 2.
+- **AI-generated changes accepted/rejected**: Accepted the specification-driven roadmap and native PostgreSQL constraint strategy. Rejected additional tables, triggers, stored procedures, Java changes, protocol changes, branch changes, and Version 2 behavior.
+- **Validation performed**: Confirmed branch `feature/database-schema-v1`, clean initial working tree, four Maven modules, placeholder SQL state, complete requirements checklist (16/16 checked), required planning artifacts, and no SQL implementation in this phase; reviewed `git diff --check` and staged content before commit.
+- **Actual test results**: Planning-only phase; no runtime tests were applicable. Artifact and checklist validation passed.
+- **Remaining limitations**: Physical data model, SQL schema, runtime database validation, seed data, initialization script, and final review remain for Phases 01–15.
+- **Corresponding commit message**: `docs(db): establish database v1 implementation plan`
