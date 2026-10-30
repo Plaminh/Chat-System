@@ -63,7 +63,7 @@
 **Independent Test**: Static and runtime checks prove report/account-state independence and allow date-bounded event and distinct-user aggregation.
 
 - [x] T011 [US3] Implement `spam_reports` with reporter/reported/reviewer references, optional message evidence, review lifecycle constraints, and indexes in `script/schema.sql`
-- [ ] T012 [US3] Implement `user_activity_logs` with event/context consistency constraints and analytics indexes in `script/schema.sql`
+- [x] T012 [US3] Implement `user_activity_logs` with event/context consistency constraints and analytics indexes in `script/schema.sql`
 
 **Checkpoint**: All twelve core tables are present and support the required Admin views.
 

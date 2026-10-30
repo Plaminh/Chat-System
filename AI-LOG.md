@@ -163,3 +163,15 @@ By hand: None. Codex performed the configuration, documentation updates, and ver
 - **Actual test results**: Focused static schema assertions passed. Runtime workflow and retained-history tests remain scheduled for Phase 12.
 - **Remaining limitations**: Prior-interaction eligibility, reviewer authorization, and sanction transactions are Version 2 responsibilities.
 - **Corresponding commit message**: `feat(db): add spam reports schema`
+
+## 2026-10-30 — Phase 11: User activity schema
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Added `user_activity_logs` for app-open, direct-chat, and group-chat source events with user/conversation context, timestamp, consistency checks, and analytics indexes.
+- **Files changed**: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.
+- **Design decisions**: Stored source events rather than calculated user counters; required no conversation for app opens and a conversation for chat activity; indexed user, event type, conversation, and time for range/distinct aggregation.
+- **AI-generated changes accepted/rejected**: Accepted event-level facts supporting `COUNT(DISTINCT ...)`. Rejected monthly summary tables, counters on `users`, and a durable online/offline flag.
+- **Validation performed**: Checked all twelve cumulative tables, activity foreign keys/delete actions, three event values, context consistency, and three analytics indexes; confirmed no thirteenth table; reviewed `git diff --check` and staged content before commit.
+- **Actual test results**: Focused static schema assertions passed with exactly twelve table definitions. Integrated runtime and normalization validation remain scheduled for Phase 12.
+- **Remaining limitations**: Event deduplication and conversation-type matching require Version 2 transaction logic; activity events do not constitute live presence.
+- **Corresponding commit message**: `feat(db): add user activity schema`
