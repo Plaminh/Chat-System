@@ -55,3 +55,15 @@ By hand: None. Codex performed the configuration, documentation updates, and ver
 - **Actual test results**: Documentation consistency checks passed; no SQL existed yet for runtime validation.
 - **Remaining limitations**: Cross-table business rules require Version 2 backend transactions; the encryption flag is metadata only; PostgreSQL runtime validation remains pending until schema implementation.
 - **Corresponding commit message**: `docs(db): define database model and ERD`
+
+## 2026-10-30 — Phase 02: Users schema
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Replaced the schema placeholder with PostgreSQL session settings and the `users` table, including authentication/profile fields, roles, account state, timestamps, constraints, and query indexes.
+- **Files changed**: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.
+- **Design decisions**: Used numeric identity keys; case-insensitive unique indexes for username/email; normalized nullable gender; explicit `active`/`locked` consistency with `locked_at`; retained only source attributes and no friend/activity counters.
+- **AI-generated changes accepted/rejected**: Accepted native checks and expression indexes. Rejected plaintext passwords, UI display IDs as keys, client credentials, stored metrics, and database triggers for `updated_at`.
+- **Validation performed**: Checked one `users` table definition, named constraints, five expected indexes, absence of other core tables, and PostgreSQL CLI availability; reviewed `git diff --check` and staged content before commit.
+- **Actual test results**: Focused static schema assertions passed. PostgreSQL runtime execution was not performed in this phase and remains scheduled for Phase 12.
+- **Remaining limitations**: `updated_at` maintenance and password hashing are Version 2 server responsibilities; later tables and integrated runtime validation remain pending.
+- **Corresponding commit message**: `feat(db): add users schema`
