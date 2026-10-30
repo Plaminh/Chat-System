@@ -93,3 +93,24 @@ The 33 explicit indexes cover case-insensitive account identity/search, account/
 - Cross-table rules listed in `data-model.md` cannot be proven by same-row SQL constraints and remain mandatory Version 2 transaction tests.
 - Performance was not benchmarked with production-scale data; indexes were reviewed structurally for the university-project workload.
 - Seed-data consistency and initialization-script behavior are validated in Phases 13 and 14.
+
+## Phase 13 seed validation
+
+`script/seed.sql` was loaded after the schema in a fresh disposable PostgreSQL 18.4 database with `ON_ERROR_STOP=1`. All foreign keys and checks passed. The resulting row counts were:
+
+| Table | Rows |
+|---|---:|
+| `users` | 6 |
+| `login_history` | 5 |
+| `friend_requests` | 4 |
+| `friendships` | 3 |
+| `user_blocks` | 1 |
+| `conversations` | 4 |
+| `direct_conversations` | 2 |
+| `conversation_members` | 10 |
+| `messages` | 7 |
+| `message_deletions` | 2 |
+| `spam_reports` | 2 |
+| `user_activity_logs` | 10 |
+
+Identity sequences were advanced past the explicit fixture IDs and a next-value query passed for both users and messages. The data uses fictional names/addresses, reserved `example.test` email addresses, and BCrypt fixture hashes without a published plaintext password. The disposable database/cluster cleanup passed again.

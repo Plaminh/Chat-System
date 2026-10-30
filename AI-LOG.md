@@ -187,3 +187,15 @@ By hand: None. Codex performed the configuration, documentation updates, and ver
 - **Actual test results**: PASS — 12 tables, 12 primary keys, 25 foreign keys, 34 checks, 33 explicit indexes; all valid integrated inserts succeeded; 14 representative invalid/delete-action cases behaved as specified; final transaction rolled back.
 - **Remaining limitations**: No separate PostgreSQL 14–17 matrix or production-scale benchmark; documented cross-table authorization rules remain Version 2 work.
 - **Corresponding commit message**: `test(db): add schema validation tests`
+
+## 2026-10-30 — Phase 13: Development seed data
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Replaced the seed placeholder with deterministic fictional development data covering administrators, normal/locked users, every relationship state, direct/group conversations, membership roles, messages and lifecycle actions, reports, and activity events across all twelve tables.
+- **Files changed**: `script/seed.sql`, `docs/database/VALIDATION_V1.md`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.
+- **Design decisions**: Used reserved `example.test` emails, fictional profiles, BCrypt fixture hashes without published plaintext, explicit IDs for readable relationships, and sequence resets for safe subsequent inserts.
+- **AI-generated changes accepted/rejected**: Accepted representative development-only coverage. Rejected real personal data, production credentials, plaintext passwords, secrets, and partial/conflict-ignoring seed behavior.
+- **Validation performed**: Loaded schema and seed with `ON_ERROR_STOP=1` into a fresh PostgreSQL 18.4 disposable database; queried every table count and verified identity sequences advance beyond fixture IDs; dropped the database, stopped the server, and removed the cluster.
+- **Actual test results**: PASS — all twelve tables populated (56 total rows), all constraints/foreign keys accepted the data, and identity-sequence checks passed.
+- **Remaining limitations**: Seed data is for local demonstration only; authentication workflows and credential provisioning remain Version 2 responsibilities.
+- **Corresponding commit message**: `feat(db): add development seed data`
