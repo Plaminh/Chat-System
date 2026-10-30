@@ -266,7 +266,11 @@ CREATE TABLE messages (
     CONSTRAINT chk_messages_unsent_state
         CHECK (
             (unsent_at IS NULL AND unsent_by IS NULL)
-            OR (unsent_at IS NOT NULL AND unsent_at >= created_at)
+            OR (
+                unsent_at IS NOT NULL
+                AND unsent_at >= created_at
+                AND body = '[Message unsent]'
+            )
         )
 );
 

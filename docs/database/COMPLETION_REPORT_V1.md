@@ -6,7 +6,7 @@
 
 **Base**: `73f2494` (`dev` at workflow start)
 
-**Review conclusion**: Ready for technical review, with one unrelated baseline Spotless issue documented below.
+**Review conclusion**: Ready for another technical review after targeted post-review remediation, with one unrelated baseline Spotless issue documented below.
 
 ## 1. Phase and commit completion
 
@@ -125,3 +125,17 @@ The final branch remains `feature/database-schema-v1`. Before this final phase c
 ## 9. Technical review readiness
 
 Database V1 is ready for technical review. The required schema, design, ERD/DBML, UI mappings, validation evidence, fictional seed data, safe initialization workflow, Spec Kit artifacts, and AI traceability are complete. Reviewers should treat the Spotless failure as an unrelated baseline repository issue and should not interpret Version 1 artifacts as implemented Version 2 runtime behavior.
+
+## 10. Post-review remediation
+
+The targeted review findings were resolved without reimplementing the prior phases or changing the twelve-table architecture:
+
+1. Setup guidance now documents one-step seeded initialization, schema-only initialization, and separate atomic seed loading into an initialized development database without suggesting normal database drops.
+2. Restriction tests accept the specific PostgreSQL foreign-key/restrict conditions while allowing unrelated exceptions to fail.
+3. Recalled messages must store `[Message unsent]`; seed and runtime fixtures prove original content cannot remain in `messages.body`. Version 2 must update body and recall metadata atomically.
+4. User search excludes both block directions and is enforced by the Version 2 backend; the directed column roles are documented with representative SQL.
+5. Schema-only and combined schema/seed initialization use `psql --single-transaction` with `ON_ERROR_STOP=1`; deliberate failures proved schema and seed rollback on PostgreSQL 18.4.
+6. Full-text search is documented as token-based rather than arbitrary substring search. Version 2 may use escaped case-insensitive `LIKE` without adding `pg_trgm` in V1.
+7. Group rejoining reactivates the unique membership row in Version 2; V1 cannot preserve multiple membership intervals.
+
+Post-remediation validation passed static checks, isolated PostgreSQL 18.4 runtime tests, initialization/refusal/rollback scenarios, and the Maven reactor (7 tests). PostgreSQL 14–17 were not runtime-tested. The pre-existing 10-file `common` Spotless failure remains outside Database V1 scope. Database V1 is ready for another technical review.

@@ -1,6 +1,7 @@
 # Database V1 Validation Results
 
-**Date**: 2026-10-30  
+**Date**: 2026-10-30
+
 **Schema**: `script/schema.sql`  
 **PostgreSQL runtime**: PostgreSQL 18.4 disposable local cluster
 
@@ -126,3 +127,26 @@ Identity sequences were advanced past the explicit fixture IDs and a next-value 
 5. Cleanup: PASS — both test databases were dropped, the disposable server stopped, and the verified cluster directory removed.
 
 No existing developer database, service, credential store, or normal `localhost:5432` cluster was modified.
+
+## Post-review remediation validation
+
+**Date**: 2026-10-30
+
+**Runtime tested**: PostgreSQL 18.4 in a new trust-only disposable cluster bound to `127.0.0.1:55439`
+
+The remediation reran the static validator and exercised the changed lifecycle and initialization behavior:
+
+- Static schema validation: PASS — 12 tables, 12 primary keys, 25 foreign keys, 34 checks, and 33 explicit indexes.
+- PowerShell parse check for `scripts/init-database.ps1`: PASS.
+- New database with `-LoadSeed`: PASS — one schema/seed transaction produced 12 tables and 56 rows; recalled message `706` stored only `[Message unsent]`.
+- Schema-only initialization followed by the documented separate `psql --single-transaction` seed command: PASS.
+- Existing nonempty database without opt-in: PASS — initializer refused it and its 12-table state remained unchanged.
+- Runtime SQL fixture: PASS — valid placeholder recall was accepted; actor-without-time and recalled original-content states were rejected; delete-for-me behavior remained independent.
+- Restriction exception handling: PASS on PostgreSQL 18.4 using the allowed foreign-key/restrict conditions. PostgreSQL 14–17 were not installed or run, so this is not a runtime version-matrix claim.
+- Deliberately invalid SQL after the full schema under `--single-transaction`: PASS — `psql` returned exit code 3 and zero user tables remained.
+- Deliberately invalid SQL after the full seed under `--single-transaction`: PASS — `psql` returned exit code 3 and zero tested fixture rows remained.
+- Disposable environment cleanup: PASS — server stopped, exact cluster path verified, and cluster directory removed.
+- Maven regression: PASS — local Maven 3.9.9 completed `clean verify`; a follow-up `verify` confirmed all five reactor projects and 7 tests passed with 0 failures/errors/skips.
+- Spotless: FAIL — the same 10 pre-existing `common` Java formatting violations remain. No Java source or unrelated formatting was changed.
+
+The unqualified `mvn clean verify` command could not start because `mvn` was absent from this shell's `PATH`; the repository-local `.tools/apache-maven-3.9.9/bin/mvn.cmd clean verify` command was therefore used for the actual build.

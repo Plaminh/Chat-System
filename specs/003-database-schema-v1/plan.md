@@ -47,6 +47,10 @@ Deliver a normalized PostgreSQL Version 1 data foundation for the Java Chat Syst
 
 **Post-design gate result**: PASS — the twelve-entity design and deferred transaction rules preserve scope and architecture boundaries.
 
+## Post-Review Remediation Scope
+
+Preserve the twelve-table design while tightening recalled-message consistency, making schema/seed initialization atomic, broadening PostgreSQL foreign-key error portability, and synchronizing setup/search/membership documentation. No Java, protocol, UI, module, or database-credential change is in scope.
+
 ## Project Structure
 
 ### Documentation (this feature)

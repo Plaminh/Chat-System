@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [string]$SchemaPath = (Join-Path $PSScriptRoot '..\schema.sql'),
-    [string]$DbmlPath = (Join-Path $PSScriptRoot '..\..\docs\database\schema-v1.dbml')
+    [string]$DbmlPath = (Join-Path $PSScriptRoot '..\..\docs\database\schema-v1.dbml'),
+    [string]$RuntimeValidationPath = (Join-Path $PSScriptRoot 'validate-schema.sql')
 )
 
 $ErrorActionPreference = 'Stop'
@@ -33,8 +34,10 @@ function Assert-Contains {
 
 $resolvedSchemaPath = (Resolve-Path -LiteralPath $SchemaPath).Path
 $resolvedDbmlPath = (Resolve-Path -LiteralPath $DbmlPath).Path
+$resolvedRuntimeValidationPath = (Resolve-Path -LiteralPath $RuntimeValidationPath).Path
 $schema = Get-Content -Raw -LiteralPath $resolvedSchemaPath
 $dbml = Get-Content -Raw -LiteralPath $resolvedDbmlPath
+$runtimeValidation = Get-Content -Raw -LiteralPath $resolvedRuntimeValidationPath
 
 $requiredTables = @(
     'users',
@@ -83,6 +86,7 @@ $requiredTokens = @(
     'idx_messages_search',
     'unsent_at',
     'unsent_by',
+    "body = '[Message unsent]'",
     'uq_message_deletions_message_user',
     'chk_spam_reports_resolution_state',
     'idx_user_activity_logs_type_time',
@@ -92,6 +96,8 @@ $requiredTokens = @(
 foreach ($token in $requiredTokens) {
     Assert-Contains -Content $schema -Token $token
 }
+
+Assert-Contains -Content $runtimeValidation -Token 'foreign_key_violation OR restrict_violation'
 
 $primaryKeyCount = ([regex]::Matches($schema, '(?i)\bPRIMARY KEY\b')).Count
 $foreignKeyCount = ([regex]::Matches($schema, '(?i)\bFOREIGN KEY\b')).Count

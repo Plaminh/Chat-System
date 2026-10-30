@@ -1,8 +1,7 @@
 -- Java Chat System - fictional development data for Database V1
 -- Development only. All people/addresses are fictional and all emails use example.test.
 -- BCrypt hashes are fixtures only; no plaintext password is published or reusable.
-
-BEGIN;
+-- Apply with psql --single-transaction -v ON_ERROR_STOP=1.
 
 INSERT INTO users (
     user_id, username, password_hash, email, full_name, address,
@@ -93,7 +92,7 @@ INSERT INTO messages (
     (703, 502, 4, 'A second direct conversation for UI filtering.', TIMESTAMPTZ '2026-03-16 04:30:00+00', NULL, NULL),
     (704, 503, 2, 'Welcome to the fictional study group.', TIMESTAMPTZ '2026-03-15 05:00:00+00', NULL, NULL),
     (705, 503, 5, 'This fictional message is referenced by a report.', TIMESTAMPTZ '2026-03-15 05:05:00+00', NULL, NULL),
-    (706, 503, 2, 'This content was recalled in the development fixture.', TIMESTAMPTZ '2026-03-15 05:10:00+00', TIMESTAMPTZ '2026-03-15 05:11:00+00', 2),
+    (706, 503, 2, '[Message unsent]', TIMESTAMPTZ '2026-03-15 05:10:00+00', TIMESTAMPTZ '2026-03-15 05:11:00+00', 2),
     (707, 504, 1, 'Administrative sample group message.', TIMESTAMPTZ '2026-03-15 01:30:00+00', NULL, NULL);
 
 INSERT INTO message_deletions (message_deletion_id, message_id, user_id, deleted_at) VALUES
@@ -136,5 +135,3 @@ SELECT setval(pg_get_serial_sequence('messages', 'message_id'), (SELECT max(mess
 SELECT setval(pg_get_serial_sequence('message_deletions', 'message_deletion_id'), (SELECT max(message_deletion_id) FROM message_deletions));
 SELECT setval(pg_get_serial_sequence('spam_reports', 'spam_report_id'), (SELECT max(spam_report_id) FROM spam_reports));
 SELECT setval(pg_get_serial_sequence('user_activity_logs', 'user_activity_log_id'), (SELECT max(user_activity_log_id) FROM user_activity_logs));
-
-COMMIT;

@@ -79,7 +79,7 @@ INSERT INTO conversation_members (
 INSERT INTO messages (message_id, conversation_id, sender_user_id, body, created_at, unsent_at, unsent_by)
 VALUES
     (3001, 2001, 1002, 'Validation direct message', TIMESTAMPTZ '2026-02-05 01:00:00+00', NULL, NULL),
-    (3002, 2002, 1001, 'Validation group message', TIMESTAMPTZ '2026-02-05 02:00:00+00', TIMESTAMPTZ '2026-02-05 03:00:00+00', 1001);
+    (3002, 2002, 1001, '[Message unsent]', TIMESTAMPTZ '2026-02-05 02:00:00+00', TIMESTAMPTZ '2026-02-05 03:00:00+00', 1001);
 
 INSERT INTO message_deletions (message_deletion_id, message_id, user_id, deleted_at)
 VALUES (3101, 3001, 1003, TIMESTAMPTZ '2026-02-06 00:00:00+00');
@@ -176,10 +176,22 @@ BEGIN
     BEGIN
         INSERT INTO messages (
             conversation_id, sender_user_id, body, unsent_by
-        ) VALUES (2001, 1002, 'Invalid recall state', 1002);
+        ) VALUES (2001, 1002, '[Message unsent]', 1002);
         RAISE EXCEPTION 'Recall actor without recall time was not rejected';
     EXCEPTION WHEN check_violation THEN
         RAISE NOTICE 'PASS: invalid recall state rejected';
+    END;
+
+    BEGIN
+        INSERT INTO messages (
+            conversation_id, sender_user_id, body, created_at, unsent_at, unsent_by
+        ) VALUES (
+            2001, 1002, 'Original recalled content must not remain',
+            TIMESTAMPTZ '2026-02-05 04:00:00+00', TIMESTAMPTZ '2026-02-05 04:01:00+00', 1002
+        );
+        RAISE EXCEPTION 'Recalled message retaining original content was not rejected';
+    EXCEPTION WHEN check_violation THEN
+        RAISE NOTICE 'PASS: recalled message content must use canonical placeholder';
     END;
 
     BEGIN
@@ -218,9 +230,23 @@ BEGIN
     BEGIN
         DELETE FROM users WHERE user_id = 1001;
         RAISE EXCEPTION 'Group owner deletion was not restricted';
-    EXCEPTION WHEN restrict_violation THEN
+    EXCEPTION WHEN foreign_key_violation OR restrict_violation THEN
         RAISE NOTICE 'PASS: group owner deletion restricted';
     END;
+END
+$$;
+
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM messages
+        WHERE unsent_at IS NOT NULL
+          AND body <> '[Message unsent]'
+    ) THEN
+        RAISE EXCEPTION 'A recalled message retained non-placeholder content';
+    END IF;
+    RAISE NOTICE 'PASS: recalled message bodies are redacted';
 END
 $$;
 

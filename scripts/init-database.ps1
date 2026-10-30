@@ -111,28 +111,27 @@ if ($databaseExists) {
     ) -Operation 'Database creation'
 }
 
-Write-Host "Applying schema from '$schemaPath'..."
-Invoke-PostgreSqlTool -Tool $psql -Arguments @(
+if ($LoadSeed) {
+    Write-Host "Applying schema and fictional development data in one transaction from '$schemaPath' and '$seedPath'..."
+} else {
+    Write-Host "Applying schema in one transaction from '$schemaPath'..."
+}
+
+$initializationArguments = @(
     '-X',
+    '--single-transaction',
     '-v', 'ON_ERROR_STOP=1',
     '-h', $HostName,
     '-p', $Port,
     '-U', $Username,
     '-d', $DatabaseName,
     '-f', $schemaPath
-) -Operation 'Schema application'
+)
 
 if ($LoadSeed) {
-    Write-Host "Loading fictional development data from '$seedPath'..."
-    Invoke-PostgreSqlTool -Tool $psql -Arguments @(
-        '-X',
-        '-v', 'ON_ERROR_STOP=1',
-        '-h', $HostName,
-        '-p', $Port,
-        '-U', $Username,
-        '-d', $DatabaseName,
-        '-f', $seedPath
-    ) -Operation 'Seed loading'
+    $initializationArguments += @('-f', $seedPath)
 }
+
+Invoke-PostgreSqlTool -Tool $psql -Arguments $initializationArguments -Operation 'Transactional database initialization'
 
 Write-Host "Database V1 initialization completed for '$DatabaseName'."

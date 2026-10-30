@@ -24,7 +24,7 @@ Create or identify an empty database dedicated to this test, then load the schem
 
 ```powershell
 $env:PGPASSWORD = Read-Host 'Isolated test database password'
-psql -X -v ON_ERROR_STOP=1 -h localhost -p 5432 -U postgres -d chat_system_v1_test -f .\script\schema.sql
+psql -X --single-transaction -v ON_ERROR_STOP=1 -h localhost -p 5432 -U postgres -d chat_system_v1_test -f .\script\schema.sql
 psql -X -v ON_ERROR_STOP=1 -h localhost -p 5432 -U postgres -d chat_system_v1_test -f .\script\tests\validate-schema.sql
 Remove-Item Env:PGPASSWORD
 ```

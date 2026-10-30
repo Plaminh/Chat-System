@@ -140,12 +140,12 @@ Ordered message content and global recall metadata.
 | `message_id` | `BIGINT` identity | No | Primary key |
 | `conversation_id` | `BIGINT` | No | FK to `conversations`, delete cascades |
 | `sender_user_id` | `BIGINT` | Yes | FK to `users`, set null after account deletion |
-| `body` | `TEXT` | No | Non-blank source content |
+| `body` | `TEXT` | No | Non-blank source content while sent; exactly `[Message unsent]` after recall |
 | `created_at` | `TIMESTAMPTZ` | No | Defaults current time |
 | `unsent_at` | `TIMESTAMPTZ` | Yes | Not before creation |
 | `unsent_by` | `BIGINT` | Yes | FK to `users`, set null; cannot be set without `unsent_at` |
 
-Indexes support conversation chronology, sender history, and PostgreSQL simple-text search. Search is applicable to plaintext Version 1 content; future encrypted content requires a separately approved search policy.
+Indexes support conversation chronology, sender history, and PostgreSQL simple-text token search. The full-text index does not support arbitrary substring matching; Version 2 uses an escaped case-insensitive `LIKE` strategy when the UI requires substrings. Search applies only to visible, non-recalled plaintext Version 1 content; future encrypted content requires a separately approved search policy.
 
 ## 10. `message_deletions`
 
@@ -204,8 +204,8 @@ Indexes support user/time history, type/time charts, and conversation activity. 
 
 - User: `active ↔ locked`; `locked_at` follows state.
 - Friend request: `pending → accepted | declined | canceled`; final states do not transition again in V1.
-- Membership: active (`left_at IS NULL`) → left (`left_at IS NOT NULL`); reactivation policy is Version 2.
-- Message: sent (`unsent_at IS NULL`) → unsent (`unsent_at IS NOT NULL`); recall is not reversed in V1.
+- Membership: active (`left_at IS NULL`) → left (`left_at IS NOT NULL`) → reactivated by updating the one existing row in Version 2. Reactivation resets the current interval and cannot preserve multiple membership episodes in V1.
+- Message: sent (`unsent_at IS NULL`) → unsent (`unsent_at IS NOT NULL`, `body = '[Message unsent]'`); recall is not reversed in V1.
 - Spam report: `pending → reviewing → resolved | dismissed`, with direct `pending → resolved | dismissed` also allowed by the model.
 
 ## Version 2 transaction rules
@@ -216,8 +216,10 @@ The following cannot be guaranteed by same-row constraints and MUST be enforced 
 2. Create group members only for group conversations; ensure an owner is an active admin and at least one admin remains.
 3. Canonicalize low/high IDs before friendship and direct-pair inserts.
 4. Accept a request and create its friendship atomically; reconcile blocks, pending reverse requests, and unfriend operations.
-5. Permit message sends, deletions, clearing, and unsending only for authorized current/former members under the approved lifecycle policy.
+5. Permit message sends, deletions, clearing, and unsending only for authorized current/former members under the approved lifecycle policy; unsend atomically updates `body`, `unsent_at`, and `unsent_by`.
 6. Permit spam reports only after eligible prior interaction and prevent self-reporting even when deleted-user references later become null.
 7. Match activity type to conversation type and avoid double-counting events during retries.
 8. Maintain all `updated_at` values and account lock timestamp/state changes atomically.
 9. Define ciphertext storage, keys, device membership, rotation, search, and recovery before enabling effective E2EE; Version 1's flag is not a security claim.
+10. Exclude both directions of `user_blocks` from user search before results leave the backend.
+11. Reactivate a former group member by updating the unique existing membership row; reset the active interval/view boundary and accept that earlier membership episodes are not retained by V1.

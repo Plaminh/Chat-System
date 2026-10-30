@@ -97,7 +97,7 @@ Table messages {
   message_id bigint [pk, increment]
   conversation_id bigint [not null]
   sender_user_id bigint
-  body text [not null]
+  body text [not null, note: 'Recalled rows use the canonical [Message unsent] placeholder']
   created_at timestamptz [not null, default: `CURRENT_TIMESTAMP`]
   unsent_at timestamptz
   unsent_by bigint

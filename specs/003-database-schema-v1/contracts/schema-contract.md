@@ -41,7 +41,8 @@ The public V1 schema contains exactly these twelve base tables and no trigger-ma
 - A pending request has no response time; every final request has one.
 - Logout, response, leave, clear, unsend, resolution, and update timestamps cannot precede their relevant creation/join timestamps.
 - A direct conversation has no name/owner; a group has both a non-blank name and owner.
-- `unsent_at` represents global recall. `message_deletions` represents delete-for-me. `conversation_members.history_cleared_at` represents clearing earlier history for one participant.
+- `unsent_at` represents global recall and requires `messages.body = '[Message unsent]'`; the original body is not retained there. `message_deletions` represents delete-for-me. `conversation_members.history_cleared_at` represents clearing earlier history for one participant.
+- A Version 2 recall operation changes `body`, `unsent_at`, and `unsent_by` atomically. It does not create or remove per-user deletion rows.
 - Report review status never serves as account status and causes no implicit sanction.
 
 ## Query-support contract
@@ -53,7 +54,7 @@ Indexes MUST support:
 3. Incoming requests by status/date; unique pending unordered pairs.
 4. Both sides of friendship and blocking relationships.
 5. Conversation type/name/owner/date and user membership lists.
-6. Conversation message chronology, sender history, and simple-text content search.
+6. Conversation message chronology, sender history, and simple-text token search; arbitrary substring search uses a documented Version 2 query strategy.
 7. Per-user message deletion lookup.
 8. Report status/date, reporter, reported account, reviewer, and message evidence.
 9. User/type/conversation activity by time range for event and distinct-user statistics.
@@ -63,6 +64,8 @@ Indexes MUST support:
 `script/tests/validate-schema.ps1` MUST statically confirm table names/count, required constraints/indexes, unsafe construct absence, and artifact synchronization. `script/tests/validate-schema.sql` MUST run inside an explicitly isolated database and roll back its fixture data after proving representative valid and invalid cases.
 
 Runtime tests MUST NOT connect to or modify a production or unknown database. Absence of PostgreSQL tooling or an explicitly supplied isolated database is reported as incomplete runtime verification, not as a pass.
+
+Restriction tests accept only PostgreSQL foreign-key/restrict SQLSTATE classes (`23503` or `23001`); unrelated exceptions must continue to fail validation.
 
 ## Compatibility contract
 

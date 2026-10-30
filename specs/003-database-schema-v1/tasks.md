@@ -80,6 +80,14 @@
 
 ---
 
+## Phase 7: Post-Review Remediation
+
+**Purpose**: Resolve the targeted technical-review findings without reopening or resetting the completed sixteen-phase implementation.
+
+- [x] T017 Redact recalled message bodies, make initialization atomic, make restriction validation portable across supported PostgreSQL error conditions, correct block-aware search/setup guidance, document substring-search and group-rejoin limitations, run applicable validation, and synchronize review evidence
+
+---
+
 ## Dependencies and Execution Order
 
 - T001 → T002 establishes planning before design.
@@ -89,6 +97,7 @@
 - T009 → T011 permits optional report evidence; T008 → T012 permits conversation activity references.
 - T003–T012 → T013 validates the integrated twelve-table schema.
 - T013 → T014 → T015 → T016 supplies seed data, safe setup, then final evidence.
+- T016 → T017 applies the bounded post-review remediation while preserving every prior completed task.
 
 ## Parallel Opportunities
 

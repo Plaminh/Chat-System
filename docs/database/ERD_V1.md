@@ -141,5 +141,6 @@ erDiagram
 - Friendship and direct-conversation pairs are canonical unordered pairs (`low < high`).
 - Every direct conversation has exactly one direct specialization by contract; this cross-table requirement is created transactionally in Version 2.
 - A conversation has many membership rows and messages. A direct conversation must have two active members; a group must have an owner who is an active admin.
+- A recalled message retains its identity, conversation, sender, creation time, and recall metadata while `body` is replaced by the canonical `[Message unsent]` placeholder.
 - A message can have multiple deletion rows, at most one per user, and can be referenced as optional evidence by reports.
 - Reports retain their own workflow independently from user account status.

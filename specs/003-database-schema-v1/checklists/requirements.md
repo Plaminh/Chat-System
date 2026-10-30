@@ -33,3 +33,11 @@
 
 - Validation iteration 1 passed all checklist items on 2026-10-30.
 - Technology choices and physical database details are intentionally deferred to `plan.md`, `research.md`, and `data-model.md`.
+
+## Post-Review Remediation Checklist
+
+- [x] Setup guidance distinguishes one-step seeded initialization, schema-only initialization, and separate atomic seed loading.
+- [x] Recalled content uses a canonical non-sensitive body and remains separate from delete-for-me/history clearing.
+- [x] Search visibility excludes both directions of a directed block.
+- [x] Message substring-search and group-rejoin limitations are explicit without adding extensions or tables.
+- [x] Static, isolated PostgreSQL runtime, rollback/refusal, and Maven verification results are recorded from actual execution.

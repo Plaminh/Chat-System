@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-30
 
-**Status**: Complete — ready for technical review
+**Status**: Complete — ready for another technical review after post-review remediation
 
 **Input**: User description: "Design and deliver the Version 1 relational data model, schema scripts, development data, initialization tooling, and documentation required by the Admin and User desktop interfaces without implementing Version 2 persistence services."
 
@@ -61,7 +61,8 @@ As an administrator, I want moderation and activity facts available independentl
 - Repeating a friendship or block in reversed user order must not create a duplicate relationship.
 - A user must not request friendship with, befriend, or block their own account.
 - Deleting an account must not leave dangling login, relationship, membership, message-deletion, report, or activity references.
-- A recalled message must remain distinguishable from a message hidden only for one user.
+- A recalled message must retain lifecycle metadata, replace original content with a canonical non-sensitive placeholder, and remain distinguishable from a message hidden only for one user.
+- If one user blocks another, neither account may discover the other through normal user search while the directed block remains.
 - Clearing a conversation history must affect only the requesting participant and must not delete shared messages.
 - Report resolution must not implicitly lock or unlock an account.
 - Encrypted-conversation metadata must not claim that key management or message encryption exists in Version 1.
@@ -78,7 +79,7 @@ As an administrator, I want moderation and activity facts available independentl
 - **FR-006**: Friendships and user blocks MUST reject self-relationships and duplicates, including reversed duplicates where the relationship is unordered.
 - **FR-007**: Conversations MUST distinguish direct and group conversations, support group names and ownership where applicable, carry an encryption-status indicator, and retain lifecycle timestamps.
 - **FR-008**: Direct conversations MUST identify a unique unordered user pair; conversation membership MUST retain roles, join/leave timestamps, and a per-user history-clearing boundary.
-- **FR-009**: Messages MUST retain conversation, sender, body, creation time, and global-unsend metadata including when and optionally by whom the recall occurred.
+- **FR-009**: Messages MUST retain conversation, sender, creation time, and global-unsend metadata including when and optionally by whom the recall occurred; recall MUST replace the original body with the canonical `[Message unsent]` placeholder.
 - **FR-010**: Per-user message deletion MUST be represented independently from global message unsending and MUST reject duplicate deletion records for the same user and message.
 - **FR-011**: Spam reports MUST retain reporter, reported account, optional referenced message, reason, review status, optional reviewer, and resolution time without conflating report status with account lock state.
 - **FR-012**: Activity records MUST distinguish application opening, direct-chat activity, and group-chat activity and MUST support time-bounded counts of events and distinct active users.
@@ -88,6 +89,7 @@ As an administrator, I want moderation and activity facts available independentl
 - **FR-016**: The deliverable MUST include a configurable initialization workflow that never embeds a password and never drops an existing database automatically.
 - **FR-017**: The deliverable MUST include an ERD, machine-readable model notation, setup guidance, UI-to-data mappings, validation evidence, and a documented limitation when runtime database validation is unavailable.
 - **FR-018**: Version 1 MUST NOT implement repositories, business services, live authentication, realtime messaging, UI integration, encryption-key management, or other Version 2 behavior.
+- **FR-019**: User search MUST exclude both accounts blocked by the searching user and accounts that blocked the searching user; the Version 2 backend MUST enforce this before returning results.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -122,5 +124,6 @@ As an administrator, I want moderation and activity facts available independentl
 - Usernames and email addresses are unique case-insensitively through normalized indexes, while display casing is preserved.
 - Password values in development data are BCrypt-formatted demonstration hashes and are not valid production credentials.
 - Presence is a future runtime concern; activity timestamps can support last-activity indicators but do not establish a live presence protocol.
-- Cross-table authorization rules, direct-conversation membership synchronization, group-owner/admin guarantees, report eligibility from prior interaction, and unsend authorization are enforced transactionally by the backend in Version 2.
+- Cross-table authorization rules, direct-conversation membership synchronization, group-owner/admin guarantees, report eligibility from prior interaction, block-aware search, membership reactivation, and unsend authorization/atomic redaction are enforced transactionally by the backend in Version 2.
+- The existing full-text index supports token search, not arbitrary UI substring matching; Version 2 may use an escaped case-insensitive `LIKE` strategy without adding a V1 extension.
 - Future end-to-end encryption requires key-management entities and ciphertext policies that are intentionally excluded from the twelve-table Version 1 scope.
