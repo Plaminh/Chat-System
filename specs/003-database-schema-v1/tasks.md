@@ -73,7 +73,7 @@
 
 **Purpose**: Prove the integrated design, supply safe fictional data/setup, and finalize review evidence.
 
-- [ ] T013 Create static and isolated PostgreSQL schema contract tests and record actual results in `script/tests/` and `docs/database/VALIDATION_V1.md`
+- [x] T013 Create static and isolated PostgreSQL schema contract tests and record actual results in `script/tests/` and `docs/database/VALIDATION_V1.md`
 - [ ] T014 Add representative referentially consistent fictional data for all twelve tables in `script/seed.sql`
 - [ ] T015 Implement safe configurable PostgreSQL initialization and command documentation in `scripts/init-database.ps1` and `docs/database/SETUP_V1.md`
 - [ ] T016 Complete the final cross-artifact, UI compatibility, build, formatting, schema, seed, Git, and documentation review in `docs/database/COMPLETION_REPORT_V1.md`

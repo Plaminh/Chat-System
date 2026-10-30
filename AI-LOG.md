@@ -175,3 +175,15 @@ By hand: None. Codex performed the configuration, documentation updates, and ver
 - **Actual test results**: Focused static schema assertions passed with exactly twelve table definitions. Integrated runtime and normalization validation remain scheduled for Phase 12.
 - **Remaining limitations**: Event deduplication and conversation-type matching require Version 2 transaction logic; activity events do not constitute live presence.
 - **Corresponding commit message**: `feat(db): add user activity schema`
+
+## 2026-10-30 — Phase 12: Schema validation
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Added portable static schema validation, a transactional PostgreSQL fixture with valid and invalid cases, and a validation report covering constraints, indexes, referential behavior, and normalization.
+- **Files changed**: `script/tests/validate-schema.ps1`, `script/tests/validate-schema.sql`, `docs/database/VALIDATION_V1.md`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.
+- **Design decisions**: Required static validation everywhere and real SQL execution only in a newly created isolated database; tested cascade, set-null, and restrict semantics; rolled back all fixture rows.
+- **AI-generated changes accepted/rejected**: Accepted a disposable local PostgreSQL cluster after the normal endpoint was unavailable. Rejected modifying/starting an unknown existing cluster, using production data, or claiming unavailable validation.
+- **Validation performed**: Ran static contract checks and loaded the full schema plus transactional fixture into PostgreSQL 18.4 on a trust-only loopback disposable cluster; dropped the database, stopped the server, and removed the verified cluster directory.
+- **Actual test results**: PASS — 12 tables, 12 primary keys, 25 foreign keys, 34 checks, 33 explicit indexes; all valid integrated inserts succeeded; 14 representative invalid/delete-action cases behaved as specified; final transaction rolled back.
+- **Remaining limitations**: No separate PostgreSQL 14–17 matrix or production-scale benchmark; documented cross-table authorization rules remain Version 2 work.
+- **Corresponding commit message**: `test(db): add schema validation tests`
