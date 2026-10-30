@@ -67,3 +67,15 @@ By hand: None. Codex performed the configuration, documentation updates, and ver
 - **Actual test results**: Focused static schema assertions passed. PostgreSQL runtime execution was not performed in this phase and remains scheduled for Phase 12.
 - **Remaining limitations**: `updated_at` maintenance and password hashing are Version 2 server responsibilities; later tables and integrated runtime validation remain pending.
 - **Corresponding commit message**: `feat(db): add users schema`
+
+## 2026-10-30 — Phase 03: Login history schema
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Added `login_history` with numeric identity, user ownership, login/logout timestamps, chronological indexes, and explicit cascading cleanup.
+- **Files changed**: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.
+- **Design decisions**: Kept user name/full name normalized in `users` rather than duplicated; allowed open sessions with `logged_out_at = NULL`; rejected logout times before login.
+- **AI-generated changes accepted/rejected**: Accepted compact session-boundary history. Rejected client/device metadata not required by Version 1 and denormalized display fields.
+- **Validation performed**: Checked two cumulative table definitions, the user foreign key with `ON DELETE CASCADE`, the timestamp constraint, and both login-history indexes; reviewed `git diff --check` and staged content before commit.
+- **Actual test results**: Focused static schema assertions passed. Runtime execution remains deferred to the isolated Phase 12 fixture.
+- **Remaining limitations**: Login/logout recording behavior and authentication are Version 2 server work.
+- **Corresponding commit message**: `feat(db): add login history schema`
