@@ -115,3 +115,15 @@ By hand: None. Codex performed the configuration, documentation updates, and ver
 - **Actual test results**: Focused static schema assertions passed. Runtime shape tests remain scheduled for Phase 12.
 - **Remaining limitations**: Group ownership/admin membership synchronization and effective encryption are Version 2 responsibilities.
 - **Corresponding commit message**: `feat(db): add conversations schema`
+
+## 2026-10-30 — Phase 07: Conversation membership schema
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Added `direct_conversations` for unique canonical one-to-one pairs and `conversation_members` for role, membership interval, and per-user history-clearing state.
+- **Files changed**: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.
+- **Design decisions**: Used the parent conversation ID as the direct specialization primary key; restricted deletion of users still named in a direct pair; allowed one membership row per conversation/user with explicit leave and clear-history timestamps.
+- **AI-generated changes accepted/rejected**: Accepted specialization plus shared membership. Rejected participant arrays, duplicate direct pairs, a separate history-clear table, and silent orphaning on account deletion.
+- **Validation performed**: Checked eight cumulative tables, canonical and unique direct pairs, all foreign-key delete actions, membership roles/timestamp bounds/uniqueness, and four supporting indexes; reviewed `git diff --check` and staged content before commit.
+- **Actual test results**: Focused static schema assertions passed. Runtime pair/membership tests remain scheduled for Phase 12.
+- **Remaining limitations**: Parent type, exactly-two direct members, group owner/admin guarantees, and rejoin policy require Version 2 transactions.
+- **Corresponding commit message**: `feat(db): add conversation membership schemas`
