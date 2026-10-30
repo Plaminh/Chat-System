@@ -43,3 +43,15 @@ By hand: None. Codex performed the configuration, documentation updates, and ver
 - **Actual test results**: Planning-only phase; no runtime tests were applicable. Artifact and checklist validation passed.
 - **Remaining limitations**: Physical data model, SQL schema, runtime database validation, seed data, initialization script, and final review remain for Phases 01–15.
 - **Corresponding commit message**: `docs(db): establish database v1 implementation plan`
+
+## 2026-10-30 — Phase 01: Database design
+
+- **Tool**: OpenAI Codex
+- **Task performed**: Defined the conceptual, logical, and planned physical model for exactly twelve core tables; produced an ERD, DBML, detailed field/constraint model, schema contract, validation quickstart, and Admin/User UI mappings.
+- **Files changed**: `specs/003-database-schema-v1/data-model.md`, `specs/003-database-schema-v1/contracts/schema-contract.md`, `specs/003-database-schema-v1/quickstart.md`, `docs/database/ERD_V1.md`, `docs/database/schema-v1.dbml`, `docs/database/UI_DATA_MAPPING_V1.md`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.
+- **Design decisions**: Adopted canonical low/high IDs for unordered relationships; specialized direct conversations without adding a table; separated unsending, delete-for-me, and history clearing; used source activity events and derived counts; documented restricted account-deletion cases and Version 2 transaction rules.
+- **AI-generated changes accepted/rejected**: Accepted the twelve-table normalized model and explicit delete behavior. Rejected stored friend/activity counters, presence persistence, report/account-status conflation, triggers, procedures, extra key-management tables, and UI source changes.
+- **Validation performed**: Cross-checked all twelve tables across ERD, DBML, data model, schema contract, plan, and UI mappings; confirmed all identifiers/states and lifecycle semantics are documented; reviewed `git diff --check` and staged content before commit.
+- **Actual test results**: Documentation consistency checks passed; no SQL existed yet for runtime validation.
+- **Remaining limitations**: Cross-table business rules require Version 2 backend transactions; the encryption flag is metadata only; PostgreSQL runtime validation remains pending until schema implementation.
+- **Corresponding commit message**: `docs(db): define database model and ERD`

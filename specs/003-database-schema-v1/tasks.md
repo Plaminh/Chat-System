@@ -20,7 +20,7 @@
 
 **Purpose**: Freeze the twelve-entity model and UI mappings before SQL implementation.
 
-- [ ] T002 Produce the ERD, DBML, detailed data model, schema contract, UI mappings, and validation quickstart in `docs/database/`, `specs/003-database-schema-v1/data-model.md`, `specs/003-database-schema-v1/contracts/schema-contract.md`, and `specs/003-database-schema-v1/quickstart.md`
+- [x] T002 Produce the ERD, DBML, detailed data model, schema contract, UI mappings, and validation quickstart in `docs/database/`, `specs/003-database-schema-v1/data-model.md`, `specs/003-database-schema-v1/contracts/schema-contract.md`, and `specs/003-database-schema-v1/quickstart.md`
 
 **Checkpoint**: The complete conceptual and logical design is reviewable before physical schema changes.
 
