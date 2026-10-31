@@ -215,3 +215,11 @@ Kept: Swing/FlatLaf, local sample state, existing four-module boundaries, and ex
 Changed: Connected Chats, Friends, Requests/Search, Groups, and Profile in `UserMainFrame`; wired chat-history search/results, report and writing-assistance dialogs, group chat/back navigation, and group creation from a selected search result. Added integration/regression coverage and fixed recursive test-button lookup helpers.
 Rejected: Live authentication, TCP messaging, persistence, email, LLM calls, or claims of real encryption/report submission.
 By hand: Reviewed the integration and test results. The VS Code test runner passed all 43 tests; direct `javac --release 21` compilation of the integrated workspace and `git diff --check` passed. Maven verification and GUI launch were not completed because Maven and a Maven wrapper are unavailable; the Java launch tool consequently failed at its Maven build step. No implemented-UI screenshots were created. T016 remains open until Maven verification and visual acceptance evidence can be completed.
+
+## 2026-10-31 — Balance User login layout
+Tool: AI assistant (Copilot SDK in VS Code).
+Asked for: Center and size the login card consistently, align the form into one 360 px column, and reduce uneven spacing without changing behavior or Vietnamese text.
+Kept: Login submission and validation logic, handlers, test getters, displayed text, theme colors, and fonts.
+Changed: Centered a fixed 480x560 card with GridBagLayout; rebuilt the form with fixed-size BorderLayout wrappers, left-aligned field labels, a stable feedback row, and vertical glue for balanced spacing. Added layout sizing assertions.
+Rejected: Business-logic, text, dependency, and shared-theme changes.
+By hand: Review the resized login UI visually after relaunching the User client.

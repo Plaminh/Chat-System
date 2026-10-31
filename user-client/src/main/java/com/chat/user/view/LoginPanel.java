@@ -6,13 +6,17 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.util.Arrays;
 import java.util.Objects;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -20,12 +24,14 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 public final class LoginPanel extends JPanel {
+  private static final int FORM_WIDTH = 360;
+
   private final UserSessionState sessionState;
   private final Runnable signInHandler;
   private final Runnable registrationHandler;
   private final Runnable recoveryHandler;
-  private final JTextField usernameField = UserUiTheme.createTextField(28);
-  private final JPasswordField passwordField = new JPasswordField(28);
+  private final JTextField usernameField = UserUiTheme.createTextField(32);
+  private final JPasswordField passwordField = new JPasswordField(32);
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.CENTER);
 
   public LoginPanel(
@@ -76,7 +82,8 @@ public final class LoginPanel extends JPanel {
     JPanel card = new JPanel(new BorderLayout());
     card.setBackground(UserUiTheme.SURFACE_WHITE);
     card.setBorder(BorderFactory.createLineBorder(UserUiTheme.BORDER));
-    card.setPreferredSize(new Dimension(520, 610));
+    card.setPreferredSize(new Dimension(480, 560));
+    card.setMinimumSize(new Dimension(480, 560));
 
     JLabel windowTitle = new JLabel("Trò Chuyện Việt  —  Cổng Đăng Nhập");
     windowTitle.setFont(UserUiTheme.FONT_BODY_BOLD);
@@ -104,40 +111,43 @@ public final class LoginPanel extends JPanel {
     subtitle.setForeground(UserUiTheme.TEXT_MUTED);
     subtitle.setAlignmentX(CENTER_ALIGNMENT);
 
-    form.add(Box.createVerticalStrut(UserUiTheme.SPACE_SM));
+    form.add(Box.createVerticalGlue());
     form.add(brand);
     form.add(Box.createVerticalStrut(UserUiTheme.SPACE_SM));
     form.add(subtitle);
-    form.add(Box.createVerticalStrut(UserUiTheme.SPACE_LG));
-    addField(form, "Tên đăng nhập hoặc Email", usernameField);
-
-    JLabel passwordLabel = createFieldLabel("Mật khẩu");
-    passwordField.setFont(UserUiTheme.FONT_BODY);
-    passwordField.setPreferredSize(new Dimension(passwordField.getPreferredSize().width, 36));
-    form.add(passwordLabel);
+    form.add(Box.createVerticalStrut(20));
+    usernameField.setFont(UserUiTheme.FONT_BODY.deriveFont(14f));
+    form.add(
+        createFormWrapper(
+            createFieldLabel("Tên đăng nhập hoặc Email"), 20, BorderLayout.WEST));
     form.add(Box.createVerticalStrut(UserUiTheme.SPACE_XS));
-    form.add(passwordField);
-    form.add(Box.createVerticalStrut(UserUiTheme.SPACE_SM));
+    form.add(createFormWrapper(usernameField, 36, BorderLayout.CENTER));
+    form.add(Box.createVerticalStrut(12));
+    form.add(createFormWrapper(createFieldLabel("Mật khẩu"), 20, BorderLayout.WEST));
+    form.add(Box.createVerticalStrut(UserUiTheme.SPACE_XS));
+    passwordField.setFont(UserUiTheme.FONT_BODY.deriveFont(14f));
+    form.add(createFormWrapper(passwordField, 36, BorderLayout.CENTER));
 
     JPanel links = new JPanel(new BorderLayout());
     links.setOpaque(false);
     JButton recoveryButton = createTextButton("Quên mật khẩu?");
+    recoveryButton.setMargin(new Insets(0, 0, 0, 0));
+    recoveryButton.setBorder(BorderFactory.createEmptyBorder());
+    recoveryButton.setCursor(
+        java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
     recoveryButton.addActionListener(event -> recoveryHandler.run());
     links.add(recoveryButton, BorderLayout.EAST);
-    form.add(links);
+    form.add(createFormWrapper(links, 28, BorderLayout.CENTER));
 
     feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
     feedbackLabel.setForeground(UserUiTheme.DANGER);
-    feedbackLabel.setAlignmentX(CENTER_ALIGNMENT);
-    form.add(Box.createVerticalStrut(UserUiTheme.SPACE_SM));
-    form.add(feedbackLabel);
+    form.add(Box.createVerticalStrut(UserUiTheme.SPACE_XS));
+    form.add(createFormWrapper(feedbackLabel, 20, BorderLayout.CENTER));
 
     JButton signInButton = UserUiTheme.createPrimaryButton("Đăng nhập");
-    signInButton.setAlignmentX(CENTER_ALIGNMENT);
-    signInButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
     signInButton.addActionListener(event -> submitSignIn());
-    form.add(Box.createVerticalStrut(UserUiTheme.SPACE_SM));
-    form.add(signInButton);
+    form.add(Box.createVerticalStrut(10));
+    form.add(createFormWrapper(signInButton, 42, BorderLayout.CENTER));
 
     JPanel registrationRow = new JPanel(new FlowLayout(FlowLayout.CENTER, UserUiTheme.SPACE_XS, 0));
     registrationRow.setOpaque(false);
@@ -146,7 +156,8 @@ public final class LoginPanel extends JPanel {
     registrationButton.addActionListener(event -> registrationHandler.run());
     registrationRow.add(registrationButton);
     form.add(Box.createVerticalStrut(UserUiTheme.SPACE_MD));
-    form.add(registrationRow);
+    form.add(createFormWrapper(registrationRow, 32, BorderLayout.CENTER));
+    form.add(Box.createVerticalGlue());
 
     JPanel footer = new JPanel(new GridLayout(1, 1));
     footer.setBackground(UserUiTheme.PRIMARY_SOFT_BG);
@@ -162,25 +173,40 @@ public final class LoginPanel extends JPanel {
     card.add(titleBar, BorderLayout.NORTH);
     card.add(form, BorderLayout.CENTER);
     card.add(footer, BorderLayout.SOUTH);
-    JPanel centered = new JPanel(new GridLayout(1, 1));
+    JPanel centered = new JPanel(new GridBagLayout());
     centered.setOpaque(false);
-    centered.setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
-    centered.add(card);
+    GridBagConstraints cardConstraints = new GridBagConstraints();
+    cardConstraints.gridx = 0;
+    cardConstraints.gridy = 0;
+    cardConstraints.anchor = GridBagConstraints.CENTER;
+    cardConstraints.insets = new Insets(24, 24, 24, 24);
+    centered.add(card, cardConstraints);
     add(centered, BorderLayout.CENTER);
   }
 
-  private void addField(JPanel form, String labelText, JTextField field) {
-    form.add(createFieldLabel(labelText));
-    form.add(Box.createVerticalStrut(UserUiTheme.SPACE_XS));
-    form.add(field);
-    form.add(Box.createVerticalStrut(UserUiTheme.SPACE_MD));
+  private JPanel createFormWrapper(JComponent component, int height, String constraint) {
+    setFixedSize(component, height);
+    component.setAlignmentX(CENTER_ALIGNMENT);
+
+    JPanel wrapper = new JPanel(new BorderLayout());
+    wrapper.setOpaque(false);
+    setFixedSize(wrapper, height);
+    wrapper.setAlignmentX(CENTER_ALIGNMENT);
+    wrapper.add(component, constraint);
+    return wrapper;
+  }
+
+  private void setFixedSize(JComponent component, int height) {
+    component.setPreferredSize(new Dimension(FORM_WIDTH, height));
+    component.setMaximumSize(new Dimension(FORM_WIDTH, height));
+    component.setMinimumSize(new Dimension(FORM_WIDTH, height));
   }
 
   private JLabel createFieldLabel(String text) {
     JLabel label = new JLabel(text);
     label.setFont(UserUiTheme.FONT_BODY_BOLD);
     label.setForeground(UserUiTheme.TEXT_SECONDARY);
-    label.setAlignmentX(LEFT_ALIGNMENT);
+    label.setAlignmentX(CENTER_ALIGNMENT);
     return label;
   }
 
