@@ -31,3 +31,29 @@ Kept: Parent-level Spotless configuration using Google Java Format, root `.edito
 Changed: Added formatter plugin management and inherited configuration without binding it to compilation or verification; existing Java sources were checked but not automatically reformatted.
 Rejected: Checkstyle, SpotBugs, PMD, SonarQube, Git hooks, CI/CD, additional formatters, application refactoring, and automatic `spotless:apply`.
 By hand: None. Codex performed the configuration, documentation updates, and verification; the developer remains responsible for reviewing and deciding whether to apply reported formatting changes.
+
+## 2026-10-26 — Establish Admin UI Version 1 planning and workflow
+Tool: Antigravity (Gemini 3.8 Flash).
+Asked for: Analyze framework and requirements for Version 1 Admin Client UI (Member C scope), establish collaborative design workflow with Stitch/Figma and Spec Kit, decompose 9 admin screens, document alignment in `Plan_Admin_UI_Version_1.md`, and switch to `feature/admin-ui-v1` branch.
+Kept: The collaborative 5-stage workflow (spec prompt generation, Stitch visual mockup, mockup/icon intake, Spec Kit plan & tasks, per-screen implementation with separate commits), dedicated `docs/Plan_Admin_UI_Version_1.md`, and directory scaffolding for `docs/mockups/` and `docs/screenshots/admin/`.
+Changed: Created `docs/Plan_Admin_UI_Version_1.md`, added directories for mockups and screenshots, and updated `AI-LOG.md`.
+Rejected: Merging all screens into a single commit or single unstructured file, jumping directly to code without visual design alignment, and accessing PostgreSQL directly from the client.
+By hand: Reviewed and approved the workflow agreement, decided on per-screen commits, and directed creation of the feature branch.
+
+## 2026-10-26 — Implement Admin Client UI Version 1
+Tool: Antigravity.
+Asked for: Generate Spec Kit planning artifacts and implement the Version 1 desktop UI for `admin-client` using Java Swing, FlatLaf, and JFreeChart with in-memory mock data across the 10 planned tasks.
+Kept: The 10 UI components and mock data layer under `com.chat.admin`, covering login, main navigation, user/group/spam management, registration/friend/activity statistics, and annual charts.
+Changed: Adjusted layout details and stripped unnecessary infrastructure metrics from initial mockups to match project requirements.
+Rejected: Direct database connections or backend business logic in Version 1.
+By hand: Reviewed each screen step-by-step, verified the packaged `admin.jar`, and approved each commit on `feature/admin-ui-v1`.
+
+## 2026-10-29 — Refine Admin Client UI layout and auto-filtering from review feedback
+Tool: Antigravity.
+Asked for: Address UI review feedback on `feature/admin-ui-v1`: remove temporary Stitch mockup/plan files, fix login dialog footer text overflow, remove the right-side version text from the main status footer, remove requirement reference notes from panel footers, widen date input fields, enforce fixed `/` separators (`yyyy/MM/dd`) with strict calendar/range validation and error highlighting, replace redundant manual filter/refresh buttons with automatic filtering and chart updates while preserving reset buttons, and improve responsive behavior when resizing windows.
+Kept: All existing Version 1 business logic, mock data models, navigation structure, and reset actions across all panels.
+Changed: Updated `AdminLoginDialog`, `AdminMainFrame`, `AdminUIStyle`, `UserManagementPanel`, `UserDetailHistoryDialog`, `GroupManagementPanel`, `SpamReportPanel`, `NewRegistrationPanel`, `FriendStatsPanel`, `UserActivityPanel`, `RegistrationChartPanel`, `ActivityChartPanel`, and regenerated `docs/screenshots/admin/`.
+Rejected: Modifying functional requirements, changing layout architecture, or removing reset controls.
+By hand: Provided the detailed UI review feedback in `feedback.txt`, removed the mockup/plan files from `docs/`, and reviewed the incremental commits.
+
+
