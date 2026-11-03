@@ -13,8 +13,9 @@ Table users {
   date_of_birth date [not null]
   gender varchar(10) [note: 'male, female, other, or NULL']
   role varchar(10) [not null, default: 'user']
-  account_status varchar(10) [not null, default: 'active']
+  account_status varchar(10) [not null, default: 'active', note: 'active, locked, or deleted; deleted is terminal']
   locked_at timestamptz
+  deleted_at timestamptz [note: 'Required only when account_status is deleted']
   password_changed_at timestamptz [not null, default: `CURRENT_TIMESTAMP`]
   created_at timestamptz [not null, default: `CURRENT_TIMESTAMP`]
   updated_at timestamptz [not null, default: `CURRENT_TIMESTAMP`]

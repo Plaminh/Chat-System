@@ -1,0 +1,68 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: chat-system-v1-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Required}
+      POSTGRES_DB: ${POSTGRES_DB:?Required}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-55432}:5432"
+    volumes:
+      - chat-system-v1-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  db-init:
+    image: postgres:16-alpine
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGUSER: ${POSTGRES_USER:?Required}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Required}
+      PGDATABASE: ${POSTGRES_DB:?Required}
+    volumes:
+      - ./script:/sql:ro
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        table_count=$$(psql -X -A -t -v ON_ERROR_STOP=1 -c \
+          "SELECT count(*) FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'")
+
+        if [ "$$table_count" = "0" ]; then
+          echo "Initializing Chat System schema and development seed data..."
+          psql -X -v ON_ERROR_STOP=1 --single-transaction \
+            -f /sql/schema.sql \
+            -f /sql/seed.sql
+        elif [ "$$table_count" = "12" ]; then
+          echo "Database already contains the 12 expected tables; initialization skipped."
+        else
+          echo "Unexpected table count: $$table_count. Refusing partial initialization." >&2
+          exit 1
+        fi
+
+        final_count=$$(psql -X -A -t -v ON_ERROR_STOP=1 -c \
+          "SELECT count(*) FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'")
+
+        if [ "$$final_count" != "12" ]; then
+          echo "Expected 12 tables after initialization, found $$final_count." >&2
+          exit 1
+        fi
+
+        echo "Database initialization check passed: 12 tables are available."
+    restart: "no"
+
+volumes:
+  chat-system-v1-data:
+    external: true
+    name: chat-system-v1-data
