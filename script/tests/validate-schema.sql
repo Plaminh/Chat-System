@@ -115,6 +115,39 @@ BEGIN
     END;
 
     BEGIN
+        INSERT INTO users (
+            username, password_hash, email, full_name, address, date_of_birth,
+            account_status
+        ) VALUES (
+            'deleted_without_time',
+            '$2a$10$012345678901234567890u12345678901234567890123456789012',
+            'deleted.without.time@example.test', 'Invalid Deleted User',
+            'Sample Ward', DATE '1990-01-01', 'deleted'
+        );
+        RAISE EXCEPTION 'Deleted account without deleted_at was not rejected';
+    EXCEPTION WHEN check_violation THEN
+        RAISE NOTICE 'PASS: deleted account requires deleted_at';
+    END;
+
+    BEGIN
+        UPDATE users
+        SET deleted_at = CURRENT_TIMESTAMP
+        WHERE user_id = 1002;
+        RAISE EXCEPTION 'Active account with deleted_at was not rejected';
+    EXCEPTION WHEN check_violation THEN
+        RAISE NOTICE 'PASS: active account rejects lifecycle timestamps';
+    END;
+
+    BEGIN
+        UPDATE users
+        SET deleted_at = CURRENT_TIMESTAMP
+        WHERE user_id = 1003;
+        RAISE EXCEPTION 'Locked account with deleted_at was not rejected';
+    EXCEPTION WHEN check_violation THEN
+        RAISE NOTICE 'PASS: locked account rejects deleted_at';
+    END;
+
+    BEGIN
         INSERT INTO friend_requests (sender_user_id, receiver_user_id)
         VALUES (1002, 1002);
         RAISE EXCEPTION 'Self friend request was not rejected';
@@ -252,34 +285,200 @@ $$;
 
 INSERT INTO users (
     user_id, username, password_hash, email, full_name, address, date_of_birth,
-    password_changed_at, created_at, updated_at
-) VALUES (
-    1010, 'delete_test', '$2a$10$012345678901234567890u12345678901234567890123456789012',
-    'delete.test@example.test', 'Delete Test User', 'Sample Ward', DATE '1992-04-04',
-    TIMESTAMPTZ '2026-02-01 00:00:00+00', TIMESTAMPTZ '2026-02-01 00:00:00+00',
-    TIMESTAMPTZ '2026-02-01 00:00:00+00'
-);
-INSERT INTO login_history (login_history_id, user_id) VALUES (1110, 1010);
-INSERT INTO messages (message_id, conversation_id, sender_user_id, body)
-VALUES (3010, 2002, 1010, 'Delete-action validation message');
-INSERT INTO spam_reports (
-    spam_report_id, reporter_user_id, reported_user_id, message_id, reason
-) VALUES (4010, 1010, 1002, 3010, 'Delete-action validation report');
+    account_status, locked_at, password_changed_at, created_at, updated_at
+) VALUES
+    (1010, 'active_delete_test',
+     '$2a$10$012345678901234567890u12345678901234567890123456789012',
+     'active.delete@example.test', 'Active Delete Test', 'Sample Ward', DATE '1992-04-04',
+     'active', NULL, TIMESTAMPTZ '2026-02-01 00:00:00+00',
+     TIMESTAMPTZ '2026-02-01 00:00:00+00', TIMESTAMPTZ '2026-02-01 00:00:00+00'),
+    (1011, 'locked_delete_test',
+     '$2a$10$012345678901234567890u12345678901234567890123456789012',
+     'locked.delete@example.test', 'Locked Delete Test', 'Sample Ward', DATE '1992-05-05',
+     'locked', TIMESTAMPTZ '2026-02-02 00:00:00+00',
+     TIMESTAMPTZ '2026-02-01 00:00:00+00', TIMESTAMPTZ '2026-02-01 00:00:00+00',
+     TIMESTAMPTZ '2026-02-02 00:00:00+00'),
+    (1012, 'replacement_admin',
+     '$2a$10$012345678901234567890u12345678901234567890123456789012',
+     'replacement.admin@example.test', 'Replacement Admin', 'Sample Ward', DATE '1992-06-06',
+     'active', NULL, TIMESTAMPTZ '2026-02-01 00:00:00+00',
+     TIMESTAMPTZ '2026-02-01 00:00:00+00', TIMESTAMPTZ '2026-02-01 00:00:00+00'),
+    (1013, 'cancel_delete_test',
+     '$2a$10$012345678901234567890u12345678901234567890123456789012',
+     'cancel.delete@example.test', 'Cancel Delete Test', 'Sample Ward', DATE '1992-07-07',
+     'active', NULL, TIMESTAMPTZ '2026-02-01 00:00:00+00',
+     TIMESTAMPTZ '2026-02-01 00:00:00+00', TIMESTAMPTZ '2026-02-01 00:00:00+00');
 
-DELETE FROM users WHERE user_id = 1010;
+INSERT INTO login_history (login_history_id, user_id, logged_in_at)
+VALUES (1110, 1010, TIMESTAMPTZ '2026-02-03 00:00:00+00');
 
+INSERT INTO conversations (
+    conversation_id, conversation_type, name, owner_user_id, created_at, updated_at
+) VALUES
+    (2010, 'direct', NULL, NULL, TIMESTAMPTZ '2026-02-03 00:00:00+00',
+     TIMESTAMPTZ '2026-02-03 00:00:00+00'),
+    (2011, 'group', 'Transfer Validation Group', 1010,
+     TIMESTAMPTZ '2026-02-04 00:00:00+00', TIMESTAMPTZ '2026-02-04 00:00:00+00'),
+    (2012, 'group', 'Cancellation Validation Group', 1013,
+     TIMESTAMPTZ '2026-02-04 00:00:00+00', TIMESTAMPTZ '2026-02-04 00:00:00+00'),
+    (2013, 'group', 'Last Member Validation Group', 1013,
+     TIMESTAMPTZ '2026-02-04 00:00:00+00', TIMESTAMPTZ '2026-02-04 00:00:00+00');
+
+INSERT INTO direct_conversations (conversation_id, user_low_id, user_high_id)
+VALUES (2010, 1010, 1012);
+
+INSERT INTO conversation_members (
+    conversation_member_id, conversation_id, user_id, member_role, joined_at
+) VALUES
+    (2110, 2010, 1010, 'member', TIMESTAMPTZ '2026-02-03 00:00:00+00'),
+    (2111, 2010, 1012, 'member', TIMESTAMPTZ '2026-02-03 00:00:00+00'),
+    (2112, 2011, 1010, 'admin', TIMESTAMPTZ '2026-02-04 00:00:00+00'),
+    (2113, 2011, 1012, 'admin', TIMESTAMPTZ '2026-02-04 00:00:00+00'),
+    (2114, 2012, 1013, 'admin', TIMESTAMPTZ '2026-02-04 00:00:00+00'),
+    (2115, 2012, 1012, 'member', TIMESTAMPTZ '2026-02-04 00:00:00+00'),
+    (2116, 2013, 1013, 'admin', TIMESTAMPTZ '2026-02-04 00:00:00+00');
+
+INSERT INTO messages (message_id, conversation_id, sender_user_id, body, created_at)
+VALUES
+    (3010, 2010, 1010, 'History remains visible', TIMESTAMPTZ '2026-02-05 01:00:00+00'),
+    (3011, 2010, 1010, 'Hidden only for replacement user', TIMESTAMPTZ '2026-02-05 02:00:00+00'),
+    (3012, 2011, 1010, 'Group history keeps deleted sender', TIMESTAMPTZ '2026-02-05 03:00:00+00');
+
+INSERT INTO message_deletions (message_deletion_id, message_id, user_id, deleted_at)
+VALUES (3110, 3011, 1012, TIMESTAMPTZ '2026-02-06 00:00:00+00');
+
+-- A failed owner-selection/last-group decision is represented by a subtransaction. Earlier
+-- tentative changes roll back together, which is the required shape for the future server service.
 DO $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM login_history WHERE login_history_id = 1110) THEN
-        RAISE EXCEPTION 'Login history did not cascade on user deletion';
+    BEGIN
+        UPDATE conversations
+        SET owner_user_id = 1012, updated_at = CURRENT_TIMESTAMP
+        WHERE conversation_id = 2012;
+        UPDATE conversation_members
+        SET left_at = CURRENT_TIMESTAMP
+        WHERE conversation_id = 2012 AND user_id = 1013;
+
+        RAISE EXCEPTION USING
+            ERRCODE = '23514',
+            MESSAGE = 'Administrator canceled deletion of the final-member group';
+    EXCEPTION WHEN check_violation THEN
+        RAISE NOTICE 'PASS: canceled group decisions rolled back as one unit';
+    END;
+
+    IF (SELECT owner_user_id FROM conversations WHERE conversation_id = 2012) <> 1013
+       OR (SELECT left_at FROM conversation_members
+           WHERE conversation_id = 2012 AND user_id = 1013) IS NOT NULL
+       OR (SELECT account_status FROM users WHERE user_id = 1013) <> 'active'
+       OR NOT EXISTS (SELECT 1 FROM conversations WHERE conversation_id = 2013) THEN
+        RAISE EXCEPTION 'Canceled deletion left partial group/account changes';
     END IF;
-    IF (SELECT sender_user_id FROM messages WHERE message_id = 3010) IS NOT NULL THEN
-        RAISE EXCEPTION 'Message sender was not set null on user deletion';
+END
+$$;
+
+-- Successful owner transfer, membership leave, and account tombstone are one transaction here.
+UPDATE conversations
+SET owner_user_id = 1012, updated_at = CURRENT_TIMESTAMP
+WHERE conversation_id = 2011 AND owner_user_id = 1010;
+
+UPDATE conversation_members
+SET member_role = 'admin'
+WHERE conversation_id = 2011 AND user_id = 1012 AND left_at IS NULL;
+
+UPDATE conversation_members
+SET left_at = CURRENT_TIMESTAMP
+WHERE user_id = 1010 AND left_at IS NULL AND conversation_id IN (
+    SELECT conversation_id FROM conversations WHERE conversation_type = 'group'
+);
+
+UPDATE users
+SET account_status = 'deleted',
+    locked_at = NULL,
+    deleted_at = CURRENT_TIMESTAMP,
+    updated_at = CURRENT_TIMESTAMP
+WHERE user_id = 1010 AND account_status IN ('active', 'locked');
+
+UPDATE users
+SET account_status = 'deleted',
+    locked_at = NULL,
+    deleted_at = CURRENT_TIMESTAMP,
+    updated_at = CURRENT_TIMESTAMP
+WHERE user_id = 1011 AND account_status IN ('active', 'locked');
+
+DO $$
+DECLARE
+    visible_message_count INTEGER;
+    hidden_message_count INTEGER;
+    direct_sender_label TEXT;
+    group_sender_label TEXT;
+BEGIN
+    IF (SELECT account_status FROM users WHERE user_id = 1010) <> 'deleted'
+       OR (SELECT deleted_at FROM users WHERE user_id = 1010) IS NULL
+       OR (SELECT locked_at FROM users WHERE user_id = 1010) IS NOT NULL THEN
+        RAISE EXCEPTION 'Active account was not soft-deleted correctly';
     END IF;
-    IF (SELECT reporter_user_id FROM spam_reports WHERE spam_report_id = 4010) IS NOT NULL THEN
-        RAISE EXCEPTION 'Report reporter was not set null on user deletion';
+    IF (SELECT account_status FROM users WHERE user_id = 1011) <> 'deleted'
+       OR (SELECT deleted_at FROM users WHERE user_id = 1011) IS NULL
+       OR (SELECT locked_at FROM users WHERE user_id = 1011) IS NOT NULL THEN
+        RAISE EXCEPTION 'Locked account was not soft-deleted correctly';
     END IF;
-    RAISE NOTICE 'PASS: user delete cascade/set-null actions verified';
+    IF (SELECT owner_user_id FROM conversations WHERE conversation_id = 2011) <> 1012
+       OR (SELECT member_role FROM conversation_members
+           WHERE conversation_id = 2011 AND user_id = 1012) <> 'admin'
+       OR (SELECT left_at FROM conversation_members
+           WHERE conversation_id = 2011 AND user_id = 1010) IS NULL THEN
+        RAISE EXCEPTION 'Group owner transfer or departing membership was incomplete';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM login_history WHERE login_history_id = 1110 AND user_id = 1010)
+       OR NOT EXISTS (SELECT 1 FROM messages WHERE message_id = 3010 AND sender_user_id = 1010) THEN
+        RAISE EXCEPTION 'Soft deletion removed account history or stable references';
+    END IF;
+
+    SELECT count(*)
+    INTO visible_message_count
+    FROM messages m
+    WHERE m.conversation_id = 2010
+      AND NOT EXISTS (
+          SELECT 1
+          FROM message_deletions md
+          WHERE md.message_id = m.message_id AND md.user_id = 1012
+      );
+    SELECT count(*)
+    INTO hidden_message_count
+    FROM messages m
+    WHERE m.conversation_id = 2010
+      AND EXISTS (
+          SELECT 1
+          FROM message_deletions md
+          WHERE md.message_id = m.message_id AND md.user_id = 1012
+      );
+
+    SELECT CASE WHEN u.account_status = 'deleted' THEN 'Tài khoản đã xóa' ELSE u.full_name END
+    INTO direct_sender_label
+    FROM messages m
+    JOIN users u ON u.user_id = m.sender_user_id
+    WHERE m.message_id = 3010;
+    SELECT CASE WHEN u.account_status = 'deleted' THEN 'Tài khoản đã xóa' ELSE u.full_name END
+    INTO group_sender_label
+    FROM messages m
+    JOIN users u ON u.user_id = m.sender_user_id
+    WHERE m.message_id = 3012;
+
+    IF visible_message_count <> 1 OR hidden_message_count <> 1 THEN
+        RAISE EXCEPTION 'Per-user deletion visibility changed after sender deletion';
+    END IF;
+    IF direct_sender_label <> 'Tài khoản đã xóa'
+       OR group_sender_label <> 'Tài khoản đã xóa' THEN
+        RAISE EXCEPTION 'Deleted sender label was not applied to retained history';
+    END IF;
+    IF EXISTS (
+        SELECT 1 FROM users
+        WHERE user_id IN (1010, 1011) AND account_status <> 'deleted'
+    ) THEN
+        RAISE EXCEPTION 'Deleted users remained eligible for login/search/recovery predicates';
+    END IF;
+
+    RAISE NOTICE 'PASS: active/locked soft delete, group transfer, history retention, and per-user hiding verified';
 END
 $$;
 
