@@ -1,0 +1,226 @@
+package com.chat.user.view;
+
+import com.chat.user.component.UserUiTheme;
+import com.chat.user.model.UserProfile;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Window;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.Arrays;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
+
+public final class RegistrationDialog extends JPanel {
+  private final JTextField fullNameField = UserUiTheme.createTextField(28);
+  private final JTextField usernameField = UserUiTheme.createTextField(28);
+  private final JTextField emailField = UserUiTheme.createTextField(28);
+  private final JTextField addressField = UserUiTheme.createTextField(28);
+  private final JTextField dateOfBirthField = UserUiTheme.createTextField(28);
+  private final JTextField genderField = UserUiTheme.createTextField(28);
+  private final JPasswordField passwordField = new JPasswordField(28);
+  private final JPasswordField confirmPasswordField = new JPasswordField(28);
+  private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.CENTER);
+  private JDialog dialog;
+  private UserProfile submittedProfile;
+
+  public RegistrationDialog() {
+    super(new BorderLayout());
+    buildContent();
+  }
+
+  public JDialog createDialog(Window owner) {
+    dialog = new JDialog(owner, "Tạo tài khoản mới", JDialog.ModalityType.APPLICATION_MODAL);
+    dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    dialog.setContentPane(this);
+    dialog.pack();
+    dialog.setMinimumSize(new Dimension(560, 700));
+    dialog.setSize(560, 720);
+    dialog.setLocationRelativeTo(owner);
+    return dialog;
+  }
+
+  JTextField getFullNameField() {
+    return fullNameField;
+  }
+
+  JTextField getUsernameField() {
+    return usernameField;
+  }
+
+  JTextField getEmailField() {
+    return emailField;
+  }
+
+  JTextField getAddressField() {
+    return addressField;
+  }
+
+  JTextField getDateOfBirthField() {
+    return dateOfBirthField;
+  }
+
+  JTextField getGenderField() {
+    return genderField;
+  }
+
+  JPasswordField getPasswordField() {
+    return passwordField;
+  }
+
+  JPasswordField getConfirmPasswordField() {
+    return confirmPasswordField;
+  }
+
+  JLabel getFeedbackLabel() {
+    return feedbackLabel;
+  }
+
+  UserProfile getSubmittedProfile() {
+    return submittedProfile;
+  }
+
+  void submitRegistration() {
+    char[] password = passwordField.getPassword();
+    char[] confirmation = confirmPasswordField.getPassword();
+    boolean passwordsMatch = Arrays.equals(password, confirmation);
+    boolean passwordBlank = isBlank(password);
+    Arrays.fill(password, '\0');
+    Arrays.fill(confirmation, '\0');
+    passwordField.setText("");
+    confirmPasswordField.setText("");
+
+    String fullName = fullNameField.getText().trim();
+    String username = usernameField.getText().trim();
+    String email = emailField.getText().trim();
+    String address = addressField.getText().trim();
+    String dateOfBirth = dateOfBirthField.getText().trim();
+    String gender = genderField.getText().trim();
+
+    if (fullName.isEmpty()
+        || username.isEmpty()
+        || email.isEmpty()
+        || address.isEmpty()
+        || dateOfBirth.isEmpty()
+        || gender.isEmpty()
+        || passwordBlank) {
+      showFeedback("Vui lòng nhập đầy đủ các thông tin bắt buộc.", UserUiTheme.DANGER);
+      return;
+    }
+    if (!isValidEmail(email)) {
+      showFeedback("Địa chỉ email chưa hợp lệ.", UserUiTheme.DANGER);
+      return;
+    }
+    if (!passwordsMatch) {
+      showFeedback("Mật khẩu xác nhận không khớp.", UserUiTheme.DANGER);
+      return;
+    }
+
+    LocalDate parsedDate;
+    try {
+      parsedDate = LocalDate.parse(dateOfBirth);
+    } catch (DateTimeParseException exception) {
+      showFeedback("Ngày sinh cần có định dạng YYYY-MM-DD.", UserUiTheme.DANGER);
+      return;
+    }
+
+    submittedProfile =
+        new UserProfile(username, fullName, email, address, parsedDate, gender);
+    showFeedback("Đăng ký mẫu hoàn tất; tài khoản chưa được tạo trên máy chủ.", UserUiTheme.SUCCESS);
+  }
+
+  private void buildContent() {
+    setBackground(UserUiTheme.SURFACE_WHITE);
+    setBorder(BorderFactory.createEmptyBorder(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG,
+        UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG));
+
+    JPanel form = new JPanel();
+    form.setLayout(new javax.swing.BoxLayout(form, javax.swing.BoxLayout.Y_AXIS));
+    form.setBackground(UserUiTheme.SURFACE_WHITE);
+    addField(form, "Họ và tên", fullNameField);
+    addField(form, "Tên người dùng", usernameField);
+    addField(form, "Địa chỉ Email", emailField);
+    addField(form, "Địa chỉ", addressField);
+    addField(form, "Ngày sinh (YYYY-MM-DD)", dateOfBirthField);
+    addField(form, "Giới tính", genderField);
+    addField(form, "Mật khẩu", passwordField);
+    addField(form, "Xác nhận mật khẩu", confirmPasswordField);
+
+    feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
+    feedbackLabel.setForeground(UserUiTheme.DANGER);
+    form.add(feedbackLabel);
+
+    JButton submitButton = UserUiTheme.createPrimaryButton("Tạo tài khoản mẫu");
+    submitButton.addActionListener(event -> submitRegistration());
+    JButton cancelButton = UserUiTheme.createSecondaryButton("Hủy");
+    cancelButton.addActionListener(event -> cancelRegistration());
+
+    JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    actions.setOpaque(false);
+    actions.add(cancelButton);
+    actions.add(submitButton);
+
+    JLabel title = new JLabel("Tạo tài khoản mới", SwingConstants.CENTER);
+    title.setFont(UserUiTheme.FONT_TITLE);
+    title.setForeground(UserUiTheme.TEXT_PRIMARY);
+    JLabel subtitle =
+        new JLabel("Nhập các thông tin tài khoản được yêu cầu", SwingConstants.CENTER);
+    subtitle.setFont(UserUiTheme.FONT_BODY);
+    subtitle.setForeground(UserUiTheme.TEXT_MUTED);
+    JPanel heading = new JPanel(new BorderLayout(0, UserUiTheme.SPACE_XS));
+    heading.setOpaque(false);
+    heading.add(title, BorderLayout.NORTH);
+    heading.add(subtitle, BorderLayout.SOUTH);
+
+    JPanel content = new JPanel(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    content.setBackground(UserUiTheme.SURFACE_WHITE);
+    content.add(heading, BorderLayout.NORTH);
+    content.add(new JScrollPane(form), BorderLayout.CENTER);
+    content.add(actions, BorderLayout.SOUTH);
+    add(content, BorderLayout.CENTER);
+  }
+
+  private void addField(JPanel form, String labelText, JTextField field) {
+    JLabel label = new JLabel(labelText);
+    label.setFont(UserUiTheme.FONT_BODY_BOLD);
+    label.setForeground(UserUiTheme.TEXT_SECONDARY);
+    form.add(label);
+    form.add(field);
+    form.add(javax.swing.Box.createVerticalStrut(UserUiTheme.SPACE_SM));
+  }
+
+  private void cancelRegistration() {
+    submittedProfile = null;
+    if (dialog != null) {
+      dialog.dispose();
+    }
+  }
+
+  private void showFeedback(String message, Color color) {
+    feedbackLabel.setText(message);
+    feedbackLabel.setForeground(color);
+  }
+
+  private boolean isValidEmail(String email) {
+    return email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
+  }
+
+  private boolean isBlank(char[] value) {
+    for (char character : value) {
+      if (!Character.isWhitespace(character)) {
+        return false;
+      }
+    }
+    return true;
+  }
+}

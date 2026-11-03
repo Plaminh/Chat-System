@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_blank" name="shell-type"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background": "#f8f9ff",
+            "surface": "#f8f9ff",
+            "primary": "#004ac6",
+            "primary-container": "#2563eb",
+            "on-primary": "#ffffff",
+            "outline": "#737686",
+            "outline-variant": "#c3c6d7",
+            "on-surface": "#0b1c30",
+            "on-surface-variant": "#434655",
+            "surface-container": "#e5eeff",
+            "surface-container-high": "#dce9ff",
+            "surface-container-highest": "#d3e4fe",
+            "surface-container-low": "#eff4ff",
+            "surface-container-lowest": "#ffffff"
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#F1F5F9] text-[#0F172A] min-h-screen w-full flex items-center justify-center p-4 antialiased select-none">
+<!-- Desktop App Container Frame -->
+<div class="w-[480px] bg-white rounded-lg shadow-2xl border border-[#CBD5E1] overflow-hidden flex flex-col">
+<!-- Dark Window Titlebar (Deep Navy) -->
+<div class="h-9 bg-[#0B1320] text-slate-200 px-3 flex items-center justify-between border-b border-[#1E293B]">
+<!-- App Icon & Title -->
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded bg-[#2563EB] flex items-center justify-center text-white text-[11px] font-bold">
+<span class="material-symbols-outlined text-[12px]">chat</span>
+</div>
+<span class="text-xs font-medium tracking-tight text-slate-200">Trò Chuyện Việt — Khôi Phục Mật Khẩu</span>
+<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800/80 text-slate-400 border border-slate-700/60 leading-none">v1.0-Desktop</span>
+</div>
+<!-- Window Control Buttons (Minimize, Maximize, Close) -->
+<div class="flex items-center gap-1.5 pl-2">
+<button class="w-3 h-3 rounded-full bg-[#334155] hover:bg-slate-500 transition-colors flex items-center justify-center group" title="Thu nhỏ" type="button">
+<span class="w-1.5 h-[1px] bg-slate-400 group-hover:bg-white inline-block"></span>
+</button>
+<button class="w-3 h-3 rounded-full bg-[#334155] hover:bg-slate-500 transition-colors flex items-center justify-center group" title="Phóng to" type="button">
+<span class="w-1.5 h-1.5 border border-slate-400 group-hover:border-white inline-block rounded-[1px]"></span>
+</button>
+<button class="w-3 h-3 rounded-full bg-[#EF4444]/80 hover:bg-[#DC2626] transition-colors flex items-center justify-center group" title="Đóng" type="button">
+<span class="material-symbols-outlined text-[9px] text-white opacity-0 group-hover:opacity-100 transition-opacity">close</span>
+</button>
+</div>
+</div>
+<!-- Interior Surface -->
+<main class="p-6 bg-white flex flex-col">
+<!-- Brand & Header Section -->
+<div class="flex flex-col items-center text-center mb-5">
+<div class="w-11 h-11 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-[#2563EB] mb-3 shadow-xs">
+<span class="material-symbols-outlined text-[24px]">shield_person</span>
+</div>
+<h1 class="text-[17px] font-semibold text-[#0F172A] tracking-tight">Khôi phục mật khẩu</h1>
+<p class="text-[12px] text-slate-500 max-w-[360px] mt-1 leading-relaxed">
+          Nhập địa chỉ email liên kết với tài khoản để nhận liên kết xác thực an toàn.
+        </p>
+</div>
+<!-- Password Recovery Form -->
+<form class="flex flex-col gap-3.5" onsubmit="event.preventDefault();">
+<div class="flex flex-col gap-1.5 text-left">
+<div class="flex items-center justify-between">
+<label class="text-xs font-semibold text-slate-700" for="recovery-email">
+              Địa chỉ Email
+            </label>
+<span class="text-[11px] font-medium text-slate-400">Bắt buộc</span>
+</div>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-2.5 text-slate-400 text-[18px] pointer-events-none">mail</span>
+<input class="w-full h-9 pl-8 pr-3 bg-white text-slate-900 text-xs rounded border border-[#CBD5E1] shadow-xs placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#2563EB] focus:border-[#2563EB] transition-colors" id="recovery-email" name="email" placeholder="nhap.email@vidu.vn" type="email" value="nguyen.van.a@example.com"/>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="h-9 px-3 rounded border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors active:bg-slate-100" type="button">
+<span class="material-symbols-outlined text-[16px] text-slate-500">arrow_back</span>
+<span>Quay lại Đăng nhập</span>
+</button>
+<button class="h-9 px-3 rounded bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-medium flex items-center justify-center gap-1.5 shadow-xs transition-colors active:bg-blue-800" type="submit">
+<span>Gửi liên kết khôi phục</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</form>
+<!-- Confirmation / Feedback Box -->
+<div class="mt-4 p-3 rounded bg-[#F0FDF4] border border-[#BBF7D0] flex flex-col gap-2.5">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[#16A34A] text-[18px] shrink-0 mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex flex-col">
+<span class="text-xs font-semibold text-[#166534]">Đã gửi hướng dẫn phục hồi!</span>
+<p class="text-[11px] text-[#15803D] mt-0.5 leading-relaxed">
+              Nếu email tồn tại trong hệ thống, chúng tôi đã gửi thư kèm liên kết bảo mật để đặt lại mật khẩu.
+            </p>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-[#DCFCE7] text-[11px]">
+<div class="flex items-center gap-1 text-[#166534]">
+<span class="material-symbols-outlined text-[14px]">verified_user</span>
+<span>Không gửi mật khẩu tạm thời qua văn bản trần</span>
+</div>
+<button class="flex items-center gap-1 px-2 py-1 rounded bg-white/70 text-slate-400 border border-slate-200 cursor-not-allowed text-[10px] font-medium" disabled="" type="button">
+<span class="material-symbols-outlined text-[12px]">schedule</span>
+<span>Gửi lại (sau 58s)</span>
+</button>
+</div>
+</div>
+<!-- Support Help Link -->
+<div class="mt-4 text-center text-xs text-slate-500 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-slate-400">help_outline</span>
+<span>Gặp sự cố truy cập?</span>
+<a class="text-[#2563EB] hover:text-blue-700 font-medium hover:underline ml-0.5" href="#">Liên hệ bộ phận hỗ trợ kỹ thuật</a>
+</div>
+</main>
+<!-- Bottom Status Strip -->
+<div class="h-6 bg-[#F8FAFC] border-t border-[#E2E8F0] px-3 flex items-center justify-between text-[10px] text-slate-400 font-mono">
+<span>Hệ thống xác thực một lần</span>
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span>Bản thử nghiệm giao diện v1.0</span>
+</div>
+</div>
+</div>
+</body></html>

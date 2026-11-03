@@ -1,0 +1,47 @@
+package com.chat.user.view;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+
+import com.chat.user.model.UserSessionState;
+import javax.swing.JLabel;
+import org.junit.jupiter.api.Test;
+
+class UserMainFrameTest {
+  @Test
+  void providesAllWorkspaceDestinationsAndStartsOnChats() {
+    UserMainFrame frame = new UserMainFrame(UserSessionState.createSample());
+
+    assertEquals(UserMainFrame.Destination.CHATS, frame.getActiveDestination());
+    assertInstanceOf(ChatWorkspacePanel.class, frame.getRegisteredView(UserMainFrame.Destination.CHATS));
+    assertInstanceOf(FriendsPanel.class, frame.getRegisteredView(UserMainFrame.Destination.FRIENDS));
+    assertInstanceOf(
+        FriendRequestsSearchPanel.class,
+        frame.getRegisteredView(UserMainFrame.Destination.REQUESTS));
+    assertInstanceOf(GroupsPanel.class, frame.getRegisteredView(UserMainFrame.Destination.GROUPS));
+    assertInstanceOf(
+        ProfileSettingsPanel.class, frame.getRegisteredView(UserMainFrame.Destination.PROFILE));
+  }
+
+  @Test
+  void navigationButtonsChangeActiveDestination() {
+    UserMainFrame frame = new UserMainFrame(UserSessionState.createSample());
+
+    frame.getNavigationButton(UserMainFrame.Destination.FRIENDS).doClick();
+
+    assertEquals(UserMainFrame.Destination.FRIENDS, frame.getActiveDestination());
+  }
+
+  @Test
+  void registeredViewCanReplaceDestinationPlaceholder() {
+    UserMainFrame frame = new UserMainFrame(UserSessionState.createSample());
+    JLabel replacement = new JLabel("Friends");
+
+    frame.registerView(UserMainFrame.Destination.FRIENDS, replacement);
+
+    assertEquals(replacement, frame.getRegisteredView(UserMainFrame.Destination.FRIENDS));
+    assertNotSame(replacement, frame.getRegisteredView(UserMainFrame.Destination.CHATS));
+  }
+}

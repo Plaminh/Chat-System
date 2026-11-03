@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+      body { overscroll-behavior: none; }
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#f8f9ff",
+            "primary": "#004ac6",
+            "primary-container": "#2563eb",
+            "on-primary": "#ffffff",
+            "on-surface": "#0b1c30",
+            "on-surface-variant": "#434655",
+            "secondary": "#565e74",
+            "canvas-bg": "#F1F5F9",
+            "dark-navy": "#0B1320",
+            "navy-header": "#0F172A",
+            "border-subtle": "#CBD5E1",
+            "status-online": "#16A34A",
+            "status-pending": "#D97706"
+          },
+          borderRadius: {
+            DEFAULT: "0.125rem",
+            lg: "0.25rem",
+            xl: "0.5rem",
+            full: "0.75rem"
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-canvas-bg font-sans text-on-surface select-none h-screen flex flex-col antialiased">
+<!-- 1. TOP DARK WINDOW TITLE BAR (#0B1320 - #0F172A) -->
+<header class="h-8 bg-dark-navy border-b border-slate-800 z-50 flex items-center justify-between px-3 select-none flex-shrink-0 text-slate-300 text-xs">
+<div class="flex items-center gap-2.5">
+<div class="w-4 h-4 rounded bg-blue-600 flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[12px]">chat</span>
+</div>
+<span class="font-semibold text-slate-100 tracking-tight text-[11px]">Trò Chuyện Việt v1.0-FlatLaf</span>
+<span class="text-slate-600">|</span>
+<span class="text-slate-400 font-mono text-[11px]">Hệ thống &gt; Tin nhắn &gt; Trợ lý hỗ trợ soạn thảo văn bản</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-slate-400 font-mono text-[11px]">2026-10-26</span>
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-900 border border-slate-700/60 text-[11px] text-emerald-400">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span>Trực tuyến</span>
+</div>
+<!-- Desktop Window Controls -->
+<div class="flex items-center -mr-2">
+<button class="w-8 h-8 inline-flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors" title="Thu nhỏ" type="button">
+<span class="material-symbols-outlined text-[13px]">remove</span>
+</button>
+<button class="w-8 h-8 inline-flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors" title="Phóng to" type="button">
+<span class="material-symbols-outlined text-[12px]">crop_square</span>
+</button>
+<button class="w-8 h-8 inline-flex items-center justify-center text-slate-400 hover:bg-red-600 hover:text-white transition-colors" title="Đóng" type="button">
+<span class="material-symbols-outlined text-[13px]">close</span>
+</button>
+</div>
+</div>
+</header>
+<!-- MAIN WORKSPACE LAYOUT (Sidebar + Content Workspace + Bottom Status Bar) -->
+<div class="flex-1 flex overflow-hidden relative">
+<!-- 1B. LEFT PERSISTENT DARK SIDEBAR (width: 220px, #0B1320 - #0F172A) -->
+<aside class="w-[220px] bg-dark-navy border-r border-slate-800 flex-shrink-0 flex flex-col justify-between p-3 z-30 select-none">
+<div class="flex flex-col gap-3">
+<!-- App Brand/Logo Header -->
+<div class="flex items-center gap-2.5 px-2 py-1.5 border-b border-slate-800/80 pb-3">
+<div class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-white text-[19px]">forum</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-xs font-semibold text-slate-100 tracking-tight truncate">Trò Chuyện Việt</span>
+<span class="text-[10px] text-slate-400 font-mono">Desktop Client</span>
+</div>
+</div>
+<!-- User Profile Card: Lê Mai Anh (@maianh_le) -->
+<div class="flex items-center gap-2.5 p-2 rounded bg-slate-900/80 border border-slate-800">
+<div class="relative flex-shrink-0">
+<div class="w-8 h-8 rounded bg-indigo-600 flex items-center justify-center text-white text-xs font-bold ring-1 ring-slate-700">
+              MA
+            </div>
+<span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-dark-navy"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-xs font-medium text-slate-100 truncate">Lê Mai Anh</span>
+<span class="text-[10px] text-slate-400 font-mono truncate">@maianh_le</span>
+</div>
+</div>
+<!-- Nav Items -->
+<nav class="flex flex-col gap-1 mt-1 text-xs">
+<!-- Active: Tin nhắn (Blue #2563EB) -->
+<a class="flex items-center justify-between px-2.5 py-2 rounded bg-blue-600 text-white font-medium shadow-sm transition-all" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[17px]">chat_bubble</span>
+<span>Tin nhắn</span>
+</div>
+<span class="px-1.5 py-0.2 rounded bg-blue-700/80 text-[10px] font-mono text-white">4</span>
+</a>
+<a class="flex items-center justify-between px-2.5 py-2 rounded text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[17px]">contacts</span>
+<span>Bạn bè</span>
+</div>
+<span class="px-1.5 py-0.2 rounded bg-red-600 text-[10px] font-semibold text-white">3</span>
+</a>
+<a class="flex items-center gap-2.5 px-2.5 py-2 rounded text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors" href="#">
+<span class="material-symbols-outlined text-[17px]">group</span>
+<span>Hội nhóm</span>
+</a>
+<a class="flex items-center gap-2.5 px-2.5 py-2 rounded text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors" href="#">
+<span class="material-symbols-outlined text-[17px]">settings</span>
+<span>Cài đặt</span>
+</a>
+</nav>
+</div>
+<!-- Logout bottom -->
+<div class="pt-2 border-t border-slate-800">
+<button class="w-full flex items-center gap-2 px-2.5 py-2 rounded text-slate-400 hover:bg-red-950/40 hover:text-red-300 transition-colors text-xs text-left" type="button">
+<span class="material-symbols-outlined text-[17px]">logout</span>
+<span>Đăng xuất</span>
+</button>
+</div>
+</aside>
+<!-- 2. BACKGROUND CANVAS (#F1F5F9 - Chat Workspace behind dimmed modal) -->
+<main class="flex-1 flex flex-row overflow-hidden bg-canvas-bg relative">
+<!-- Cột 1: Danh sách hội thoại (280px) -->
+<section class="w-[280px] border-r border-slate-300 bg-white flex flex-col h-full opacity-60 pointer-events-none select-none">
+<div class="p-3 border-b border-slate-200">
+<div class="flex items-center justify-between mb-2">
+<span class="font-semibold text-slate-800 text-sm">Đoạn chat</span>
+<span class="material-symbols-outlined text-slate-500 text-sm">tune</span>
+</div>
+<div class="h-8 bg-slate-100 rounded px-2 flex items-center gap-1.5 text-xs text-slate-400 border border-slate-200">
+<span class="material-symbols-outlined text-sm">search</span>
+<span>Tìm kiếm tin nhắn...</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-1.5 space-y-1 text-xs">
+<div class="p-2.5 rounded bg-blue-50 border border-blue-200 flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center flex-shrink-0 text-xs">TH</div>
+<div class="min-w-0 flex-1">
+<div class="flex justify-between items-baseline font-semibold text-slate-800">
+<span class="truncate">Trần Hoàng Nam</span>
+<span class="text-[10px] text-slate-400">10:42</span>
+</div>
+<p class="text-[11px] text-blue-600 truncate italic">Đang soạn thảo...</p>
+</div>
+</div>
+<div class="p-2.5 rounded hover:bg-slate-50 flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-full bg-slate-300 text-slate-700 font-bold flex items-center justify-center flex-shrink-0 text-xs">QD</div>
+<div class="min-w-0 flex-1">
+<div class="flex justify-between items-baseline font-semibold text-slate-700">
+<span class="truncate">Nguyễn Quốc Dũng</span>
+<span class="text-[10px] text-slate-400">Thứ 3</span>
+</div>
+<p class="text-[11px] text-slate-500 truncate">Anh gửi lại biên bản họp phòng kế hoạch...</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Cột 2: Khung Chat Chính (Dimmed Background Workspace) -->
+<section class="flex-1 flex flex-col h-full bg-slate-100 opacity-60 pointer-events-none select-none">
+<div class="h-12 bg-white border-b border-slate-200 px-4 flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-xs">TH</div>
+<div>
+<div class="font-semibold text-xs text-slate-800">Trần Hoàng Nam</div>
+<div class="text-[10px] text-emerald-600 font-medium">Trực tuyến trên Trò Chuyện Việt Desktop</div>
+</div>
+</div>
+</div>
+<div class="flex-1 p-4 space-y-3 overflow-y-auto">
+<div class="flex items-start gap-2 max-w-[70%]">
+<div class="bg-white p-2.5 rounded border border-slate-200 text-xs text-slate-700 shadow-sm">
+              Chào bạn, mình vừa tổng hợp xong feedback của các bên về lộ trình sprint tới. Cậu xem qua chưa?
+            </div>
+</div>
+<div class="flex items-start justify-end max-w-[70%] ml-auto">
+<div class="bg-blue-600 text-white p-2.5 rounded text-xs shadow-sm">
+              Mình xem rồi nhé, các hạng mục đều hợp lý!
+            </div>
+</div>
+</div>
+<div class="p-3 bg-white border-t border-slate-200">
+<div class="p-2 bg-slate-50 border border-slate-200 rounded">
+<textarea class="w-full bg-transparent text-xs text-slate-700 resize-none outline-none" id="composer-textarea" rows="2">nam ơi xong chưa gửi tôi xem cái file sprint với để tôi báo sếp</textarea>
+<div class="flex justify-between items-center pt-1 border-t border-slate-200 mt-1">
+<span class="text-[10px] text-slate-400">Trợ lý soạn thảo: Sẵn sàng</span>
+<button class="px-3 py-1 bg-blue-600 text-white rounded text-xs" type="button">Gửi</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. WRITING ASSISTANCE MODAL DIALOG (Admin FlatLaf Desktop Theme) -->
+<div class="absolute inset-0 z-40 flex items-center justify-center bg-slate-900/45 backdrop-blur-[1px] p-4 transition-all duration-150" id="writing-assistant-modal">
+<!-- Modal Container (Sharp 4px border-radius, crisp 1px border #CBD5E1, subtle desktop drop-shadow) -->
+<div class="w-full max-w-[820px] bg-white rounded-[4px] border border-border-subtle shadow-xl flex flex-col max-h-[92vh] overflow-hidden select-text text-slate-800">
+<!-- Dialog Header: Dark navy title bar (#0F172A) -->
+<div class="bg-navy-header px-4 py-2.5 flex items-center justify-between text-white flex-shrink-0 border-b border-slate-800">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-[2px] bg-blue-600 flex items-center justify-center text-white shadow-inner">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<h3 class="font-semibold text-xs text-slate-100 tracking-tight">Trợ lý hỗ trợ soạn thảo tin nhắn</h3>
+<span class="px-1.5 py-0.2 rounded-[2px] bg-blue-900 text-blue-300 font-mono text-[10px] border border-blue-700">Trò Chuyện Việt</span>
+</div>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+<p class="text-[10px] text-slate-300">
+                    Công cụ hỗ trợ văn phong mẫu <span class="text-slate-400 font-mono">(Mô phỏng giao diện cục bộ • Không gọi API bên thứ ba)</span>
+</p>
+</div>
+</div>
+</div>
+<!-- Crisp close button (✕) -->
+<button class="w-7 h-7 rounded-[2px] inline-flex items-center justify-center text-slate-400 hover:bg-red-600 hover:text-white transition-colors" id="btn-close-modal-x" title="Đóng" type="button">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+<!-- Dialog Body (Scrollable) -->
+<div class="p-4 overflow-y-auto space-y-3.5 flex-1 bg-slate-50/60">
+<!-- Mode selector / Tabs: 'Chỉnh sửa bản nháp' & 'Gợi ý tin nhắn mới' (32-36px desktop height) -->
+<div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-200 pb-2.5">
+<div class="inline-flex p-0.5 rounded-[3px] bg-slate-200/80 border border-slate-300">
+<button class="h-8 px-3.5 rounded-[2px] bg-blue-600 text-white font-medium text-xs shadow-sm flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[15px]">edit_note</span>
+<span>Chỉnh sửa bản nháp</span>
+</button>
+<button class="h-8 px-3.5 rounded-[2px] text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium text-xs transition-colors flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[15px]">lightbulb</span>
+<span>Gợi ý tin nhắn mới</span>
+</button>
+</div>
+<span class="text-[11px] text-slate-500 font-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-blue-600">verified</span>
+                Áp dụng chuẩn quy tắc giao tiếp tiếng Việt
+              </span>
+</div>
+<!-- Tone selector / Style Chips: Compact Flat Badges -->
+<div class="space-y-1.5">
+<label class="font-mono text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Chọn phong cách văn phong mong muốn</label>
+<div class="flex flex-wrap gap-1.5">
+<button class="h-7 px-2.5 rounded-[2px] bg-blue-600 text-white text-xs font-medium flex items-center gap-1.5 shadow-xs" type="button">
+<span class="material-symbols-outlined text-[14px]">business_center</span>
+<span>Chuyên nghiệp &amp; Lịch sự</span>
+<span class="material-symbols-outlined text-[12px]">check</span>
+</button>
+<button class="h-7 px-2.5 rounded-[2px] bg-white hover:bg-slate-100 text-slate-700 text-xs border border-slate-300 font-medium flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px] text-slate-500">bolt</span>
+<span>Ngắn gọn &amp; Súc tích</span>
+</button>
+<button class="h-7 px-2.5 rounded-[2px] bg-white hover:bg-slate-100 text-slate-700 text-xs border border-slate-300 font-medium flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px] text-slate-500">sentiment_satisfied</span>
+<span>Thân thiện &amp; Cởi mở</span>
+</button>
+<button class="h-7 px-2.5 rounded-[2px] bg-white hover:bg-slate-100 text-slate-700 text-xs border border-slate-300 font-medium flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px] text-slate-500">gavel</span>
+<span>Trang trọng &amp; Nghiêm túc</span>
+</button>
+</div>
+</div>
+<!-- Split / Side-by-Side: Draft vs Proposed Revision Preview -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+<!-- KHUNG 1: Bản nháp hiện tại -->
+<div class="rounded-[3px] bg-white border border-slate-300 p-3 flex flex-col justify-between shadow-xs">
+<div class="space-y-1.5">
+<div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[2px] bg-slate-100 text-slate-600 font-mono text-[10px] border border-slate-200">
+<span class="material-symbols-outlined text-[12px]">history_edu</span>
+                      Bản nháp hiện tại trong ô soạn
+                    </span>
+<span class="font-mono text-[10px] text-slate-400">15 từ • 62 ký tự</span>
+</div>
+<p class="text-xs text-slate-700 italic p-2.5 rounded-[2px] bg-slate-50 border border-dashed border-slate-200 min-h-[88px] leading-relaxed select-text" id="original-draft-text">
+                    “nam ơi xong chưa gửi tôi xem cái file sprint với để tôi báo sếp”
+                  </p>
+</div>
+<div class="pt-2 mt-1 flex items-center justify-between text-[11px] text-slate-500 border-t border-slate-100">
+<span class="flex items-center gap-1 text-amber-600 font-medium">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                    Văn phong suồng sã, thiếu chủ ngữ
+                  </span>
+<button class="text-blue-600 hover:underline font-mono text-[10px]" type="button">Giữ nguyên</button>
+</div>
+</div>
+<!-- KHUNG 2: Đề xuất văn phong chuyên nghiệp (Gợi ý tối ưu) -->
+<div class="rounded-[3px] bg-blue-50/40 border-2 border-blue-600 p-3 flex flex-col justify-between shadow-sm relative">
+<div class="space-y-1.5">
+<div class="flex items-center justify-between pb-1.5 border-b border-blue-100">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[2px] bg-blue-100 text-blue-700 font-mono text-[10px] font-semibold">
+<span class="material-symbols-outlined text-[12px]">recommend</span>
+                      Đề xuất văn phong chuyên nghiệp
+                    </span>
+<span class="px-1.5 py-0.2 rounded-[2px] bg-emerald-600 text-white font-mono text-[9px] font-bold tracking-wider">
+                      GỢI Ý TỐI ƯU
+                    </span>
+</div>
+<div class="p-2.5 rounded-[2px] bg-white border border-blue-200 min-h-[88px] flex flex-col justify-between">
+<p class="text-xs text-slate-900 font-medium leading-relaxed select-text" id="suggested-replacement-text">
+                      Chào Nam, cậu đã hoàn thiện tài liệu kế hoạch sprint chưa? Nhờ cậu gửi qua giúp mình để mình tổng hợp báo cáo với ban lãnh đạo nhé. Cảm ơn cậu!
+                    </p>
+</div>
+</div>
+<div class="pt-2 mt-1 flex items-center justify-between text-[11px] border-t border-blue-100">
+<span class="text-emerald-700 font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+                    Rõ ràng hơn (+2 ý chính) • Văn phong lịch sự, trang nhã
+                  </span>
+<span class="font-mono text-[10px] text-slate-500">27 từ</span>
+</div>
+</div>
+</div>
+<!-- Alternative Suggestions Strip -->
+<div class="p-2.5 rounded-[3px] bg-white border border-slate-300 flex items-center justify-between gap-2 shadow-xs">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[16px] text-blue-600 flex-shrink-0">splitscreen</span>
+<span class="text-xs text-slate-700 truncate">
+                  Phương án rút gọn: <span class="italic text-slate-600">“Nam gửi giúp mình tài liệu sprint nhé, để mình kịp gửi sếp xem qua. Cảm ơn Nam!”</span>
+</span>
+</div>
+<button class="h-6 px-2.5 rounded-[2px] bg-slate-100 hover:bg-slate-200 text-blue-600 text-[11px] border border-slate-300 font-medium whitespace-nowrap transition-colors" id="btn-use-alt" type="button">
+                Chọn phương án này
+              </button>
+</div>
+<!-- Visual Disclaimer badge (Clearly marked as local mockup) -->
+<div class="p-2.5 rounded-[3px] bg-slate-100 border border-slate-300 space-y-0.5">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-[15px] text-slate-500 flex-shrink-0 mt-0.5">info</span>
+<p class="text-[11px] text-slate-600 leading-normal">
+<span class="font-semibold text-slate-800">Mô phỏng giao diện mẫu</span> - Không kết nối mô hình ngôn ngữ trực tuyến (LLM/API). Người dùng toàn quyền kiểm soát nội dung trước khi gửi.
+                </p>
+</div>
+</div>
+</div>
+<!-- Dialog Footer Action Bar -->
+<div class="px-4 py-2.5 bg-slate-100 border-t border-slate-300 flex items-center justify-between flex-wrap gap-2 flex-shrink-0">
+<div>
+<!-- Nút Thử lại (Visual only / Re-generate animation) -->
+<button class="h-8 px-3 rounded-[2px] bg-white hover:bg-slate-50 text-slate-700 text-xs border border-slate-300 flex items-center gap-1.5 transition-colors shadow-2xs" id="btn-retry-action" type="button">
+<span class="material-symbols-outlined text-[15px] text-slate-600" id="retry-icon">autorenew</span>
+<span>Thử lại (Tạo gợi ý khác)</span>
+</button>
+</div>
+<div class="flex items-center gap-2">
+<!-- Nút Đóng -->
+<button class="h-8 px-3.5 rounded-[2px] bg-white hover:bg-slate-50 text-slate-700 text-xs border border-slate-300 transition-colors" id="btn-close-modal" type="button">
+                Đóng
+              </button>
+<!-- Nút Chèn nối tiếp -->
+<button class="h-8 px-3.5 rounded-[2px] bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs border border-slate-300 transition-colors flex items-center gap-1.5" id="btn-insert-append" type="button">
+<span class="material-symbols-outlined text-[15px]">playlist_add</span>
+<span>Chèn nối tiếp</span>
+</button>
+<!-- Nút Thay thế toàn bộ (Primary Bright Blue #2563EB) -->
+<button class="h-8 px-4 rounded-[2px] bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs flex items-center gap-1.5 shadow-sm transition-colors" id="btn-insert-replace" type="button">
+<span class="material-symbols-outlined text-[15px]">check_circle</span>
+<span>Chèn vào ô soạn</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- 1C. BOTTOM DESKTOP STATUS BAR -->
+<footer class="h-6 bg-dark-navy border-t border-slate-800 flex items-center justify-between px-3 text-[11px] font-mono text-slate-400 select-none flex-shrink-0 z-40">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+<span class="text-slate-300">Trạng thái kết nối: Sẵn sàng</span>
+<span class="text-slate-600">|</span>
+<span>Phiên làm việc bảo mật (TLS 1.3 / E2E)</span>
+</div>
+<div class="flex items-center gap-2 text-slate-400">
+<span>Client UI Version 1.0 (FlatLaf Desktop Theme)</span>
+</div>
+</footer>
+<!-- CLIENT JAVASCRIPT MICRO-INTERACTIONS -->
+<script>
+    (function() {
+      const modal = document.getElementById('writing-assistant-modal');
+      const textarea = document.getElementById('composer-textarea');
+      const suggestedText = document.getElementById('suggested-replacement-text');
+      
+      const btnCloseX = document.getElementById('btn-close-modal-x');
+      const btnClose = document.getElementById('btn-close-modal');
+      const btnReplace = document.getElementById('btn-insert-replace');
+      const btnAppend = document.getElementById('btn-insert-append');
+      const btnRetry = document.getElementById('btn-retry-action');
+      const retryIcon = document.getElementById('retry-icon');
+      const btnUseAlt = document.getElementById('btn-use-alt');
+
+      function closeModal() {
+        if (modal) {
+          modal.classList.add('opacity-0', 'pointer-events-none');
+          setTimeout(() => {
+            modal.style.display = 'none';
+          }, 150);
+        }
+      }
+
+      function openModal() {
+        if (modal) {
+          modal.style.display = 'flex';
+          setTimeout(() => {
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+          }, 10);
+        }
+      }
+
+      if (btnCloseX) btnCloseX.addEventListener('click', closeModal);
+      if (btnClose) btnClose.addEventListener('click', closeModal);
+
+      // Chèn vào ô soạn
+      if (btnReplace && textarea && suggestedText) {
+        btnReplace.addEventListener('click', function() {
+          textarea.value = suggestedText.innerText.trim();
+          textarea.focus();
+          closeModal();
+        });
+      }
+
+      // Chèn nối tiếp
+      if (btnAppend && textarea && suggestedText) {
+        btnAppend.addEventListener('click', function() {
+          const current = textarea.value.trim();
+          textarea.value = (current ? current + ' ' : '') + suggestedText.innerText.trim();
+          textarea.focus();
+          closeModal();
+        });
+      }
+
+      // Chọn phương án rút gọn
+      if (btnUseAlt && textarea) {
+        btnUseAlt.addEventListener('click', function() {
+          textarea.value = 'Nam gửi giúp mình tài liệu sprint nhé, để mình kịp gửi sếp xem qua. Cảm ơn Nam!';
+          textarea.focus();
+          closeModal();
+        });
+      }
+
+      // Thử lại (Visual rotation)
+      if (btnRetry && retryIcon && suggestedText) {
+        btnRetry.addEventListener('click', function() {
+          retryIcon.classList.add('animate-spin');
+          setTimeout(() => {
+            retryIcon.classList.remove('animate-spin');
+            suggestedText.innerText = 'Nam thân mến, nhờ cậu gửi giúp mình tài liệu Sprint Backlog mới nhất để mình chuẩn bị trước nội dung báo cáo nhé. Cảm ơn cậu nhiều!';
+          }, 400);
+        });
+      }
+    })();
+  </script>
+</body></html>

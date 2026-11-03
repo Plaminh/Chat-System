@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trò Chuyện Việt - Quản lý Hội Nhóm &amp; Tạo Nhóm Mới</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "navy-sidebar": "#0F172A",
+            "navy-border": "#1E293B",
+            "desktop-canvas": "#F1F5F9",
+            "card-border": "#CBD5E1",
+            "primary-blue": "#2563EB",
+            "primary-hover": "#1D4ED8",
+            "status-online": "#16A34A",
+            "status-danger": "#DC2626"
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    @layer base {
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      * {
+        box-sizing: border-box;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+  </style>
+</head>
+<body class="h-full bg-desktop-canvas font-sans text-slate-800 antialiased select-none flex">
+<!-- ================= 1. FIXED DARK NAVY SIDEBAR (240px) ================= -->
+<aside class="w-[240px] flex-shrink-0 bg-navy-sidebar border-r border-navy-border flex flex-col justify-between text-slate-300 z-30">
+<!-- Top Identity & Navigation -->
+<div class="flex flex-col">
+<!-- App Header / Branding -->
+<div class="h-12 border-b border-navy-border px-3.5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded bg-primary-blue flex items-center justify-center text-white shadow-sm">
+<span class="material-symbols-outlined text-[16px]">forum</span>
+</div>
+<span class="text-[13px] font-bold text-white tracking-tight">Trò Chuyện Việt</span>
+</div>
+<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 font-medium">v1.0</span>
+</div>
+<!-- Current User Profile Box -->
+<div class="p-3 border-b border-navy-border bg-slate-900/60">
+<div class="flex items-center gap-2.5">
+<div class="relative flex-shrink-0">
+<img alt="Avatar Lê Mai Anh" class="w-9 h-9 rounded border border-slate-700 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd4jwPwd_NLBvo13tNjdV1qfJPQevd6nzx0P6E40ZHPiLcV9oLnlsNZGaxQe810f1MEOZDO1X-tu7tiyRerz-jJmlSdsexTw0mP_YOYEndlnJ2XqMkZqPTDiwtk76-5Xj-EKqMDT9q3H4FkHu_Pej3fw6-6iCLTF0vP1poG0cDxE-AvLcTr0vinFDf40y17Cu1d5zqLCAOEZvFD7ALN4wm0jGXK4T5_BHRjxdYrtA"/>
+<span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-status-online border-2 border-navy-sidebar"></span>
+</div>
+<div class="min-w-0 flex-1">
+<div class="text-[12px] font-semibold text-white truncate">Lê Mai Anh</div>
+<div class="text-[11px] text-slate-400 font-mono truncate">@maianh_le</div>
+</div>
+</div>
+<div class="mt-2 flex items-center justify-between text-[11px]">
+<span class="inline-flex items-center gap-1.5 text-emerald-400 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            Trực tuyến
+          </span>
+<span class="text-[10px] text-slate-400 font-mono">ID: 88421</span>
+</div>
+</div>
+<!-- Sidebar Navigation Menu -->
+<nav class="p-2 space-y-4">
+<!-- Group: TRÒ CHUYỆN -->
+<div>
+<div class="px-2 pb-1.5 text-[10px] font-bold text-slate-400 tracking-wider uppercase">TRÒ CHUYỆN</div>
+<div class="space-y-0.5 text-[12px]">
+<a class="flex items-center gap-2.5 px-2.5 py-1.5 rounded text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors" href="#">
+<span class="material-symbols-outlined text-[17px] text-slate-400">chat_bubble</span>
+<span>Tin nhắn</span>
+<span class="ml-auto text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">4</span>
+</a>
+<a class="flex items-center gap-2.5 px-2.5 py-1.5 rounded text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors" href="#">
+<span class="material-symbols-outlined text-[17px] text-slate-400">contacts</span>
+<span>Bạn bè</span>
+</a>
+<a class="flex items-center gap-2.5 px-2.5 py-1.5 rounded font-medium bg-primary-blue text-white shadow-sm" href="#">
+<span class="material-symbols-outlined text-[17px] text-white">groups</span>
+<span>Hội nhóm</span>
+<span class="ml-auto text-[10px] font-semibold px-1.5 py-0.2 rounded bg-blue-700 text-blue-100">8</span>
+</a>
+</div>
+</div>
+<!-- Group: TÀI KHOẢN & HỆ THỐNG -->
+<div>
+<div class="px-2 pb-1.5 text-[10px] font-bold text-slate-400 tracking-wider uppercase">TÀI KHOẢN &amp; HỆ THỐNG</div>
+<div class="space-y-0.5 text-[12px]">
+<a class="flex items-center gap-2.5 px-2.5 py-1.5 rounded text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors" href="#">
+<span class="material-symbols-outlined text-[17px] text-slate-400">tune</span>
+<span>Cài đặt</span>
+</a>
+<a class="flex items-center gap-2.5 px-2.5 py-1.5 rounded text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors" href="#">
+<span class="material-symbols-outlined text-[17px] text-slate-400">shield</span>
+<span>Bảo mật</span>
+</a>
+</div>
+</div>
+</nav>
+</div>
+<!-- Bottom Logout -->
+<div class="p-2 border-t border-navy-border">
+<button class="w-full flex items-center gap-2 px-2.5 py-1.5 rounded text-[12px] text-slate-300 hover:text-white hover:bg-rose-950/40 hover:border-rose-900 border border-transparent transition-all" title="Đăng xuất khỏi hệ thống">
+<span class="material-symbols-outlined text-[17px] text-slate-400">logout</span>
+<span>Đăng xuất</span>
+</button>
+</div>
+</aside>
+<!-- ================= 2. MAIN DESKTOP WORKSPACE ================= -->
+<div class="flex-1 flex flex-col h-full overflow-hidden bg-desktop-canvas">
+<!-- TOP WINDOW CHROME / BREADCRUMB BAR (FlatLaf Desktop titlebar) -->
+<header class="h-9 bg-white border-b border-card-border px-3 flex items-center justify-between text-[12px] text-slate-600 flex-shrink-0 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[16px] text-slate-400">dns</span>
+<div class="flex items-center gap-1 font-mono text-[11px] text-slate-500 truncate">
+<span>Hệ thống</span>
+<span class="text-slate-300">&gt;</span>
+<span class="text-slate-700 font-semibold">Hội nhóm</span>
+<span class="text-slate-300">&gt;</span>
+<span class="text-primary-blue font-semibold">Danh sách nhóm &amp; Tạo nhóm</span>
+</div>
+<div class="hidden md:flex items-center gap-3 pl-3 ml-2 border-l border-slate-200 text-[11px] text-slate-500 font-mono">
+<span>Phiên làm việc: <strong>2026-10-26</strong></span>
+<span class="text-slate-300">|</span>
+<span>Vai trò: <strong class="text-slate-700">Thành viên</strong></span>
+</div>
+</div>
+<!-- Window Control Buttons (- o x) -->
+<div class="flex items-center gap-1">
+<button class="w-6 h-5 flex items-center justify-center rounded hover:bg-slate-100 text-slate-500" title="Thu nhỏ">
+<span class="material-symbols-outlined text-[13px]">minimize</span>
+</button>
+<button class="w-6 h-5 flex items-center justify-center rounded hover:bg-slate-100 text-slate-500" title="Phóng to">
+<span class="material-symbols-outlined text-[13px]">crop_square</span>
+</button>
+<button class="w-6 h-5 flex items-center justify-center rounded hover:bg-status-danger hover:text-white text-slate-500 transition-colors" title="Đóng">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+</header>
+<!-- WORKSPACE CANVAS BODY -->
+<div class="flex-1 flex overflow-hidden p-2 gap-2 relative">
+<!-- CỘT DANH SÁCH NHÓM (320px) -->
+<div class="w-[320px] flex-shrink-0 bg-white border border-card-border rounded-md flex flex-col overflow-hidden shadow-xs">
+<!-- Header & Toolbar -->
+<div class="p-2.5 border-b border-card-border bg-slate-50/70 flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="font-bold text-[13px] text-slate-800">Danh Sách Nhóm</span>
+<span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-200 text-slate-700 font-medium">8 nhóm</span>
+</div>
+<button class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-primary-blue hover:bg-primary-hover text-white text-[11px] font-semibold shadow-xs transition-colors" id="open-modal-btn">
+<span class="material-symbols-outlined text-[14px]">group_add</span>
+<span>Tạo nhóm</span>
+</button>
+</div>
+<!-- Search box -->
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-[15px]">search</span>
+<input class="w-full pl-7 pr-2.5 py-1 text-[11px] bg-white border border-slate-300 rounded focus:outline-none focus:border-primary-blue placeholder:text-slate-400" placeholder="Lọc nhóm hoặc chủ đề..." type="text"/>
+</div>
+</div>
+<!-- Scrollable 8 Group List -->
+<div class="flex-1 overflow-y-auto divide-y divide-slate-100 text-[12px]">
+<!-- Group 1 (Active) -->
+<div class="p-2.5 bg-blue-50/70 border-l-2 border-primary-blue hover:bg-blue-50 cursor-pointer flex items-center gap-2.5 transition-colors">
+<div class="w-8 h-8 rounded bg-primary-blue/10 border border-blue-200 flex items-center justify-center font-bold text-primary-blue text-[11px] flex-shrink-0">
+              UI
+            </div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between leading-tight">
+<span class="font-semibold text-slate-800 truncate text-[12px]">Dự án Thiết kế UI/UX Q4</span>
+<span class="text-[10px] text-slate-400 font-mono">09:42</span>
+</div>
+<p class="text-[11px] text-slate-500 truncate mt-0.5">Nam: Đã cập nhật file Figma v3.5</p>
+</div>
+<span class="w-4 h-4 rounded-full bg-primary-blue text-white text-[9px] font-bold flex items-center justify-center flex-shrink-0">2</span>
+</div>
+<!-- Group 2 -->
+<div class="p-2.5 hover:bg-slate-50 cursor-pointer flex items-center gap-2.5 transition-colors">
+<div class="w-8 h-8 rounded bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-700 text-[11px] flex-shrink-0">
+              AD
+            </div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between leading-tight">
+<span class="font-semibold text-slate-700 truncate text-[12px]">Ban Quản Trị Hệ Thống</span>
+<span class="text-[10px] text-slate-400 font-mono">Hôm qua</span>
+</div>
+<p class="text-[11px] text-slate-400 truncate mt-0.5">Kiểm tra bảo mật định kỳ cụm DB-HCM</p>
+</div>
+</div>
+<!-- Group 3 -->
+<div class="p-2.5 hover:bg-slate-50 cursor-pointer flex items-center gap-2.5 transition-colors">
+<div class="w-8 h-8 rounded bg-emerald-50 border border-emerald-200 flex items-center justify-center font-bold text-emerald-700 text-[11px] flex-shrink-0">
+              CB
+            </div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between leading-tight">
+<span class="font-medium text-slate-700 truncate text-[12px]">CLB Chạy Bộ Cuối Tuần</span>
+<span class="text-[10px] text-slate-400 font-mono">T.Hai</span>
+</div>
+<p class="text-[11px] text-slate-400 truncate mt-0.5">Thảo: Sáng CN hẹn ở Sala lúc 5h30 nhé!</p>
+</div>
+</div>
+<!-- Group 4 -->
+<div class="p-2.5 hover:bg-slate-50 cursor-pointer flex items-center gap-2.5 transition-colors">
+<div class="w-8 h-8 rounded bg-indigo-50 border border-indigo-200 flex items-center justify-center font-bold text-indigo-700 text-[11px] flex-shrink-0">
+              FE
+            </div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between leading-tight">
+<span class="font-medium text-slate-700 truncate text-[12px]">Frontend Development Guild</span>
+<span class="text-[10px] text-slate-400 font-mono">18/10</span>
+</div>
+<p class="text-[11px] text-slate-400 truncate mt-0.5">Tuấn: Đã sync FlatLaf tokens với core repo</p>
+</div>
+</div>
+<!-- Group 5 -->
+<div class="p-2.5 hover:bg-slate-50 cursor-pointer flex items-center gap-2.5 transition-colors">
+<div class="w-8 h-8 rounded bg-amber-50 border border-amber-200 flex items-center justify-center font-bold text-amber-700 text-[11px] flex-shrink-0">
+              TB
+            </div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between leading-tight">
+<span class="font-medium text-slate-700 truncate text-[12px]">Thông Báo Công Ty Toàn Thể</span>
+<span class="text-[10px] text-slate-400 font-mono">15/10</span>
+</div>
+<p class="text-[11px] text-slate-400 truncate mt-0.5">[HR] Thông báo lịch nghỉ lễ Q4</p>
+</div>
+</div>
+<!-- Group 6 -->
+<div class="p-2.5 hover:bg-slate-50 cursor-pointer flex items-center gap-2.5 transition-colors">
+<div class="w-8 h-8 rounded bg-purple-50 border border-purple-200 flex items-center justify-center font-bold text-purple-700 text-[11px] flex-shrink-0">
+              QA
+            </div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between leading-tight">
+<span class="font-medium text-slate-700 truncate text-[12px]">Nhóm Kiểm Thử &amp; UAT v3.5</span>
+<span class="text-[10px] text-slate-400 font-mono">12/10</span>
+</div>
+<p class="text-[11px] text-slate-400 truncate mt-0.5">Đã log 3 bugs kiểm thử màn hình modal</p>
+</div>
+</div>
+<!-- Group 7 -->
+<div class="p-2.5 hover:bg-slate-50 cursor-pointer flex items-center gap-2.5 transition-colors">
+<div class="w-8 h-8 rounded bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-600 text-[11px] flex-shrink-0">
+              MK
+            </div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between leading-tight">
+<span class="font-medium text-slate-700 truncate text-[12px]">Chiến Dịch Marketing Ra Mắt</span>
+<span class="text-[10px] text-slate-400 font-mono">10/10</span>
+</div>
+<p class="text-[11px] text-slate-400 truncate mt-0.5">Hoàn thiện banner cho App Store</p>
+</div>
+</div>
+<!-- Group 8 -->
+<div class="p-2.5 hover:bg-slate-50 cursor-pointer flex items-center gap-2.5 transition-colors">
+<div class="w-8 h-8 rounded bg-sky-50 border border-sky-200 flex items-center justify-center font-bold text-sky-700 text-[11px] flex-shrink-0">
+              CS
+            </div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between leading-tight">
+<span class="font-medium text-slate-700 truncate text-[12px]">Chăm Sóc Khách Hàng 24/7</span>
+<span class="text-[10px] text-slate-400 font-mono">08/10</span>
+</div>
+<p class="text-[11px] text-slate-400 truncate mt-0.5">Báo cáo chỉ số SLA tháng vừa qua</p>
+</div>
+</div>
+</div>
+<!-- Footer status of group list -->
+<div class="p-2 bg-slate-50 border-t border-card-border flex items-center justify-between text-[11px] text-slate-500 font-mono">
+<span>Kênh hoạt động: 8/8</span>
+<span class="text-primary-blue cursor-pointer hover:underline">Làm mới</span>
+</div>
+</div>
+<!-- WORKSPACE DETAIL / PREVIEW WORKSPACE -->
+<div class="flex-1 bg-white border border-card-border rounded-md flex flex-col overflow-hidden shadow-xs">
+<!-- Top bar of group channel -->
+<div class="h-10 border-b border-card-border px-3.5 flex items-center justify-between bg-slate-50/50">
+<div class="flex items-center gap-2">
+<span class="font-bold text-[13px] text-slate-800">Dự án Thiết kế UI/UX Q4</span>
+<span class="text-[10px] px-1.5 py-0.2 rounded bg-slate-200 text-slate-600 font-mono">6 thành viên</span>
+</div>
+<div class="flex items-center gap-2 text-slate-500 text-[12px]">
+<button class="px-2 py-1 rounded hover:bg-slate-200 flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">person_add</span>
+<span class="text-[11px]">Mời thêm</span>
+</button>
+<button class="px-2 py-1 rounded hover:bg-slate-200 flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">settings</span>
+<span class="text-[11px]">Tùy chọn</span>
+</button>
+</div>
+</div>
+<!-- Placeholder Chat Workspace -->
+<div class="flex-1 p-4 bg-slate-50/30 flex flex-col justify-between overflow-y-auto">
+<div class="space-y-3">
+<div class="text-center">
+<span class="text-[11px] font-mono text-slate-400 bg-white border border-slate-200 px-2 py-0.5 rounded">Hôm nay, 26 tháng 10 năm 2026</span>
+</div>
+<div class="flex items-start gap-2.5">
+<img alt="Trần Hoàng Nam" class="w-7 h-7 rounded border border-slate-200 object-cover mt-0.5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOcBeMIloZaJAMM0cag8SWzcuq_hxgmvLK6pFNbOQg-w5uAoPDGeBHOdVhvPD0dHd0bgMJzzaJs0Vf5yE9NcVhkBJk0X1pg0LrNr7PHoFrcpesei-12_Us2eQJ8IFrT1dLLpHZni3-8a31OoOQImIfEdkchlF2KTJAixQ9fE-5nHq8eY9zEgePlBGu2iBVqFhOgrcIo_-sNIwcrv1vFt8KPbY8dlbKi4gqqCF-zTQ"/>
+<div class="bg-white border border-slate-200 rounded p-2 max-w-lg text-[12px] shadow-2xs">
+<div class="font-semibold text-slate-800 text-[11px] mb-0.5">Trần Hoàng Nam <span class="text-[10px] text-slate-400 font-normal font-mono">09:40</span></div>
+<p class="text-slate-700">Mọi người xem qua các luồng giao diện Admin Client FlatLaf nhé. Cần đảm bảo độ tương phản các nút bấm và hộp thoại đồng nhất.</p>
+</div>
+</div>
+<div class="flex items-start gap-2.5">
+<img alt="Lê Mai Anh" class="w-7 h-7 rounded border border-slate-200 object-cover mt-0.5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd4jwPwd_NLBvo13tNjdV1qfJPQevd6nzx0P6E40ZHPiLcV9oLnlsNZGaxQe810f1MEOZDO1X-tu7tiyRerz-jJmlSdsexTw0mP_YOYEndlnJ2XqMkZqPTDiwtk76-5Xj-EKqMDT9q3H4FkHu_Pej3fw6-6iCLTF0vP1poG0cDxE-AvLcTr0vinFDf40y17Cu1d5zqLCAOEZvFD7ALN4wm0jGXK4T5_BHRjxdYrtA"/>
+<div class="bg-white border border-slate-200 rounded p-2 max-w-lg text-[12px] shadow-2xs">
+<div class="font-semibold text-slate-800 text-[11px] mb-0.5">Lê Mai Anh <span class="text-[10px] text-slate-400 font-normal font-mono">09:42</span></div>
+<p class="text-slate-700">Mình đang mở hộp thoại tạo nhóm để hoàn thiện bảng chọn người dùng theo đúng chỉ dẫn!</p>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-2 border-t border-slate-200 flex items-center gap-2 bg-white p-2 rounded border">
+<input class="flex-1 text-[12px] border-none focus:outline-none placeholder:text-slate-400" placeholder="Nhập tin nhắn..." type="text"/>
+<button class="px-3 py-1 rounded bg-primary-blue text-white text-[11px] font-semibold">Gửi</button>
+</div>
+</div>
+</div>
+</div>
+<!-- ================= 4. CREATE GROUP MODAL DIALOG (OVERLAY) ================= -->
+<div class="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] z-50 flex items-center justify-center p-4" id="modal-container">
+<!-- Window Style Dialog Container (Max width: 560px) -->
+<div class="w-full max-w-[560px] bg-white border border-card-border rounded-md shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+<!-- Dark Navy Titlebar (#0F172A) -->
+<div class="h-9 bg-navy-sidebar px-3 flex items-center justify-between text-white flex-shrink-0">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-blue-400">group_add</span>
+<span class="text-[12px] font-semibold tracking-tight">Tạo nhóm trò chuyện mới</span>
+</div>
+<button class="w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" id="close-modal-btn" title="Đóng hộp thoại">
+<span class="material-symbols-outlined text-[15px]">close</span>
+</button>
+</div>
+<!-- Dialog Body -->
+<div class="p-4 space-y-3.5 max-h-[80vh] overflow-y-auto text-[12px]">
+<!-- Field: Tên nhóm trò chuyện -->
+<div class="space-y-1">
+<div class="flex items-center justify-between">
+<label class="font-semibold text-slate-700 text-[12px]">
+                Tên nhóm trò chuyện <span class="text-status-danger">*</span>
+</label>
+<span class="font-mono text-[11px] text-slate-400">31/60 ký tự</span>
+</div>
+<div class="relative">
+<input class="w-full pl-3 pr-8 py-1.5 text-[12px] bg-white border border-card-border rounded focus:outline-none focus:border-primary-blue font-medium text-slate-800" id="group-name-input" type="text" value="Biệt đội Sáng tạo UI/UX 2024"/>
+<span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-status-online text-[16px]">check_circle</span>
+</div>
+</div>
+<!-- Field: Thêm thành viên -->
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<label class="font-semibold text-slate-700 text-[12px]">
+                Thêm thành viên vào nhóm <span class="text-status-danger">*</span>
+<span class="font-normal text-slate-500">(Tối thiểu 1 người dùng khác)</span>
+</label>
+<span class="text-[11px] font-semibold text-status-online flex items-center gap-1 font-mono">
+<span class="material-symbols-outlined text-[13px]">verified</span>
+                Hợp lệ
+              </span>
+</div>
+<!-- Member Search -->
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[15px]">search</span>
+<input class="w-full pl-8 pr-3 py-1.5 text-[11px] bg-slate-50 border border-card-border rounded focus:outline-none focus:border-primary-blue placeholder:text-slate-400" placeholder="Tìm theo tên hoặc @username..." type="text"/>
+</div>
+<!-- Selected Tags Area -->
+<div class="p-2.5 rounded bg-slate-50 border border-slate-200 space-y-2">
+<div class="flex items-center justify-between text-[11px]">
+<span class="text-slate-500 font-medium">Đã chọn để thêm vào nhóm:</span>
+<span class="font-mono font-semibold text-slate-700">2 / 50 người</span>
+</div>
+<div class="flex flex-wrap gap-1.5">
+<!-- Tag 1 -->
+<div class="inline-flex items-center gap-1.5 pl-1.5 pr-2 py-0.5 rounded bg-white border border-slate-300 text-[11px] text-slate-700 shadow-2xs">
+<img alt="Trần Hoàng Nam" class="w-4 h-4 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOcBeMIloZaJAMM0cag8SWzcuq_hxgmvLK6pFNbOQg-w5uAoPDGeBHOdVhvPD0dHd0bgMJzzaJs0Vf5yE9NcVhkBJk0X1pg0LrNr7PHoFrcpesei-12_Us2eQJ8IFrT1dLLpHZni3-8a31OoOQImIfEdkchlF2KTJAixQ9fE-5nHq8eY9zEgePlBGu2iBVqFhOgrcIo_-sNIwcrv1vFt8KPbY8dlbKi4gqqCF-zTQ"/>
+<span class="font-medium">Trần Hoàng Nam</span>
+<span class="text-slate-400 text-[10px] font-mono">(@namtran_saas)</span>
+<button class="text-slate-400 hover:text-status-danger ml-0.5">
+<span class="material-symbols-outlined text-[13px]">close</span>
+</button>
+</div>
+<!-- Tag 2 -->
+<div class="inline-flex items-center gap-1.5 pl-1.5 pr-2 py-0.5 rounded bg-white border border-slate-300 text-[11px] text-slate-700 shadow-2xs">
+<img alt="Lê Mai Anh" class="w-4 h-4 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd4jwPwd_NLBvo13tNjdV1qfJPQevd6nzx0P6E40ZHPiLcV9oLnlsNZGaxQe810f1MEOZDO1X-tu7tiyRerz-jJmlSdsexTw0mP_YOYEndlnJ2XqMkZqPTDiwtk76-5Xj-EKqMDT9q3H4FkHu_Pej3fw6-6iCLTF0vP1poG0cDxE-AvLcTr0vinFDf40y17Cu1d5zqLCAOEZvFD7ALN4wm0jGXK4T5_BHRjxdYrtA"/>
+<span class="font-medium">Lê Mai Anh</span>
+<span class="text-slate-400 text-[10px] font-mono">(@maianh_le)</span>
+<button class="text-slate-400 hover:text-status-danger ml-0.5">
+<span class="material-symbols-outlined text-[13px]">close</span>
+</button>
+</div>
+</div>
+<!-- Validation note -->
+<div class="text-[11px] text-status-online flex items-center gap-1 pt-0.5">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span>Đã chọn 2 thành viên (Đạt yêu cầu tối thiểu 1 người dùng khác)</span>
+</div>
+</div>
+<!-- Member Selection Checkbox List -->
+<div class="space-y-1">
+<span class="text-[11px] text-slate-500 font-semibold block">Gợi ý từ danh bạ gần đây:</span>
+<div class="border border-card-border rounded max-h-36 overflow-y-auto divide-y divide-slate-100 bg-white">
+<!-- Item 1 (Checked) -->
+<label class="flex items-center justify-between p-2 hover:bg-slate-50 cursor-pointer bg-blue-50/40">
+<div class="flex items-center gap-2">
+<div class="relative">
+<img alt="Trần Hoàng Nam" class="w-6 h-6 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9jSApL0AvgRjxoIAeyK89lHkhT0dbjj0xtjCtiFdyeDDje1JPb_huFzRlVRVC4Zor5il4fz9Rt1jNY4E06IYMQhJOB6SDhpXOzlrM9QMn0GVVMDih9J8kJK41WeTIsZi0_XsM-ITBJT2rt6YVKMQFTemPWY07HBipHYASTeSCDFOK6FkfKZ_lMNiNNR_ZSj1_rE1AI9OWhlzbSbLUCw5wGtHOXD7NRV31YYOPy6E"/>
+<span class="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-status-online"></span>
+</div>
+<div>
+<div class="font-medium text-slate-800 text-[11px]">Trần Hoàng Nam <span class="text-slate-400 font-mono text-[10px]">@namtran_saas</span></div>
+<span class="text-[10px] text-emerald-600 font-medium">Đang trực tuyến</span>
+</div>
+</div>
+<input checked="" class="w-3.5 h-3.5 text-primary-blue rounded border-slate-300 focus:ring-0" type="checkbox"/>
+</label>
+<!-- Item 2 (Checked) -->
+<label class="flex items-center justify-between p-2 hover:bg-slate-50 cursor-pointer bg-blue-50/40">
+<div class="flex items-center gap-2">
+<div class="relative">
+<img alt="Lê Mai Anh" class="w-6 h-6 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI91h3RiZvFnRp0C5QCXbV_DH46ua_nJn0rxrMCBfeeiHu8FhgRmx8rtcmslFa9OvgWMHmSkkNKmePicI0RCP-BzyXsmarHYUIWdg0XteY7Pc4qNd1NpWnuvykSRanKk2l1a86lkU4BDd-fuPuNBefxVQLSEPDWCQk8asHsMEFQMM-ZkaSNb6EXEoZTSlyXrO1IU2pj9hlVD3f5UizchPqYiiF2SzMubCAWqtg8tg"/>
+<span class="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-status-online"></span>
+</div>
+<div>
+<div class="font-medium text-slate-800 text-[11px]">Lê Mai Anh <span class="text-slate-400 font-mono text-[10px]">@maianh_le</span></div>
+<span class="text-[10px] text-emerald-600 font-medium">Đang trực tuyến</span>
+</div>
+</div>
+<input checked="" class="w-3.5 h-3.5 text-primary-blue rounded border-slate-300 focus:ring-0" type="checkbox"/>
+</label>
+<!-- Item 3 (Unchecked) -->
+<label class="flex items-center justify-between p-2 hover:bg-slate-50 cursor-pointer">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-slate-200 text-slate-600 font-bold text-[10px] flex items-center justify-center">
+                      MT
+                    </div>
+<div>
+<div class="font-medium text-slate-800 text-[11px]">Đỗ Minh Tuấn <span class="text-slate-400 font-mono text-[10px]">@tuan_do</span></div>
+<span class="text-[10px] text-slate-400">Hoạt động 15 phút trước</span>
+</div>
+</div>
+<input class="w-3.5 h-3.5 text-primary-blue rounded border-slate-300 focus:ring-0" type="checkbox"/>
+</label>
+<!-- Item 4 (Unchecked) -->
+<label class="flex items-center justify-between p-2 hover:bg-slate-50 cursor-pointer">
+<div class="flex items-center gap-2">
+<div class="relative">
+<div class="w-6 h-6 rounded-full bg-slate-200 text-slate-600 font-bold text-[10px] flex items-center justify-center">HL</div>
+<span class="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-status-online"></span>
+</div>
+<div>
+<div class="font-medium text-slate-800 text-[11px]">Nguyễn Hà Linh <span class="text-slate-400 font-mono text-[10px]">@halinh_ui</span></div>
+<span class="text-[10px] text-emerald-600 font-medium">Đang trực tuyến</span>
+</div>
+</div>
+<input class="w-3.5 h-3.5 text-primary-blue rounded border-slate-300 focus:ring-0" type="checkbox"/>
+</label>
+<!-- Item 5 (Unchecked) -->
+<label class="flex items-center justify-between p-2 hover:bg-slate-50 cursor-pointer">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-slate-200 text-slate-600 font-bold text-[10px] flex items-center justify-center">VT</div>
+<div>
+<div class="font-medium text-slate-800 text-[11px]">Vũ Minh Thảo <span class="text-slate-400 font-mono text-[10px]">@thaovu_dev</span></div>
+<span class="text-[10px] text-slate-400">Truy cập 10 phút trước</span>
+</div>
+</div>
+<input class="w-3.5 h-3.5 text-primary-blue rounded border-slate-300 focus:ring-0" type="checkbox"/>
+</label>
+</div>
+</div>
+</div>
+<!-- Group Permissions Checkboxes -->
+<div class="p-2.5 rounded bg-slate-50 border border-slate-200 space-y-2">
+<span class="text-[11px] font-semibold text-slate-600 block">Cấu hình &amp; Quyền hạn ban đầu:</span>
+<label class="flex items-start gap-2 cursor-pointer">
+<input checked="" class="mt-0.5 w-3.5 h-3.5 text-primary-blue rounded border-slate-300 focus:ring-0" type="checkbox"/>
+<div class="text-[11px] leading-tight">
+<span class="font-medium text-slate-800 block">Chỉ Quản trị viên mới có quyền đổi tên nhóm và thêm thành viên</span>
+<span class="text-slate-400 text-[10px]">Giúp bảo đảm tính trật tự của nhóm dự án</span>
+</div>
+</label>
+<label class="flex items-start gap-2 cursor-pointer">
+<input checked="" class="mt-0.5 w-3.5 h-3.5 text-primary-blue rounded border-slate-300 focus:ring-0" type="checkbox"/>
+<div class="text-[11px] leading-tight">
+<div class="flex items-center gap-1.5">
+<span class="font-medium text-slate-800">Mã hóa hội thoại nhóm (Chế độ thiết kế mẫu - Mockup placeholder)</span>
+<span class="px-1 py-0.2 rounded bg-blue-100 text-blue-700 text-[9px] font-bold uppercase">Mẫu thử</span>
+</div>
+<span class="text-slate-500 text-[10px] block mt-0.5 italic">
+                  Dấu hiệu thị giác mẫu thử nghiệm, không đại diện cho dịch vụ mã hóa thực tế đang kích hoạt
+                </span>
+</div>
+</label>
+</div>
+</div>
+<!-- Dialog Footer Actions -->
+<div class="p-3 bg-slate-100/80 border-t border-card-border flex items-center justify-end gap-2 flex-shrink-0">
+<button class="px-3.5 py-1.5 text-[11px] font-medium rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 transition-colors" id="cancel-btn">
+            Hủy bỏ
+          </button>
+<button class="px-4 py-1.5 text-[11px] font-semibold rounded bg-primary-blue hover:bg-primary-hover text-white shadow-xs transition-colors flex items-center gap-1.5" id="submit-group-btn">
+<span class="material-symbols-outlined text-[14px]">group_add</span>
+<span>Tạo nhóm ngay (2 thành viên)</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ================= 5. BOTTOM STATUS STRIP ================= -->
+<footer class="h-6 bg-slate-200 border-t border-slate-300 px-3 flex items-center justify-between text-[11px] text-slate-600 font-mono flex-shrink-0">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1.5 text-slate-700">
+<span class="w-2 h-2 rounded-full bg-status-online"></span>
+          Trạng thái kết nối: Sẵn sàng
+        </span>
+<span class="text-slate-400">|</span>
+<span>Phiên làm việc bảo mật (TLS 1.3 / E2E)</span>
+<span class="text-slate-400">|</span>
+<span>Client UI Version 1.0 (FlatLaf Desktop Theme)</span>
+</div>
+<div class="hidden sm:flex items-center gap-2 text-slate-500">
+<span>Máy chủ: HCM-Central-02</span>
+<span class="text-slate-400">•</span>
+<span>Độ trễ: 18ms</span>
+</div>
+</footer>
+</div>
+<!-- Interactive Controls Logic -->
+<script>
+    (function() {
+      const modal = document.getElementById('modal-container');
+      const closeBtn = document.getElementById('close-modal-btn');
+      const cancelBtn = document.getElementById('cancel-btn');
+      const openBtn = document.getElementById('open-modal-btn');
+      const submitBtn = document.getElementById('submit-group-btn');
+
+      function hideModal() {
+        if (modal) modal.style.display = 'none';
+      }
+
+      function showModal() {
+        if (modal) modal.style.display = 'flex';
+      }
+
+      if (closeBtn) closeBtn.addEventListener('click', hideModal);
+      if (cancelBtn) cancelBtn.addEventListener('click', hideModal);
+      if (openBtn) openBtn.addEventListener('click', showModal);
+
+      if (submitBtn) {
+        submitBtn.addEventListener('click', function() {
+          const originalContent = submitBtn.innerHTML;
+          submitBtn.innerHTML = '<span class="material-symbols-outlined text-[14px] animate-spin">refresh</span> Đang khởi tạo nhóm...';
+          submitBtn.disabled = true;
+          setTimeout(function() {
+            submitBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">done</span> Hoàn tất!';
+            submitBtn.classList.remove('bg-primary-blue', 'hover:bg-primary-hover');
+            submitBtn.classList.add('bg-emerald-600');
+            setTimeout(function() {
+              hideModal();
+              submitBtn.innerHTML = originalContent;
+              submitBtn.disabled = false;
+              submitBtn.classList.remove('bg-emerald-600');
+              submitBtn.classList.add('bg-primary-blue', 'hover:bg-primary-hover');
+            }, 600);
+          }, 500);
+        });
+      }
+    })();
+  </script>
+</body></html>

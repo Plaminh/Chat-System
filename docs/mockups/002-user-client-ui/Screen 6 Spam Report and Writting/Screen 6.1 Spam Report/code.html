@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<title>Trò Chuyện Việt v1.0-FlatLaf - Báo cáo vi phạm</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#f8f9ff",
+            "primary": "#2563eb",
+            "primary-dark": "#1d4ed8",
+            "navy-darkest": "#0b1320",
+            "navy-dark": "#0f172a",
+            "navy-border": "#1e293b",
+            "error": "#dc2626",
+            "error-hover": "#b91c1c",
+            "status-online": "#16a34a",
+            "status-pending": "#d97706",
+            "canvas-bg": "#f1f5f9",
+            "border-ui": "#cbd5e1",
+            "border-light": "#e2e8f0"
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        user-select: none;
+        font-family: 'Inter', sans-serif;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="bg-navy-darkest text-slate-800 flex flex-col h-screen overflow-hidden text-[13px]">
+<!-- 1. TOP DARK WINDOW TITLE BAR -->
+<header class="h-8 bg-[#0b1320] border-b border-[#1e293b] flex items-center justify-between px-3 select-none flex-shrink-0 z-50 text-slate-300 text-xs">
+<div class="flex items-center gap-2 min-w-0">
+<div class="w-4 h-4 rounded bg-primary flex items-center justify-center text-white font-bold text-[10px]">
+<span class="material-symbols-outlined text-[12px]">forum</span>
+</div>
+<span class="font-semibold text-slate-200 tracking-tight">Trò Chuyện Việt v1.0-FlatLaf</span>
+<span class="text-slate-600">|</span>
+<span class="text-slate-400 font-mono text-[11px] truncate hidden sm:inline">Hệ thống &gt; Tin nhắn &gt; Báo cáo vi phạm (Spam Report)</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="hidden md:flex items-center gap-3 font-mono text-[11px] text-slate-400">
+<span>Phiên: 2026-10-26</span>
+<span class="flex items-center gap-1 text-emerald-400 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span> Trực tuyến
+        </span>
+</div>
+<!-- Desktop Window Controls -->
+<div class="flex items-center ml-2 border-l border-[#1e293b] pl-2 -mr-1">
+<button class="w-7 h-7 flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors" title="Thu nhỏ" type="button">
+<span class="material-symbols-outlined text-[14px]">remove</span>
+</button>
+<button class="w-7 h-7 flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors" title="Mở rộng" type="button">
+<span class="material-symbols-outlined text-[13px]">crop_square</span>
+</button>
+<button class="w-7 h-7 flex items-center justify-center text-slate-400 hover:bg-red-600 hover:text-white transition-colors" title="Đóng" type="button">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+</div>
+</header>
+<!-- MAIN WORKSPACE LAYOUT (Sidebar + Canvas) -->
+<div class="flex flex-1 overflow-hidden relative">
+<!-- LEFT PERSISTENT DARK SIDEBAR (width: 220px) -->
+<aside class="w-[220px] bg-[#0f172a] border-r border-[#1e293b] flex flex-col justify-between flex-shrink-0 z-30 select-none">
+<div class="flex flex-col">
+<!-- User Profile Card -->
+<div class="p-3 border-b border-[#1e293b] flex items-center gap-2.5 bg-[#0b1320]/60">
+<div class="relative w-8 h-8 rounded bg-primary text-white flex items-center justify-center font-bold text-xs ring-1 ring-white/10">
+            MA
+            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-[#0f172a]"></span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<span class="text-xs font-semibold text-slate-200 truncate">Lê Mai Anh</span>
+<span class="text-[11px] font-mono text-slate-400 truncate">@maianh_le</span>
+</div>
+</div>
+<!-- Navigation items -->
+<nav class="p-2 space-y-1">
+<a class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-[3px] text-xs font-medium bg-[#2563eb] text-white shadow-sm" href="#">
+<span class="material-symbols-outlined text-[17px]">chat_bubble</span>
+<span class="flex-1 truncate">Tin nhắn</span>
+<span class="w-2 h-2 rounded-full bg-white/80"></span>
+</a>
+<a class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-[3px] text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[17px]">contacts</span>
+<span class="flex-1 truncate">Bạn bè</span>
+<span class="px-1.5 py-0.2 rounded-full bg-slate-700 text-[10px] text-slate-300">24</span>
+</a>
+<a class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-[3px] text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[17px]">group</span>
+<span class="flex-1 truncate">Hội nhóm</span>
+</a>
+<a class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-[3px] text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[17px]">settings</span>
+<span class="flex-1 truncate">Cài đặt</span>
+</a>
+</nav>
+</div>
+<!-- Logout bottom action -->
+<div class="p-2 border-t border-[#1e293b]">
+<button class="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-[3px] text-xs font-medium text-slate-400 hover:bg-rose-950/40 hover:text-rose-300 transition-colors">
+<span class="material-symbols-outlined text-[17px]">logout</span>
+<span>Đăng xuất</span>
+</button>
+</div>
+</aside>
+<!-- CENTER PALE WORKSPACE BACKGROUND & BLURRED CONTENT -->
+<div class="flex-1 bg-[#f1f5f9] flex flex-col relative overflow-hidden">
+<!-- BLURRED UNDERLYING WORKSPACE CHAT SCREEN (FlatLaf Style) -->
+<div class="w-full h-full flex overflow-hidden filter blur-[3px] opacity-70 pointer-events-none select-none">
+<!-- Secondary conversation panel -->
+<div class="w-72 bg-white border-r border-[#cbd5e1] flex flex-col flex-shrink-0">
+<div class="p-3 border-b border-[#cbd5e1] flex items-center justify-between bg-slate-50">
+<span class="font-semibold text-slate-800 text-xs uppercase tracking-wide">Đoạn chat gần đây</span>
+<span class="material-symbols-outlined text-slate-500 text-[16px]">edit_note</span>
+</div>
+<div class="p-2 space-y-1">
+<div class="p-2 bg-blue-50 border border-blue-200 rounded-[2px] flex items-center gap-2">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-slate-300 flex-shrink-0">
+<img alt="Nguyễn Văn Tuấn" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwFhUSmd60pGeC7CTGiVoUJyYiaIRNw6Ya9wP6YuNrD-KLusVeWiwzvq9iYUjB6XZq3nIRCv9iN2sfQf7aWX-rdNESdAHcRfPVCcDdR83LAqOmzjxCTG7g4ob-2_7Xc_zENVTIETFnnoIM0dpV9-yqBalxjApLk_66YH74j-mhnRM2SWRpzrL9wh1_92uekODIducMLZ0obCnnoFejlvjQuKGhb3fE-xkSGTFkm_4"/>
+</div>
+<div class="min-w-0 flex-1">
+<div class="flex justify-between items-center text-xs">
+<span class="font-semibold text-slate-900 truncate">Nguyễn Văn Tuấn</span>
+<span class="text-[10px] text-slate-500">10:42</span>
+</div>
+<p class="text-[11px] text-red-600 truncate">Tham gia ngay cơ hội đầu tư x3...</p>
+</div>
+</div>
+<div class="p-2 hover:bg-slate-100 rounded-[2px] flex items-center gap-2">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-slate-300 flex-shrink-0">
+<img alt="Trần Hoàng Linh" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCBzdiS4F7RJVjMMUA6vj8DAiw9J5_lVxrxU9OSvmmSQU-7AKxRCwmw704Cx_sUG41pVuFbPYDqd-06sWLlhe_Tk2e0a6-24ntH9wGJjDUOqSZb5AUqScLiQEeLJr6Hgf0gTiquYBiAvugnKLXStp07UlZW44Csc0kXHFKLUhJs25Zh6L_IFhy7tlGy2eULXU9gvIfCOfnjYgaBXQjiBlnk9poMkCqY2A6OfNztn0"/>
+</div>
+<div class="min-w-0 flex-1">
+<div class="flex justify-between items-center text-xs">
+<span class="font-semibold text-slate-700 truncate">Trần Hoàng Linh</span>
+<span class="text-[10px] text-slate-500">Hôm qua</span>
+</div>
+<p class="text-[11px] text-slate-500 truncate">Tài liệu dự án sprint tới đã được duyệt</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Chat Stream Body -->
+<div class="flex-1 bg-slate-100 flex flex-col justify-between">
+<div class="h-10 bg-white border-b border-[#cbd5e1] px-4 flex items-center justify-between">
+<span class="font-semibold text-slate-800 text-xs">Nguyễn Văn Tuấn (@tuan_marketing_fast)</span>
+<span class="text-xs text-red-600 font-medium">Báo cáo vi phạm</span>
+</div>
+<div class="p-4 space-y-3">
+<div class="max-w-md bg-white border border-[#cbd5e1] p-2.5 rounded text-xs text-slate-700">
+              Chào bạn! Bên mình đang có dự án cam kết hoàn vốn 100% kèm lợi nhuận 35%/tháng. Tham gia ngay tại link: https://fast-invest-vi.sample/ref8839
+            </div>
+<div class="max-w-md bg-white border border-[#cbd5e1] p-2.5 rounded text-xs text-slate-700">
+              Chỉ còn 3 suất ưu tiên cuối cùng hôm nay thôi nhé bạn ơi!
+            </div>
+</div>
+<div class="h-12 bg-white border-t border-[#cbd5e1] p-2 flex items-center gap-2">
+<div class="flex-1 h-8 bg-slate-100 border border-slate-300 rounded px-2 text-xs flex items-center text-slate-400">Nhập tin nhắn...</div>
+<div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[16px]">send</span>
+</div>
+</div>
+</div>
+</div>
+<!-- MODAL DIALOG BACKDROP CONTAINER -->
+<div class="absolute inset-0 z-40 bg-slate-900/40 backdrop-blur-[2px] flex items-center justify-center p-4" id="reportModalBackdrop">
+<!-- 3. THE SPAM REPORT MODAL DIALOG (Admin FlatLaf Desktop Theme) -->
+<div class="w-full max-w-[540px] bg-white rounded-[4px] border border-[#cbd5e1] shadow-[0_10px_25px_-5px_rgba(0,0,0,0.2),0_8px_10px_-6px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+<!-- Dialog header: Dark navy title bar (#0F172A) -->
+<div class="h-10 bg-[#0f172a] border-b border-[#1e293b] px-3.5 flex items-center justify-between text-white select-none">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-400 text-[18px]">report_problem</span>
+<div class="flex items-baseline gap-1.5">
+<h2 class="text-xs font-bold text-slate-100 tracking-wide">Báo cáo cuộc trò chuyện (Spam &amp; Vi phạm)</h2>
+<span class="text-[10px] text-slate-400 hidden sm:inline">• Bảo vệ tài khoản và không gian làm việc an toàn</span>
+</div>
+</div>
+<button class="w-6 h-6 rounded-[2px] flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-colors" id="closeModalBtn" title="Đóng" type="button">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+<!-- Dialog Body Content -->
+<div class="p-4 flex flex-col gap-3.5 max-h-[calc(85vh-90px)] overflow-y-auto bg-white text-xs">
+<!-- Reported Account Panel -->
+<div class="p-2.5 rounded-[4px] bg-slate-50 border border-[#cbd5e1] flex items-center gap-3">
+<div class="relative w-10 h-10 rounded-[3px] overflow-hidden flex-shrink-0 border border-slate-300 bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="Portrait photo of user being reported with subtle lighting and clean composition" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0A-Y4bfinRuLI2-3zzyvbia1OpEXtUc-rPGKVlxtETlD4thM_kwDHXch1JIIQvwcYQzpVfrbmHulguQ8SKfSi5PMEN2TkD8EQVjFPeRfhbgm3_G7cMgLlSnONxM9Dkeq79o1Z3lLnNC54gcRn-m4KwPlBdWBAzfpVctzQmQzMG6AslKRKpdH5LX16ralGZHVo9QPiZAMmnYZH1ry2zN469XQWc3KuUB1boAlHY-k"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-semibold text-slate-900">Nguyễn Văn Tuấn</span>
+<span class="text-slate-500 font-mono text-[11px]">(@tuan_marketing_fast)</span>
+</div>
+<div class="text-[11px] text-slate-600 flex items-center gap-1.5 mt-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block"></span>
+<span>Người dùng từ cuộc trò chuyện trước đó • Đã gửi 2 tin nhắn gần đây</span>
+</div>
+</div>
+</div>
+<!-- Report Reason Radio Group -->
+<div class="flex flex-col gap-1.5">
+<label class="text-[11px] font-semibold text-slate-700 uppercase tracking-wider flex items-center justify-between">
+<span>Lý do báo cáo vi phạm <span class="text-red-600">*</span></span>
+<span class="text-[10px] font-normal text-slate-500 italic">Chọn 1 lý do chính xác</span>
+</label>
+<div class="space-y-1.5" id="reasonGroup">
+<!-- Option 1: Selected by default -->
+<label class="reason-item flex items-start gap-2.5 p-2 rounded-[3px] border border-blue-500 bg-blue-50/70 cursor-pointer transition-all" data-value="spam">
+<input checked="" class="mt-0.5 text-blue-600 focus:ring-blue-500 h-3.5 w-3.5 border-slate-300" name="report_reason" type="radio" value="spam"/>
+<div class="flex-1 min-w-0">
+<span class="font-medium text-slate-900 block leading-tight">Spam / Gửi tin nhắn rác hoặc quảng cáo phiền toái</span>
+<span class="text-[11px] text-slate-500 leading-tight">Tiếp thị tự động, gửi link hàng loạt chưa qua đồng thuận</span>
+</div>
+<span class="material-symbols-outlined text-blue-600 text-[16px] flex-shrink-0">verified</span>
+</label>
+<!-- Option 2 -->
+<label class="reason-item flex items-start gap-2.5 p-2 rounded-[3px] border border-[#cbd5e1] hover:bg-slate-50 cursor-pointer transition-all bg-white" data-value="impersonation">
+<input class="mt-0.5 text-blue-600 focus:ring-blue-500 h-3.5 w-3.5 border-slate-300" name="report_reason" type="radio" value="impersonation"/>
+<div class="flex-1 min-w-0">
+<span class="font-medium text-slate-800 block leading-tight">Mạo danh danh tính hoặc tổ chức</span>
+<span class="text-[11px] text-slate-500 leading-tight">Giả mạo đối tác, đồng nghiệp hoặc thương hiệu chính thức</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[16px] flex-shrink-0">person_alert</span>
+</label>
+<!-- Option 3 -->
+<label class="reason-item flex items-start gap-2.5 p-2 rounded-[3px] border border-[#cbd5e1] hover:bg-slate-50 cursor-pointer transition-all bg-white" data-value="harassment">
+<input class="mt-0.5 text-blue-600 focus:ring-blue-500 h-3.5 w-3.5 border-slate-300" name="report_reason" type="radio" value="harassment"/>
+<div class="flex-1 min-w-0">
+<span class="font-medium text-slate-800 block leading-tight">Quấy rối, xúc phạm hoặc đe dọa</span>
+<span class="text-[11px] text-slate-500 leading-tight">Sử dụng ngôn từ thù hằn, công kích hoặc làm phiền liên tục</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[16px] flex-shrink-0">gavel</span>
+</label>
+<!-- Option 4 -->
+<label class="reason-item flex items-start gap-2.5 p-2 rounded-[3px] border border-[#cbd5e1] hover:bg-slate-50 cursor-pointer transition-all bg-white" data-value="fraud">
+<input class="mt-0.5 text-blue-600 focus:ring-blue-500 h-3.5 w-3.5 border-slate-300" name="report_reason" type="radio" value="fraud"/>
+<div class="flex-1 min-w-0">
+<span class="font-medium text-slate-800 block leading-tight">Lừa đảo tài chính hoặc liên kết đáng ngờ</span>
+<span class="text-[11px] text-slate-500 leading-tight">Kêu gọi nạp tiền, gửi mã OTP hoặc dẫn dụ sang web độc hại</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[16px] flex-shrink-0">shield_lock</span>
+</label>
+<!-- Option 5 -->
+<label class="reason-item flex items-start gap-2.5 p-2 rounded-[3px] border border-[#cbd5e1] hover:bg-slate-50 cursor-pointer transition-all bg-white" data-value="other">
+<input class="mt-0.5 text-blue-600 focus:ring-blue-500 h-3.5 w-3.5 border-slate-300" name="report_reason" type="radio" value="other"/>
+<div class="flex-1 min-w-0">
+<span class="font-medium text-slate-800 block leading-tight">Lý do khác</span>
+<span class="text-[11px] text-slate-500 leading-tight">Nội dung không thuộc các phân mục nêu trên</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[16px] flex-shrink-0">more_horiz</span>
+</label>
+</div>
+</div>
+<!-- Detailed Description Field -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between text-[11px]">
+<label class="font-semibold text-slate-700" for="reportDetailInput">Mô tả chi tiết vi phạm <span class="text-red-600">*</span></label>
+<span class="font-mono text-slate-500 text-[10px]" id="charCount">118/300 ký tự</span>
+</div>
+<textarea class="w-full bg-slate-50 border border-[#cbd5e1] rounded-[3px] p-2 text-xs text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none resize-none transition-colors" id="reportDetailInput" maxlength="300" placeholder="Vui lòng cung cấp thêm ngữ cảnh hoặc bằng chứng cụ thể..." rows="3">Tài khoản liên tục gửi các đường link quảng cáo đầu tư không rõ nguồn gốc vào nhóm thảo luận dù đã được nhắc nhở nhiều lần.</textarea>
+<div class="flex items-center gap-1.5 text-emerald-700 text-[11px] mt-0.5 font-medium">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span>Độ dài mô tả hợp lệ (tối thiểu 20 ký tự).</span>
+</div>
+</div>
+<!-- Preventive Checkbox Actions -->
+<div class="p-2.5 rounded-[4px] bg-slate-50 border border-[#cbd5e1] flex flex-col gap-1.5">
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Hành động bảo vệ tức thì</span>
+<label class="flex items-start gap-2 cursor-pointer group">
+<input checked="" class="mt-0.5 rounded-[2px] text-red-600 focus:ring-red-500 h-3.5 w-3.5 border-slate-300" id="blockUserCheck" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-medium text-slate-800 group-hover:text-red-600 transition-colors">Đồng thời chặn tài khoản này và không nhận tin nhắn</span>
+<span class="text-[11px] text-slate-500">Người dùng sẽ không thể tìm thấy hoặc gửi tin nhắn riêng cho bạn.</span>
+</div>
+</label>
+</div>
+<!-- Explicit visual disclaimer card -->
+<div class="p-2 rounded-[3px] bg-amber-50 border border-amber-200 text-amber-900 text-[11px] flex items-start gap-2">
+<span class="material-symbols-outlined text-amber-600 text-[16px] mt-0.5 flex-shrink-0">info</span>
+<div class="leading-relaxed">
+<strong class="font-semibold">Lưu ý mô phỏng:</strong> Giao diện thử nghiệm - Mockup visual placeholder. Không kết nối máy chủ backend thực tế. Dữ liệu báo cáo được lưu cục bộ trong phiên làm việc.
+              </div>
+</div>
+</div>
+<!-- Modal Footer Action Bar (32-36px height controls) -->
+<div class="h-12 bg-slate-100 border-t border-[#cbd5e1] px-4 flex items-center justify-between select-none">
+<span class="text-[11px] text-slate-500 flex items-center gap-1 font-mono">
+<span class="material-symbols-outlined text-[14px] text-slate-400">lock</span>
+              Bảo mật E2E &amp; TLS 1.3
+            </span>
+<div class="flex items-center gap-2">
+<button class="h-8 px-3.5 rounded-[3px] bg-white border border-[#cbd5e1] text-slate-700 hover:bg-slate-50 hover:border-slate-400 font-medium text-xs transition-colors shadow-sm" id="cancelModalBtn" type="button">
+                Hủy bỏ
+              </button>
+<button class="h-8 px-4 rounded-[3px] bg-[#dc2626] hover:bg-[#b91c1c] active:bg-red-800 text-white font-medium text-xs shadow-sm transition-all flex items-center gap-1.5" id="submitReportBtn" type="button">
+<span class="material-symbols-outlined text-[15px]">send</span>
+<span>Gửi báo cáo vi phạm</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- TOAST FEEDBACK PLACEHOLDER (Bottom-Right Notification) -->
+<div class="fixed bottom-9 right-4 z-50 max-w-[400px] bg-white rounded-[4px] border border-[#cbd5e1] p-3 shadow-xl flex items-start gap-2.5 transition-all duration-300" id="toastSuccessNotification">
+<div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+</div>
+<div class="flex-1 min-w-0 text-xs">
+<div class="flex items-center justify-between mb-1">
+<span class="font-semibold text-slate-900">Đã tiếp nhận thông tin phản hồi</span>
+<button class="text-slate-400 hover:text-slate-700" id="dismissToastBtn">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<p class="text-[11px] text-slate-600 leading-normal mb-1.5">
+            Giao diện thử nghiệm - Mockup visual placeholder. Không có kết nối máy chủ backend thực tế được kích hoạt. Dữ liệu báo cáo được lưu cục bộ trong phiên làm việc.
+          </p>
+<div class="flex items-center justify-between text-[10px] text-slate-500 font-mono">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-sans font-medium border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Client Test OK
+            </span>
+<span>#REP-2026-1026</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 1. BOTTOM DESKTOP STATUS BAR -->
+<footer class="h-6 bg-[#0b1320] border-t border-[#1e293b] flex items-center justify-between px-3 text-[11px] font-mono text-slate-400 select-none z-50 flex-shrink-0">
+<div class="flex items-center gap-2 truncate">
+<span class="text-emerald-400 font-bold">●</span>
+<span class="text-slate-300 font-medium">Trạng thái kết nối: Sẵn sàng</span>
+<span class="text-slate-600">|</span>
+<span>Phiên làm việc bảo mật (TLS 1.3 / E2E)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-slate-400 hidden sm:inline">Client UI Version 1.0 (FlatLaf Desktop Theme)</span>
+</div>
+</footer>
+<script>
+    // Character counter interaction
+    const textarea = document.getElementById('reportDetailInput');
+    const charCount = document.getElementById('charCount');
+
+    if (textarea && charCount) {
+      textarea.addEventListener('input', function() {
+        const length = this.value.length;
+        charCount.textContent = `${length}/300 ký tự`;
+      });
+    }
+
+    // Reason Selection Interaction
+    const reasonItems = document.querySelectorAll('.reason-item');
+    reasonItems.forEach(item => {
+      item.addEventListener('click', () => {
+        reasonItems.forEach(r => {
+          r.classList.remove('border-blue-500', 'bg-blue-50/70');
+          r.classList.add('border-[#cbd5e1]', 'bg-white');
+          const radio = r.querySelector('input[type="radio"]');
+          if (radio) radio.checked = false;
+          const icon = r.querySelector('.material-symbols-outlined');
+          if (icon) {
+            icon.classList.remove('text-blue-600');
+            icon.classList.add('text-slate-400');
+          }
+        });
+
+        item.classList.remove('border-[#cbd5e1]', 'bg-white');
+        item.classList.add('border-blue-500', 'bg-blue-50/70');
+        const activeRadio = item.querySelector('input[type="radio"]');
+        if (activeRadio) activeRadio.checked = true;
+        const activeIcon = item.querySelector('.material-symbols-outlined');
+        if (activeIcon) {
+          activeIcon.classList.remove('text-slate-400');
+          activeIcon.classList.add('text-blue-600');
+        }
+      });
+    });
+
+    // Modal controls
+    const modal = document.getElementById('reportModalBackdrop');
+    const closeBtn = document.getElementById('closeModalBtn');
+    const cancelBtn = document.getElementById('cancelModalBtn');
+    const submitBtn = document.getElementById('submitReportBtn');
+    const toast = document.getElementById('toastSuccessNotification');
+    const dismissToastBtn = document.getElementById('dismissToastBtn');
+
+    function hideModal() {
+      if (modal) {
+        modal.classList.add('opacity-0', 'pointer-events-none');
+      }
+    }
+
+    if (closeBtn) closeBtn.addEventListener('click', hideModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', hideModal);
+
+    if (submitBtn) {
+      submitBtn.addEventListener('click', function() {
+        hideModal();
+        if (toast) {
+          toast.classList.remove('translate-y-24', 'opacity-0');
+        }
+      });
+    }
+
+    if (dismissToastBtn && toast) {
+      dismissToastBtn.addEventListener('click', () => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+      });
+    }
+  </script>
+</body></html>

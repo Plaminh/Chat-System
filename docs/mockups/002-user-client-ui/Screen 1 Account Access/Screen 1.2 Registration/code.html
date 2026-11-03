@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_blank" name="shell-type"/>
+<title>Trò Chuyện Việt — Đăng Ký Tài Khoản Mới</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body { overscroll-behavior: none; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background": "#f8f9ff",
+            "surface": "#f8f9ff",
+            "primary": "#004ac6",
+            "primary-container": "#2563eb",
+            "on-primary": "#ffffff",
+            "on-surface": "#0b1c30",
+            "on-surface-variant": "#434655",
+            "outline": "#737686",
+            "outline-variant": "#c3c6d7",
+            "surface-card": "#ffffff",
+            "surface-container-low": "#eff4ff",
+            "surface-container": "#e5eeff",
+            "status-online": "#16a34a",
+            "status-destructive": "#dc2626",
+            "navy-titlebar": "#0b1320",
+            "navy-titlebar-border": "#1e293b",
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          },
+          borderRadius: {
+            DEFAULT: "0.125rem",
+            sm: "0.25rem",
+            md: "0.375rem",
+            lg: "0.5rem",
+            xl: "0.75rem"
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-[#F1F5F9] font-sans text-[13px] text-[#0F172A] flex items-center justify-center min-h-screen p-4 select-none">
+<!-- Desktop App Window Frame (Admin Client Alignment) -->
+<div class="w-full max-w-[550px] bg-white rounded-lg border border-[#CBD5E1] shadow-[0_12px_32px_-4px_rgba(15,23,42,0.14),0_4px_12px_-2px_rgba(15,23,42,0.06)] overflow-hidden flex flex-col">
+<!-- Dark Navy Window Titlebar -->
+<header class="h-9 bg-[#0B1320] border-b border-[#1E293B] px-3 flex items-center justify-between text-slate-300">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded bg-[#2563EB] flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[12px]">chat</span>
+</div>
+<span class="text-[12px] font-medium text-slate-200 tracking-tight">Trò Chuyện Việt — Đăng Ký Tài Khoản Mới</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-[11px] font-mono text-slate-400 bg-slate-800/80 px-1.5 py-0.5 rounded border border-slate-700/60">v1.0-Desktop</span>
+<div class="flex items-center gap-1.5 ml-1">
+<button aria-label="Minimize" class="w-3 h-3 rounded-full bg-[#334155] hover:bg-[#475569] transition-colors" type="button"></button>
+<button aria-label="Maximize" class="w-3 h-3 rounded-full bg-[#334155] hover:bg-[#475569] transition-colors" type="button"></button>
+<button aria-label="Close" class="w-3 h-3 rounded-full bg-[#EF4444]/80 hover:bg-[#EF4444] transition-colors" type="button"></button>
+</div>
+</div>
+</header>
+<!-- Main Registration Interior Content -->
+<main class="p-6 bg-white flex flex-col">
+<!-- Header Badge & Title -->
+<div class="flex flex-col items-center text-center mb-5">
+<div class="w-12 h-12 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center p-2 mb-2.5 shadow-sm text-[#2563EB]">
+<span class="material-symbols-outlined text-[26px]">person_add</span>
+</div>
+<h1 class="text-[18px] font-bold text-[#0F172A] tracking-tight">Tạo tài khoản mới</h1>
+<p class="text-[12px] text-[#64748B] mt-0.5">Gia nhập mạng lưới trò chuyện công việc và cá nhân</p>
+</div>
+<!-- Registration Form -->
+<form class="flex flex-col gap-3.5" id="registration-form" onsubmit="event.preventDefault()">
+<!-- Họ và tên & Tên người dùng -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<!-- Họ và tên -->
+<div class="flex flex-col gap-1">
+<label class="text-[12px] font-medium text-[#1E293B] flex items-center gap-0.5" for="fullname">
+<span>Họ và tên</span>
+<span class="text-[#DC2626] font-semibold">*</span>
+</label>
+<div class="relative flex items-center">
+<input class="w-full h-[38px] px-3 pr-8 rounded border border-[#CBD5E1] bg-white text-[#0F172A] text-[13px] outline-none transition-all placeholder:text-[#94A3B8] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]" id="fullname" placeholder="Nhập họ và tên" type="text" value="Nguyễn Văn An"/>
+<span class="material-symbols-outlined text-[#16A34A] text-[17px] absolute right-2.5 pointer-events-none" style="font-variation-settings: 'FILL' 1;">
+                check_circle
+              </span>
+</div>
+</div>
+<!-- Tên người dùng -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="text-[12px] font-medium text-[#1E293B] flex items-center gap-0.5" for="username">
+<span>Tên người dùng</span>
+<span class="text-[#DC2626] font-semibold">*</span>
+</label>
+<span class="text-[11px] font-semibold text-[#16A34A] flex items-center gap-1 bg-[#DCFCE7] px-1.5 py-0.5 rounded">
+<span class="w-1.5 h-1.5 rounded-full bg-[#16A34A]"></span>
+                Khả dụng
+              </span>
+</div>
+<div class="relative flex items-center">
+<span class="text-[13px] text-[#64748B] absolute left-3 select-none pointer-events-none font-mono">@</span>
+<input class="w-full h-[38px] pl-7 pr-8 rounded border border-[#CBD5E1] bg-white text-[#0F172A] text-[13px] outline-none transition-all placeholder:text-[#94A3B8] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]" id="username" placeholder="username" type="text" value="an_nguyen"/>
+<span class="material-symbols-outlined text-[#16A34A] text-[17px] absolute right-2.5 pointer-events-none" style="font-variation-settings: 'FILL' 1;">
+                check_circle
+              </span>
+</div>
+</div>
+</div>
+<!-- Địa chỉ Email -->
+<div class="flex flex-col gap-1">
+<label class="text-[12px] font-medium text-[#1E293B] flex items-center gap-0.5" for="email">
+<span>Địa chỉ Email</span>
+<span class="text-[#DC2626] font-semibold">*</span>
+</label>
+<div class="relative flex items-center">
+<input class="w-full h-[38px] px-3 pr-8 rounded border border-[#CBD5E1] bg-white text-[#0F172A] text-[13px] outline-none transition-all placeholder:text-[#94A3B8] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]" id="email" placeholder="email@company.vn" type="email" value="an.nguyen@company.vn"/>
+<span class="material-symbols-outlined text-[#16A34A] text-[17px] absolute right-2.5 pointer-events-none" style="font-variation-settings: 'FILL' 1;">
+              check_circle
+            </span>
+</div>
+</div>
+<!-- Mật khẩu & Xác nhận mật khẩu -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<!-- Mật khẩu -->
+<div class="flex flex-col gap-1">
+<label class="text-[12px] font-medium text-[#1E293B] flex items-center gap-0.5" for="password">
+<span>Mật khẩu</span>
+<span class="text-[#DC2626] font-semibold">*</span>
+</label>
+<div class="relative flex items-center">
+<input class="w-full h-[38px] px-3 pr-8 rounded border border-[#CBD5E1] bg-white text-[#0F172A] text-[13px] outline-none transition-all placeholder:text-[#94A3B8] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]" id="password" type="password" value="ThietKe@2025#"/>
+<button aria-label="Toggle password visibility" class="absolute right-2 p-1 text-[#64748B] hover:text-[#0F172A] transition-colors flex items-center justify-center" onclick="togglePasswordVisibility('password', this)" type="button">
+<span class="material-symbols-outlined text-[17px]">visibility</span>
+</button>
+</div>
+<!-- Độ mạnh mật khẩu compact -->
+<div class="flex flex-col gap-1 mt-0.5">
+<div class="flex items-center justify-between text-[11px]">
+<span class="text-[#64748B]">Độ mạnh mật khẩu</span>
+<span class="text-[#16A34A] font-medium">Mạnh (4/4)</span>
+</div>
+<div class="grid grid-cols-4 gap-1 w-full h-1">
+<div class="h-full rounded-full bg-[#16A34A]"></div>
+<div class="h-full rounded-full bg-[#16A34A]"></div>
+<div class="h-full rounded-full bg-[#16A34A]"></div>
+<div class="h-full rounded-full bg-[#16A34A]"></div>
+</div>
+</div>
+</div>
+<!-- Xác nhận mật khẩu -->
+<div class="flex flex-col gap-1">
+<label class="text-[12px] font-medium text-[#1E293B] flex items-center gap-0.5" for="confirm-password">
+<span>Xác nhận mật khẩu</span>
+<span class="text-[#DC2626] font-semibold">*</span>
+</label>
+<div class="relative flex items-center">
+<input class="w-full h-[38px] px-3 pr-8 rounded border border-[#CBD5E1] bg-white text-[#0F172A] text-[13px] outline-none transition-all placeholder:text-[#94A3B8] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]" id="confirm-password" type="password" value="ThietKe@2025#"/>
+<button aria-label="Toggle confirm password visibility" class="absolute right-2 p-1 text-[#64748B] hover:text-[#0F172A] transition-colors flex items-center justify-center" onclick="togglePasswordVisibility('confirm-password', this)" type="button">
+<span class="material-symbols-outlined text-[17px]">visibility</span>
+</button>
+</div>
+<div class="flex items-center gap-1 mt-1 text-[#16A34A] text-[11px] font-medium">
+<span class="material-symbols-outlined text-[14px]">done_all</span>
+<span>Mật khẩu hoàn toàn trùng khớp</span>
+</div>
+</div>
+</div>
+<!-- Điều khoản Checkbox -->
+<div class="bg-[#F8FAFC] border border-[#E2E8F0] rounded p-2.5 flex items-start gap-2.5 mt-0.5">
+<div class="pt-0.5">
+<input checked="" class="w-4 h-4 rounded border-[#CBD5E1] text-[#2563EB] focus:ring-[#2563EB] focus:ring-offset-0 cursor-pointer accent-[#2563EB]" id="terms" type="checkbox"/>
+</div>
+<label class="text-[12px] leading-[18px] text-[#475569] cursor-pointer select-none" for="terms">
+            Tôi đồng ý với 
+            <a class="text-[#2563EB] font-medium hover:underline" href="javascript:void(0)">Điều khoản dịch vụ</a> 
+            và 
+            <a class="text-[#2563EB] font-medium hover:underline" href="javascript:void(0)">Chính sách quyền riêng tư</a>.
+          </label>
+</div>
+<!-- Action Buttons (Admin Client Standard) -->
+<div class="flex items-center justify-end gap-2.5 pt-2">
+<button class="h-[38px] px-4 rounded border border-[#CBD5E1] bg-white hover:bg-[#F8FAFC] text-[#334155] font-medium text-[13px] transition-all active:scale-[0.98]" type="button">
+            Hủy
+          </button>
+<button class="h-[38px] px-5 rounded bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium text-[13px] shadow-sm transition-all active:scale-[0.98] flex items-center gap-1.5" type="submit">
+<span>Đăng ký tài khoản</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</form>
+<!-- Switch to Login Link -->
+<div class="mt-4 pt-3 border-t border-[#F1F5F9] flex items-center justify-center gap-1.5 text-[12px] text-[#64748B]">
+<span>Đã có tài khoản sẵn sàng?</span>
+<a class="font-medium text-[#2563EB] hover:underline flex items-center gap-0.5" href="javascript:void(0)">
+<span>Đăng nhập ngay</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</main>
+<!-- Bottom Status Footer Strip -->
+<footer class="h-7 bg-[#F8FAFC] border-t border-[#E2E8F0] px-3 flex items-center justify-between text-[11px] text-[#64748B]">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#16A34A]"></span>
+<span>Hệ thống bảo vệ danh tính nội bộ</span>
+</div>
+<div class="text-[#94A3B8]">
+        Dữ liệu lưu cục bộ trong phiên thử nghiệm
+      </div>
+</footer>
+</div>
+<script>
+    function togglePasswordVisibility(fieldId, btn) {
+      const input = document.getElementById(fieldId);
+      const icon = btn.querySelector('.material-symbols-outlined');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    }
+  </script>
+</body></html>

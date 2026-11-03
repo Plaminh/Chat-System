@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trò Chuyện Việt - Cài đặt hồ sơ &amp; Đổi mật khẩu</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            sidebar: "#0B1320",
+            "sidebar-card": "#131D31",
+            "sidebar-hover": "#17233B",
+            canvas: "#F1F5F9",
+            panel: "#FFFFFF",
+            primary: "#2563EB",
+            "primary-hover": "#1D4ED8",
+            "border-ui": "#E2E8F0",
+            "border-sidebar": "#1E293B",
+            "text-main": "#0F172A",
+            "text-muted": "#64748B",
+            "text-light": "#94A3B8",
+            "status-online": "#16A34A",
+            "status-warn": "#D97706",
+            "status-danger": "#DC2626"
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            sm: "0.125rem",
+            md: "0.25rem",
+            lg: "0.375rem",
+            xl: "0.5rem"
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+      body { overscroll-behavior: none; font-family: 'Inter', sans-serif; }
+    }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="bg-[#0B1320] text-text-main flex items-center justify-center p-0 md:p-3 select-none">
+<!-- Desktop App Window (1280x800 Layout) -->
+<div class="w-full max-w-[1280px] h-[800px] bg-canvas flex flex-col rounded-lg shadow-2xl overflow-hidden border border-slate-700/30">
+<!-- Workspace Body: Sidebar + Main Content -->
+<div class="flex-1 flex min-h-0 overflow-hidden">
+<!-- Left Navigation Sidebar (~230px, Deep Navy) -->
+<aside class="w-[230px] bg-sidebar text-slate-200 shrink-0 flex flex-col justify-between border-r border-border-sidebar">
+<!-- Top Section -->
+<div class="flex flex-col">
+<!-- Logo & Version -->
+<div class="h-12 px-4 flex items-center justify-between border-b border-border-sidebar">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-blue-500">forum</span>
+<span class="font-bold text-[14px] text-white tracking-tight">Trò Chuyện Việt</span>
+</div>
+<span class="text-[11px] font-mono text-blue-400 border border-blue-500/40 px-1.5 py-0.5 rounded">v1.0</span>
+</div>
+<!-- Current User Card -->
+<div class="p-3 mx-2 my-2.5 rounded bg-sidebar-card border border-slate-800/80 flex items-center gap-2.5">
+<img alt="Lê Mai Anh" class="w-9 h-9 rounded object-cover ring-1 ring-blue-500/50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrm7wfjIzctq0T8VwkRIbshycb96PcoHymGmxCrmJGGc0J34qMZoJNxC1b1uVFGBwvS7L1ZZaaZrUspLFCQyWgNHJ_0w7UpOq93pgjdYsqhb-KKyHpISliNP7P5W9Ot6IYJhpB7FvQ_kOV8HxpRQh_xqWeeGTBA_Q2dULRuQyOlHuZqq19MjUX6egacRkR_Uztf_JECkqGzEDUh4E9nU6fcNbpy35RV-HT6c2Vk_8"/>
+<div class="flex-1 min-w-0">
+<div class="text-[12px] font-semibold text-white truncate">Lê Mai Anh</div>
+<div class="text-[11px] text-slate-400 truncate">@maianh_le</div>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-[10px] text-emerald-400 font-medium">Trực tuyến</span>
+</div>
+</div>
+</div>
+<!-- Nav Group: TÀI KHOẢN & HỆ THỐNG -->
+<div class="px-3 pt-2">
+<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">TÀI KHOẢN &amp; HỆ THỐNG</div>
+<nav class="flex flex-col gap-0.5 mt-1">
+<!-- Active Nav Item -->
+<a class="flex items-center gap-2.5 px-2.5 py-2 rounded bg-primary text-white text-[12px] font-medium shadow-sm" href="#">
+<span class="material-symbols-outlined text-[17px]">manage_accounts</span>
+<span>Hồ sơ &amp; Tài khoản</span>
+</a>
+<button class="w-full flex items-center justify-between px-2.5 py-2 rounded text-slate-300 hover:text-white hover:bg-sidebar-hover text-[12px] font-medium transition-colors text-left" id="openPassNavBtn" type="button">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[17px] text-slate-400">shield_lock</span>
+<span>Đổi mật khẩu</span>
+</div>
+<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1 py-0.2 rounded font-mono">90d</span>
+</button>
+<a class="flex items-center gap-2.5 px-2.5 py-2 rounded text-slate-300 hover:text-white hover:bg-sidebar-hover text-[12px] font-medium transition-colors" href="#">
+<span class="material-symbols-outlined text-[17px] text-slate-400">palette</span>
+<span>Giao diện &amp; Cài đặt</span>
+</a>
+<a class="flex items-center justify-between px-2.5 py-2 rounded text-slate-300 hover:text-white hover:bg-sidebar-hover text-[12px] font-medium transition-colors" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[17px] text-slate-400">notifications</span>
+<span>Thông báo</span>
+</div>
+<span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+</a>
+</nav>
+</div>
+<!-- Nav Group: TRÒ CHUYỆN -->
+<div class="px-3 pt-3">
+<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">TRÒ CHUYỆN</div>
+<nav class="flex flex-col gap-0.5 mt-1">
+<a class="flex items-center gap-2.5 px-2.5 py-2 rounded text-slate-300 hover:text-white hover:bg-sidebar-hover text-[12px] font-medium transition-colors" href="#">
+<span class="material-symbols-outlined text-[17px] text-slate-400">chat</span>
+<span>Tin nhắn</span>
+</a>
+<a class="flex items-center gap-2.5 px-2.5 py-2 rounded text-slate-300 hover:text-white hover:bg-sidebar-hover text-[12px] font-medium transition-colors" href="#">
+<span class="material-symbols-outlined text-[17px] text-slate-400">group</span>
+<span>Bạn bè</span>
+</a>
+<a class="flex items-center gap-2.5 px-2.5 py-2 rounded text-slate-300 hover:text-white hover:bg-sidebar-hover text-[12px] font-medium transition-colors" href="#">
+<span class="material-symbols-outlined text-[17px] text-slate-400">groups</span>
+<span>Hội nhóm</span>
+</a>
+</nav>
+</div>
+</div>
+<!-- Bottom Sign Out Button -->
+<div class="p-3 border-t border-border-sidebar">
+<button class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-slate-700/50 hover:border-rose-500/30 text-[12px] font-medium transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">logout</span>
+<span>Đăng xuất</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col min-w-0 bg-canvas overflow-hidden">
+<!-- Top Header Bar -->
+<header class="h-12 bg-panel px-5 border-b border-border-ui flex items-center justify-between shrink-0 shadow-sm">
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1.5 text-[11px] text-text-muted">
+<span>Hệ thống</span>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<span>Cài đặt</span>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<span class="text-primary font-medium">Hồ sơ cá nhân &amp; Tài khoản</span>
+</div>
+<div class="h-3.5 w-px bg-slate-300 mx-1"></div>
+<h1 class="text-[15px] font-semibold text-text-main tracking-tight">Hồ sơ cá nhân &amp; Tài khoản</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[11px] text-slate-600 font-mono bg-slate-100 border border-slate-200 px-2 py-0.5 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-slate-500">schedule</span>
+              Phiên làm việc: 2026-10-26
+            </span>
+<span class="text-[11px] font-medium text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">
+              Vai trò: Thành viên
+            </span>
+<button class="flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-[12px] font-medium rounded shadow-2xs transition-colors" id="quickPassBtn" type="button">
+<span class="material-symbols-outlined text-[15px] text-primary">key</span>
+<span>Đổi mật khẩu</span>
+</button>
+</div>
+</header>
+<!-- Main Work Area (Scrollable 2-Column Workspace) -->
+<div class="flex-1 overflow-y-auto p-4">
+<div class="grid grid-cols-12 gap-4 max-w-[1200px] mx-auto">
+<!-- Left Column: Profile Card + Member Metadata + 2FA -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-3.5">
+<!-- Profile Avatar Card -->
+<div class="bg-panel rounded border border-border-ui shadow-2xs overflow-hidden">
+<div class="h-14 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600"></div>
+<div class="px-4 pb-4 pt-0 flex flex-col items-center text-center -mt-8">
+<div class="relative mb-2">
+<img alt="Lê Mai Anh" class="w-18 h-18 rounded border-2 border-white shadow object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrm7wfjIzctq0T8VwkRIbshycb96PcoHymGmxCrmJGGc0J34qMZoJNxC1b1uVFGBwvS7L1ZZaaZrUspLFCQyWgNHJ_0w7UpOq93pgjdYsqhb-KKyHpISliNP7P5W9Ot6IYJhpB7FvQ_kOV8HxpRQh_xqWeeGTBA_Q2dULRuQyOlHuZqq19MjUX6egacRkR_Uztf_JECkqGzEDUh4E9nU6fcNbpy35RV-HT6c2Vk_8"/>
+<span class="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-status-online border-2 border-white" title="Trực tuyến"></span>
+</div>
+<h2 class="text-[14px] font-bold text-text-main">Lê Mai Anh</h2>
+<p class="text-[11px] text-text-muted">@maianh_le</p>
+<div class="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 border border-emerald-200 text-status-online text-[11px] font-medium rounded">
+<span class="w-1.5 h-1.5 rounded-full bg-status-online animate-pulse"></span>
+<span>Trực tuyến (Online)</span>
+</div>
+<!-- Actions (compact 32px height, 4px radius) -->
+<div class="w-full mt-3.5 flex flex-col gap-1.5">
+<button class="w-full h-8 px-3 bg-blue-50 hover:bg-blue-100 text-primary border border-blue-200 text-[12px] font-medium rounded flex items-center justify-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">photo_camera</span>
+<span>Thay đổi ảnh đại diện</span>
+</button>
+<button class="w-full h-8 px-3 bg-white hover:bg-rose-50 text-status-danger border border-slate-200 hover:border-rose-200 text-[12px] font-medium rounded flex items-center justify-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+<span>Xóa ảnh</span>
+</button>
+</div>
+<p class="text-[11px] text-text-muted mt-2">Định dạng JPG, PNG hoặc GIF. Tối đa 5MB.</p>
+</div>
+</div>
+<!-- Member Info Card -->
+<div class="bg-panel rounded border border-border-ui shadow-2xs p-3.5 flex flex-col gap-2">
+<div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider pb-1 border-b border-slate-100">
+                  Thông tin thành viên
+                </div>
+<div class="flex items-center justify-between text-[12px] py-0.5">
+<span class="text-text-muted">Ngày tham gia</span>
+<span class="font-medium text-text-main">15 Tháng 1, 2022</span>
+</div>
+<div class="flex items-center justify-between text-[12px] py-0.5">
+<span class="text-text-muted">Bộ phận / Phòng ban</span>
+<span class="font-medium text-text-main">Product Design Hub</span>
+</div>
+<div class="flex items-center justify-between text-[12px] py-0.5">
+<span class="text-text-muted">Cấp độ tài khoản</span>
+<span class="inline-flex items-center gap-1 text-primary text-[11px] font-semibold bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">
+<span class="material-symbols-outlined text-[13px]">verified</span>
+                    Cấp độ 3 (Đã xác minh)
+                  </span>
+</div>
+</div>
+<!-- 2FA Security Card -->
+<div class="bg-emerald-50/70 border border-emerald-200 rounded p-3 flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[20px] text-status-online shrink-0 mt-0.5">verified_user</span>
+<div>
+<div class="text-[12px] font-semibold text-emerald-900">Bảo vệ 2 lớp (2FA) đã kích hoạt</div>
+<p class="text-[11px] text-emerald-700 mt-0.5 leading-snug">
+                    Tài khoản được mã hóa đầu cuối và kết nối khóa bảo mật sinh trắc học máy trạm.
+                  </p>
+</div>
+</div>
+</div>
+<!-- Right Column: Profile Form Details & Password Section -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-3.5">
+<!-- Public Profile Form Card -->
+<form class="bg-panel rounded border border-border-ui shadow-2xs p-4 flex flex-col gap-3.5" id="profileForm">
+<div class="flex items-center justify-between pb-2 border-b border-border-ui">
+<div>
+<h3 class="text-[14px] font-bold text-text-main">Thông tin công khai</h3>
+<p class="text-[11px] text-text-muted">Những thông tin này sẽ hiển thị với đồng nghiệp và đối tác trong tổ chức Zalo Work.</p>
+</div>
+<span class="text-[11px] text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">
+                    Đồng bộ tự động
+                  </span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<!-- Full Name -->
+<div class="flex flex-col gap-1">
+<label class="text-[12px] font-medium text-text-main" for="fullName">Họ và tên</label>
+<div class="relative">
+<input class="w-full h-8 pl-8 pr-2.5 text-[12px] rounded border-border-ui text-text-main bg-white focus:ring-1 focus:ring-primary focus:border-primary shadow-2xs" id="fullName" type="text" value="Lê Mai Anh"/>
+<span class="material-symbols-outlined absolute left-2 top-2 text-[15px] text-slate-400">badge</span>
+</div>
+</div>
+<!-- Username -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="text-[12px] font-medium text-text-main" for="username">Tên người dùng</label>
+<span class="inline-flex items-center gap-0.5 text-[10px] text-blue-600 font-semibold">
+<span class="material-symbols-outlined text-[12px]">check_circle</span>
+                        Đã xác thực
+                      </span>
+</div>
+<div class="relative">
+<input class="w-full h-8 pl-8 pr-2.5 text-[12px] rounded border-border-ui text-text-main bg-white focus:ring-1 focus:ring-primary focus:border-primary shadow-2xs" id="username" type="text" value="@maianh_le"/>
+<span class="material-symbols-outlined absolute left-2 top-2 text-[15px] text-slate-400">alternate_email</span>
+</div>
+</div>
+<!-- Email -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="text-[12px] font-medium text-text-main" for="email">Email liên hệ</label>
+<span class="inline-flex items-center gap-0.5 text-[10px] text-emerald-600 font-semibold">
+<span class="material-symbols-outlined text-[12px]">verified</span>
+                        Đã xác minh
+                      </span>
+</div>
+<div class="relative">
+<input class="w-full h-8 pl-8 pr-2.5 text-[12px] rounded border-border-ui text-text-main bg-white focus:ring-1 focus:ring-primary focus:border-primary shadow-2xs" id="email" type="email" value="maianh.le@techcorp.vn"/>
+<span class="material-symbols-outlined absolute left-2 top-2 text-[15px] text-slate-400">mail</span>
+</div>
+</div>
+<!-- Phone -->
+<div class="flex flex-col gap-1">
+<label class="text-[12px] font-medium text-text-main" for="phone">Số điện thoại</label>
+<div class="relative">
+<input class="w-full h-8 pl-8 pr-2.5 text-[12px] rounded border-border-ui text-text-main bg-white focus:ring-1 focus:ring-primary focus:border-primary shadow-2xs" id="phone" type="text" value="0912 *** 789"/>
+<span class="material-symbols-outlined absolute left-2 top-2 text-[15px] text-slate-400">call</span>
+</div>
+</div>
+<!-- Bio -->
+<div class="col-span-1 md:col-span-2 flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="text-[12px] font-medium text-text-main" for="bio">Lời giới thiệu (Bio/Trạng thái)</label>
+<span class="text-[10px] text-text-muted">54 / 160 ký tự</span>
+</div>
+<textarea class="w-full p-2 text-[12px] rounded border-border-ui text-text-main bg-white focus:ring-1 focus:ring-primary focus:border-primary shadow-2xs resize-none" id="bio" rows="2">Trưởng nhóm thiết kế sản phẩm | Đang bận dự án quý 2</textarea>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center justify-end gap-2 pt-2 border-t border-border-ui">
+<button class="h-8 px-3 text-[12px] font-medium text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 rounded transition-colors" type="button">
+                    Hủy
+                  </button>
+<button class="h-8 px-4 text-[12px] font-medium text-white bg-primary hover:bg-primary-hover rounded shadow-2xs flex items-center gap-1.5 transition-colors" type="submit">
+<span class="material-symbols-outlined text-[15px]">save</span>
+<span>Lưu thay đổi</span>
+</button>
+</div>
+</form>
+<!-- Password Security Block (Bảo mật mật khẩu & Đổi mật khẩu) -->
+<div class="bg-panel rounded border border-border-ui shadow-2xs p-4 flex flex-col gap-3">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3">
+<div class="w-9 h-9 rounded bg-blue-50 border border-blue-200 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]">lock_reset</span>
+</div>
+<div>
+<h4 class="text-[13px] font-bold text-text-main">Bảo mật mật khẩu &amp; Phiên truy cập</h4>
+<p class="text-[11px] text-text-muted mt-0.5">
+                        Lần đổi mật khẩu gần đây nhất: <span class="font-semibold text-slate-700">85 ngày trước</span>. Khuyến nghị cập nhật định kỳ mỗi 90 ngày.
+                      </p>
+</div>
+</div>
+<button class="h-8 px-3 bg-primary hover:bg-primary-hover text-white text-[12px] font-medium rounded shrink-0 shadow-2xs flex items-center gap-1 transition-colors" id="cardPassBtn" type="button">
+<span class="material-symbols-outlined text-[15px]">key</span>
+<span>Đổi mật khẩu ngay</span>
+</button>
+</div>
+<!-- Password Quick Tips / Status indicators -->
+<div class="bg-slate-50 border border-slate-200/80 rounded p-2.5 flex items-center justify-between text-[11px]">
+<div class="flex items-center gap-2 text-slate-600">
+<span class="material-symbols-outlined text-[15px] text-amber-600">warning</span>
+<span>Mật khẩu sắp hết hạn bảo mật (còn 5 ngày). Vui lòng cập nhật để duy trì kết nối máy trạm an toàn.</span>
+</div>
+<span class="font-mono text-amber-700 font-semibold">Status: Expiring Soon</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Status Footer Bar -->
+<footer class="h-7 bg-white px-4 border-t border-border-ui flex items-center justify-between text-[11px] text-text-muted shrink-0">
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-1 text-emerald-600 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              Trạng thái kết nối: Sẵn sàng
+            </span>
+<span class="text-slate-300">|</span>
+<span class="flex items-center gap-1 text-slate-600">
+<span class="material-symbols-outlined text-[12px] text-blue-600">lock</span>
+              Phiên làm việc bảo mật (TLS 1.3 / E2EE)
+            </span>
+</div>
+<div class="font-mono text-[10px] text-slate-500">
+            Client UI Version 1.0 (FlatLaf Desktop Theme)
+          </div>
+</footer>
+</div>
+</div>
+</div>
+<!-- Change Password Modal Dialog -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs opacity-0 pointer-events-none transition-opacity duration-150" id="passwordModal">
+<div class="w-full max-w-[460px] bg-panel rounded border border-slate-300 shadow-2xl overflow-hidden flex flex-col scale-95 transition-transform duration-150" id="passwordModalCard">
+<!-- Modal Header -->
+<div class="flex items-center justify-between px-4 py-2.5 bg-slate-50 border-b border-border-ui">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded bg-primary text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+</div>
+<div>
+<h3 class="text-[13px] font-bold text-text-main">Đổi mật khẩu bảo mật</h3>
+</div>
+</div>
+<button class="w-6 h-6 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors" id="closePassModalBtn" title="Đóng" type="button">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+<!-- Modal Body Form -->
+<form class="p-4 flex flex-col gap-3" id="passwordForm">
+<!-- Notice banner -->
+<div class="p-2.5 rounded bg-blue-50 border border-blue-200 text-blue-900 flex items-start gap-2 text-[11px]">
+<span class="material-symbols-outlined text-[15px] text-blue-600 shrink-0 mt-0.5">info</span>
+<span>Mật khẩu mới không được trùng với mật khẩu gần đây nhất và nên gồm tối thiểu 8 ký tự kèm chữ hoa, số và ký tự đặc biệt.</span>
+</div>
+<!-- Field 1: Current Password -->
+<div class="flex flex-col gap-1">
+<label class="text-[11px] font-semibold text-text-main" for="currentPassword">Mật khẩu hiện tại</label>
+<div class="relative">
+<input class="w-full h-8 px-2.5 pr-8 text-[12px] rounded border-border-ui text-text-main bg-white focus:ring-1 focus:ring-primary focus:border-primary shadow-2xs" id="currentPassword" placeholder="Nhập mật khẩu hiện tại" required="" type="password"/>
+<button class="toggle-password absolute right-2 top-2 text-slate-400 hover:text-slate-700" data-target="currentPassword" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- Field 2: New Password -->
+<div class="flex flex-col gap-1">
+<label class="text-[11px] font-semibold text-text-main" for="newPassword">Mật khẩu mới</label>
+<div class="relative">
+<input class="w-full h-8 px-2.5 pr-8 text-[12px] rounded border-border-ui text-text-main bg-white focus:ring-1 focus:ring-primary focus:border-primary shadow-2xs" id="newPassword" placeholder="Nhập mật khẩu mới" required="" type="password"/>
+<button class="toggle-password absolute right-2 top-2 text-slate-400 hover:text-slate-700" data-target="newPassword" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+</button>
+</div>
+<!-- Strength bar -->
+<div class="flex flex-col gap-1 mt-1">
+<div class="grid grid-cols-4 gap-1 h-1">
+<div class="bg-emerald-500 rounded"></div>
+<div class="bg-emerald-500 rounded"></div>
+<div class="bg-emerald-500 rounded"></div>
+<div class="bg-slate-200 rounded"></div>
+</div>
+<div class="flex items-center justify-between text-[10px] text-text-muted">
+<span>Độ mạnh: <strong class="text-emerald-600">Khá tốt</strong></span>
+<span>Tối thiểu 8 ký tự</span>
+</div>
+</div>
+</div>
+<!-- Field 3: Confirm New Password -->
+<div class="flex flex-col gap-1">
+<label class="text-[11px] font-semibold text-text-main" for="confirmPassword">Xác nhận mật khẩu mới</label>
+<div class="relative">
+<input class="w-full h-8 px-2.5 pr-8 text-[12px] rounded border-border-ui text-text-main bg-white focus:ring-1 focus:ring-primary focus:border-primary shadow-2xs" id="confirmPassword" placeholder="Nhập lại mật khẩu mới" required="" type="password"/>
+<button class="toggle-password absolute right-2 top-2 text-slate-400 hover:text-slate-700" data-target="confirmPassword" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- Modal Actions -->
+<div class="flex items-center justify-end gap-2 pt-2 border-t border-border-ui mt-1">
+<button class="h-8 px-3 text-[12px] font-medium text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 rounded transition-colors" id="cancelPassModalBtn" type="button">
+            Hủy
+          </button>
+<button class="h-8 px-4 text-[12px] font-medium text-white bg-primary hover:bg-primary-hover rounded shadow-2xs flex items-center gap-1 transition-colors" type="submit">
+<span class="material-symbols-outlined text-[15px]">check</span>
+<span>Cập nhật mật khẩu</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<script>
+    (function initAdminClientProfile() {
+      const modal = document.getElementById('passwordModal');
+      const modalCard = document.getElementById('passwordModalCard');
+      const triggers = [
+        document.getElementById('quickPassBtn'),
+        document.getElementById('cardPassBtn'),
+        document.getElementById('openPassNavBtn')
+      ];
+      const closeBtn = document.getElementById('closePassModalBtn');
+      const cancelBtn = document.getElementById('cancelPassModalBtn');
+      const passwordForm = document.getElementById('passwordForm');
+
+      function openModal() {
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modalCard.classList.remove('scale-95');
+        modalCard.classList.add('scale-100');
+      }
+
+      function closeModal() {
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        modalCard.classList.remove('scale-100');
+        modalCard.classList.add('scale-95');
+      }
+
+      triggers.forEach(btn => {
+        if (btn) btn.addEventListener('click', openModal);
+      });
+
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      document.querySelectorAll('.toggle-password').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-target');
+          const input = document.getElementById(targetId);
+          const icon = btn.querySelector('.material-symbols-outlined');
+          if (input.type === 'password') {
+            input.type = 'text';
+            icon.textContent = 'visibility_off';
+          } else {
+            input.type = 'password';
+            icon.textContent = 'visibility';
+          }
+        });
+      });
+
+      passwordForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Cập nhật mật khẩu thành công!');
+        closeModal();
+      });
+
+      const profileForm = document.getElementById('profileForm');
+      if (profileForm) {
+        profileForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          alert('Đã lưu thay đổi thông tin cá nhân!');
+        });
+      }
+    })();
+  </script>
+</body></html>
