@@ -11,6 +11,7 @@ server.properties
 *.local.properties
 .env
 .env.*
+!.env.example
 
 # Logs
 *.log

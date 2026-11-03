@@ -5,33 +5,33 @@
 
 INSERT INTO users (
     user_id, username, password_hash, email, full_name, address,
-    date_of_birth, gender, role, account_status, locked_at,
+    date_of_birth, gender, role, account_status, locked_at, deleted_at,
     password_changed_at, created_at, updated_at
 ) VALUES
     (1, 'admin_dev', '$2a$10$Ke96E.TGgMFMnqmMF093B.5GzwaVDziSsy6ndIy5YuoeJZA2.pVyO',
      'admin.dev@example.test', 'Development Admin', 'Fictional District 1',
-     DATE '1988-01-15', 'other', 'admin', 'active', NULL,
+     DATE '1988-01-15', 'other', 'admin', 'active', NULL, NULL,
      TIMESTAMPTZ '2026-01-01 01:00:00+00', TIMESTAMPTZ '2026-01-01 01:00:00+00', TIMESTAMPTZ '2026-01-01 01:00:00+00'),
     (2, 'alice_sample', '$2a$10$Ke96E.TGgMFMnqmMF093B.5GzwaVDziSsy6ndIy5YuoeJZA2.pVyO',
      'alice.sample@example.test', 'Alice Sample', 'Fictional District 2',
-     DATE '1995-02-20', 'female', 'user', 'active', NULL,
+     DATE '1995-02-20', 'female', 'user', 'active', NULL, NULL,
      TIMESTAMPTZ '2026-01-05 02:00:00+00', TIMESTAMPTZ '2026-01-05 02:00:00+00', TIMESTAMPTZ '2026-01-05 02:00:00+00'),
     (3, 'bob_sample', '$2a$10$Ke96E.TGgMFMnqmMF093B.5GzwaVDziSsy6ndIy5YuoeJZA2.pVyO',
      'bob.sample@example.test', 'Bob Sample', 'Fictional District 3',
-     DATE '1993-03-21', 'male', 'user', 'locked', TIMESTAMPTZ '2026-03-10 04:00:00+00',
+     DATE '1993-03-21', 'male', 'user', 'locked', TIMESTAMPTZ '2026-03-10 04:00:00+00', NULL,
      TIMESTAMPTZ '2026-01-08 03:00:00+00', TIMESTAMPTZ '2026-01-08 03:00:00+00', TIMESTAMPTZ '2026-03-10 04:00:00+00'),
     (4, 'carol_sample', '$2a$10$Ke96E.TGgMFMnqmMF093B.5GzwaVDziSsy6ndIy5YuoeJZA2.pVyO',
      'carol.sample@example.test', 'Carol Sample', 'Fictional District 4',
-     DATE '1997-04-22', 'female', 'user', 'active', NULL,
+     DATE '1997-04-22', 'female', 'user', 'active', NULL, NULL,
      TIMESTAMPTZ '2026-02-01 04:00:00+00', TIMESTAMPTZ '2026-02-01 04:00:00+00', TIMESTAMPTZ '2026-02-01 04:00:00+00'),
     (5, 'dave_sample', '$2a$10$Ke96E.TGgMFMnqmMF093B.5GzwaVDziSsy6ndIy5YuoeJZA2.pVyO',
      'dave.sample@example.test', 'Dave Sample', 'Fictional District 5',
-     DATE '1991-05-23', NULL, 'user', 'active', NULL,
+     DATE '1991-05-23', NULL, 'user', 'active', NULL, NULL,
      TIMESTAMPTZ '2026-02-14 05:00:00+00', TIMESTAMPTZ '2026-02-14 05:00:00+00', TIMESTAMPTZ '2026-02-14 05:00:00+00'),
     (6, 'erin_sample', '$2a$10$Ke96E.TGgMFMnqmMF093B.5GzwaVDziSsy6ndIy5YuoeJZA2.pVyO',
      'erin.sample@example.test', 'Erin Sample', 'Fictional District 6',
-     DATE '1998-06-24', 'other', 'user', 'active', NULL,
-     TIMESTAMPTZ '2026-03-01 06:00:00+00', TIMESTAMPTZ '2026-03-01 06:00:00+00', TIMESTAMPTZ '2026-03-01 06:00:00+00');
+     DATE '1998-06-24', 'other', 'user', 'deleted', NULL, TIMESTAMPTZ '2026-03-15 06:00:00+00',
+     TIMESTAMPTZ '2026-03-01 06:00:00+00', TIMESTAMPTZ '2026-03-01 06:00:00+00', TIMESTAMPTZ '2026-03-15 06:00:00+00');
 
 INSERT INTO login_history (login_history_id, user_id, logged_in_at, logged_out_at) VALUES
     (101, 1, TIMESTAMPTZ '2026-03-15 01:00:00+00', TIMESTAMPTZ '2026-03-15 02:00:00+00'),

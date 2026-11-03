@@ -2,7 +2,8 @@
 param(
     [string]$SchemaPath = (Join-Path $PSScriptRoot '..\schema.sql'),
     [string]$DbmlPath = (Join-Path $PSScriptRoot '..\..\docs\database\schema-v1.dbml'),
-    [string]$RuntimeValidationPath = (Join-Path $PSScriptRoot 'validate-schema.sql')
+    [string]$RuntimeValidationPath = (Join-Path $PSScriptRoot 'validate-schema.sql'),
+    [string]$MigrationPath = (Join-Path $PSScriptRoot '..\migrations\001_admin_soft_delete.sql')
 )
 
 $ErrorActionPreference = 'Stop'
@@ -35,9 +36,45 @@ function Assert-Contains {
 $resolvedSchemaPath = (Resolve-Path -LiteralPath $SchemaPath).Path
 $resolvedDbmlPath = (Resolve-Path -LiteralPath $DbmlPath).Path
 $resolvedRuntimeValidationPath = (Resolve-Path -LiteralPath $RuntimeValidationPath).Path
-$schema = Get-Content -Raw -LiteralPath $resolvedSchemaPath
+$resolvedMigrationPath = (Resolve-Path -LiteralPath $MigrationPath).Path
+$schemaEntry = Get-Content -Raw -LiteralPath $resolvedSchemaPath
 $dbml = Get-Content -Raw -LiteralPath $resolvedDbmlPath
 $runtimeValidation = Get-Content -Raw -LiteralPath $resolvedRuntimeValidationPath
+$migration = Get-Content -Raw -LiteralPath $resolvedMigrationPath
+
+$expectedSchemaModules = @(
+    'schema/01_accounts.sql',
+    'schema/02_social.sql',
+    'schema/03_conversations.sql',
+    'schema/04_messages.sql',
+    'schema/05_moderation.sql',
+    'schema/06_activity.sql'
+)
+
+$normalizedSchemaEntry = $schemaEntry -replace "`r`n", "`n"
+$expectedIncludeBlock = ($expectedSchemaModules | ForEach-Object { "\ir $_" }) -join "`n"
+Assert-Contains -Content $normalizedSchemaEntry -Token $expectedIncludeBlock
+Assert-True -Condition ($schemaEntry -notmatch '(?im)^\s*CREATE TABLE\b') -Message 'entry point must not duplicate module DDL'
+
+$schemaRoot = Split-Path -Parent $resolvedSchemaPath
+$schemaModuleDirectory = Join-Path $schemaRoot 'schema'
+$actualSchemaModuleNames = @(
+    Get-ChildItem -LiteralPath $schemaModuleDirectory -Filter '*.sql' -File |
+        Sort-Object Name |
+        ForEach-Object { $_.Name }
+)
+$expectedSchemaModuleNames = @($expectedSchemaModules | ForEach-Object { Split-Path -Leaf $_ })
+$schemaModuleDifference = @(Compare-Object $expectedSchemaModuleNames $actualSchemaModuleNames)
+Assert-True -Condition ($schemaModuleDifference.Count -eq 0) -Message 'schema module files differ from the approved six-file layout'
+
+$schemaModuleContents = @(
+    foreach ($relativeModulePath in $expectedSchemaModules) {
+        $modulePath = Join-Path $schemaRoot $relativeModulePath
+        Assert-True -Condition (Test-Path -LiteralPath $modulePath -PathType Leaf) -Message "missing schema module '$relativeModulePath'"
+        Get-Content -Raw -LiteralPath $modulePath
+    }
+)
+$schema = (@($schemaEntry) + $schemaModuleContents) -join "`n"
 
 $requiredTables = @(
     'users',
@@ -76,6 +113,8 @@ $requiredTokens = @(
     'TIMESTAMPTZ',
     'uq_users_username_ci',
     'uq_users_email_ci',
+    'deleted_at TIMESTAMPTZ',
+    "account_status IN ('active', 'locked', 'deleted')",
     'uq_friend_requests_pending_pair',
     'chk_friendships_canonical_pair',
     'uq_friendships_pair',
@@ -98,6 +137,27 @@ foreach ($token in $requiredTokens) {
 }
 
 Assert-Contains -Content $runtimeValidation -Token 'foreign_key_violation OR restrict_violation'
+Assert-Contains -Content $runtimeValidation -Token "account_status = 'deleted'"
+Assert-Contains -Content $runtimeValidation -Token "THEN 'Tài khoản đã xóa'"
+Assert-Contains -Content $runtimeValidation -Token 'message_deletions'
+
+$requiredMigrationTokens = @(
+    '\set ON_ERROR_STOP on',
+    'BEGIN;',
+    'COMMIT;',
+    'ADD COLUMN deleted_at TIMESTAMPTZ',
+    'DROP CONSTRAINT chk_users_account_status',
+    'DROP CONSTRAINT chk_users_lock_state',
+    "account_status IN ('active', 'locked', 'deleted')",
+    'Unexpected Database V1 structure',
+    'Unexpected legacy account constraints',
+    'Unexpected migrated account constraints'
+)
+foreach ($token in $requiredMigrationTokens) {
+    Assert-Contains -Content $migration -Token $token
+}
+Assert-True -Condition ($migration -notmatch '(?im)^\s*(DROP\s+(DATABASE|TABLE)|TRUNCATE)\b') -Message 'migration contains destructive database/table SQL'
+Assert-True -Condition ($migration -notmatch '(?im)^\s*\\i[r]?\s+.*seed\.sql') -Message 'migration must never reload seed data'
 
 $primaryKeyCount = ([regex]::Matches($schema, '(?i)\bPRIMARY KEY\b')).Count
 $foreignKeyCount = ([regex]::Matches($schema, '(?i)\bFOREIGN KEY\b')).Count
@@ -119,3 +179,4 @@ Write-Output "Primary keys: $primaryKeyCount"
 Write-Output "Foreign keys: $foreignKeyCount"
 Write-Output "Check constraints: $checkCount"
 Write-Output "Explicit indexes: $indexCount"
+Write-Output 'Soft-delete migration contract: present and transaction-scoped'

@@ -2,11 +2,85 @@
 
 ## Prerequisites
 
-- PostgreSQL 14 or later with `psql` and `createdb` available on `PATH`.
+- Docker Desktop or Docker Engine with Docker Compose for the container workflow.
+- PostgreSQL 14 or later with `psql` and `createdb` available on `PATH` for database initialization.
 - PowerShell 5.1 or later.
 - A PostgreSQL role allowed to connect to the maintenance database and create the target database, or access to an explicitly approved empty target database.
 
 The script has no password parameter and contains no password. Authentication is delegated to PostgreSQL's standard mechanisms: interactive prompt, a locally protected `pgpass` file, or a process environment configured by the developer. Never commit local credentials.
+
+## Docker Compose configuration
+
+Copy the safe example and replace the password placeholder locally:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+`POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB` configure PostgreSQL when a new empty volume is initialized. `POSTGRES_PORT` selects the loopback host port; the default is `55432`. Docker Compose reads these values from `.env`, which is ignored by Git.
+
+The `postgres` service uses the external volume `chat-system-v1-data`. The one-shot `db-init` service mounts the complete `script/` directory read-only, runs the modular `script/schema.sql` entry point followed by `script/seed.sql`, waits for PostgreSQL to become healthy, and checks the number of public tables. When the database has zero tables, it applies schema and seed together in one transaction. When all 12 expected tables already exist, it skips initialization. Any partial or unexpected table count causes a failure instead of modifying the database.
+
+Create the volume once on a new workstation, then start PostgreSQL and inspect the initialization result:
+
+```powershell
+docker volume create chat-system-v1-data
+docker compose up -d
+docker compose ps -a
+docker compose logs db-init
+```
+
+Successful initialization ends with `Database initialization check passed: 12 tables are available.` The `db-init` container then exits with code 0; PostgreSQL continues running. In DBeaver, refresh the connection and open **Databases → chat_system_v1 → Schemas → public → Tables**.
+
+The Compose workflow loads the fictional development seed automatically only when the database contains zero tables. It never reapplies seed data to an initialized database. Use the standalone initializer described below for non-Compose or schema-only workflows.
+
+## Adopt a legacy Docker volume
+
+If a workstation still has a `chat-system-v1-db` container created with `docker run`, Compose cannot create another container with that fixed name, even if the legacy container is stopped. The legacy container must therefore be stopped and renamed (or removed) manually before its volume can be adopted. This causes downtime from the stop until the Compose-managed container is healthy.
+
+Before the change, set `.env` to the existing database name, username, port, and initialized password. PostgreSQL ignores `POSTGRES_*` initialization values when the data directory is already populated, so changing `POSTGRES_PASSWORD` does not change an existing role's password. The local value must match the password already initialized in the volume for clients that use it.
+
+Take and verify a backup outside the repository before the maintenance window. Protect the dump because it contains database data:
+
+```powershell
+New-Item -ItemType Directory -Force ..\chat-system-backups | Out-Null
+$backupName = 'chat_system_v1-before-compose-{0}.dump' -f (Get-Date -Format 'yyyyMMdd-HHmmss')
+$backupFile = Join-Path '..\chat-system-backups' $backupName
+docker exec chat-system-v1-db pg_dump `
+    -U chat_v1 -d chat_system_v1 --format=custom `
+    --file=/tmp/chat_system_v1-before-compose.dump
+docker cp chat-system-v1-db:/tmp/chat_system_v1-before-compose.dump $backupFile
+pg_restore --list $backupFile | Out-Null
+if ($LASTEXITCODE -ne 0) { throw 'Backup verification failed; do not continue.' }
+```
+
+After the backup is verified, run the following commands manually during a maintenance window:
+
+```powershell
+docker stop chat-system-v1-db
+docker rename chat-system-v1-db chat-system-v1-db-legacy
+docker compose up -d
+docker compose ps
+docker compose exec postgres pg_isready -U chat_v1 -d chat_system_v1
+```
+
+Keep the renamed legacy container stopped until the Compose-managed service and application connections are verified. Never start both containers against the same PostgreSQL data volume. If rollback is required:
+
+```powershell
+docker compose down
+docker rename chat-system-v1-db-legacy chat-system-v1-db
+docker start chat-system-v1-db
+```
+
+`docker compose down` removes the Compose-managed container and network, but the external volume remains. Remove the stopped legacy container only after the adoption and backup are verified.
+
+## Connect with DBeaver
+
+Create a PostgreSQL connection with host `127.0.0.1`, port `55432` (or `POSTGRES_PORT`), database `chat_system_v1`, and user `chat_v1`. Enter the local password from the developer's secret store or `.env`; do not save or publish it in repository documentation. Test the connection before applying any SQL.
+
+## Safe shutdown
+
+Use `docker compose stop` to stop PostgreSQL while retaining its container, or `docker compose down` to remove only the Compose container and network. Because `chat-system-v1-data` is external, neither command deletes the database volume. Do not add `--volumes` or manually delete the named volume when data must be preserved.
 
 ## One-step initialization with fictional data
 
