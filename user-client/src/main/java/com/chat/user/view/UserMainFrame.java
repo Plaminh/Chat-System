@@ -9,9 +9,12 @@ import com.chat.user.model.UserProfile;
 import com.chat.user.model.UserSessionState;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -30,7 +33,7 @@ public final class UserMainFrame extends JPanel {
   public enum Destination {
     CHATS("Chats"),
     FRIENDS("Friends"),
-    REQUESTS("Requests / Search"),
+    REQUESTS("Requests"),
     GROUPS("Groups"),
     PROFILE("Profile");
 
@@ -48,12 +51,12 @@ public final class UserMainFrame extends JPanel {
   private final UserSessionState sessionState;
   private final CardLayout cardLayout = new CardLayout();
   private final JPanel cardContainer = new JPanel(cardLayout);
-  private final UserNavigationSidebar navigationSidebar =
-      new UserNavigationSidebar(this::showDestination);
+  private final UserNavigationSidebar navigationSidebar;
   private final Map<Destination, JComponent> views = new EnumMap<>(Destination.class);
   private final Set<String> blockedUsernames = new HashSet<>();
   private final List<UserProfile> knownProfiles = new ArrayList<>();
   private final JLabel headerTitle = new JLabel();
+  private final JLabel headerBreadcrumb = new JLabel();
   private ChatWorkspacePanel chatWorkspace;
   private GroupsPanel groupsPanel;
   private Destination activeDestination;
@@ -61,6 +64,11 @@ public final class UserMainFrame extends JPanel {
   public UserMainFrame(UserSessionState sessionState) {
     super(new BorderLayout());
     this.sessionState = Objects.requireNonNull(sessionState, "sessionState");
+    navigationSidebar =
+        new UserNavigationSidebar(
+            sessionState.getProfile().fullName(),
+            sessionState.getProfile().username(),
+            this::showDestination);
     UserUiTheme.applyGlobalDefaults();
     buildLayout();
     for (Destination destination : Destination.values()) {
@@ -90,6 +98,7 @@ public final class UserMainFrame extends JPanel {
     activeDestination = destination;
     cardLayout.show(cardContainer, destination.name());
     headerTitle.setText(destination.label());
+    headerBreadcrumb.setText("Console  \u203a  Workspace  \u203a  " + destination.label());
     navigationSidebar.setActiveDestination(destination);
   }
 
@@ -123,6 +132,7 @@ public final class UserMainFrame extends JPanel {
         BorderFactory.createEmptyBorder(
             UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG));
     workspace.add(cardContainer, BorderLayout.CENTER);
+    workspace.add(buildStatusFooter(), BorderLayout.SOUTH);
     add(workspace, BorderLayout.CENTER);
   }
 
@@ -135,18 +145,59 @@ public final class UserMainFrame extends JPanel {
             BorderFactory.createEmptyBorder(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG,
                 UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG)));
 
+    headerBreadcrumb.setFont(UserUiTheme.FONT_SMALL);
+    headerBreadcrumb.setForeground(UserUiTheme.TEXT_MUTED);
     headerTitle.setFont(UserUiTheme.FONT_TITLE);
     headerTitle.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JLabel account = new JLabel(sessionState.getProfile().fullName());
-    account.setFont(UserUiTheme.FONT_BODY);
-    account.setForeground(UserUiTheme.TEXT_SECONDARY);
-    JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-    right.setOpaque(false);
-    right.add(account);
+    JPanel titleBlock = new JPanel(new BorderLayout(0, UserUiTheme.SPACE_XS));
+    titleBlock.setOpaque(false);
+    titleBlock.add(headerBreadcrumb, BorderLayout.NORTH);
+    titleBlock.add(headerTitle, BorderLayout.SOUTH);
 
-    header.add(headerTitle, BorderLayout.WEST);
+    JLabel sessionDate =
+        new JLabel(
+            "Session Date: "
+                + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(LocalDateTime.now()));
+    sessionDate.setFont(UserUiTheme.FONT_SMALL);
+    sessionDate.setForeground(UserUiTheme.TEXT_SECONDARY);
+    sessionDate.setBorder(
+        BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(UserUiTheme.BORDER),
+            BorderFactory.createEmptyBorder(5, 8, 5, 8)));
+    JLabel role = new JLabel("Role: Member");
+    role.setFont(UserUiTheme.FONT_SMALL);
+    role.setForeground(UserUiTheme.PRIMARY);
+    role.setBorder(
+        BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(0xBFDBFE)),
+            BorderFactory.createEmptyBorder(5, 8, 5, 8)));
+    JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, UserUiTheme.SPACE_SM, 0));
+    right.setOpaque(false);
+    right.add(sessionDate);
+    right.add(role);
+
+    header.add(titleBlock, BorderLayout.WEST);
     header.add(right, BorderLayout.EAST);
     return header;
+  }
+
+  private JPanel buildStatusFooter() {
+    JPanel footer = new JPanel(new BorderLayout());
+    footer.setBackground(UserUiTheme.SURFACE_WHITE);
+    footer.setBorder(
+        BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(1, 0, 0, 0, UserUiTheme.BORDER),
+            BorderFactory.createEmptyBorder(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_MD,
+                UserUiTheme.SPACE_SM, UserUiTheme.SPACE_MD)));
+    JLabel status = new JLabel("● Workspace Ready  |  Sample data only");
+    status.setFont(UserUiTheme.FONT_SMALL);
+    status.setForeground(UserUiTheme.TEXT_SECONDARY);
+    JLabel version = new JLabel("Chat System — User Client UI (Version 1.0)");
+    version.setFont(UserUiTheme.FONT_SMALL);
+    version.setForeground(UserUiTheme.TEXT_MUTED);
+    footer.add(status, BorderLayout.WEST);
+    footer.add(version, BorderLayout.EAST);
+    return footer;
   }
 
   private void installSampleViews() {
@@ -244,8 +295,8 @@ public final class UserMainFrame extends JPanel {
     if (conversation.messages().isEmpty()) {
       JOptionPane.showMessageDialog(
           this,
-          "Chỉ có thể báo cáo tài khoản đã có tương tác trong cuộc trò chuyện mẫu.",
-          "Chưa đủ điều kiện báo cáo",
+          "You can only report an account after an interaction in a sample conversation.",
+          "Report Not Available",
           JOptionPane.INFORMATION_MESSAGE);
       return;
     }
@@ -275,15 +326,16 @@ public final class UserMainFrame extends JPanel {
 
   private boolean confirmFriendAction(
       FriendEntry friend, FriendsPanel.RelationshipAction action) {
-    String actionLabel = action == FriendsPanel.RelationshipAction.BLOCK ? "chặn" : "hủy kết bạn";
+    String actionLabel =
+        action == FriendsPanel.RelationshipAction.BLOCK ? "block" : "remove as a friend";
     return JOptionPane.showConfirmDialog(
             this,
-            "Bạn có chắc muốn "
+            "Are you sure you want to "
                 + actionLabel
                 + " @"
                 + friend.username()
-                + " trong dữ liệu mẫu?",
-            "Xác nhận thao tác",
+                + " in the sample data?",
+            "Confirm Action",
             JOptionPane.YES_NO_OPTION)
         == JOptionPane.YES_OPTION;
   }
@@ -293,18 +345,18 @@ public final class UserMainFrame extends JPanel {
     String message =
         switch (confirmation.action()) {
           case DELETE_FOR_ME ->
-              "Ẩn "
+              "Hide "
                   + confirmation.messageCount()
-                  + " tin nhắn khỏi giao diện mẫu của bạn?";
+                  + " message(s) from your sample UI?";
           case UNSEND ->
-              "Đánh dấu "
+              "Mark "
                   + confirmation.messageCount()
-                  + " tin nhắn là đã thu hồi trong giao diện mẫu?";
+                  + " message(s) as unsent in the sample UI?";
           case CLEAR_HISTORY ->
-              "Xóa lịch sử mẫu của cuộc trò chuyện này trong phiên hiện tại?";
+              "Clear this conversation's sample history for the current session?";
         };
     return JOptionPane.showConfirmDialog(
-            this, message, "Xác nhận thao tác mẫu", JOptionPane.YES_NO_OPTION)
+            this, message, "Confirm Sample Action", JOptionPane.YES_NO_OPTION)
         == JOptionPane.YES_OPTION;
   }
 
@@ -315,10 +367,10 @@ public final class UserMainFrame extends JPanel {
     }
     return JOptionPane.showConfirmDialog(
             this,
-            "Xóa thành viên khỏi nhóm mẫu "
+            "Remove this member from the sample group "
                 + group.name()
-                + "? Thay đổi chỉ tồn tại trong phiên hiện tại.",
-            "Xác nhận xóa thành viên",
+                + "? This change only applies to the current session.",
+            "Confirm Member Removal",
             JOptionPane.YES_NO_OPTION)
         == JOptionPane.YES_OPTION;
   }

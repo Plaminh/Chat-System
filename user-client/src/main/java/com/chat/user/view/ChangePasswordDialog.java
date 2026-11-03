@@ -30,7 +30,7 @@ public final class ChangePasswordDialog extends JPanel {
   }
 
   public JDialog createDialog(Window owner) {
-    dialog = new JDialog(owner, "Đổi mật khẩu", JDialog.ModalityType.APPLICATION_MODAL);
+    dialog = new JDialog(owner, "Change Password", JDialog.ModalityType.APPLICATION_MODAL);
     dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     dialog.setContentPane(this);
     dialog.pack();
@@ -76,17 +76,17 @@ public final class ChangePasswordDialog extends JPanel {
     confirmPasswordField.setText("");
 
     if (currentBlank || newBlank || confirmationBlank) {
-      showFeedback("Vui lòng nhập đầy đủ các trường mật khẩu.", UserUiTheme.DANGER);
+      showFeedback("Complete all password fields.", UserUiTheme.DANGER);
       return;
     }
     if (!matches) {
-      showFeedback("Mật khẩu mới và xác nhận không khớp.", UserUiTheme.DANGER);
+      showFeedback("The new password and confirmation do not match.", UserUiTheme.DANGER);
       return;
     }
 
     changeSubmitted = true;
     showFeedback(
-        "Yêu cầu đổi mật khẩu mẫu; mật khẩu chưa được thay đổi trên máy chủ.",
+        "Sample password change requested; the server password was not changed.",
         UserUiTheme.SUCCESS);
   }
 
@@ -96,21 +96,21 @@ public final class ChangePasswordDialog extends JPanel {
         BorderFactory.createEmptyBorder(
             UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG));
 
-    JLabel title = new JLabel("Đổi mật khẩu", SwingConstants.CENTER);
+    JLabel title = new JLabel("Change Password", SwingConstants.CENTER);
     title.setFont(UserUiTheme.FONT_TITLE);
     title.setForeground(UserUiTheme.TEXT_PRIMARY);
     JPanel form = new JPanel();
     form.setLayout(new javax.swing.BoxLayout(form, javax.swing.BoxLayout.Y_AXIS));
     form.setOpaque(false);
-    addField(form, "Mật khẩu hiện tại", currentPasswordField);
-    addField(form, "Mật khẩu mới", newPasswordField);
-    addField(form, "Xác nhận mật khẩu mới", confirmPasswordField);
+    addField(form, "Current password", currentPasswordField);
+    addField(form, "New password", newPasswordField);
+    addField(form, "Confirm new password", confirmPasswordField);
 
     feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
     feedbackLabel.setForeground(UserUiTheme.DANGER);
-    JButton cancelButton = UserUiTheme.createSecondaryButton("Hủy");
+    JButton cancelButton = UserUiTheme.createSecondaryButton("Cancel");
     cancelButton.addActionListener(event -> closeDialog());
-    JButton submitButton = UserUiTheme.createPrimaryButton("Xác nhận mẫu");
+    JButton submitButton = UserUiTheme.createPrimaryButton("Confirm Sample Change");
     submitButton.addActionListener(event -> submitChange());
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     actions.setOpaque(false);

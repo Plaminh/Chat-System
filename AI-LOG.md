@@ -216,6 +216,38 @@ Changed: Connected Chats, Friends, Requests/Search, Groups, and Profile in `User
 Rejected: Live authentication, TCP messaging, persistence, email, LLM calls, or claims of real encryption/report submission.
 By hand: Reviewed the integration and test results. The VS Code test runner passed all 43 tests; direct `javac --release 21` compilation of the integrated workspace and `git diff --check` passed. Maven verification and GUI launch were not completed because Maven and a Maven wrapper are unavailable; the Java launch tool consequently failed at its Maven build step. No implemented-UI screenshots were created. T016 remains open until Maven verification and visual acceptance evidence can be completed.
 
+## 2026-10-31 — Refine User login input sizing
+Tool: AI assistant (Copilot SDK in VS Code).
+Asked for: Make the username and password inputs less tall and improve text proportions.
+Kept: The existing User login layout, field widths, and shared input styling for other screens.
+Changed: Reverted an initial out-of-scope change to the Admin login dialog. Reduced both User login input heights from 36 px to 32 px and increased their font size from 13 pt to 14 pt; added a focused sizing test.
+Rejected: Changes to Admin login or shared input styling across other screens.
+By hand: Review the updated User login screen visually; no runtime GUI verification is claimed.
+
+## 2026-10-31 — Upgrade project runtime to Java 25 LTS
+Tool: AI assistant (Copilot SDK in VS Code).
+Asked for: Upgrade the Java runtime to the latest LTS version in auto-execution mode.
+Kept: The existing four Maven modules, application architecture, dependencies, and Java source behavior.
+Changed: Set the root Maven compiler release to Java 25. The installed JDK is already 25.0.4.1 LTS.
+Rejected: Installing another JDK or upgrading unrelated dependencies.
+By hand: Review the Java upgrade and run the verified Maven build/tests. Admin-specific source code was not changed; this entry was narrowed to the actual compiler/runtime change.
+
+## 2026-10-31 — Restore Admin documentation scope
+Tool: AI assistant (Copilot SDK in VS Code).
+Asked for: Keep changes limited to User-related work, explain the login field width setting, and undo Java-version edits to Admin-specific planning files.
+Kept: Java 25 compiler target requested earlier; existing User login changes and unrelated pre-existing work.
+Changed: Restored the Admin UI plan, quickstart, research, and Admin project-plan Java-version references. Confirmed no tracked files under `admin-client` were modified.
+Rejected: Changes to Admin source code or unrelated User UI layout.
+By hand: Review the User login field width before making a manual adjustment.
+
+## 2026-10-31 — Reduce User login field width
+Tool: AI assistant (Copilot SDK in VS Code).
+Asked for: Make the username and password input boxes narrower in `LoginPanel.java`.
+Kept: Existing User login layout, field height, and shared UI styling.
+Changed: Increased each field to 32 text columns, capped its maximum width at 360 px, and centered both in the form; added focused width assertions.
+Rejected: Changes to Admin UI or shared input styling.
+By hand: Review the updated login screen visually after rebuilding and restarting the User client.
+
 ## 2026-10-31 — Balance User login layout
 Tool: AI assistant (Copilot SDK in VS Code).
 Asked for: Center and size the login card consistently, align the form into one 360 px column, and reduce uneven spacing without changing behavior or Vietnamese text.
@@ -223,3 +255,19 @@ Kept: Login submission and validation logic, handlers, test getters, displayed t
 Changed: Centered a fixed 480x560 card with GridBagLayout; rebuilt the form with fixed-size BorderLayout wrappers, left-aligned field labels, a stable feedback row, and vertical glue for balanced spacing. Added layout sizing assertions.
 Rejected: Business-logic, text, dependency, and shared-theme changes.
 By hand: Review the resized login UI visually after relaunching the User client.
+
+## 2026-11-03 — Align User Client UI with Admin
+Tool: AI assistant (Copilot SDK in VS Code).
+Asked for: Update the User Client UI to use English and match the Admin Client theme, then replace the 12 User screenshots.
+Kept: Swing/FlatLaf, the existing sample-only behavior, English proper nouns/user names in sample data, the existing 12 screenshot filenames, and all four Maven modules.
+Changed: Matched the workspace shell to the Admin navy/blue layout with account/status chrome; translated User-facing controls, dialogs, feedback, and sample message text to English; updated related tests and the User UI plan.
+Rejected: Adding new business behavior, changing protocol or persistence, formatting unrelated code, and deleting the existing screenshots before replacements were available.
+By hand: Reviewed the Admin screenshot and current User UI source. The focused User tests passed (44 tests). The debugger first failed to resolve the sibling `common` artifact from the module-only build; after installing the reactor artifacts, the User window was still unavailable for capture. The developer subsequently captured and replaced all 12 User screenshots manually.
+
+## 2026-11-03 — Refine User navigation sidebar
+Tool: AI assistant (Copilot SDK in VS Code).
+Asked for: Make the User sidebar visually match the Admin sidebar while keeping navigation and other functionality unchanged.
+Kept: Existing User destinations, routes, sample session behavior, four Maven modules, and screenshot files until verified replacements are available.
+Changed: Matched the sidebar width and navy styling; added the version badge, profile card and online indicator, aligned section labels, local line icons, active/hover states, and a visual-only Sign Out button. Renamed the visible Requests destination label without changing its enum or routing. Added sidebar-focused regression checks.
+Rejected: Admin-module dependencies, shared-module changes, sign-out behavior, route changes, and deleting screenshots without replacements.
+By hand: Reviewed the User/Admin sidebar patterns and tested the User reactor. `mvn -pl user-client -am test` passed (45 User tests, 2 Common tests). A GUI launch was attempted, but the debugger reported no active session afterward and the desktop showed no User Client window. The developer then captured and replaced the 12 User screenshots manually.

@@ -15,7 +15,7 @@ class RegistrationDialogTest {
     dialog.submitRegistration();
 
     assertNull(dialog.getSubmittedProfile());
-    assertTrue(dialog.getFeedbackLabel().getText().contains("đầy đủ"));
+    assertTrue(dialog.getFeedbackLabel().getText().contains("required fields"));
   }
 
   @Test
@@ -26,7 +26,7 @@ class RegistrationDialogTest {
     dialog.submitRegistration();
 
     assertNull(dialog.getSubmittedProfile());
-    assertTrue(dialog.getFeedbackLabel().getText().contains("không khớp"));
+    assertTrue(dialog.getFeedbackLabel().getText().contains("do not match"));
   }
 
   @Test
@@ -39,7 +39,7 @@ class RegistrationDialogTest {
     assertEquals(LocalDate.of(2000, 1, 1), dialog.getSubmittedProfile().dateOfBirth());
     assertEquals(0, dialog.getPasswordField().getPassword().length);
     assertEquals(0, dialog.getConfirmPasswordField().getPassword().length);
-    assertTrue(dialog.getFeedbackLabel().getText().contains("chưa được tạo"));
+    assertTrue(dialog.getFeedbackLabel().getText().contains("no account was created"));
   }
 
   private RegistrationDialog validDialog() {

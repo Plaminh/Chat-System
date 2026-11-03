@@ -19,7 +19,7 @@ class SpamReportDialogTest {
     blankReason.getReasonField().setText("   ");
     blankReason.submitReport();
     assertFalse(blankReason.isReportSubmitted());
-    assertTrue(blankReason.getFeedbackLabel().getText().contains("lý do"));
+    assertTrue(blankReason.getFeedbackLabel().getText().contains("reason"));
   }
 
   @Test
@@ -30,7 +30,7 @@ class SpamReportDialogTest {
     dialog.submitReport();
 
     assertTrue(dialog.isReportSubmitted());
-    assertTrue(dialog.getFeedbackLabel().getText().contains("chưa gửi"));
+    assertTrue(dialog.getFeedbackLabel().getText().contains("not sent"));
   }
 
   private UserProfile profile() {

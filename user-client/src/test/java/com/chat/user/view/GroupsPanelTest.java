@@ -24,7 +24,7 @@ class GroupsPanelTest {
     dialog.submitCreation();
 
     assertTrue(dialog.getCreatedGroup() == null);
-    assertTrue(dialog.getFeedbackLabel().getText().contains("ít nhất một"));
+    assertTrue(dialog.getFeedbackLabel().getText().contains("at least one"));
   }
 
   @Test

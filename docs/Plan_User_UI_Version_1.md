@@ -7,7 +7,7 @@
 - **Người thực hiện**: Thành viên phụ trách User Client UI (B – Tiến theo phân công trong `project.txt`)
 - **Cộng sự hỗ trợ**: AI Assistant (hỗ trợ phân tích, thiết kế và triển khai)
 - **Phạm vi giai đoạn**: Version 1
-- **Công nghệ nền tảng**: Java 21, Java Swing, FlatLaf, Mock Data
+- **Công nghệ nền tảng**: Java 25 LTS, Java Swing, FlatLaf, Mock Data
 
 ---
 
@@ -185,3 +185,10 @@ Chat-System/
 - [ ] Dự án biên dịch thành công qua lệnh `mvn test-compile`.
 - [ ] Có ảnh chụp giao diện tại `docs/screenshots/user/` phục vụ báo cáo Version 1.
 - [ ] Tiến độ và đóng góp được thể hiện trung thực trong Git theo quy ước nhóm.
+
+## 7. Đồng Bộ Ngôn Ngữ Và Giao Diện
+
+- Tất cả nội dung giao diện hiển thị cho người dùng trong `user-client` dùng tiếng Anh, đồng bộ với Admin Client.
+- User Client dùng cùng bảng màu navy/blue, nền sáng, viền, kiểu chữ, nút và khoảng cách với Admin Client; phần điều hướng, header và footer cũng theo cùng phong cách workspace.
+- Giữ nguyên các tên riêng trong dữ liệu mẫu; nội dung chức năng và thông báo mẫu hiển thị bằng tiếng Anh.
+- Ảnh chụp UI sau khi chạy ứng dụng được lưu tại `docs/screenshots/user/` với 12 tên màn hình hiện có.

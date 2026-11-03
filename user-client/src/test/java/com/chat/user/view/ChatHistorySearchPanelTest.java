@@ -18,12 +18,12 @@ class ChatHistorySearchPanelTest {
     List<ChatHistorySearchPanel.SearchResult> navigated = new ArrayList<>();
     ChatHistorySearchPanel panel =
         new ChatHistorySearchPanel(conversations, conversations.get(0), navigated::add, request -> true);
-    panel.getSearchField().setText("tài liệu");
+    panel.getSearchField().setText("sample document");
 
     assertTrue(panel.getVisibleResults().size() >= 1);
     ChatHistorySearchPanel.SearchResult result = panel.getVisibleResults().get(0);
     panel.selectResult(result);
-    clickButton(panel, "Đi tới tin nhắn");
+    clickButton(panel, "Go to Message");
     assertEquals(result, navigated.get(0));
   }
 
@@ -34,7 +34,7 @@ class ChatHistorySearchPanelTest {
     Conversation conversation = conversations.get(0);
     ChatHistorySearchPanel panel =
         new ChatHistorySearchPanel(conversations, conversation, result -> {}, request -> true);
-    panel.getSearchField().setText("tài liệu");
+    panel.getSearchField().setText("sample document");
     ChatHistorySearchPanel.SearchResult first = panel.getVisibleResults().get(0);
     panel.selectResult(first);
     panel.applySelectedMessageAction(ChatHistoryActions.Action.DELETE_FOR_ME);
@@ -45,7 +45,7 @@ class ChatHistorySearchPanelTest {
             .orElseThrow()
             .removedForCurrentUser());
 
-    panel.getSearchField().setText("Cảm ơn");
+    panel.getSearchField().setText("Thanks");
     ChatHistorySearchPanel.SearchResult second = panel.getVisibleResults().get(0);
     panel.selectResult(second);
     panel.applySelectedMessageAction(ChatHistoryActions.Action.UNSEND);

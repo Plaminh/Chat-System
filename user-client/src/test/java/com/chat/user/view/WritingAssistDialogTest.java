@@ -39,7 +39,7 @@ class WritingAssistDialogTest {
   void discardDoesNotInvokeDraftUpdateHandler() {
     ArrayList<String> accepted = new ArrayList<>();
     WritingAssistDialog dialog = new WritingAssistDialog("Draft to keep", accepted::add);
-    javax.swing.JButton discard = findButton(dialog, "Bỏ qua");
+    javax.swing.JButton discard = findButton(dialog, "Discard");
     discard.doClick();
 
     assertFalse(dialog.isAccepted());

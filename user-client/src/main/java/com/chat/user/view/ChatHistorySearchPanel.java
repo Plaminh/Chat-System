@@ -32,8 +32,8 @@ import javax.swing.event.DocumentListener;
 
 public final class ChatHistorySearchPanel extends JPanel {
   public enum Scope {
-    ALL("Tất cả cuộc trò chuyện"),
-    CURRENT("Cuộc trò chuyện hiện tại");
+    ALL("All conversations"),
+    CURRENT("Current conversation");
 
     private final String label;
 
@@ -72,7 +72,8 @@ public final class ChatHistorySearchPanel extends JPanel {
   private final Map<SearchResult, JCheckBox> selectionByResult = new LinkedHashMap<>();
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.LEFT);
   private List<SearchResult> visibleResults = List.of();
-  private Runnable backHandler = () -> showFeedback("Quay lại cuộc trò chuyện từ điều hướng.", UserUiTheme.TEXT_MUTED);
+  private Runnable backHandler =
+      () -> showFeedback("Return to the conversation from navigation.", UserUiTheme.TEXT_MUTED);
 
   public ChatHistorySearchPanel(
       List<Conversation> conversations,
@@ -131,7 +132,7 @@ public final class ChatHistorySearchPanel extends JPanel {
                     Collectors.mapping(
                         entry -> entry.getKey().message().messageId(), Collectors.toSet())));
     if (selectedByConversation.isEmpty()) {
-      showFeedback("Chọn ít nhất một tin nhắn trước.", UserUiTheme.DANGER);
+      showFeedback("Select at least one message first.", UserUiTheme.DANGER);
       return;
     }
 
@@ -148,13 +149,13 @@ public final class ChatHistorySearchPanel extends JPanel {
 
     selectedByConversation.forEach(
         (conversation, messageIds) -> actions.applyMessageAction(action, conversation, messageIds));
-    showFeedback("Thao tác mẫu chỉ áp dụng trong phiên hiện tại.", UserUiTheme.TEXT_MUTED);
+    showFeedback("Sample actions apply to this session only.", UserUiTheme.TEXT_MUTED);
     renderResults();
   }
 
   void clearCurrentHistory() {
     if (currentConversation == null) {
-      showFeedback("Không có cuộc trò chuyện được chọn.", UserUiTheme.DANGER);
+      showFeedback("No conversation is selected.", UserUiTheme.DANGER);
       return;
     }
     ActionConfirmation confirmation =
@@ -166,7 +167,7 @@ public final class ChatHistorySearchPanel extends JPanel {
       return;
     }
     actions.clearHistory(currentConversation);
-    showFeedback("Lịch sử mẫu đã được xóa khỏi phiên hiện tại.", UserUiTheme.TEXT_MUTED);
+    showFeedback("Sample history was cleared from this session.", UserUiTheme.TEXT_MUTED);
     renderResults();
   }
 
@@ -175,10 +176,10 @@ public final class ChatHistorySearchPanel extends JPanel {
     setBorder(BorderFactory.createEmptyBorder(
         UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
 
-    JLabel title = new JLabel("Tìm kiếm lịch sử");
+    JLabel title = new JLabel("Search Message History");
     title.setFont(UserUiTheme.FONT_TITLE);
     title.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JLabel subtitle = new JLabel("Tìm nội dung trong các cuộc trò chuyện mẫu.");
+    JLabel subtitle = new JLabel("Search messages across your sample conversations.");
     subtitle.setFont(UserUiTheme.FONT_BODY);
     subtitle.setForeground(UserUiTheme.TEXT_MUTED);
     JPanel titleBlock = new JPanel(new GridLayout(0, 1, 0, UserUiTheme.SPACE_XS));
@@ -186,7 +187,7 @@ public final class ChatHistorySearchPanel extends JPanel {
     titleBlock.add(title);
     titleBlock.add(subtitle);
 
-    searchField.putClientProperty("JTextField.placeholderText", "Nhập từ khóa tìm tin nhắn");
+    searchField.putClientProperty("JTextField.placeholderText", "Enter a message keyword");
     scope.setFont(UserUiTheme.FONT_BODY);
     scope.setEnabled(currentConversation != null);
     scope.addActionListener(event -> renderResults());
@@ -194,15 +195,15 @@ public final class ChatHistorySearchPanel extends JPanel {
     filters.setOpaque(false);
     filters.add(scope);
     filters.add(searchField);
-    JButton deleteForMe = UserUiTheme.createSecondaryButton("Xóa tin nhắn cho tôi");
+    JButton deleteForMe = UserUiTheme.createSecondaryButton("Delete for Me");
     deleteForMe.addActionListener(
         event -> applySelectedMessageAction(ChatHistoryActions.Action.DELETE_FOR_ME));
-    JButton unsend = UserUiTheme.createSecondaryButton("Thu hồi tin nhắn");
+    JButton unsend = UserUiTheme.createSecondaryButton("Unsend Message");
     unsend.addActionListener(
         event -> applySelectedMessageAction(ChatHistoryActions.Action.UNSEND));
-    JButton clearHistory = UserUiTheme.createSecondaryButton("Xóa lịch sử cuộc trò chuyện");
+    JButton clearHistory = UserUiTheme.createSecondaryButton("Clear Conversation History");
     clearHistory.addActionListener(event -> clearCurrentHistory());
-    JButton back = UserUiTheme.createSecondaryButton("Quay lại trò chuyện");
+    JButton back = UserUiTheme.createSecondaryButton("Back to Chat");
     back.addActionListener(event -> backHandler.run());
     JPanel actionsRow = new JPanel(new FlowLayout(FlowLayout.LEFT, UserUiTheme.SPACE_XS, 0));
     actionsRow.setOpaque(false);
@@ -270,9 +271,9 @@ public final class ChatHistorySearchPanel extends JPanel {
     selectionByResult.clear();
     resultsPanel.removeAll();
     if (query.isEmpty()) {
-      resultsPanel.add(emptyState("Nhập từ khóa để tìm trong lịch sử."));
+      resultsPanel.add(emptyState("Enter a keyword to search message history."));
     } else if (visibleResults.isEmpty()) {
-      resultsPanel.add(emptyState("Không tìm thấy tin nhắn phù hợp."));
+      resultsPanel.add(emptyState("No matching messages found."));
     } else {
       for (SearchResult result : visibleResults) {
         JCheckBox selected = new JCheckBox(result.message().displayContent());
@@ -297,7 +298,7 @@ public final class ChatHistorySearchPanel extends JPanel {
                 + DATE_FORMAT.format(result.message().sentAt()));
     context.setFont(UserUiTheme.FONT_SMALL);
     context.setForeground(UserUiTheme.TEXT_MUTED);
-    JButton navigate = UserUiTheme.createPrimaryButton("Đi tới tin nhắn");
+    JButton navigate = UserUiTheme.createPrimaryButton("Go to Message");
     navigate.addActionListener(event -> navigationHandler.accept(result));
     JPanel bottom = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
     bottom.setOpaque(false);

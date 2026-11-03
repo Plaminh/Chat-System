@@ -35,7 +35,7 @@ public final class ChatWorkspacePanel extends JPanel {
   private final javax.swing.JTextField conversationFilter = UserUiTheme.createTextField(22);
   private final JPanel messageList = new JPanel();
   private final JTextArea composer = new JTextArea(3, 32);
-  private final JLabel conversationTitle = new JLabel("Cuộc trò chuyện");
+  private final JLabel conversationTitle = new JLabel("Conversation");
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.LEFT);
   private Conversation selectedConversation;
   private Runnable historySearchHandler = this::showUnavailableAction;
@@ -65,14 +65,14 @@ public final class ChatWorkspacePanel extends JPanel {
                 new ChatMessage(
                     "message-1",
                     "mai.anh",
-                    "Chào bạn! Mình đã gửi nội dung tài liệu mẫu.",
+                    "Hi! I sent over the sample document.",
                     LocalDateTime.of(2026, 10, 27, 10, 32),
                     false,
                     false),
                 new ChatMessage(
                     "message-2",
                     "alex.morgan",
-                    "Cảm ơn bạn, mình sẽ xem và phản hồi sớm.",
+                    "Thanks, I will review it and get back to you soon.",
                     LocalDateTime.of(2026, 10, 27, 10, 38),
                     false,
                     false))),
@@ -84,7 +84,7 @@ public final class ChatWorkspacePanel extends JPanel {
                 new ChatMessage(
                     "message-3",
                     "minh.tran",
-                    "Cuộc hẹn của chúng ta vẫn vào chiều nay nhé?",
+                    "Are we still meeting this afternoon?",
                     LocalDateTime.of(2026, 10, 26, 15, 5),
                     false,
                     false))));
@@ -159,12 +159,12 @@ public final class ChatWorkspacePanel extends JPanel {
   void sendSampleMessage() {
     String content = composer.getText().trim();
     if (content.isEmpty()) {
-      feedbackLabel.setText("Nhập nội dung tin nhắn trước khi tiếp tục.");
+      feedbackLabel.setText("Enter a message before continuing.");
       feedbackLabel.setForeground(UserUiTheme.DANGER);
       return;
     }
     if (selectedConversation == null) {
-      feedbackLabel.setText("Chọn một cuộc trò chuyện trước khi soạn tin nhắn.");
+      feedbackLabel.setText("Select a conversation before composing a message.");
       feedbackLabel.setForeground(UserUiTheme.DANGER);
       return;
     }
@@ -178,7 +178,7 @@ public final class ChatWorkspacePanel extends JPanel {
             false,
             false));
     composer.setText("");
-    feedbackLabel.setText("Tin nhắn mẫu đã thêm vào phiên này; chưa được gửi đi.");
+    feedbackLabel.setText("Sample message added to this session; it was not sent.");
     feedbackLabel.setForeground(UserUiTheme.TEXT_MUTED);
     renderMessages();
     renderConversationList();
@@ -204,10 +204,10 @@ public final class ChatWorkspacePanel extends JPanel {
     pane.setBackground(UserUiTheme.SURFACE_WHITE);
     pane.setBorder(BorderFactory.createEmptyBorder(
         UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
-    JLabel title = new JLabel("Đoạn trò chuyện");
+    JLabel title = new JLabel("Conversations");
     title.setFont(UserUiTheme.FONT_TITLE);
     title.setForeground(UserUiTheme.TEXT_PRIMARY);
-    conversationFilter.putClientProperty("JTextField.placeholderText", "Tìm cuộc trò chuyện");
+    conversationFilter.putClientProperty("JTextField.placeholderText", "Search conversations");
     JPanel heading = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
     heading.setOpaque(false);
     heading.add(title, BorderLayout.NORTH);
@@ -257,16 +257,16 @@ public final class ChatWorkspacePanel extends JPanel {
             UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD)));
     conversationTitle.setFont(UserUiTheme.FONT_SUBTITLE);
     conversationTitle.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JLabel sampleBadge = new JLabel("Bản mẫu");
+    JLabel sampleBadge = new JLabel("Sample");
     sampleBadge.setFont(UserUiTheme.FONT_SMALL);
     sampleBadge.setForeground(UserUiTheme.TEXT_MUTED);
-    JButton historySearch = UserUiTheme.createSecondaryButton("Tìm lịch sử");
+    JButton historySearch = UserUiTheme.createSecondaryButton("Search History");
     historySearch.addActionListener(event -> historySearchHandler.run());
-    JButton report = UserUiTheme.createSecondaryButton("Báo cáo");
+    JButton report = UserUiTheme.createSecondaryButton("Report");
     report.addActionListener(
         event -> {
           if (selectedConversation == null) {
-            feedbackLabel.setText("Chọn cuộc trò chuyện trước khi báo cáo.");
+            feedbackLabel.setText("Select a conversation before reporting.");
             return;
           }
           reportHandler.accept(selectedConversation);
@@ -293,9 +293,9 @@ public final class ChatWorkspacePanel extends JPanel {
         BorderFactory.createEmptyBorder(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM,
             UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM)));
     composer.setText("");
-    JButton sendButton = UserUiTheme.createPrimaryButton("Gửi mẫu");
+    JButton sendButton = UserUiTheme.createPrimaryButton("Send Sample");
     sendButton.addActionListener(event -> sendSampleMessage());
-    JButton assistButton = UserUiTheme.createSecondaryButton("Trợ lý soạn thảo");
+    JButton assistButton = UserUiTheme.createSecondaryButton("Writing Assistant");
     assistButton.addActionListener(event -> writingAssistHandler.accept(composer.getText()));
     JPanel composeActions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     composeActions.setOpaque(false);
@@ -336,15 +336,15 @@ public final class ChatWorkspacePanel extends JPanel {
   }
 
   private void showUnavailableAction() {
-    feedbackLabel.setText("Tác vụ này chưa được kết nối.");
+    feedbackLabel.setText("This action is not connected.");
     feedbackLabel.setForeground(UserUiTheme.TEXT_MUTED);
   }
 
   private void renderMessages() {
     messageList.removeAll();
     if (selectedConversation == null) {
-      conversationTitle.setText("Cuộc trò chuyện");
-      JLabel empty = new JLabel("Chọn một cuộc trò chuyện để xem tin nhắn.");
+      conversationTitle.setText("Conversation");
+      JLabel empty = new JLabel("Select a conversation to view messages.");
       empty.setFont(UserUiTheme.FONT_BODY);
       empty.setForeground(UserUiTheme.TEXT_MUTED);
       empty.setAlignmentX(CENTER_ALIGNMENT);
@@ -358,7 +358,7 @@ public final class ChatWorkspacePanel extends JPanel {
         }
       }
       if (selectedConversation.messages().isEmpty()) {
-        JLabel empty = new JLabel("Chưa có tin nhắn trong cuộc trò chuyện này.");
+        JLabel empty = new JLabel("No messages in this conversation yet.");
         empty.setFont(UserUiTheme.FONT_BODY);
         empty.setForeground(UserUiTheme.TEXT_MUTED);
         messageList.add(empty);
@@ -376,7 +376,7 @@ public final class ChatWorkspacePanel extends JPanel {
       Conversation conversation = (Conversation) value;
       String preview =
           conversation.messages().isEmpty()
-              ? "Chưa có tin nhắn"
+              ? "No messages yet"
               : conversation.messages().get(conversation.messages().size() - 1).content();
       JLabel label = new JLabel(
           "<html><b>" + escapeHtml(conversation.displayName()) + "</b><br>"

@@ -73,11 +73,11 @@ public final class ProfileSettingsPanel extends JPanel {
 
     if (fullName.isEmpty() || email.isEmpty() || address.isEmpty() || dateOfBirth.isEmpty()
         || gender.isEmpty()) {
-      showFeedback("Vui lòng nhập đầy đủ các thông tin bắt buộc.", UserUiTheme.DANGER);
+      showFeedback("Complete all required fields.", UserUiTheme.DANGER);
       return;
     }
     if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
-      showFeedback("Địa chỉ email chưa hợp lệ.", UserUiTheme.DANGER);
+      showFeedback("Enter a valid email address.", UserUiTheme.DANGER);
       return;
     }
 
@@ -85,7 +85,7 @@ public final class ProfileSettingsPanel extends JPanel {
     try {
       parsedDate = LocalDate.parse(dateOfBirth);
     } catch (DateTimeParseException exception) {
-      showFeedback("Ngày sinh cần có định dạng YYYY-MM-DD.", UserUiTheme.DANGER);
+      showFeedback("Date of birth must use the YYYY-MM-DD format.", UserUiTheme.DANGER);
       return;
     }
 
@@ -94,7 +94,7 @@ public final class ProfileSettingsPanel extends JPanel {
         new UserProfile(
             oldProfile.username(), fullName, email, address, parsedDate, gender));
     loadProfile();
-    showFeedback("Thông tin mẫu đã được cập nhật trong phiên này.", UserUiTheme.SUCCESS);
+    showFeedback("Sample profile updated for this session.", UserUiTheme.SUCCESS);
   }
 
   void cancelChanges() {
@@ -109,10 +109,10 @@ public final class ProfileSettingsPanel extends JPanel {
 
     JPanel profileCard = UserUiTheme.createCardPanel();
     profileCard.setLayout(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
-    JLabel title = new JLabel("Hồ sơ cá nhân & Tài khoản");
+    JLabel title = new JLabel("Profile & Account");
     title.setFont(UserUiTheme.FONT_TITLE);
     title.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JLabel subtitle = new JLabel("Chỉnh sửa các thông tin tài khoản thuộc phạm vi đồ án.");
+    JLabel subtitle = new JLabel("View and edit your account details.");
     subtitle.setFont(UserUiTheme.FONT_BODY);
     subtitle.setForeground(UserUiTheme.TEXT_MUTED);
     JPanel heading = new JPanel(new BorderLayout(UserUiTheme.SPACE_XS, UserUiTheme.SPACE_XS));
@@ -122,17 +122,17 @@ public final class ProfileSettingsPanel extends JPanel {
 
     JPanel fields = new JPanel(new GridLayout(0, 2, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
     fields.setOpaque(false);
-    addField(fields, "Họ và tên", fullNameField);
+    addField(fields, "Full name", fullNameField);
     usernameField.setEditable(false);
-    addField(fields, "Tên người dùng", usernameField);
+    addField(fields, "Username", usernameField);
     addField(fields, "Email", emailField);
-    addField(fields, "Địa chỉ", addressField);
-    addField(fields, "Ngày sinh (YYYY-MM-DD)", dateOfBirthField);
-    addField(fields, "Giới tính", genderField);
+    addField(fields, "Address", addressField);
+    addField(fields, "Date of birth (YYYY-MM-DD)", dateOfBirthField);
+    addField(fields, "Gender", genderField);
 
-    JButton cancelButton = UserUiTheme.createSecondaryButton("Hủy");
+    JButton cancelButton = UserUiTheme.createSecondaryButton("Cancel");
     cancelButton.addActionListener(event -> cancelChanges());
-    JButton saveButton = UserUiTheme.createPrimaryButton("Lưu thay đổi");
+    JButton saveButton = UserUiTheme.createPrimaryButton("Save Changes");
     saveButton.addActionListener(event -> saveProfile());
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     actions.setOpaque(false);
@@ -148,10 +148,10 @@ public final class ProfileSettingsPanel extends JPanel {
     profileCard.add(profileContent, BorderLayout.CENTER);
 
     JPanel passwordCard = UserUiTheme.createCardPanel();
-    JLabel passwordInfo = new JLabel("<html><b>Mật khẩu tài khoản</b><br>Đổi mật khẩu bằng biểu mẫu mẫu.</html>");
+    JLabel passwordInfo = new JLabel("<html><b>Account Password</b><br>Change your password using the sample form.</html>");
     passwordInfo.setFont(UserUiTheme.FONT_BODY);
     passwordInfo.setForeground(UserUiTheme.TEXT_SECONDARY);
-    JButton changePasswordButton = UserUiTheme.createPrimaryButton("Đổi mật khẩu");
+    JButton changePasswordButton = UserUiTheme.createPrimaryButton("Change Password");
     changePasswordButton.addActionListener(event -> showChangePasswordDialog());
     passwordCard.add(passwordInfo, BorderLayout.CENTER);
     passwordCard.add(changePasswordButton, BorderLayout.EAST);

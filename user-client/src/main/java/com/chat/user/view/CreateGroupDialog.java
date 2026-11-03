@@ -73,7 +73,7 @@ public final class CreateGroupDialog extends JPanel {
   }
 
   public JDialog createDialog(Window owner) {
-    dialog = new JDialog(owner, "Tạo nhóm trò chuyện", JDialog.ModalityType.APPLICATION_MODAL);
+    dialog = new JDialog(owner, "Create Group Chat", JDialog.ModalityType.APPLICATION_MODAL);
     dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     dialog.setContentPane(this);
     dialog.pack();
@@ -103,11 +103,11 @@ public final class CreateGroupDialog extends JPanel {
     String name = groupNameField.getText().trim();
     List<UserProfile> selected = participantList.getSelectedValuesList();
     if (name.isEmpty()) {
-      showFeedback("Nhập tên nhóm trước khi tiếp tục.", UserUiTheme.DANGER);
+      showFeedback("Enter a group name to continue.", UserUiTheme.DANGER);
       return;
     }
     if (selected.isEmpty()) {
-      showFeedback("Chọn ít nhất một người dùng khác để tạo nhóm.", UserUiTheme.DANGER);
+      showFeedback("Select at least one other user to create a group.", UserUiTheme.DANGER);
       return;
     }
 
@@ -117,7 +117,7 @@ public final class CreateGroupDialog extends JPanel {
     createdGroup =
         new GroupConversation("group-" + UUID.randomUUID(), name, members, List.of());
     createdHandler.accept(createdGroup);
-    showFeedback("Nhóm mẫu đã được tạo trong phiên hiện tại.", UserUiTheme.SUCCESS);
+    showFeedback("Sample group created for this session.", UserUiTheme.SUCCESS);
     if (dialog != null) {
       dialog.dispose();
     }
@@ -128,7 +128,7 @@ public final class CreateGroupDialog extends JPanel {
     setBorder(
         BorderFactory.createEmptyBorder(
             UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG));
-    groupNameField.putClientProperty("JTextField.placeholderText", "Tên nhóm trò chuyện");
+    groupNameField.putClientProperty("JTextField.placeholderText", "Group name");
     participantList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     participantList.setCellRenderer(new DefaultListCellRenderer() {
       @Override
@@ -143,13 +143,13 @@ public final class CreateGroupDialog extends JPanel {
       }
     });
 
-    JLabel title = new JLabel("Tạo nhóm trò chuyện mới", SwingConstants.CENTER);
+    JLabel title = new JLabel("Create a New Group Chat", SwingConstants.CENTER);
     title.setFont(UserUiTheme.FONT_TITLE);
     title.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JLabel nameLabel = new JLabel("Tên nhóm");
+    JLabel nameLabel = new JLabel("Group name");
     nameLabel.setFont(UserUiTheme.FONT_BODY_BOLD);
     nameLabel.setForeground(UserUiTheme.TEXT_SECONDARY);
-    JLabel participantLabel = new JLabel("Thêm ít nhất một người dùng khác");
+    JLabel participantLabel = new JLabel("Add at least one other user");
     participantLabel.setFont(UserUiTheme.FONT_BODY_BOLD);
     participantLabel.setForeground(UserUiTheme.TEXT_SECONDARY);
 
@@ -168,9 +168,9 @@ public final class CreateGroupDialog extends JPanel {
 
     feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
     feedbackLabel.setForeground(UserUiTheme.DANGER);
-    JButton cancel = UserUiTheme.createSecondaryButton("Hủy");
+    JButton cancel = UserUiTheme.createSecondaryButton("Cancel");
     cancel.addActionListener(event -> closeDialog());
-    JButton create = UserUiTheme.createPrimaryButton("Tạo nhóm mẫu");
+    JButton create = UserUiTheme.createPrimaryButton("Create Sample Group");
     create.addActionListener(event -> submitCreation());
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     actions.setOpaque(false);

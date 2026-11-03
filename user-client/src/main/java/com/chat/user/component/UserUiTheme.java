@@ -1,11 +1,17 @@
 package com.chat.user.component;
 
 import java.awt.BorderLayout;
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
@@ -23,6 +29,7 @@ public final class UserUiTheme {
   public static final Color PRIMARY_SOFT_BG = new Color(0xEFF6FF);
   public static final Color SUCCESS = new Color(0x10B981);
   public static final Color DANGER = new Color(0xDC2626);
+  public static final Color DANGER_SOFT = new Color(0xFCA5A5);
 
   public static final Color TEXT_PRIMARY = new Color(0x0F172A);
   public static final Color TEXT_SECONDARY = new Color(0x475569);
@@ -40,6 +47,7 @@ public final class UserUiTheme {
   public static final Font FONT_BODY = new Font("SansSerif", Font.PLAIN, 13);
   public static final Font FONT_BODY_BOLD = new Font("SansSerif", Font.BOLD, 13);
   public static final Font FONT_SMALL = new Font("SansSerif", Font.PLAIN, 12);
+  public static final Font FONT_SECTION = new Font("SansSerif", Font.BOLD, 11);
 
   private UserUiTheme() {}
 
@@ -49,6 +57,9 @@ public final class UserUiTheme {
     UIManager.put("TextComponent.arc", 8);
     UIManager.put("ScrollBar.width", 10);
     UIManager.put("ScrollBar.thumbArc", 999);
+    UIManager.put("Table.rowHeight", 36);
+    UIManager.put("Table.showHorizontalLines", true);
+    UIManager.put("Table.showVerticalLines", false);
   }
 
   public static Border createCardBorder() {
@@ -91,5 +102,72 @@ public final class UserUiTheme {
     field.setFont(FONT_BODY);
     field.setPreferredSize(new Dimension(field.getPreferredSize().width, 36));
     return field;
+  }
+
+  public enum NavigationIcon {
+    CHAT,
+    FRIENDS,
+    REQUESTS,
+    GROUPS,
+    PROFILE,
+    LOGOUT
+  }
+
+  public static Icon createNavigationIcon(NavigationIcon type, Color color, int size) {
+    return new Icon() {
+      @Override
+      public void paintIcon(Component component, Graphics graphics, int x, int y) {
+        Graphics2D g = (Graphics2D) graphics.create();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setColor(color);
+        g.setStroke(new BasicStroke(1.8f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g.translate(x, y);
+
+        switch (type) {
+          case CHAT -> {
+            g.drawRoundRect(2, 3, size - 4, size - 6, 5, 5);
+            g.drawLine(5, size - 3, 3, size - 1);
+          }
+          case FRIENDS -> {
+            g.drawOval(3, 2, 6, 6);
+            g.drawArc(1, 9, 10, 6, 0, 180);
+            g.drawOval(10, 3, 4, 4);
+          }
+          case REQUESTS -> {
+            g.drawOval(2, 2, 7, 7);
+            g.drawArc(0, 9, 11, 6, 0, 180);
+            g.drawLine(13, 5, 13, 11);
+            g.drawLine(10, 8, 16, 8);
+          }
+          case GROUPS -> {
+            g.drawOval(5, 1, 6, 6);
+            g.drawArc(2, 8, 12, 7, 0, 180);
+            g.drawArc(0, 5, 6, 7, 0, 150);
+            g.drawArc(10, 5, 6, 7, 30, 150);
+          }
+          case PROFILE -> {
+            g.drawOval(5, 2, 6, 6);
+            g.drawArc(2, 9, 12, 7, 0, 180);
+          }
+          case LOGOUT -> {
+            g.drawRect(2, 2, 7, size - 4);
+            g.drawLine(7, size / 2, size - 2, size / 2);
+            g.drawLine(size - 5, size / 2 - 3, size - 2, size / 2);
+            g.drawLine(size - 5, size / 2 + 3, size - 2, size / 2);
+          }
+        }
+        g.dispose();
+      }
+
+      @Override
+      public int getIconWidth() {
+        return size;
+      }
+
+      @Override
+      public int getIconHeight() {
+        return size;
+      }
+    };
   }
 }

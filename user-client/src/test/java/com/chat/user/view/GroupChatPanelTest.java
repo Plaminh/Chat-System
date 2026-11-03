@@ -17,7 +17,7 @@ class GroupChatPanelTest {
     GroupChatPanel panel = new GroupChatPanel(group, "creator");
 
     assertEquals(2, panel.getMemberList().getComponentCount());
-    assertTrue(panel.getEncryptionPlaceholder().getText().contains("chưa được kích hoạt"));
+    assertTrue(panel.getEncryptionPlaceholder().getText().contains("not enabled"));
   }
 
   @Test
@@ -30,7 +30,7 @@ class GroupChatPanelTest {
 
     assertEquals(1, group.messages().size());
     assertEquals("Sample group message", group.messages().get(0).content());
-    assertTrue(panel.getFeedbackLabel().getText().contains("phiên này"));
+    assertTrue(panel.getFeedbackLabel().getText().contains("this session only"));
   }
 
   private GroupConversation createGroup() {

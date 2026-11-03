@@ -67,7 +67,7 @@ public final class FriendRequestsSearchPanel extends JPanel {
         sampleProfile("quang.vo", "Võ Quang", "quang@example.test"),
         sampleProfile("thu.nguyen", "Nguyễn Thu", "thu@example.test"),
         sampleProfile("minh.tran", "Trần Minh", "minh@example.test"),
-        sampleProfile("blocked.user", "Người dùng bị chặn", "blocked@example.test"));
+        sampleProfile("blocked.user", "Blocked User", "blocked@example.test"));
   }
 
   JTextField getRequestFilterField() {
@@ -97,12 +97,12 @@ public final class FriendRequestsSearchPanel extends JPanel {
 
     JTabbedPane tabs = new JTabbedPane();
     tabs.setFont(UserUiTheme.FONT_BODY_BOLD);
-    tabs.addTab("Lời mời kết bạn", buildRequestsTab());
-    tabs.addTab("Tìm kiếm người dùng", buildSearchTab());
+    tabs.addTab("Friend Requests", buildRequestsTab());
+    tabs.addTab("Find People", buildSearchTab());
     add(tabs, BorderLayout.CENTER);
 
-    requestFilterField.putClientProperty("JTextField.placeholderText", "Lọc theo tên người gửi");
-    searchField.putClientProperty("JTextField.placeholderText", "Username hoặc họ tên");
+    requestFilterField.putClientProperty("JTextField.placeholderText", "Filter by sender name");
+    searchField.putClientProperty("JTextField.placeholderText", "Username or full name");
     requestFilterField.getDocument().addDocumentListener(documentListener(this::renderRequests));
     searchField.getDocument().addDocumentListener(documentListener(this::renderSearchResults));
   }
@@ -112,7 +112,7 @@ public final class FriendRequestsSearchPanel extends JPanel {
     panel.setBackground(UserUiTheme.CANVAS_BG);
     panel.setBorder(BorderFactory.createEmptyBorder(
         UserUiTheme.SPACE_MD, 0, 0, 0));
-    JLabel title = new JLabel("Lời mời kết bạn");
+    JLabel title = new JLabel("Friend Requests");
     title.setFont(UserUiTheme.FONT_TITLE);
     title.setForeground(UserUiTheme.TEXT_PRIMARY);
     JPanel heading = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
@@ -134,10 +134,10 @@ public final class FriendRequestsSearchPanel extends JPanel {
     panel.setBackground(UserUiTheme.CANVAS_BG);
     panel.setBorder(BorderFactory.createEmptyBorder(
         UserUiTheme.SPACE_MD, 0, 0, 0));
-    JLabel title = new JLabel("Tìm kiếm người dùng");
+    JLabel title = new JLabel("Find People");
     title.setFont(UserUiTheme.FONT_TITLE);
     title.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JLabel description = new JLabel("Tìm bằng username hoặc họ tên.");
+    JLabel description = new JLabel("Search by username or full name.");
     description.setFont(UserUiTheme.FONT_BODY);
     description.setForeground(UserUiTheme.TEXT_MUTED);
     JPanel heading = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
@@ -169,7 +169,7 @@ public final class FriendRequestsSearchPanel extends JPanel {
             .toList();
     requestList.removeAll();
     if (visibleRequests.isEmpty()) {
-      requestList.add(emptyLabel("Không có lời mời kết bạn phù hợp."));
+      requestList.add(emptyLabel("No matching friend requests."));
     } else {
       for (FriendRequest request : visibleRequests) {
         requestList.add(createRequestRow(request));
@@ -195,9 +195,9 @@ public final class FriendRequestsSearchPanel extends JPanel {
                 .toList();
     searchResults.removeAll();
     if (entered.isEmpty()) {
-      searchResults.add(emptyLabel("Nhập username hoặc họ tên để bắt đầu tìm kiếm."));
+      searchResults.add(emptyLabel("Enter a username or full name to start searching."));
     } else if (visibleSearchResults.isEmpty()) {
-      searchResults.add(emptyLabel("Không tìm thấy người dùng phù hợp."));
+      searchResults.add(emptyLabel("No matching users found."));
     } else {
       for (UserProfile profile : visibleSearchResults) {
         searchResults.add(createSearchResultRow(profile));
@@ -215,9 +215,9 @@ public final class FriendRequestsSearchPanel extends JPanel {
         request.requester().fullName() + "  •  @" + request.requester().username());
     identity.setFont(UserUiTheme.FONT_BODY_BOLD);
     identity.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JButton accept = UserUiTheme.createPrimaryButton("Chấp nhận");
+    JButton accept = UserUiTheme.createPrimaryButton("Accept");
     accept.addActionListener(event -> updateRequest(request, FriendRequest.Status.ACCEPTED));
-    JButton decline = UserUiTheme.createSecondaryButton("Từ chối");
+    JButton decline = UserUiTheme.createSecondaryButton("Decline");
     decline.addActionListener(event -> updateRequest(request, FriendRequest.Status.DECLINED));
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, UserUiTheme.SPACE_XS, 0));
     actions.setOpaque(false);
@@ -234,9 +234,9 @@ public final class FriendRequestsSearchPanel extends JPanel {
     JLabel identity = new JLabel(profile.fullName() + "  •  @" + profile.username());
     identity.setFont(UserUiTheme.FONT_BODY_BOLD);
     identity.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JButton chat = UserUiTheme.createPrimaryButton("Nhắn tin");
+    JButton chat = UserUiTheme.createPrimaryButton("Message");
     chat.addActionListener(event -> openChatHandler.accept(profile));
-    JButton addToGroup = UserUiTheme.createSecondaryButton("Chọn cho nhóm");
+    JButton addToGroup = UserUiTheme.createSecondaryButton("Add to Group");
     addToGroup.addActionListener(event -> selectForGroupHandler.accept(profile));
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, UserUiTheme.SPACE_XS, 0));
     actions.setOpaque(false);

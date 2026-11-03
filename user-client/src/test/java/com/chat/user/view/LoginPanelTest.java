@@ -23,7 +23,7 @@ class LoginPanelTest {
 
     assertFalse(session.isSignedIn());
     assertEquals(0, signInCalls[0]);
-    assertTrue(panel.getFeedbackLabel().getText().contains("Vui lòng nhập"));
+    assertTrue(panel.getFeedbackLabel().getText().contains("Enter your username"));
   }
 
   @Test
@@ -72,7 +72,7 @@ class LoginPanelTest {
     assertTrue(session.isSignedIn());
     assertEquals(1, signInCalls[0]);
     assertEquals("", new String(panel.getPasswordField().getPassword()));
-    assertTrue(panel.getFeedbackLabel().getText().contains("chưa được xác thực"));
+    assertTrue(panel.getFeedbackLabel().getText().contains("not authenticated"));
   }
 
   private LoginPanel newPanel(UserSessionState session, int[] signInCalls) {

@@ -22,8 +22,8 @@ import javax.swing.WindowConstants;
 
 public final class WritingAssistDialog extends JPanel {
   public enum Mode {
-    SUGGEST("Gợi ý tin nhắn mới"),
-    REVISE("Chỉnh sửa bản nháp");
+    SUGGEST("Suggest a new message"),
+    REVISE("Revise the draft");
 
     private final String label;
 
@@ -55,7 +55,7 @@ public final class WritingAssistDialog extends JPanel {
   }
 
   public JDialog createDialog(Window owner) {
-    dialog = new JDialog(owner, "Trợ lý hỗ trợ soạn thảo", JDialog.ModalityType.APPLICATION_MODAL);
+    dialog = new JDialog(owner, "Writing Assistant", JDialog.ModalityType.APPLICATION_MODAL);
     dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     dialog.setContentPane(this);
     dialog.pack();
@@ -84,12 +84,12 @@ public final class WritingAssistDialog extends JPanel {
   void acceptPreview() {
     String proposed = preview.getText().trim();
     if (proposed.isEmpty()) {
-      showFeedback("Chưa có nội dung xem trước để chèn.", UserUiTheme.DANGER);
+      showFeedback("There is no preview content to insert.", UserUiTheme.DANGER);
       return;
     }
     acceptHandler.accept(proposed);
     accepted = true;
-    showFeedback("Bản xem trước mẫu đã được chấp nhận vào ô soạn.", UserUiTheme.SUCCESS);
+    showFeedback("Sample preview accepted in the composer.", UserUiTheme.SUCCESS);
     closeDialog();
   }
 
@@ -112,10 +112,10 @@ public final class WritingAssistDialog extends JPanel {
         BorderFactory.createEmptyBorder(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM,
             UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM)));
 
-    JLabel title = new JLabel("Trợ lý hỗ trợ soạn thảo tin nhắn", SwingConstants.CENTER);
+    JLabel title = new JLabel("Message Writing Assistant", SwingConstants.CENTER);
     title.setFont(UserUiTheme.FONT_TITLE);
     title.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JLabel modeLabel = new JLabel("Chế độ xem trước:");
+    JLabel modeLabel = new JLabel("Preview mode:");
     modeLabel.setFont(UserUiTheme.FONT_BODY_BOLD);
     modeLabel.setForeground(UserUiTheme.TEXT_SECONDARY);
     modeSelector.setFont(UserUiTheme.FONT_BODY);
@@ -126,8 +126,8 @@ public final class WritingAssistDialog extends JPanel {
     modeRow.add(modeLabel, BorderLayout.WEST);
     modeRow.add(modeSelector, BorderLayout.CENTER);
 
-    JPanel currentBlock = createTextBlock("Bản nháp hiện tại", originalDraftView);
-    JPanel previewBlock = createTextBlock("Đề xuất mẫu", preview);
+    JPanel currentBlock = createTextBlock("Current Draft", originalDraftView);
+    JPanel previewBlock = createTextBlock("Sample Suggestion", preview);
     JPanel content = new JPanel(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
     content.setOpaque(false);
     JPanel heading = new JPanel(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
@@ -142,7 +142,7 @@ public final class WritingAssistDialog extends JPanel {
     content.add(textBlocks, BorderLayout.CENTER);
 
     JLabel disclaimer =
-        new JLabel("Bản mẫu cục bộ; không gọi mô hình ngôn ngữ hoặc dịch vụ bên ngoài.");
+        new JLabel("Local sample only; no language model or external service is called.");
     disclaimer.setFont(UserUiTheme.FONT_SMALL);
     disclaimer.setForeground(UserUiTheme.TEXT_MUTED);
     feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
@@ -152,9 +152,9 @@ public final class WritingAssistDialog extends JPanel {
     footerInfo.add(feedbackLabel, BorderLayout.NORTH);
     footerInfo.add(disclaimer, BorderLayout.SOUTH);
 
-    JButton discard = UserUiTheme.createSecondaryButton("Bỏ qua");
+    JButton discard = UserUiTheme.createSecondaryButton("Discard");
     discard.addActionListener(event -> closeDialog());
-    JButton accept = UserUiTheme.createPrimaryButton("Chèn vào ô soạn");
+    JButton accept = UserUiTheme.createPrimaryButton("Insert into Composer");
     accept.addActionListener(event -> acceptPreview());
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     actions.setOpaque(false);
@@ -187,13 +187,13 @@ public final class WritingAssistDialog extends JPanel {
     if (mode == Mode.SUGGEST) {
       proposed =
           draft.isEmpty()
-              ? "Bạn có thể chia sẻ thêm thông tin để mọi người cùng nắm rõ nội dung."
-              : draft + " Cảm ơn bạn đã chia sẻ.";
+              ? "Could you share a little more detail so everyone has the full context?"
+              : draft + " Thanks for sharing.";
     } else {
       proposed =
           draft.isEmpty()
-              ? "Xin chào, bạn có thể cho mình biết thêm thông tin được không?"
-              : "Mình muốn chia sẻ rằng: " + draft;
+              ? "Hi, could you share a little more information?"
+              : "I would like to share: " + draft;
     }
     preview.setText(proposed);
   }

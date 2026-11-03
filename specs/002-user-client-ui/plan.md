@@ -10,7 +10,7 @@ Deliver the Version 1 User desktop interface in the existing `user-client` Maven
 
 ## Technical Context
 
-**Language/Version**: Java 21.
+**Language/Version**: Java 25 LTS.
 
 **Primary Dependencies**: Existing Java Swing, FlatLaf, `common`, and JUnit 5 dependencies in `user-client`; no new dependency is planned.
 
@@ -43,7 +43,7 @@ Deliver the Version 1 User desktop interface in the existing `user-client` Maven
 | Principle | Plan decision | Gate |
 |---|---|---|
 | Project scope | Implement only the User Client UI functions required by the project specification; exclude unrelated content visible in generated mockups. | PASS |
-| Technology | Keep Java 21, Maven, Swing, FlatLaf and JUnit 5; add no framework or dependency. | PASS |
+| Technology | Keep Java 25 LTS, Maven, Swing, FlatLaf and JUnit 5; add no framework or dependency. | PASS |
 | Module boundaries | Modify User UI only in `user-client`; depend on `common` only where already appropriate; do not depend on `server`. | PASS |
 | Architecture responsibilities | Keep UI/presentation in the client; leave authentication, authorization, networking, persistence, email, LLM and cryptography to later approved backend work. | PASS |
 | Code quality | Follow existing `com.chat.user` packages and conventions; avoid speculative abstractions. | PASS |

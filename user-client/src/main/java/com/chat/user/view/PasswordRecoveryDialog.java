@@ -27,7 +27,7 @@ public final class PasswordRecoveryDialog extends JPanel {
   }
 
   public JDialog createDialog(Window owner) {
-    dialog = new JDialog(owner, "Khôi phục mật khẩu", JDialog.ModalityType.APPLICATION_MODAL);
+    dialog = new JDialog(owner, "Password Recovery", JDialog.ModalityType.APPLICATION_MODAL);
     dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     dialog.setContentPane(this);
     dialog.pack();
@@ -52,17 +52,17 @@ public final class PasswordRecoveryDialog extends JPanel {
   void submitRecoveryRequest() {
     String email = emailField.getText().trim();
     if (email.isEmpty()) {
-      showFeedback("Vui lòng nhập địa chỉ email.", UserUiTheme.DANGER);
+      showFeedback("Enter your email address.", UserUiTheme.DANGER);
       return;
     }
     if (!isValidEmail(email)) {
-      showFeedback("Địa chỉ email chưa hợp lệ.", UserUiTheme.DANGER);
+      showFeedback("Enter a valid email address.", UserUiTheme.DANGER);
       return;
     }
 
     requestSubmitted = true;
     showFeedback(
-        "Yêu cầu mẫu đã được ghi nhận; hệ thống không gửi email hoặc mật khẩu.",
+        "Sample request recorded; no email or password was sent.",
         UserUiTheme.SUCCESS);
   }
 
@@ -72,17 +72,17 @@ public final class PasswordRecoveryDialog extends JPanel {
         BorderFactory.createEmptyBorder(
             UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG));
 
-    JLabel title = new JLabel("Khôi phục mật khẩu", SwingConstants.CENTER);
+    JLabel title = new JLabel("Password Recovery", SwingConstants.CENTER);
     title.setFont(UserUiTheme.FONT_TITLE);
     title.setForeground(UserUiTheme.TEXT_PRIMARY);
     JLabel description =
         new JLabel(
-            "Nhập email liên kết với tài khoản để xem phản hồi mẫu.",
+            "Enter the email linked to your account to view a sample response.",
             SwingConstants.CENTER);
     description.setFont(UserUiTheme.FONT_BODY);
     description.setForeground(UserUiTheme.TEXT_MUTED);
 
-    JLabel emailLabel = new JLabel("Địa chỉ Email");
+    JLabel emailLabel = new JLabel("Email address");
     emailLabel.setFont(UserUiTheme.FONT_BODY_BOLD);
     emailLabel.setForeground(UserUiTheme.TEXT_SECONDARY);
     JPanel form = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
@@ -93,9 +93,9 @@ public final class PasswordRecoveryDialog extends JPanel {
     feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
     feedbackLabel.setForeground(UserUiTheme.DANGER);
 
-    JButton cancelButton = UserUiTheme.createSecondaryButton("Quay lại đăng nhập");
+    JButton cancelButton = UserUiTheme.createSecondaryButton("Back to Sign In");
     cancelButton.addActionListener(event -> closeDialog());
-    JButton submitButton = UserUiTheme.createPrimaryButton("Gửi yêu cầu mẫu");
+    JButton submitButton = UserUiTheme.createPrimaryButton("Send Sample Request");
     submitButton.addActionListener(event -> submitRecoveryRequest());
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.CENTER, UserUiTheme.SPACE_SM, 0));
     actions.setOpaque(false);

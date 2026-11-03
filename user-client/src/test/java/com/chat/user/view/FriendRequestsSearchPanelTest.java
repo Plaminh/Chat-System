@@ -14,10 +14,10 @@ class FriendRequestsSearchPanelTest {
   void acceptingAndDecliningRequestsRemovesThemFromPendingList() {
     FriendRequestsSearchPanel panel = createPanel(new HashSet<>());
 
-    clickButton(panel, "Chấp nhận");
+    clickButton(panel, "Accept");
     assertEquals(1, panel.getVisibleRequests().size());
 
-    clickButton(panel, "Từ chối");
+    clickButton(panel, "Decline");
     assertTrue(panel.getVisibleRequests().isEmpty());
   }
 
@@ -41,7 +41,7 @@ class FriendRequestsSearchPanelTest {
   @Test
   void acceptingRequestUpdatesItsSampleStatus() {
     FriendRequestsSearchPanel panel = createPanel(new HashSet<>());
-    clickButton(panel, "Chấp nhận");
+    clickButton(panel, "Accept");
 
     List<FriendRequest> requests = panel.getRequests();
     assertTrue(
