@@ -400,11 +400,7 @@ Asked for: Inspected the target branch, repository governance, four-module archi
 
 Kept: Fixed scope at exactly twelve core tables; preserved numeric database identities and UI display-ID mappings; separated recall, per-user deletion, and history clearing; deferred cross-table authorization and E2EE key management to Version 2. Accepted the specification-driven roadmap and native PostgreSQL constraint strategy.
 
-Changed: Files: `specs/003-database-schema-v1/spec.md`, `specs/003-database-schema-v1/plan.md`, `specs/003-database-schema-v1/research.md`, `specs/003-database-schema-v1/tasks.md`, `specs/003-database-schema-v1/checklists/requirements.md`, `docs/database/IMPLEMENTATION_PLAN_V1.md`, `AI-LOG.md`.  
-Verification reported: Confirmed branch `feature/database-schema-v1`, clean initial working tree, four Maven modules, placeholder SQL state, complete requirements checklist (16/16 checked), required planning artifacts, and no SQL implementation in this phase; reviewed `git diff --check` and staged content before commit.  
-Test results: Planning-only phase; no runtime tests were applicable. Artifact and checklist validation passed.  
-Remaining limitations: Physical data model, SQL schema, runtime database validation, seed data, initialization script, and final review remain for Phases 01–15.  
-Corresponding commit message: `docs(db): establish database v1 implementation plan`
+Changed: Files: `specs/003-database-schema-v1/spec.md`, `specs/003-database-schema-v1/plan.md`, `specs/003-database-schema-v1/research.md`, `specs/003-database-schema-v1/tasks.md`, `specs/003-database-schema-v1/checklists/requirements.md`, `docs/database/IMPLEMENTATION_PLAN_V1.md`, `AI-LOG.md`. Codex reported verification: Confirmed branch `feature/database-schema-v1`, clean initial working tree, four Maven modules, placeholder SQL state, complete requirements checklist (16/16 checked), required planning artifacts, and no SQL implementation in this phase; reviewed `git diff --check` and staged content before commit. Reported test results: Planning-only phase; no runtime tests were applicable. Artifact and checklist validation passed. Remaining limitations: Physical data model, SQL schema, runtime database validation, seed data, initialization script, and final review remain for Phases 01–15. Recorded commit message: `docs(db): establish database v1 implementation plan`.
 
 Rejected: Additional tables, triggers, stored procedures, Java changes, protocol changes, branch changes, and Version 2 behavior.
 
@@ -418,11 +414,7 @@ Asked for: Defined the conceptual, logical, and planned physical model for exact
 
 Kept: Adopted canonical low/high IDs for unordered relationships; specialized direct conversations without adding a table; separated unsending, delete-for-me, and history clearing; used source activity events and derived counts; documented restricted account-deletion cases and Version 2 transaction rules. Accepted the twelve-table normalized model and explicit delete behavior.
 
-Changed: Files: `specs/003-database-schema-v1/data-model.md`, `specs/003-database-schema-v1/contracts/schema-contract.md`, `specs/003-database-schema-v1/quickstart.md`, `docs/database/ERD_V1.md`, `docs/database/schema-v1.dbml`, `docs/database/UI_DATA_MAPPING_V1.md`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.  
-Verification reported: Cross-checked all twelve tables across ERD, DBML, data model, schema contract, plan, and UI mappings; confirmed all identifiers/states and lifecycle semantics are documented; reviewed `git diff --check` and staged content before commit.  
-Test results: Documentation consistency checks passed; no SQL existed yet for runtime validation.  
-Remaining limitations: Cross-table business rules require Version 2 backend transactions; the encryption flag is metadata only; PostgreSQL runtime validation remains pending until schema implementation.  
-Corresponding commit message: `docs(db): define database model and ERD`
+Changed: Files: `specs/003-database-schema-v1/data-model.md`, `specs/003-database-schema-v1/contracts/schema-contract.md`, `specs/003-database-schema-v1/quickstart.md`, `docs/database/ERD_V1.md`, `docs/database/schema-v1.dbml`, `docs/database/UI_DATA_MAPPING_V1.md`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`. Codex reported verification: Cross-checked all twelve tables across ERD, DBML, data model, schema contract, plan, and UI mappings; confirmed all identifiers/states and lifecycle semantics are documented; reviewed `git diff --check` and staged content before commit. Reported test results: Documentation consistency checks passed; no SQL existed yet for runtime validation. Remaining limitations: Cross-table business rules require Version 2 backend transactions; the encryption flag is metadata only; PostgreSQL runtime validation remains pending until schema implementation. Recorded commit message: `docs(db): define database model and ERD`.
 
 Rejected: Stored friend/activity counters, presence persistence, report/account-status conflation, triggers, procedures, extra key-management tables, and UI source changes.
 
@@ -436,11 +428,7 @@ Asked for: Replaced the schema placeholder with PostgreSQL session settings and 
 
 Kept: Used numeric identity keys; case-insensitive unique indexes for username/email; normalized nullable gender; explicit `active`/`locked` consistency with `locked_at`; retained only source attributes and no friend/activity counters. Accepted native checks and expression indexes.
 
-Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.  
-Verification reported: Checked one `users` table definition, named constraints, five expected indexes, absence of other core tables, and PostgreSQL CLI availability; reviewed `git diff --check` and staged content before commit.  
-Test results: Focused static schema assertions passed. PostgreSQL runtime execution was not performed in this phase and remains scheduled for Phase 12.  
-Remaining limitations: `updated_at` maintenance and password hashing are Version 2 server responsibilities; later tables and integrated runtime validation remain pending.  
-Corresponding commit message: `feat(db): add users schema`
+Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`. Codex reported verification: Checked one `users` table definition, named constraints, five expected indexes, absence of other core tables, and PostgreSQL CLI availability; reviewed `git diff --check` and staged content before commit. Reported test results: Focused static schema assertions passed. PostgreSQL runtime execution was not performed in this phase and remains scheduled for Phase 12. Remaining limitations: `updated_at` maintenance and password hashing are Version 2 server responsibilities; later tables and integrated runtime validation remain pending. Recorded commit message: `feat(db): add users schema`.
 
 Rejected: Plaintext passwords, UI display IDs as keys, client credentials, stored metrics, and database triggers for `updated_at`.
 
@@ -454,11 +442,7 @@ Asked for: Added `login_history` with numeric identity, user ownership, login/lo
 
 Kept: Kept user name/full name normalized in `users` rather than duplicated; allowed open sessions with `logged_out_at = NULL`; rejected logout times before login. Accepted compact session-boundary history.
 
-Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.  
-Verification reported: Checked two cumulative table definitions, the user foreign key with `ON DELETE CASCADE`, the timestamp constraint, and both login-history indexes; reviewed `git diff --check` and staged content before commit.  
-Test results: Focused static schema assertions passed. Runtime execution remains deferred to the isolated Phase 12 fixture.  
-Remaining limitations: Login/logout recording behavior and authentication are Version 2 server work.  
-Corresponding commit message: `feat(db): add login history schema`
+Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`. Codex reported verification: Checked two cumulative table definitions, the user foreign key with `ON DELETE CASCADE`, the timestamp constraint, and both login-history indexes; reviewed `git diff --check` and staged content before commit. Reported test results: Focused static schema assertions passed. Runtime execution remains deferred to the isolated Phase 12 fixture. Remaining limitations: Login/logout recording behavior and authentication are Version 2 server work. Recorded commit message: `feat(db): add login history schema`.
 
 Rejected: Client/device metadata not required by Version 1 and denormalized display fields.
 
@@ -472,11 +456,7 @@ Asked for: Added directed `friend_requests` with sender/receiver references, nor
 
 Kept: Preserved historical final requests while allowing only one pending request for an unordered user pair, preventing simultaneous reverse requests through a partial expression index. Accepted the `LEAST`/`GREATEST` pending-pair index.
 
-Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.  
-Verification reported: Checked three cumulative tables, both user foreign keys, four allowed states, self-request and response-time constraints, partial unique pending-pair index, and sender/receiver query indexes; reviewed `git diff --check` and staged content before commit.  
-Test results: Focused static schema assertions passed. Runtime constraint tests remain scheduled for Phase 12.  
-Remaining limitations: Accepting/declining requests and atomic friendship creation are Version 2 transaction responsibilities.  
-Corresponding commit message: `feat(db): add friend requests schema`
+Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`. Codex reported verification: Checked three cumulative tables, both user foreign keys, four allowed states, self-request and response-time constraints, partial unique pending-pair index, and sender/receiver query indexes; reviewed `git diff --check` and staged content before commit. Reported test results: Focused static schema assertions passed. Runtime constraint tests remain scheduled for Phase 12. Remaining limitations: Accepting/declining requests and atomic friendship creation are Version 2 transaction responsibilities. Recorded commit message: `feat(db): add friend requests schema`.
 
 Rejected: Permanent uniqueness across all request history and extra request-message fields.
 
@@ -490,11 +470,7 @@ Asked for: Added canonical unordered `friendships` and directed `user_blocks`, i
 
 Kept: Required `user_low_id < user_high_id` for friendships; allowed at most one friendship per accepted request; kept blocks directional and independent from friendship/request cleanup policy. Accepted relational source facts and canonical pairs.
 
-Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.  
-Verification reported: Checked five cumulative tables, all relationship foreign keys/delete actions, canonical/self checks, pair/request uniqueness, and four supporting indexes; reviewed `git diff --check` and staged content before commit.  
-Test results: Focused static schema assertions passed. Runtime duplicate/self-reference tests remain scheduled for Phase 12.  
-Remaining limitations: Version 2 must canonicalize IDs and atomically reconcile requests, friendships, and blocks.  
-Corresponding commit message: `feat(db): add friendship and blocking schemas`
+Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`. Codex reported verification: Checked five cumulative tables, all relationship foreign keys/delete actions, canonical/self checks, pair/request uniqueness, and four supporting indexes; reviewed `git diff --check` and staged content before commit. Reported test results: Focused static schema assertions passed. Runtime duplicate/self-reference tests remain scheduled for Phase 12. Remaining limitations: Version 2 must canonicalize IDs and atomically reconcile requests, friendships, and blocks. Recorded commit message: `feat(db): add friendship and blocking schemas`.
 
 Rejected: Duplicated bidirectional friendship rows, stored friend counts, and automatic trigger-based block reconciliation.
 
@@ -508,11 +484,7 @@ Asked for: Added shared `conversations` metadata for direct and group chats, inc
 
 Kept: Required direct conversations to have no group name/owner and groups to have both; restricted deletion of a group owner until Version 2 transfers or removes ownership; treated encryption as a status flag only. Accepted one shared conversation supertype.
 
-Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.  
-Verification reported: Checked six cumulative tables, type/shape/timestamp constraints, owner foreign-key restriction, encryption default, and three conversation indexes; reviewed `git diff --check` and staged content before commit.  
-Test results: Focused static schema assertions passed. Runtime shape tests remain scheduled for Phase 12.  
-Remaining limitations: Group ownership/admin membership synchronization and effective encryption are Version 2 responsibilities.  
-Corresponding commit message: `feat(db): add conversations schema`
+Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`. Codex reported verification: Checked six cumulative tables, type/shape/timestamp constraints, owner foreign-key restriction, encryption default, and three conversation indexes; reviewed `git diff --check` and staged content before commit. Reported test results: Focused static schema assertions passed. Runtime shape tests remain scheduled for Phase 12. Remaining limitations: Group ownership/admin membership synchronization and effective encryption are Version 2 responsibilities. Recorded commit message: `feat(db): add conversations schema`.
 
 Rejected: Separate direct/group message tables, embedded member arrays, E2EE key columns, and automatic timestamp triggers.
 
@@ -526,11 +498,7 @@ Asked for: Added `direct_conversations` for unique canonical one-to-one pairs an
 
 Kept: Used the parent conversation ID as the direct specialization primary key; restricted deletion of users still named in a direct pair; allowed one membership row per conversation/user with explicit leave and clear-history timestamps. Accepted specialization plus shared membership.
 
-Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.  
-Verification reported: Checked eight cumulative tables, canonical and unique direct pairs, all foreign-key delete actions, membership roles/timestamp bounds/uniqueness, and four supporting indexes; reviewed `git diff --check` and staged content before commit.  
-Test results: Focused static schema assertions passed. Runtime pair/membership tests remain scheduled for Phase 12.  
-Remaining limitations: Parent type, exactly-two direct members, group owner/admin guarantees, and rejoin policy require Version 2 transactions.  
-Corresponding commit message: `feat(db): add conversation membership schemas`
+Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`. Codex reported verification: Checked eight cumulative tables, canonical and unique direct pairs, all foreign-key delete actions, membership roles/timestamp bounds/uniqueness, and four supporting indexes; reviewed `git diff --check` and staged content before commit. Reported test results: Focused static schema assertions passed. Runtime pair/membership tests remain scheduled for Phase 12. Remaining limitations: Parent type, exactly-two direct members, group owner/admin guarantees, and rejoin policy require Version 2 transactions. Recorded commit message: `feat(db): add conversation membership schemas`.
 
 Rejected: Participant arrays, duplicate direct pairs, a separate history-clear table, and silent orphaning on account deletion.
 
@@ -544,11 +512,7 @@ Asked for: Added `messages` with conversation/sender references, non-blank body,
 
 Kept: Retained messages when sender accounts are removed by setting authorship null; required recall time before allowing an optional recall actor; added PostgreSQL simple-text GIN search for plaintext V1 content. Accepted explicit recall metadata and source body retention.
 
-Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.  
-Verification reported: Checked nine cumulative tables, all message foreign-key delete actions, body/unsend constraints, chronological/sender indexes, and GIN search index; reviewed `git diff --check` and staged content before commit.  
-Test results: Focused static schema assertions passed. Runtime send/unsend and search-index validation remain scheduled for Phase 12.  
-Remaining limitations: Sender membership, unsend authorization/window, recalled-body access, and encrypted-message search policy require Version 2 decisions.  
-Corresponding commit message: `feat(db): add messages schema`
+Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`. Codex reported verification: Checked nine cumulative tables, all message foreign-key delete actions, body/unsend constraints, chronological/sender indexes, and GIN search index; reviewed `git diff --check` and staged content before commit. Reported test results: Focused static schema assertions passed. Runtime send/unsend and search-index validation remain scheduled for Phase 12. Remaining limitations: Sender membership, unsend authorization/window, recalled-body access, and encrypted-message search policy require Version 2 decisions. Recorded commit message: `feat(db): add messages schema`.
 
 Rejected: Per-user deletion flags on messages, physical deletion for unsend, message encryption keys, and speculative attachment fields.
 
@@ -562,11 +526,7 @@ Asked for: Added `message_deletions` for per-user delete-for-me state with expli
 
 Kept: Kept user-specific hiding separate from `messages.unsent_at` and from membership `history_cleared_at`; cascaded records when either their message or user ceases to exist. Accepted one junction record per user/message.
 
-Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.  
-Verification reported: Checked ten cumulative tables, message/user cascading foreign keys, unique pair constraint, and user deletion-history index; reviewed `git diff --check` and staged content before commit.  
-Test results: Focused static schema assertions passed. Runtime uniqueness/visibility tests remain scheduled for Phase 12.  
-Remaining limitations: Participant authorization for delete-for-me is a Version 2 transaction rule.  
-Corresponding commit message: `feat(db): add message deletion schema`
+Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`. Codex reported verification: Checked ten cumulative tables, message/user cascading foreign keys, unique pair constraint, and user deletion-history index; reviewed `git diff --check` and staged content before commit. Reported test results: Focused static schema assertions passed. Runtime uniqueness/visibility tests remain scheduled for Phase 12. Remaining limitations: Participant authorization for delete-for-me is a Version 2 transaction rule. Recorded commit message: `feat(db): add message deletion schema`.
 
 Rejected: A shared deleted flag, duplicate deletion events, and physical message removal.
 
@@ -580,11 +540,7 @@ Asked for: Added `spam_reports` with reporter/reported account references, optio
 
 Kept: Used `SET NULL` to retain moderation history after related account/message deletion; separated report statuses from account lock state; required resolution time only for terminal statuses. Accepted nullable retained-audit references and four-state workflow.
 
-Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.  
-Verification reported: Checked eleven cumulative tables, four foreign keys/delete actions, self-report/reason/status/resolution constraints, and five moderation indexes; reviewed `git diff --check` and staged content before commit.  
-Test results: Focused static schema assertions passed. Runtime workflow and retained-history tests remain scheduled for Phase 12.  
-Remaining limitations: Prior-interaction eligibility, reviewer authorization, and sanction transactions are Version 2 responsibilities.  
-Corresponding commit message: `feat(db): add spam reports schema`
+Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`. Codex reported verification: Checked eleven cumulative tables, four foreign keys/delete actions, self-report/reason/status/resolution constraints, and five moderation indexes; reviewed `git diff --check` and staged content before commit. Reported test results: Focused static schema assertions passed. Runtime workflow and retained-history tests remain scheduled for Phase 12. Remaining limitations: Prior-interaction eligibility, reviewer authorization, and sanction transactions are Version 2 responsibilities. Recorded commit message: `feat(db): add spam reports schema`.
 
 Rejected: An `account_locked` report status, implicit sanctions, self-reporting, and mandatory message evidence.
 
@@ -598,11 +554,7 @@ Asked for: Added `user_activity_logs` for app-open, direct-chat, and group-chat 
 
 Kept: Stored source events rather than calculated user counters; required no conversation for app opens and a conversation for chat activity; indexed user, event type, conversation, and time for range/distinct aggregation. Accepted event-level facts supporting `COUNT(DISTINCT ...)`.
 
-Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.  
-Verification reported: Checked all twelve cumulative tables, activity foreign keys/delete actions, three event values, context consistency, and three analytics indexes; confirmed no thirteenth table; reviewed `git diff --check` and staged content before commit.  
-Test results: Focused static schema assertions passed with exactly twelve table definitions. Integrated runtime and normalization validation remain scheduled for Phase 12.  
-Remaining limitations: Event deduplication and conversation-type matching require Version 2 transaction logic; activity events do not constitute live presence.  
-Corresponding commit message: `feat(db): add user activity schema`
+Changed: Files: `script/schema.sql`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`. Codex reported verification: Checked all twelve cumulative tables, activity foreign keys/delete actions, three event values, context consistency, and three analytics indexes; confirmed no thirteenth table; reviewed `git diff --check` and staged content before commit. Reported test results: Focused static schema assertions passed with exactly twelve table definitions. Integrated runtime and normalization validation remain scheduled for Phase 12. Remaining limitations: Event deduplication and conversation-type matching require Version 2 transaction logic; activity events do not constitute live presence. Recorded commit message: `feat(db): add user activity schema`.
 
 Rejected: Monthly summary tables, counters on `users`, and a durable online/offline flag.
 
@@ -616,11 +568,7 @@ Asked for: Added portable static schema validation, a transactional PostgreSQL f
 
 Kept: Required static validation everywhere and real SQL execution only in a newly created isolated database; tested cascade, set-null, and restrict semantics; rolled back all fixture rows. Accepted a disposable local PostgreSQL cluster after the normal endpoint was unavailable.
 
-Changed: Files: `script/tests/validate-schema.ps1`, `script/tests/validate-schema.sql`, `docs/database/VALIDATION_V1.md`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.  
-Verification reported: Ran static contract checks and loaded the full schema plus transactional fixture into PostgreSQL 18.4 on a trust-only loopback disposable cluster; dropped the database, stopped the server, and removed the verified cluster directory.  
-Test results: PASS — 12 tables, 12 primary keys, 25 foreign keys, 34 checks, 33 explicit indexes; all valid integrated inserts succeeded; 14 representative invalid/delete-action cases behaved as specified; final transaction rolled back.  
-Remaining limitations: No separate PostgreSQL 14–17 matrix or production-scale benchmark; documented cross-table authorization rules remain Version 2 work.  
-Corresponding commit message: `test(db): add schema validation tests`
+Changed: Files: `script/tests/validate-schema.ps1`, `script/tests/validate-schema.sql`, `docs/database/VALIDATION_V1.md`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`. Codex reported verification: Ran static contract checks and loaded the full schema plus transactional fixture into PostgreSQL 18.4 on a trust-only loopback disposable cluster; dropped the database, stopped the server, and removed the verified cluster directory. Reported test results: PASS — 12 tables, 12 primary keys, 25 foreign keys, 34 checks, 33 explicit indexes; all valid integrated inserts succeeded; 14 representative invalid/delete-action cases behaved as specified; final transaction rolled back. Remaining limitations: No separate PostgreSQL 14–17 matrix or production-scale benchmark; documented cross-table authorization rules remain Version 2 work. Recorded commit message: `test(db): add schema validation tests`.
 
 Rejected: Modifying/starting an unknown existing cluster, using production data, or claiming unavailable validation.
 
@@ -634,11 +582,7 @@ Asked for: Replaced the seed placeholder with deterministic fictional developmen
 
 Kept: Used reserved `example.test` emails, fictional profiles, BCrypt fixture hashes without published plaintext, explicit IDs for readable relationships, and sequence resets for safe subsequent inserts. Accepted representative development-only coverage.
 
-Changed: Files: `script/seed.sql`, `docs/database/VALIDATION_V1.md`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.  
-Verification reported: Loaded schema and seed with `ON_ERROR_STOP=1` into a fresh PostgreSQL 18.4 disposable database; queried every table count and verified identity sequences advance beyond fixture IDs; dropped the database, stopped the server, and removed the cluster.  
-Test results: PASS — all twelve tables populated (56 total rows), all constraints/foreign keys accepted the data, and identity-sequence checks passed.  
-Remaining limitations: Seed data is for local demonstration only; authentication workflows and credential provisioning remain Version 2 responsibilities.  
-Corresponding commit message: `feat(db): add development seed data`
+Changed: Files: `script/seed.sql`, `docs/database/VALIDATION_V1.md`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`. Codex reported verification: Loaded schema and seed with `ON_ERROR_STOP=1` into a fresh PostgreSQL 18.4 disposable database; queried every table count and verified identity sequences advance beyond fixture IDs; dropped the database, stopped the server, and removed the cluster. Reported test results: PASS — all twelve tables populated (56 total rows), all constraints/foreign keys accepted the data, and identity-sequence checks passed. Remaining limitations: Seed data is for local demonstration only; authentication workflows and credential provisioning remain Version 2 responsibilities. Recorded commit message: `feat(db): add development seed data`.
 
 Rejected: Real personal data, production credentials, plaintext passwords, secrets, and partial/conflict-ignoring seed behavior.
 
@@ -652,11 +596,7 @@ Asked for: Added a configurable PowerShell initializer and setup guide for new o
 
 Kept: Delegated authentication to PostgreSQL; accepted only validated database names/ports; refused existing databases by default; permitted `-UseExistingEmpty` only after counting zero non-system tables; never auto-dropped a database. Accepted explicit empty-database opt-in and preserved native tool output.
 
-Changed: Files: `scripts/init-database.ps1`, `docs/database/SETUP_V1.md`, `docs/database/VALIDATION_V1.md`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.  
-Verification reported: Parsed the script, scanned for embedded password assignment, and executed new+seed, existing refusal, approved-empty, and nonempty-refusal scenarios in a disposable PostgreSQL 18.4 cluster; cleaned both databases and the cluster.  
-Test results: PASS — new database produced 12 tables/56 seed rows; default existing refusal left 12 tables unchanged; approved empty database produced 12 tables; nonempty opt-in was refused; cleanup passed.  
-Remaining limitations: Backup/restore, migration, production deployment, and secure local credential provisioning are operational responsibilities outside V1.  
-Corresponding commit message: `build(db): add PostgreSQL initialization script`
+Changed: Files: `scripts/init-database.ps1`, `docs/database/SETUP_V1.md`, `docs/database/VALIDATION_V1.md`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`. Codex reported verification: Parsed the script, scanned for embedded password assignment, and executed new+seed, existing refusal, approved-empty, and nonempty-refusal scenarios in a disposable PostgreSQL 18.4 cluster; cleaned both databases and the cluster. Reported test results: PASS — new database produced 12 tables/56 seed rows; default existing refusal left 12 tables unchanged; approved empty database produced 12 tables; nonempty opt-in was refused; cleanup passed. Remaining limitations: Backup/restore, migration, production deployment, and secure local credential provisioning are operational responsibilities outside V1. Recorded commit message: `build(db): add PostgreSQL initialization script`.
 
 Rejected: Embedded/password parameters, automatic drop/recreate, silent schema merging, and production migration behavior.
 
@@ -670,11 +610,7 @@ Asked for: Completed cross-artifact, schema, seed, initialization, UI compatibil
 
 Kept: Declared Database V1 ready for technical review while preserving explicit Version 2 boundaries and reporting the unrelated baseline Spotless failure rather than modifying Java source. Accepted the evidence-based completion report and final status updates.
 
-Changed: Files: `docs/database/COMPLETION_REPORT_V1.md`, `specs/003-database-schema-v1/spec.md`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`.  
-Verification reported: Ran Spec Kit analysis, static schema validation, `mvn clean verify`, `mvn spotless:check`, module/file/table/task/log/commit-history checks, `git diff --check`, staged diff review, and final branch/status inspection.  
-Test results: PASS — schema static checks (12 tables, 12 PKs, 25 FKs, 34 checks, 33 indexes), prior PostgreSQL runtime/seed/initializer suites, Maven reactor build, and 7 Java tests. FAIL — Spotless found 10 pre-existing formatting violations in `common`; no unrelated formatting was applied.  
-Remaining limitations: Baseline Java formatting violations, no PostgreSQL 14–17 matrix, no production-scale benchmark, and all documented Version 2 transaction/runtime responsibilities remain outstanding outside this feature.  
-Corresponding commit message: `docs(db): finalize database v1 documentation`
+Changed: Files: `docs/database/COMPLETION_REPORT_V1.md`, `specs/003-database-schema-v1/spec.md`, `specs/003-database-schema-v1/tasks.md`, `AI-LOG.md`. Codex reported verification: Ran Spec Kit analysis, static schema validation, `mvn clean verify`, `mvn spotless:check`, module/file/table/task/log/commit-history checks, `git diff --check`, staged diff review, and final branch/status inspection. Reported test results: PASS — schema static checks (12 tables, 12 PKs, 25 FKs, 34 checks, 33 indexes), prior PostgreSQL runtime/seed/initializer suites, Maven reactor build, and 7 Java tests. FAIL — Spotless found 10 pre-existing formatting violations in `common`; no unrelated formatting was applied. Remaining limitations: Baseline Java formatting violations, no PostgreSQL 14–17 matrix, no production-scale benchmark, and all documented Version 2 transaction/runtime responsibilities remain outstanding outside this feature. Recorded commit message: `docs(db): finalize database v1 documentation`.
 
 Rejected: Unrelated Java formatting, performance claims without benchmarks, Version 2 implementation, remote Git operations, and fabricated test/commit evidence.
 
@@ -682,53 +618,112 @@ By hand: No manual source edits are documented. Codex reported the validation; m
 
 ## 2026-10-30 — Database V1 — Post-Review Remediation
 
-- **Tool**: OpenAI Codex
-- **Task requested**: Investigate and remediate the Database V1 review findings for setup guidance, PostgreSQL restriction-test portability, recalled-message consistency, block-aware user search, atomic initialization, message-search behavior, and group rejoining; synchronize SpecKit/documentation and create one atomic commit.
-- **Issues investigated**: Confirmed that the setup guide instructed a contradictory initializer rerun; the restriction test caught only `restrict_violation`; recalled seed/test rows retained source-like content; user-search mapping excluded only blocks created by the searcher; schema and seed were separate `psql` invocations; full-text search did not provide arbitrary substring matching; and unique membership rows lacked documented reactivation semantics.
-- **Files changed**: `script/schema.sql`, `script/seed.sql`, `script/tests/validate-schema.sql`, `script/tests/validate-schema.ps1`, `scripts/init-database.ps1`; `docs/database/SETUP_V1.md`, `docs/database/UI_DATA_MAPPING_V1.md`, `docs/database/VALIDATION_V1.md`, `docs/database/COMPLETION_REPORT_V1.md`, `docs/database/ERD_V1.md`, `docs/database/schema-v1.dbml`; `specs/003-database-schema-v1/spec.md`, `plan.md`, `tasks.md`, `data-model.md`, `contracts/schema-contract.md`, `quickstart.md`, `checklists/requirements.md`; and `AI-LOG.md`.
-- **Changes accepted/rejected**: Accepted canonical `[Message unsent]` redaction, specific `foreign_key_violation OR restrict_violation` handling, one-transaction schema/seed application, bidirectional block exclusion, documented `LIKE` substring strategy, and membership-row reactivation. Rejected catch-all exception handling, schema/table redesign, `pg_trgm`, Java services, UI changes, automatic database drops, embedded credentials, and a thirteenth membership-history table.
-- **Design decisions**: Global recall retains message identity/conversation/sender/timestamps while replacing `body`; delete-for-me and history clearing remain independent. Seed SQL relies on the caller's `--single-transaction` so schema and seed can share one transaction. Version 2 must perform recall redaction atomically, enforce block filtering server-side, escape substring patterns, and reactivate the unique membership row while accepting V1's loss of multiple membership episodes.
-- **Tests executed**: Static schema validator; PowerShell parser; isolated PostgreSQL 18.4 seeded/schema-only/separate-seed initialization; runtime SQL fixture; existing-database refusal; deliberate schema and seed failure rollback; recalled-body query; disposable-cluster cleanup; repository-local Maven 3.9.9 `clean verify` and follow-up `verify`; `spotless:check`; Git diff/status checks.
-- **Actual test results**: PASS — static validation reported 12 tables, 12 PKs, 25 FKs, 34 checks, and 33 indexes; PostgreSQL 18.4 produced 12 tables/56 seed rows, stored only `[Message unsent]` for the recalled fixture, passed all runtime cases, refused the existing database unchanged, rolled failed schema application back to 0 tables, and rolled failed seed loading back to 0 tested rows; cleanup removed the isolated cluster. PASS — Maven reactor and 7 tests completed with 0 failures/errors/skips. FAIL — Spotless still reports the same 10 pre-existing `common` Java formatting violations; no Java file was modified. The first unqualified `mvn clean verify` attempt did not start because `mvn` was absent from `PATH`; the repository-local Maven executable was used successfully.
-- **Remaining limitations**: Only PostgreSQL 18.4 was runtime-tested; PostgreSQL 14–17 portability is implemented through named SQLSTATE conditions but not claimed as version-matrix evidence. Full-text search remains token-based, substring `LIKE` may scan more rows, V1 membership stores only one interval, and Version 2 backend authorization/transaction behavior remains unimplemented by design. The unrelated baseline Spotless violations remain.
-- **Corresponding commit message**: `fix(db): address v1 review findings and validation portability`
+Tool: OpenAI Codex.
+
+Asked for: Investigate and remediate the Database V1 review findings involving setup guidance, PostgreSQL restriction-test portability, recalled-message consistency, block-aware user search, atomic initialization, message-search behavior, and group rejoining; synchronize Spec Kit documentation and prepare one atomic commit.
+
+Kept: Accepted canonical `[Message unsent]` redaction; specific `foreign_key_violation OR restrict_violation` handling; transactional schema/seed initialization; exclusion of users blocked in either direction; documented `LIKE` substring-search strategy; and reactivation of existing membership rows. Preserved message identity, conversation, sender, and timestamps upon global recall while replacing `body`; kept delete-for-me separate from history clearing. Seed execution relies on the caller's `--single-transaction`. Version 2 remains responsible for atomic recall, server-side block enforcement, escaping substring patterns, and group rejoin policy; Version 1 retains one membership interval per user/conversation.
+
+Changed: Investigated contradictory initializer rerun guidance, overly narrow restriction-test exception handling, source-like content in recalled message fixtures, one-direction block filtering, separate schema/seed `psql` invocations, token-only full-text search, and missing membership reactivation semantics. Updated `script/schema.sql`, `script/seed.sql`, `script/tests/validate-schema.sql`, `script/tests/validate-schema.ps1`, `scripts/init-database.ps1`, `docs/database/SETUP_V1.md`, `docs/database/UI_DATA_MAPPING_V1.md`, `docs/database/VALIDATION_V1.md`, `docs/database/COMPLETION_REPORT_V1.md`, `docs/database/ERD_V1.md`, `docs/database/schema-v1.dbml`, the affected files under `specs/003-database-schema-v1/` (`spec.md`, `plan.md`, `tasks.md`, `data-model.md`, `contracts/schema-contract.md`, `quickstart.md`, `checklists/requirements.md`), and `AI-LOG.md`. Codex reported running the static schema validator, PowerShell parser, isolated PostgreSQL 18.4 schema/seed and rollback scenarios, runtime SQL fixtures, existing-database refusal, recalled-body query, cluster cleanup, repository-local Maven 3.9.9 `clean verify`/`verify`, `spotless:check`, and Git diff/status checks. Reported PASS: 12 tables, 12 PKs, 25 FKs, 34 checks, 33 indexes; 56 seed rows; `[Message unsent]` redaction; successful initialization/refusal/rollback cases (0 tables after failed schema and 0 tested rows after failed seed); cleanup; and 7 Java tests with no failures, errors, or skips. Reported FAIL: 10 pre-existing Spotless violations in `common`; no Java files were changed. An initial `mvn clean verify` invocation could not start because Maven was absent from `PATH`; the repository-local Maven executable subsequently succeeded. Limitations remain: no PostgreSQL 14–17 runtime matrix, potentially expensive substring `LIKE` search, token-based full-text search, one membership interval in V1, unimplemented V2 authorization/transactions, and existing formatting violations. Recorded commit message: `fix(db): address v1 review findings and validation portability`.
+
+Rejected: Catch-all exception handling, redesigning the database/tables, adding `pg_trgm` or a thirteenth membership-history table, implementing Java services or UI changes in the database task, automatically dropping databases, and embedding credentials.
+
+By hand: This entry does not document manual source edits or independently confirmed manual review/commit actions; the verification and test results above were reported by Codex.
 
 ## 2026-10-31 — Refine User login input sizing
+
 Tool: AI assistant (Copilot SDK in VS Code).
+
 Asked for: Make the username and password inputs less tall and improve text proportions.
+
 Kept: The existing User login layout, field widths, and shared input styling for other screens.
+
 Changed: Reverted an initial out-of-scope change to the Admin login dialog. Reduced both User login input heights from 36 px to 32 px and increased their font size from 13 pt to 14 pt; added a focused sizing test.
+
 Rejected: Changes to Admin login or shared input styling across other screens.
+
 By hand: Review the updated User login screen visually; no runtime GUI verification is claimed.
 
 ## 2026-10-31 — Upgrade project runtime to Java 25 LTS
+
 Tool: AI assistant (Copilot SDK in VS Code).
+
 Asked for: Upgrade the Java runtime to the latest LTS version in auto-execution mode.
+
 Kept: The existing four Maven modules, application architecture, dependencies, and Java source behavior.
+
 Changed: Set the root Maven compiler release to Java 25. The installed JDK is already 25.0.4.1 LTS.
+
 Rejected: Installing another JDK or upgrading unrelated dependencies.
+
 By hand: Review the Java upgrade and run the verified Maven build/tests. Admin-specific source code was not changed; this entry was narrowed to the actual compiler/runtime change.
 
 ## 2026-10-31 — Restore Admin documentation scope
+
 Tool: AI assistant (Copilot SDK in VS Code).
+
 Asked for: Keep changes limited to User-related work, explain the login field width setting, and undo Java-version edits to Admin-specific planning files.
+
 Kept: Java 25 compiler target requested earlier; existing User login changes and unrelated pre-existing work.
+
 Changed: Restored the Admin UI plan, quickstart, research, and Admin project-plan Java-version references. Confirmed no tracked files under `admin-client` were modified.
+
 Rejected: Changes to Admin source code or unrelated User UI layout.
+
 By hand: Review the User login field width before making a manual adjustment.
 
 ## 2026-10-31 — Reduce User login field width
+
 Tool: AI assistant (Copilot SDK in VS Code).
+
 Asked for: Make the username and password input boxes narrower in `LoginPanel.java`.
+
 Kept: Existing User login layout, field height, and shared UI styling.
+
 Changed: Increased each field to 32 text columns, capped its maximum width at 360 px, and centered both in the form; added focused width assertions.
+
 Rejected: Changes to Admin UI or shared input styling.
+
 By hand: Review the updated login screen visually after rebuilding and restarting the User client.
 
 ## 2026-10-31 — Balance User login layout
+
 Tool: AI assistant (Copilot SDK in VS Code).
+
 Asked for: Center and size the login card consistently, align the form into one 360 px column, and reduce uneven spacing without changing behavior or Vietnamese text.
+
 Kept: Login submission and validation logic, handlers, test getters, displayed text, theme colors, and fonts.
+
 Changed: Centered a fixed 480x560 card with GridBagLayout; rebuilt the form with fixed-size BorderLayout wrappers, left-aligned field labels, a stable feedback row, and vertical glue for balanced spacing. Added layout sizing assertions.
+
 Rejected: Business-logic, text, dependency, and shared-theme changes.
+
 By hand: Review the resized login UI visually after relaunching the User client.
+
+## 2026-11-03 — Align User Client UI with Admin
+
+Tool: AI assistant (Copilot SDK in VS Code).
+
+Asked for: Update the User Client UI to use English and match the Admin Client theme, then replace the 12 User screenshots.
+
+Kept: Swing/FlatLaf, the existing sample-only behavior, English proper nouns/user names in sample data, the existing 12 screenshot filenames, and all four Maven modules.
+
+Changed: Matched the workspace shell to the Admin navy/blue layout with account/status chrome; translated User-facing controls, dialogs, feedback, and sample message text to English; updated related tests and the User UI plan.
+
+Rejected: Adding new business behavior, changing protocol or persistence, formatting unrelated code, and deleting the existing screenshots before replacements were available.
+
+By hand: Reviewed the Admin screenshot and current User UI source. The focused User tests passed (44 tests). The debugger first failed to resolve the sibling `common` artifact from the module-only build; after installing the reactor artifacts, the User window was still unavailable for capture. The developer subsequently captured and replaced all 12 User screenshots manually.
+
+## 2026-11-03 — Refine User navigation sidebar
+
+Tool: AI assistant (Copilot SDK in VS Code).
+
+Asked for: Make the User sidebar visually match the Admin sidebar while keeping navigation and other functionality unchanged.
+
+Kept: Existing User destinations, routes, sample session behavior, four Maven modules, and screenshot files until verified replacements are available.
+
+Changed: Matched the sidebar width and navy styling; added the version badge, profile card and online indicator, aligned section labels, local line icons, active/hover states, and a visual-only Sign Out button. Renamed the visible Requests destination label without changing its enum or routing. Added sidebar-focused regression checks.
+
+Rejected: Admin-module dependencies, shared-module changes, sign-out behavior, route changes, and deleting screenshots without replacements.
+
+By hand: Reviewed the User/Admin sidebar patterns and tested the User reactor. `mvn -pl user-client -am test` passed (45 User tests, 2 Common tests). A GUI launch was attempted, but the debugger reported no active session afterward and the desktop showed no User Client window. The developer then captured and replaced the 12 User screenshots manually.
