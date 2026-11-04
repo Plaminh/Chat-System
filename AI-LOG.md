@@ -693,6 +693,38 @@ By hand: No manual source edits are documented. Codex reported the validation; m
 - **Remaining limitations**: Only PostgreSQL 18.4 was runtime-tested; PostgreSQL 14–17 portability is implemented through named SQLSTATE conditions but not claimed as version-matrix evidence. Full-text search remains token-based, substring `LIKE` may scan more rows, V1 membership stores only one interval, and Version 2 backend authorization/transaction behavior remains unimplemented by design. The unrelated baseline Spotless violations remain.
 - **Corresponding commit message**: `fix(db): address v1 review findings and validation portability`
 
+## 2026-10-31 — Refine User login input sizing
+Tool: AI assistant (Copilot SDK in VS Code).
+Asked for: Make the username and password inputs less tall and improve text proportions.
+Kept: The existing User login layout, field widths, and shared input styling for other screens.
+Changed: Reverted an initial out-of-scope change to the Admin login dialog. Reduced both User login input heights from 36 px to 32 px and increased their font size from 13 pt to 14 pt; added a focused sizing test.
+Rejected: Changes to Admin login or shared input styling across other screens.
+By hand: Review the updated User login screen visually; no runtime GUI verification is claimed.
+
+## 2026-10-31 — Upgrade project runtime to Java 25 LTS
+Tool: AI assistant (Copilot SDK in VS Code).
+Asked for: Upgrade the Java runtime to the latest LTS version in auto-execution mode.
+Kept: The existing four Maven modules, application architecture, dependencies, and Java source behavior.
+Changed: Set the root Maven compiler release to Java 25. The installed JDK is already 25.0.4.1 LTS.
+Rejected: Installing another JDK or upgrading unrelated dependencies.
+By hand: Review the Java upgrade and run the verified Maven build/tests. Admin-specific source code was not changed; this entry was narrowed to the actual compiler/runtime change.
+
+## 2026-10-31 — Restore Admin documentation scope
+Tool: AI assistant (Copilot SDK in VS Code).
+Asked for: Keep changes limited to User-related work, explain the login field width setting, and undo Java-version edits to Admin-specific planning files.
+Kept: Java 25 compiler target requested earlier; existing User login changes and unrelated pre-existing work.
+Changed: Restored the Admin UI plan, quickstart, research, and Admin project-plan Java-version references. Confirmed no tracked files under `admin-client` were modified.
+Rejected: Changes to Admin source code or unrelated User UI layout.
+By hand: Review the User login field width before making a manual adjustment.
+
+## 2026-10-31 — Reduce User login field width
+Tool: AI assistant (Copilot SDK in VS Code).
+Asked for: Make the username and password input boxes narrower in `LoginPanel.java`.
+Kept: Existing User login layout, field height, and shared UI styling.
+Changed: Increased each field to 32 text columns, capped its maximum width at 360 px, and centered both in the form; added focused width assertions.
+Rejected: Changes to Admin UI or shared input styling.
+By hand: Review the updated login screen visually after rebuilding and restarting the User client.
+
 ## 2026-10-31 — Balance User login layout
 Tool: AI assistant (Copilot SDK in VS Code).
 Asked for: Center and size the login card consistently, align the form into one 360 px column, and reduce uneven spacing without changing behavior or Vietnamese text.
@@ -700,9 +732,3 @@ Kept: Login submission and validation logic, handlers, test getters, displayed t
 Changed: Centered a fixed 480x560 card with GridBagLayout; rebuilt the form with fixed-size BorderLayout wrappers, left-aligned field labels, a stable feedback row, and vertical glue for balanced spacing. Added layout sizing assertions.
 Rejected: Business-logic, text, dependency, and shared-theme changes.
 By hand: Review the resized login UI visually after relaunching the User client.
-
-## 2026-11-03 — Reorder AI log chronologically
-Tool: OpenAI Codex (VS Code).
-Asked for: Finalize the existing `AI-LOG.md` merge resolution by preserving all 46 historical entries and ordering them chronologically.
-Changed: Reordered complete historical entry blocks and normalized excessive blank lines between entries; no historical entry content or date was changed.
-By hand: The developer requested the reordering and remains responsible for final review.

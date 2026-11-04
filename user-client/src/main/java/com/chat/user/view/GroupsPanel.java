@@ -58,7 +58,7 @@ public final class GroupsPanel extends JPanel {
     return List.of(
         new GroupConversation(
             "group-design-team",
-            "Nhóm trò chuyện mẫu",
+            "Design Team",
             List.of(
                 new com.chat.user.model.GroupMember(
                     currentUser, com.chat.user.model.GroupMember.Role.ADMIN),
@@ -94,10 +94,10 @@ public final class GroupsPanel extends JPanel {
     setBackground(UserUiTheme.CANVAS_BG);
     setBorder(BorderFactory.createEmptyBorder(
         UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
-    JLabel title = new JLabel("Hội nhóm");
+    JLabel title = new JLabel("Groups");
     title.setFont(UserUiTheme.FONT_TITLE);
     title.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JButton create = UserUiTheme.createPrimaryButton("Tạo nhóm");
+    JButton create = UserUiTheme.createPrimaryButton("Create Group");
     create.addActionListener(event -> openCreateDialog());
     JPanel heading = new JPanel(new BorderLayout());
     heading.setOpaque(false);
@@ -127,7 +127,7 @@ public final class GroupsPanel extends JPanel {
   private void renderGroups() {
     groupList.removeAll();
     if (groups.isEmpty()) {
-      JLabel empty = new JLabel("Chưa có nhóm trò chuyện.", SwingConstants.CENTER);
+      JLabel empty = new JLabel("No groups yet.", SwingConstants.CENTER);
       empty.setFont(UserUiTheme.FONT_BODY);
       empty.setForeground(UserUiTheme.TEXT_MUTED);
       groupList.add(empty);
@@ -145,14 +145,14 @@ public final class GroupsPanel extends JPanel {
     JPanel row = UserUiTheme.createCardPanel();
     row.setLayout(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
     JLabel info = new JLabel(
-        group.name() + "  •  " + group.members().size() + " thành viên");
+        group.name() + "  •  " + group.members().size() + " members");
     info.setFont(UserUiTheme.FONT_BODY_BOLD);
     info.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JButton chat = UserUiTheme.createPrimaryButton("Mở trò chuyện");
+    JButton chat = UserUiTheme.createPrimaryButton("Open Chat");
     chat.addActionListener(event -> openChatHandler.accept(group));
-    JButton members = UserUiTheme.createSecondaryButton("Thành viên");
+    JButton members = UserUiTheme.createSecondaryButton("Members");
     members.addActionListener(event -> openMembersDialog(group));
-    JButton rename = UserUiTheme.createSecondaryButton("Đổi tên");
+    JButton rename = UserUiTheme.createSecondaryButton("Rename");
     rename.addActionListener(event -> promptRename(group));
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     actions.setOpaque(false);
@@ -175,7 +175,7 @@ public final class GroupsPanel extends JPanel {
 
   private void promptRename(GroupConversation group) {
     String name =
-        JOptionPane.showInputDialog(this, "Nhập tên nhóm mới:", group.name());
+        JOptionPane.showInputDialog(this, "Enter a new group name:", group.name());
     if (name == null) {
       return;
     }
@@ -183,7 +183,7 @@ public final class GroupsPanel extends JPanel {
       renameGroup(group, name);
     } catch (IllegalArgumentException exception) {
       JOptionPane.showMessageDialog(
-          this, exception.getMessage(), "Tên nhóm không hợp lệ", JOptionPane.WARNING_MESSAGE);
+          this, exception.getMessage(), "Invalid Group Name", JOptionPane.WARNING_MESSAGE);
     }
   }
 

@@ -35,6 +35,24 @@ class UserMainFrameTest {
   }
 
   @Test
+  void sidebarMatchesAdminChromeWithoutChangingNavigationBehavior() {
+    UserMainFrame frame = new UserMainFrame(UserSessionState.createSample());
+
+    assertEquals(245, frame.getNavigationSidebar().getPreferredSize().width);
+    for (UserMainFrame.Destination destination : UserMainFrame.Destination.values()) {
+      assertNotNull(frame.getNavigationButton(destination).getIcon());
+    }
+    assertEquals("Requests", frame.getNavigationButton(UserMainFrame.Destination.REQUESTS).getText());
+    assertEquals("Sign Out", frame.getNavigationSidebar().getSignOutButton().getText());
+    assertNotNull(frame.getNavigationSidebar().getSignOutButton().getIcon());
+    assertEquals(0, frame.getNavigationSidebar().getSignOutButton().getActionListeners().length);
+
+    frame.getNavigationSidebar().getSignOutButton().doClick();
+
+    assertEquals(UserMainFrame.Destination.CHATS, frame.getActiveDestination());
+  }
+
+  @Test
   void registeredViewCanReplaceDestinationPlaceholder() {
     UserMainFrame frame = new UserMainFrame(UserSessionState.createSample());
     JLabel replacement = new JLabel("Friends");

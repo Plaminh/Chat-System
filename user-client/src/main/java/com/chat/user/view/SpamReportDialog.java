@@ -34,7 +34,7 @@ public final class SpamReportDialog extends JPanel {
   }
 
   public JDialog createDialog(Window owner) {
-    dialog = new JDialog(owner, "Báo cáo tài khoản", JDialog.ModalityType.APPLICATION_MODAL);
+    dialog = new JDialog(owner, "Report Account", JDialog.ModalityType.APPLICATION_MODAL);
     dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     dialog.setContentPane(this);
     dialog.pack();
@@ -59,17 +59,17 @@ public final class SpamReportDialog extends JPanel {
   void submitReport() {
     if (!hasPriorConversation) {
       showFeedback(
-          "Chỉ có thể báo cáo tài khoản đã có cuộc trò chuyện trước đó.",
+          "You can only report an account after a conversation has taken place.",
           UserUiTheme.DANGER);
       return;
     }
     if (reasonField.getText().trim().isEmpty()) {
-      showFeedback("Nhập lý do báo cáo trước khi tiếp tục.", UserUiTheme.DANGER);
+      showFeedback("Enter a reason for the report before continuing.", UserUiTheme.DANGER);
       return;
     }
     reportSubmitted = true;
     showFeedback(
-        "Báo cáo mẫu đã được ghi nhận trong giao diện; chưa gửi đến máy chủ.",
+        "Sample report recorded in the UI; it was not sent to the server.",
         UserUiTheme.SUCCESS);
   }
 
@@ -78,18 +78,18 @@ public final class SpamReportDialog extends JPanel {
     setBorder(
         BorderFactory.createEmptyBorder(
             UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG));
-    JLabel title = new JLabel("Báo cáo cuộc trò chuyện", SwingConstants.CENTER);
+    JLabel title = new JLabel("Report Conversation", SwingConstants.CENTER);
     title.setFont(UserUiTheme.FONT_TITLE);
     title.setForeground(UserUiTheme.TEXT_PRIMARY);
     JLabel target =
         new JLabel(
-            "Tài khoản được báo cáo: "
+            "Reported account: "
                 + reportedUser.fullName()
                 + "  •  @"
                 + reportedUser.username());
     target.setFont(UserUiTheme.FONT_BODY_BOLD);
     target.setForeground(UserUiTheme.TEXT_SECONDARY);
-    JLabel reasonLabel = new JLabel("Lý do báo cáo");
+    JLabel reasonLabel = new JLabel("Reason for report");
     reasonLabel.setFont(UserUiTheme.FONT_BODY_BOLD);
     reasonLabel.setForeground(UserUiTheme.TEXT_SECONDARY);
     reasonField.setFont(UserUiTheme.FONT_BODY);
@@ -111,9 +111,9 @@ public final class SpamReportDialog extends JPanel {
 
     feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
     feedbackLabel.setForeground(UserUiTheme.DANGER);
-    JButton cancel = UserUiTheme.createSecondaryButton("Hủy");
+    JButton cancel = UserUiTheme.createSecondaryButton("Cancel");
     cancel.addActionListener(event -> closeDialog());
-    JButton submit = UserUiTheme.createPrimaryButton("Gửi báo cáo mẫu");
+    JButton submit = UserUiTheme.createPrimaryButton("Submit Sample Report");
     submit.addActionListener(event -> submitReport());
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     actions.setOpaque(false);

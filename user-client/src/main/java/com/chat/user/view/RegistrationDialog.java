@@ -40,7 +40,7 @@ public final class RegistrationDialog extends JPanel {
   }
 
   public JDialog createDialog(Window owner) {
-    dialog = new JDialog(owner, "Tạo tài khoản mới", JDialog.ModalityType.APPLICATION_MODAL);
+    dialog = new JDialog(owner, "Create Account", JDialog.ModalityType.APPLICATION_MODAL);
     dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     dialog.setContentPane(this);
     dialog.pack();
@@ -114,15 +114,15 @@ public final class RegistrationDialog extends JPanel {
         || dateOfBirth.isEmpty()
         || gender.isEmpty()
         || passwordBlank) {
-      showFeedback("Vui lòng nhập đầy đủ các thông tin bắt buộc.", UserUiTheme.DANGER);
+      showFeedback("Complete all required fields.", UserUiTheme.DANGER);
       return;
     }
     if (!isValidEmail(email)) {
-      showFeedback("Địa chỉ email chưa hợp lệ.", UserUiTheme.DANGER);
+      showFeedback("Enter a valid email address.", UserUiTheme.DANGER);
       return;
     }
     if (!passwordsMatch) {
-      showFeedback("Mật khẩu xác nhận không khớp.", UserUiTheme.DANGER);
+      showFeedback("The passwords do not match.", UserUiTheme.DANGER);
       return;
     }
 
@@ -130,13 +130,13 @@ public final class RegistrationDialog extends JPanel {
     try {
       parsedDate = LocalDate.parse(dateOfBirth);
     } catch (DateTimeParseException exception) {
-      showFeedback("Ngày sinh cần có định dạng YYYY-MM-DD.", UserUiTheme.DANGER);
+      showFeedback("Date of birth must use the YYYY-MM-DD format.", UserUiTheme.DANGER);
       return;
     }
 
     submittedProfile =
         new UserProfile(username, fullName, email, address, parsedDate, gender);
-    showFeedback("Đăng ký mẫu hoàn tất; tài khoản chưa được tạo trên máy chủ.", UserUiTheme.SUCCESS);
+    showFeedback("Sample registration complete; no account was created on the server.", UserUiTheme.SUCCESS);
   }
 
   private void buildContent() {
@@ -147,22 +147,22 @@ public final class RegistrationDialog extends JPanel {
     JPanel form = new JPanel();
     form.setLayout(new javax.swing.BoxLayout(form, javax.swing.BoxLayout.Y_AXIS));
     form.setBackground(UserUiTheme.SURFACE_WHITE);
-    addField(form, "Họ và tên", fullNameField);
-    addField(form, "Tên người dùng", usernameField);
-    addField(form, "Địa chỉ Email", emailField);
-    addField(form, "Địa chỉ", addressField);
-    addField(form, "Ngày sinh (YYYY-MM-DD)", dateOfBirthField);
-    addField(form, "Giới tính", genderField);
-    addField(form, "Mật khẩu", passwordField);
-    addField(form, "Xác nhận mật khẩu", confirmPasswordField);
+    addField(form, "Full name", fullNameField);
+    addField(form, "Username", usernameField);
+    addField(form, "Email address", emailField);
+    addField(form, "Address", addressField);
+    addField(form, "Date of birth (YYYY-MM-DD)", dateOfBirthField);
+    addField(form, "Gender", genderField);
+    addField(form, "Password", passwordField);
+    addField(form, "Confirm password", confirmPasswordField);
 
     feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
     feedbackLabel.setForeground(UserUiTheme.DANGER);
     form.add(feedbackLabel);
 
-    JButton submitButton = UserUiTheme.createPrimaryButton("Tạo tài khoản mẫu");
+    JButton submitButton = UserUiTheme.createPrimaryButton("Create Sample Account");
     submitButton.addActionListener(event -> submitRegistration());
-    JButton cancelButton = UserUiTheme.createSecondaryButton("Hủy");
+    JButton cancelButton = UserUiTheme.createSecondaryButton("Cancel");
     cancelButton.addActionListener(event -> cancelRegistration());
 
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -170,11 +170,11 @@ public final class RegistrationDialog extends JPanel {
     actions.add(cancelButton);
     actions.add(submitButton);
 
-    JLabel title = new JLabel("Tạo tài khoản mới", SwingConstants.CENTER);
+    JLabel title = new JLabel("Create a New Account", SwingConstants.CENTER);
     title.setFont(UserUiTheme.FONT_TITLE);
     title.setForeground(UserUiTheme.TEXT_PRIMARY);
     JLabel subtitle =
-        new JLabel("Nhập các thông tin tài khoản được yêu cầu", SwingConstants.CENTER);
+        new JLabel("Enter the required account details", SwingConstants.CENTER);
     subtitle.setFont(UserUiTheme.FONT_BODY);
     subtitle.setForeground(UserUiTheme.TEXT_MUTED);
     JPanel heading = new JPanel(new BorderLayout(0, UserUiTheme.SPACE_XS));

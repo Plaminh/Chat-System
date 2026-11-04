@@ -35,7 +35,7 @@ class ChatWorkspacePanelTest {
     assertEquals(3, selected.messages().size());
     assertEquals("A sample reply", selected.messages().get(2).content());
     assertEquals("", panel.getComposer().getText());
-    assertTrue(panel.getFeedbackLabel().getText().contains("chưa được gửi"));
+    assertTrue(panel.getFeedbackLabel().getText().contains("not sent"));
   }
 
   @Test
@@ -47,7 +47,7 @@ class ChatWorkspacePanelTest {
     panel.sendSampleMessage();
 
     assertEquals(initialCount, panel.getSelectedConversation().messages().size());
-    assertTrue(panel.getFeedbackLabel().getText().contains("Nhập nội dung"));
+    assertTrue(panel.getFeedbackLabel().getText().contains("Enter a message"));
   }
 
   @Test
@@ -60,9 +60,9 @@ class ChatWorkspacePanelTest {
     panel.setActionHandlers(historyCalls::incrementAndGet, reported::add, assistedDrafts::add);
     panel.getComposer().setText("draft to assist");
 
-    findButton(panel, "Tìm lịch sử").doClick();
-    findButton(panel, "Báo cáo").doClick();
-    findButton(panel, "Trợ lý soạn thảo").doClick();
+    findButton(panel, "Search History").doClick();
+    findButton(panel, "Report").doClick();
+    findButton(panel, "Writing Assistant").doClick();
 
     assertEquals(1, historyCalls.get());
     assertEquals(panel.getSelectedConversation(), reported.get(0));

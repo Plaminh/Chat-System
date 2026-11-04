@@ -49,7 +49,7 @@ public final class GroupMembersDialog extends JPanel {
   }
 
   public JDialog createDialog(Window owner) {
-    dialog = new JDialog(owner, "Thành viên nhóm", JDialog.ModalityType.APPLICATION_MODAL);
+    dialog = new JDialog(owner, "Group Members", JDialog.ModalityType.APPLICATION_MODAL);
     dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     dialog.setContentPane(this);
     dialog.pack();
@@ -70,15 +70,15 @@ public final class GroupMembersDialog extends JPanel {
   void addSelectedMember() {
     UserProfile selected = (UserProfile) addMemberSelector.getSelectedItem();
     if (selected == null) {
-      feedbackLabel.setText("Không còn thành viên phù hợp để thêm.");
+      feedbackLabel.setText("No eligible members are available to add.");
       return;
     }
     if (group.containsMember(selected.username())) {
-      feedbackLabel.setText("Người dùng này đã là thành viên.");
+      feedbackLabel.setText("This user is already a member.");
       return;
     }
     group.addMember(selected);
-    feedbackLabel.setText("Đã thêm thành viên vào nhóm mẫu.");
+    feedbackLabel.setText("Member added to the sample group.");
     refresh();
   }
 
@@ -113,7 +113,7 @@ public final class GroupMembersDialog extends JPanel {
     setBackground(UserUiTheme.SURFACE_WHITE);
     setBorder(BorderFactory.createEmptyBorder(
         UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG));
-    JLabel title = new JLabel("Thành viên: " + group.name(), SwingConstants.CENTER);
+    JLabel title = new JLabel("Members: " + group.name(), SwingConstants.CENTER);
     title.setFont(UserUiTheme.FONT_TITLE);
     title.setForeground(UserUiTheme.TEXT_PRIMARY);
     addMemberSelector.setRenderer(new javax.swing.DefaultListCellRenderer() {
@@ -126,7 +126,7 @@ public final class GroupMembersDialog extends JPanel {
         return super.getListCellRendererComponent(list, value, index, selected, focus);
       }
     });
-    JButton addButton = UserUiTheme.createPrimaryButton("Thêm thành viên");
+    JButton addButton = UserUiTheme.createPrimaryButton("Add Member");
     addButton.addActionListener(event -> addSelectedMember());
     JPanel addRow = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, 0));
     addRow.setOpaque(false);
@@ -174,10 +174,10 @@ public final class GroupMembersDialog extends JPanel {
     identity.setFont(UserUiTheme.FONT_BODY);
     identity.setForeground(UserUiTheme.TEXT_PRIMARY);
     JButton roleButton = UserUiTheme.createSecondaryButton(
-        member.role() == GroupMember.Role.ADMIN ? "Hạ quyền quản trị" : "Bổ nhiệm quản trị");
+        member.role() == GroupMember.Role.ADMIN ? "Remove Admin Role" : "Make Admin");
     roleButton.addActionListener(
         event -> performMemberAction(member.user().username(), MemberAction.TOGGLE_ADMIN));
-    JButton removeButton = UserUiTheme.createSecondaryButton("Xóa khỏi nhóm");
+    JButton removeButton = UserUiTheme.createSecondaryButton("Remove from Group");
     removeButton.addActionListener(
         event -> performMemberAction(member.user().username(), MemberAction.REMOVE));
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, UserUiTheme.SPACE_XS, 0));

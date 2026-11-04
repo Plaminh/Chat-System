@@ -39,7 +39,7 @@ class ProfileSettingsPanelTest {
     assertEquals("Updated Name", session.getProfile().fullName());
     assertEquals("alex.morgan", session.getProfile().username());
     assertEquals(LocalDate.of(1999, 2, 3), session.getProfile().dateOfBirth());
-    assertTrue(panel.getFeedbackLabel().getText().contains("trong phiên này"));
+    assertTrue(panel.getFeedbackLabel().getText().contains("this session"));
   }
 
   @Test
@@ -51,7 +51,7 @@ class ProfileSettingsPanelTest {
 
     dialog.submitChange();
 
-    assertTrue(dialog.getFeedbackLabel().getText().contains("không khớp"));
+    assertTrue(dialog.getFeedbackLabel().getText().contains("do not match"));
     assertFalse(dialog.isChangeSubmitted());
 
     dialog.getCurrentPasswordField().setText("current");

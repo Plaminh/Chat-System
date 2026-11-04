@@ -4,7 +4,7 @@ A clean foundation for a university Java final project. Two Java Swing desktop c
 
 ## Technology stack
 
-- Java 21, Maven, JUnit 5
+- Java 25 LTS, Maven, JUnit 5
 - Swing and FlatLaf; JFreeChart is available to the admin client
 - Spring Boot in non-web mode, Java `ServerSocket`, Spring JDBC
 - PostgreSQL JDBC, Jackson, BCrypt
@@ -44,7 +44,7 @@ Source code follows the standard `src/main/java`, `src/main/resources`, and `src
 
 ## Prerequisites and build
 
-Install a Java 21 JDK and Apache Maven 3.9+ and ensure `java` and `mvn` are on `PATH`.
+Install a Java 25 LTS JDK and Apache Maven 3.9+ and ensure `java` and `mvn` are on `PATH`.
 
 ```powershell
 mvn clean verify

@@ -23,9 +23,9 @@ public final class UserApplication {
 
   private static void showWindow() {
     UserSessionState sessionState = UserSessionState.createSample();
-    JFrame frame = new JFrame("Trò Chuyện Việt");
+    JFrame frame = new JFrame("Chat System - User Client");
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    frame.setMinimumSize(new Dimension(1080, 720));
+    frame.setMinimumSize(new Dimension(1120, 720));
     frame.setSize(1280, 800);
     frame.setLocationRelativeTo(null);
 
@@ -41,7 +41,7 @@ public final class UserApplication {
 
   private static void showWorkspace(JFrame frame, UserSessionState sessionState) {
     frame.setContentPane(new UserMainFrame(sessionState));
-    frame.setTitle("Trò Chuyện Việt");
+    frame.setTitle("Chat System - User Client");
     frame.revalidate();
     frame.repaint();
   }

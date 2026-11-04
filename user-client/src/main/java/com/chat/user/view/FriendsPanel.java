@@ -36,7 +36,7 @@ public final class FriendsPanel extends JPanel {
   private final BiPredicate<FriendEntry, RelationshipAction> confirmationHandler;
   private final Consumer<FriendEntry> openChatHandler;
   private final JTextField searchField = UserUiTheme.createTextField(24);
-  private final JCheckBox onlineOnly = new JCheckBox("Chỉ hiển thị đang trực tuyến");
+  private final JCheckBox onlineOnly = new JCheckBox("Show online only");
   private final JPanel friendList = new JPanel();
   private List<FriendEntry> visibleFriends = List.of();
 
@@ -87,10 +87,10 @@ public final class FriendsPanel extends JPanel {
     setBorder(BorderFactory.createEmptyBorder(
         UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
 
-    JLabel title = new JLabel("Bạn bè");
+    JLabel title = new JLabel("Friends");
     title.setFont(UserUiTheme.FONT_TITLE);
     title.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JLabel subtitle = new JLabel("Tìm bạn bè, xem trạng thái và mở cuộc trò chuyện.");
+    JLabel subtitle = new JLabel("Find friends, check their status, and start a conversation.");
     subtitle.setFont(UserUiTheme.FONT_BODY);
     subtitle.setForeground(UserUiTheme.TEXT_MUTED);
     JPanel heading = new JPanel(new GridLayout(0, 1, 0, UserUiTheme.SPACE_XS));
@@ -98,7 +98,7 @@ public final class FriendsPanel extends JPanel {
     heading.add(title);
     heading.add(subtitle);
 
-    searchField.putClientProperty("JTextField.placeholderText", "Tìm theo tên");
+    searchField.putClientProperty("JTextField.placeholderText", "Search by name");
     onlineOnly.setFont(UserUiTheme.FONT_BODY);
     onlineOnly.setForeground(UserUiTheme.TEXT_SECONDARY);
     onlineOnly.setOpaque(false);
@@ -151,7 +151,7 @@ public final class FriendsPanel extends JPanel {
 
     friendList.removeAll();
     if (visibleFriends.isEmpty()) {
-      JLabel empty = new JLabel("Không tìm thấy bạn bè phù hợp.");
+      JLabel empty = new JLabel("No matching friends found.");
       empty.setFont(UserUiTheme.FONT_BODY);
       empty.setForeground(UserUiTheme.TEXT_MUTED);
       empty.setBorder(BorderFactory.createEmptyBorder(UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD,
@@ -176,18 +176,18 @@ public final class FriendsPanel extends JPanel {
     name.setFont(UserUiTheme.FONT_BODY_BOLD);
     name.setForeground(UserUiTheme.TEXT_PRIMARY);
     JLabel handle = new JLabel(
-        "@" + friend.username() + "  •  " + (friend.online() ? "Đang trực tuyến" : "Ngoại tuyến"));
+        "@" + friend.username() + "  •  " + (friend.online() ? "Online" : "Offline"));
     handle.setFont(UserUiTheme.FONT_SMALL);
     handle.setForeground(friend.online() ? UserUiTheme.SUCCESS : UserUiTheme.TEXT_SECONDARY);
     identity.add(name);
     identity.add(handle);
 
-    JButton chatButton = UserUiTheme.createPrimaryButton("Nhắn tin");
+    JButton chatButton = UserUiTheme.createPrimaryButton("Message");
     chatButton.addActionListener(event -> openChatHandler.accept(friend));
-    JButton unfriendButton = UserUiTheme.createSecondaryButton("Hủy kết bạn");
+    JButton unfriendButton = UserUiTheme.createSecondaryButton("Remove Friend");
     unfriendButton.addActionListener(
         event -> handleRelationshipAction(friend, RelationshipAction.UNFRIEND));
-    JButton blockButton = UserUiTheme.createSecondaryButton("Chặn");
+    JButton blockButton = UserUiTheme.createSecondaryButton("Block");
     blockButton.addActionListener(
         event -> handleRelationshipAction(friend, RelationshipAction.BLOCK));
 

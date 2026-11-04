@@ -33,7 +33,7 @@ class FriendsPanelTest {
     FriendsPanel panel =
         new FriendsPanel(friends, blocked, (friend, action) -> false, friend -> {});
 
-    findButton(panel, "Chặn").doClick();
+    findButton(panel, "Block").doClick();
 
     assertEquals(3, panel.getVisibleFriends().size());
     assertTrue(blocked.isEmpty());
@@ -46,7 +46,7 @@ class FriendsPanelTest {
     FriendsPanel panel =
         new FriendsPanel(friends, blocked, (friend, action) -> true, friend -> {});
     panel.getSearchField().setText("mai");
-    javax.swing.JButton blockButton = findButton(panel, "Chặn");
+    javax.swing.JButton blockButton = findButton(panel, "Block");
     blockButton.doClick();
 
     assertFalse(blocked.isEmpty());

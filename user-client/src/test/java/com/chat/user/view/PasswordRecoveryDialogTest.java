@@ -17,7 +17,7 @@ class PasswordRecoveryDialogTest {
     dialog.getEmailField().setText("not-an-email");
     dialog.submitRecoveryRequest();
     assertFalse(dialog.isRequestSubmitted());
-    assertTrue(dialog.getFeedbackLabel().getText().contains("chưa hợp lệ"));
+    assertTrue(dialog.getFeedbackLabel().getText().contains("valid email"));
   }
 
   @Test
@@ -28,7 +28,7 @@ class PasswordRecoveryDialogTest {
     dialog.submitRecoveryRequest();
 
     assertTrue(dialog.isRequestSubmitted());
-    assertTrue(dialog.getFeedbackLabel().getText().contains("không gửi email"));
-    assertFalse(dialog.getFeedbackLabel().getText().contains("mật khẩu mới"));
+    assertTrue(dialog.getFeedbackLabel().getText().contains("no email"));
+    assertFalse(dialog.getFeedbackLabel().getText().contains("new password"));
   }
 }

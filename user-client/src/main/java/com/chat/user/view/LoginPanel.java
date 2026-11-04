@@ -67,12 +67,12 @@ public final class LoginPanel extends JPanel {
     passwordField.setText("");
 
     if (username.isEmpty() || passwordBlank) {
-      showFeedback("Vui lòng nhập tên đăng nhập/email và mật khẩu.", UserUiTheme.DANGER);
+      showFeedback("Enter your username/email and password.", UserUiTheme.DANGER);
       return;
     }
 
     sessionState.signIn();
-    showFeedback("Đăng nhập mẫu thành công; tài khoản chưa được xác thực.", UserUiTheme.SUCCESS);
+    showFeedback("Sample sign-in succeeded; your account was not authenticated.", UserUiTheme.SUCCESS);
     signInHandler.run();
   }
 
@@ -85,7 +85,7 @@ public final class LoginPanel extends JPanel {
     card.setPreferredSize(new Dimension(480, 560));
     card.setMinimumSize(new Dimension(480, 560));
 
-    JLabel windowTitle = new JLabel("Trò Chuyện Việt  —  Cổng Đăng Nhập");
+    JLabel windowTitle = new JLabel("ChatUser  —  Sign In");
     windowTitle.setFont(UserUiTheme.FONT_BODY_BOLD);
     windowTitle.setForeground(Color.WHITE);
     windowTitle.setBorder(
@@ -102,11 +102,11 @@ public final class LoginPanel extends JPanel {
         BorderFactory.createEmptyBorder(
             UserUiTheme.SPACE_LG, 34, UserUiTheme.SPACE_LG, 34));
 
-    JLabel brand = new JLabel("Trò Chuyện Việt", SwingConstants.CENTER);
+    JLabel brand = new JLabel("ChatUser", SwingConstants.CENTER);
     brand.setFont(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 24));
     brand.setForeground(UserUiTheme.TEXT_PRIMARY);
     brand.setAlignmentX(CENTER_ALIGNMENT);
-    JLabel subtitle = new JLabel("Đăng nhập vào tài khoản cá nhân để tiếp tục trao đổi");
+    JLabel subtitle = new JLabel("Sign in to your account to start messaging");
     subtitle.setFont(UserUiTheme.FONT_BODY);
     subtitle.setForeground(UserUiTheme.TEXT_MUTED);
     subtitle.setAlignmentX(CENTER_ALIGNMENT);
@@ -119,18 +119,18 @@ public final class LoginPanel extends JPanel {
     usernameField.setFont(UserUiTheme.FONT_BODY.deriveFont(14f));
     form.add(
         createFormWrapper(
-            createFieldLabel("Tên đăng nhập hoặc Email"), 20, BorderLayout.WEST));
+            createFieldLabel("Username or Email"), 20, BorderLayout.WEST));
     form.add(Box.createVerticalStrut(UserUiTheme.SPACE_XS));
     form.add(createFormWrapper(usernameField, 36, BorderLayout.CENTER));
     form.add(Box.createVerticalStrut(12));
-    form.add(createFormWrapper(createFieldLabel("Mật khẩu"), 20, BorderLayout.WEST));
+    form.add(createFormWrapper(createFieldLabel("Password"), 20, BorderLayout.WEST));
     form.add(Box.createVerticalStrut(UserUiTheme.SPACE_XS));
     passwordField.setFont(UserUiTheme.FONT_BODY.deriveFont(14f));
     form.add(createFormWrapper(passwordField, 36, BorderLayout.CENTER));
 
     JPanel links = new JPanel(new BorderLayout());
     links.setOpaque(false);
-    JButton recoveryButton = createTextButton("Quên mật khẩu?");
+    JButton recoveryButton = createTextButton("Forgot password?");
     recoveryButton.setMargin(new Insets(0, 0, 0, 0));
     recoveryButton.setBorder(BorderFactory.createEmptyBorder());
     recoveryButton.setCursor(
@@ -144,15 +144,15 @@ public final class LoginPanel extends JPanel {
     form.add(Box.createVerticalStrut(UserUiTheme.SPACE_XS));
     form.add(createFormWrapper(feedbackLabel, 20, BorderLayout.CENTER));
 
-    JButton signInButton = UserUiTheme.createPrimaryButton("Đăng nhập");
+    JButton signInButton = UserUiTheme.createPrimaryButton("Sign In");
     signInButton.addActionListener(event -> submitSignIn());
     form.add(Box.createVerticalStrut(10));
     form.add(createFormWrapper(signInButton, 42, BorderLayout.CENTER));
 
     JPanel registrationRow = new JPanel(new FlowLayout(FlowLayout.CENTER, UserUiTheme.SPACE_XS, 0));
     registrationRow.setOpaque(false);
-    registrationRow.add(new JLabel("Chưa có tài khoản?"));
-    JButton registrationButton = createTextButton("Đăng ký ngay");
+    registrationRow.add(new JLabel("Don't have an account?"));
+    JButton registrationButton = createTextButton("Register now");
     registrationButton.addActionListener(event -> registrationHandler.run());
     registrationRow.add(registrationButton);
     form.add(Box.createVerticalStrut(UserUiTheme.SPACE_MD));
@@ -163,7 +163,7 @@ public final class LoginPanel extends JPanel {
     footer.setBackground(UserUiTheme.PRIMARY_SOFT_BG);
     JLabel footerText =
         new JLabel(
-            "Phiên bản giao diện mẫu v1.0  •  Không kết nối dịch vụ tài khoản",
+            "Sample UI v1.0  •  Account services are not connected",
             SwingConstants.CENTER);
     footerText.setFont(UserUiTheme.FONT_SMALL);
     footerText.setForeground(UserUiTheme.TEXT_SECONDARY);

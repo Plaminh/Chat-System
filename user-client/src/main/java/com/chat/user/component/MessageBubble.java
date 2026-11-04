@@ -28,7 +28,7 @@ public final class MessageBubble extends JPanel {
             BorderFactory.createEmptyBorder(10, 12, 8, 12)));
 
     String content =
-        message.unsent() ? "Tin nhắn đã được thu hồi trong bản mẫu." : message.content();
+        message.unsent() ? "This message was unsent in the sample UI." : message.content();
     JTextArea text = new JTextArea(content);
     text.setEditable(false);
     text.setFocusable(false);

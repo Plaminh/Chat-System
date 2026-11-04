@@ -4,7 +4,7 @@ This guide validates the User UI implementation locally. Screens use sample data
 
 ## Prerequisites
 
-- Java 21 available on `PATH`.
+- Java 25 LTS available on `PATH`.
 - Maven available on `PATH`.
 - Repository checked out on `feature/user-ui-v1`.
 - Desktop environment available for visual Swing review. Automated tests/builds can run without opening the Swing application.

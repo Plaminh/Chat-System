@@ -11,9 +11,9 @@ Use `.specify/memory/constitution.md` as the authoritative project constitution.
 
 ## Technology and code changes
 
-- Preserve Java 21, Maven, Swing, FlatLaf, Spring Boot in non-web mode, TCP sockets, Spring JDBC, Jackson, and PostgreSQL.
+- Preserve Java 25 LTS, Maven, Swing, FlatLaf, Spring Boot in non-web mode, TCP sockets, Spring JDBC, Jackson, and PostgreSQL.
 - WebSocket is prohibited. Do not introduce REST as the main client protocol, JPA/Hibernate, microservices, or unnecessary abstractions.
-- Modify only files required by the task. Avoid unrelated refactoring and preserve existing project conventions and Java 21 compatibility.
+- Modify only files required by the task. Avoid unrelated refactoring and preserve existing project conventions and Java 25 compatibility.
 - Do not silently change protocol contracts or database schemas.
 
 ## Formatting and verification

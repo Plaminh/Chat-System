@@ -9,7 +9,7 @@ Implement only functionality required by the university Final Project specificat
 The frontend MUST remain a Windows desktop application. The backend MUST use a Java framework and TCP sockets. WebSocket is prohibited, and PostgreSQL is the required database.
 
 ### III. Existing Technology Stack
-Preserve Java 21, Maven, Swing, FlatLaf, JFreeChart where applicable, Spring Boot in non-web mode, Spring JDBC, Jackson, PostgreSQL, and BCrypt. Replacing this stack requires an explicit project decision.
+Preserve Java 25 LTS, Maven, Swing, FlatLaf, JFreeChart where applicable, Spring Boot in non-web mode, Spring JDBC, Jackson, PostgreSQL, and BCrypt. Replacing this stack requires an explicit project decision.
 
 ### IV. Module Boundaries
 The project MUST contain exactly four Maven modules: `common`, `admin-client`, `user-client`, and `server`. Both clients and the server may depend on `common`; clients MUST NOT depend on `server`, and `server` MUST NOT depend on either client.
@@ -48,4 +48,6 @@ Each change must remain within an approved specification, respect module boundar
 
 This constitution governs project specifications, plans, tasks, implementation, and review. Amendments require explicit team approval, a documented reason, and updates to dependent Spec Kit artifacts where applicable. Compliance is reviewed before work is merged into `dev`; exceptions must be recorded rather than assumed.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-22 | **Last Amended**: 2026-10-22
+Java 25 LTS was selected as the project runtime by explicit project request on 2026-10-31; all other technology and architecture constraints remain unchanged.
+
+**Version**: 1.1.0 | **Ratified**: 2026-10-22 | **Last Amended**: 2026-10-31

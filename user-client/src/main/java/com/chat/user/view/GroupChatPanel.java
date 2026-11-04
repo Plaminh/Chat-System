@@ -26,10 +26,10 @@ public final class GroupChatPanel extends JPanel {
   private final JTextArea composer = new JTextArea(3, 32);
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.LEFT);
   private final JLabel encryptionPlaceholder =
-      new JLabel("Mã hóa: chỉ là nhãn giao diện mẫu, chưa được kích hoạt.");
+      new JLabel("Encryption: sample label only; not enabled.");
   private Runnable backHandler =
       () -> {
-        feedbackLabel.setText("Chọn Hội nhóm trong thanh điều hướng để quay lại.");
+        feedbackLabel.setText("Select Groups in the navigation to return.");
         feedbackLabel.setForeground(UserUiTheme.TEXT_MUTED);
       };
 
@@ -69,7 +69,7 @@ public final class GroupChatPanel extends JPanel {
   void sendSampleMessage() {
     String content = composer.getText().trim();
     if (content.isEmpty()) {
-      feedbackLabel.setText("Nhập nội dung tin nhắn trước khi tiếp tục.");
+      feedbackLabel.setText("Enter a message before continuing.");
       feedbackLabel.setForeground(UserUiTheme.DANGER);
       return;
     }
@@ -83,7 +83,7 @@ public final class GroupChatPanel extends JPanel {
             false,
             false));
     composer.setText("");
-    feedbackLabel.setText("Tin nhắn nhóm mẫu chỉ được giữ trong phiên này.");
+    feedbackLabel.setText("Sample group messages are kept in this session only.");
     feedbackLabel.setForeground(UserUiTheme.TEXT_MUTED);
     renderMessages();
   }
@@ -107,7 +107,7 @@ public final class GroupChatPanel extends JPanel {
     encryptionPlaceholder.setFont(UserUiTheme.FONT_SMALL);
     encryptionPlaceholder.setForeground(UserUiTheme.TEXT_MUTED);
     header.add(groupName, BorderLayout.WEST);
-    JButton back = UserUiTheme.createSecondaryButton("Quay lại hội nhóm");
+    JButton back = UserUiTheme.createSecondaryButton("Back to Groups");
     back.addActionListener(event -> backHandler.run());
     JPanel headerActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, UserUiTheme.SPACE_XS, 0));
     headerActions.setOpaque(false);
@@ -128,7 +128,7 @@ public final class GroupChatPanel extends JPanel {
         BorderFactory.createLineBorder(UserUiTheme.BORDER),
         BorderFactory.createEmptyBorder(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM,
             UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM)));
-    JButton send = UserUiTheme.createPrimaryButton("Gửi mẫu");
+    JButton send = UserUiTheme.createPrimaryButton("Send Sample");
     send.addActionListener(event -> sendSampleMessage());
     JPanel actionRow = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     actionRow.setOpaque(false);
@@ -145,7 +145,7 @@ public final class GroupChatPanel extends JPanel {
     memberList.setBackground(UserUiTheme.SURFACE_WHITE);
     JPanel membersCard = UserUiTheme.createCardPanel();
     membersCard.setLayout(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
-    JLabel membersTitle = new JLabel("Thành viên và vai trò");
+    JLabel membersTitle = new JLabel("Members & Roles");
     membersTitle.setFont(UserUiTheme.FONT_SUBTITLE);
     membersTitle.setForeground(UserUiTheme.TEXT_PRIMARY);
     membersCard.add(membersTitle, BorderLayout.NORTH);
@@ -171,7 +171,7 @@ public final class GroupChatPanel extends JPanel {
       }
     }
     if (group.messages().isEmpty()) {
-      JLabel empty = new JLabel("Chưa có tin nhắn trong nhóm này.", SwingConstants.CENTER);
+      JLabel empty = new JLabel("No messages in this group yet.", SwingConstants.CENTER);
       empty.setFont(UserUiTheme.FONT_BODY);
       empty.setForeground(UserUiTheme.TEXT_MUTED);
       messageList.add(empty);
@@ -188,7 +188,7 @@ public final class GroupChatPanel extends JPanel {
           member.user().fullName() + "  •  @" + member.user().username());
       identity.setFont(UserUiTheme.FONT_BODY_BOLD);
       JLabel role = new JLabel(
-          member.role() == GroupMember.Role.ADMIN ? "Quản trị viên" : "Thành viên");
+          member.role() == GroupMember.Role.ADMIN ? "Administrator" : "Member");
       role.setFont(UserUiTheme.FONT_SMALL);
       role.setForeground(member.role() == GroupMember.Role.ADMIN
           ? UserUiTheme.PRIMARY

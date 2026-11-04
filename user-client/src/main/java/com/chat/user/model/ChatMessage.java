@@ -31,6 +31,6 @@ public record ChatMessage(
     if (removedForCurrentUser) {
       return "";
     }
-    return unsent ? "Tin nhắn đã được thu hồi trong bản mẫu." : content;
+    return unsent ? "This message was unsent in the sample UI." : content;
   }
 }
