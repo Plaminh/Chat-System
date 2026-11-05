@@ -1,5 +1,6 @@
 package com.chat.admin.view;
 
+import com.chat.admin.controller.AdminAuthController;
 import com.chat.admin.view.AdminUIStyle.NavIconType;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -31,6 +32,7 @@ import javax.swing.WindowConstants;
  * <p>Validates administrator credentials before granting access to {@link AdminMainFrame}.
  */
 public final class AdminLoginDialog extends JDialog {
+  private final AdminAuthController authController = new AdminAuthController();
   private final JTextField usernameField = new JTextField("admin");
   private final JPasswordField passwordField = new JPasswordField("admin123");
   private final JCheckBox rememberCheckBox = new JCheckBox("Remember session on this workstation", true);
@@ -281,42 +283,27 @@ public final class AdminLoginDialog extends JDialog {
     String username = usernameField.getText() == null ? "" : usernameField.getText().trim();
     String password = new String(passwordField.getPassword()).trim();
 
-    if (username.isEmpty()) {
+    AdminAuthController.AuthResult result = authController.authenticate(username, password);
+    if (!result.success()) {
       errorLabel.setForeground(AdminUIStyle.DANGER_TEXT);
-      errorLabel.setText("⚠ Please enter your administrator username.");
-      usernameField.requestFocusInWindow();
-      return;
-    }
-    if (password.isEmpty()) {
-      errorLabel.setForeground(AdminUIStyle.DANGER_TEXT);
-      errorLabel.setText("⚠ Please enter your password.");
-      passwordField.requestFocusInWindow();
-      return;
-    }
-    if (password.length() < 4) {
-      errorLabel.setForeground(AdminUIStyle.DANGER_TEXT);
-      errorLabel.setText("⚠ Invalid credentials. Password must be at least 4 characters.");
-      return;
-    }
-
-    // Validate against mock admin credentials
-    boolean validAdmin =
-        ("admin".equalsIgnoreCase(username) || "sysadmin@campus.edu".equalsIgnoreCase(username))
-            && "admin123".equals(password);
-    if (!validAdmin) {
-      errorLabel.setForeground(AdminUIStyle.DANGER_TEXT);
-      errorLabel.setText("⚠ Invalid username or password. Use 'admin' / 'admin123'.");
-      JOptionPane.showMessageDialog(
-          this,
-          "Authentication failed: Invalid administrator username or password.\n"
-              + "Hint: Default mock credentials are 'admin' / 'admin123'.",
-          "Authentication Failed",
-          JOptionPane.ERROR_MESSAGE);
+      errorLabel.setText(result.errorMessage().contains("Authentication failed") ? "Invalid administrator username or password." : result.errorMessage());
+      if (result.errorMessage().contains("username")) {
+        usernameField.requestFocusInWindow();
+      } else if (result.errorMessage().contains("password")) {
+        passwordField.requestFocusInWindow();
+      }
+      if (result.errorMessage().contains("Authentication failed")) {
+        JOptionPane.showMessageDialog(
+            this,
+            result.errorMessage(),
+            "Authentication Failed",
+            JOptionPane.ERROR_MESSAGE);
+      }
       return;
     }
 
     this.authenticated = true;
-    this.authenticatedUsername = username;
+    this.authenticatedUsername = result.username();
     dispose();
   }
 }

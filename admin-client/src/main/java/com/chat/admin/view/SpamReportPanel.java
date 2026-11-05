@@ -1,5 +1,6 @@
 package com.chat.admin.view;
 
+import com.chat.admin.controller.SpamModerationController;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.model.AdminUser;
 import com.chat.admin.model.SpamReportRecord;
@@ -41,6 +42,7 @@ public final class SpamReportPanel extends JPanel {
     "MODERATION STATUS"
   };
 
+  private final SpamModerationController controller = new SpamModerationController();
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField usernameFilterField =
       AdminUIStyle.createSearchField("Filter by reported or reporting username...", 15);
@@ -85,7 +87,7 @@ public final class SpamReportPanel extends JPanel {
     add(buildBottomModerationBar(), BorderLayout.SOUTH);
 
     wireEvents();
-    dataStore.addChangeListener(() -> applyFiltersAndRefresh(false));
+    controller.addDataChangeListener(() -> applyFiltersAndRefresh(false));
     applyFiltersAndRefresh(false);
   }
 
@@ -253,40 +255,12 @@ public final class SpamReportPanel extends JPanel {
             : usernameFilterField.getText().trim().toLowerCase();
     int sortIdx = sortCombo.getSelectedIndex();
 
-    List<SpamReportRecord> all = dataStore.getSpamReports();
-    long pendingCount =
-        all.stream().filter(r -> "Pending".equalsIgnoreCase(r.getStatus())).count();
-    long lockedCount = all.size() - pendingCount;
-    openReportsValueLabel.setText(pendingCount + " pending");
-    lockedOffendersValueLabel.setText(lockedCount + " locked");
+    SpamModerationController.SpamKpiStats stats = controller.getKpiStats();
+    openReportsValueLabel.setText(stats.pendingCount() + " pending");
+    lockedOffendersValueLabel.setText(stats.lockedCount() + " locked");
 
-    List<SpamReportRecord> filtered = new ArrayList<>();
-    for (SpamReportRecord r : all) {
-      LocalDate reportDate = r.getReportedAt().toLocalDate();
-      if (fromDate != null && reportDate.isBefore(fromDate)) {
-        continue;
-      }
-      if (toDate != null && reportDate.isAfter(toDate)) {
-        continue;
-      }
-      if (!query.isEmpty()
-          && !r.getReportedUsername().toLowerCase().contains(query)
-          && !r.getReporterUsername().toLowerCase().contains(query)) {
-        continue;
-      }
-      filtered.add(r);
-    }
-
-    Comparator<SpamReportRecord> comparator =
-        switch (sortIdx) {
-          case 1 -> Comparator.comparing(SpamReportRecord::getReportedAt);
-          case 2 -> Comparator.comparing(r -> r.getReportedUsername().toLowerCase());
-          case 3 ->
-              Comparator.comparing((SpamReportRecord r) -> r.getReportedUsername().toLowerCase())
-                  .reversed();
-          default -> Comparator.comparing(SpamReportRecord::getReportedAt).reversed();
-        };
-    filtered.sort(comparator);
+    List<SpamReportRecord> filtered =
+        controller.filterAndSortReports(query, fromDate, toDate, sortIdx);
 
     tableModel.setRowCount(0);
     for (SpamReportRecord r : filtered) {
@@ -351,7 +325,7 @@ public final class SpamReportPanel extends JPanel {
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
     if (confirm == JOptionPane.YES_OPTION) {
-      dataStore.lockUserAccount(offenderUsername);
+      controller.lockUserAccount(offenderUsername);
       JOptionPane.showMessageDialog(
           this,
           "Account " + offenderUsername + " has been locked and updated across the system.",

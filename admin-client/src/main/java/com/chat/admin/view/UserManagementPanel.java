@@ -1,5 +1,6 @@
 package com.chat.admin.view;
 
+import com.chat.admin.controller.UserManagementController;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.model.AdminUser;
 import java.awt.BorderLayout;
@@ -53,6 +54,7 @@ public final class UserManagementPanel extends JPanel {
     "STATUS"
   };
 
+  private final UserManagementController controller = new UserManagementController();
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField searchField =
       AdminUIStyle.createSearchField("Search by username, full name, or email...", 18);
@@ -89,7 +91,7 @@ public final class UserManagementPanel extends JPanel {
     add(buildBottomActionBar(), BorderLayout.SOUTH);
 
     wireEvents();
-    dataStore.addChangeListener(this::refreshTableData);
+    controller.addDataChangeListener(this::refreshTableData);
     refreshTableData();
   }
 
@@ -250,31 +252,7 @@ public final class UserManagementPanel extends JPanel {
     String statusFilter = (String) statusCombo.getSelectedItem();
     int sortIdx = sortCombo.getSelectedIndex();
 
-    List<AdminUser> filtered = new ArrayList<>();
-    for (AdminUser u : dataStore.getUsers()) {
-      boolean matchesQuery =
-          query.isEmpty()
-              || u.getUsername().toLowerCase().contains(query)
-              || u.getFullName().toLowerCase().contains(query)
-              || u.getEmail().toLowerCase().contains(query);
-      boolean matchesStatus =
-          statusFilter == null
-              || "All Statuses".equals(statusFilter)
-              || u.getStatusText().equalsIgnoreCase(statusFilter);
-      if (matchesQuery && matchesStatus) {
-        filtered.add(u);
-      }
-    }
-
-    Comparator<AdminUser> comparator =
-        switch (sortIdx) {
-          case 1 -> Comparator.comparing(AdminUser::getCreatedAt);
-          case 2 -> Comparator.comparing(u -> u.getFullName().toLowerCase());
-          case 3 ->
-              Comparator.comparing((AdminUser u) -> u.getFullName().toLowerCase()).reversed();
-          default -> Comparator.comparing(AdminUser::getCreatedAt).reversed();
-        };
-    filtered.sort(comparator);
+    List<AdminUser> filtered = controller.filterAndSortUsers(query, statusFilter, sortIdx);
 
     tableModel.setRowCount(0);
     int rowToSelect = -1;
@@ -301,7 +279,7 @@ public final class UserManagementPanel extends JPanel {
         "Showing "
             + filtered.size()
             + " of "
-            + dataStore.getUsers().size()
+            + controller.getTotalUserCount()
             + " total user accounts");
 
     if (rowToSelect >= 0) {
@@ -519,7 +497,7 @@ public final class UserManagementPanel extends JPanel {
     getSelectedUser()
         .ifPresent(
             user -> {
-              boolean nowLocked = dataStore.toggleUserLock(user.getUsername());
+              boolean nowLocked = controller.toggleUserLock(user.getUsername());
               JOptionPane.showMessageDialog(
                   this,
                   "Account @"
@@ -561,7 +539,7 @@ public final class UserManagementPanel extends JPanel {
                       JOptionPane.ERROR_MESSAGE);
                   return;
                 }
-                user.setPasswordHash("bcrypt$updated$" + newPass.hashCode());
+                controller.resetPassword(user, newPass);
                 JOptionPane.showMessageDialog(
                     this,
                     "Password for @" + user.getUsername() + " has been updated successfully.",
@@ -587,7 +565,7 @@ public final class UserManagementPanel extends JPanel {
                       JOptionPane.YES_NO_OPTION,
                       JOptionPane.WARNING_MESSAGE);
               if (confirm == JOptionPane.YES_OPTION) {
-                dataStore.deleteUser(user.getUsername());
+                controller.deleteUser(user.getUsername());
               }
             });
   }

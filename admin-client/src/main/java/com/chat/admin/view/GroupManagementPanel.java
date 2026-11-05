@@ -1,5 +1,6 @@
 package com.chat.admin.view;
 
+import com.chat.admin.controller.GroupManagementController;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.model.GroupChatInfo;
 import com.chat.admin.model.GroupChatInfo.GroupMemberInfo;
@@ -36,6 +37,7 @@ public final class GroupManagementPanel extends JPanel {
   };
   private static final String[] MEMBER_COLUMNS = {"USERNAME", "FULL NAME", "ROLE IN GROUP"};
 
+  private final GroupManagementController controller = new GroupManagementController();
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField searchGroupField =
       AdminUIStyle.createSearchField("Filter group chats by group name...", 18);
@@ -256,24 +258,7 @@ public final class GroupManagementPanel extends JPanel {
         searchGroupField.getText() == null ? "" : searchGroupField.getText().trim().toLowerCase();
     int sortIdx = sortCombo.getSelectedIndex();
 
-    List<GroupChatInfo> filtered = new ArrayList<>();
-    for (GroupChatInfo g : dataStore.getGroups()) {
-      if (query.isEmpty()
-          || g.groupName().toLowerCase().contains(query)
-          || g.groupId().toLowerCase().contains(query)) {
-        filtered.add(g);
-      }
-    }
-
-    Comparator<GroupChatInfo> comparator =
-        switch (sortIdx) {
-          case 1 -> Comparator.comparing(GroupChatInfo::createdAt);
-          case 2 -> Comparator.comparing(g -> g.groupName().toLowerCase());
-          case 3 ->
-              Comparator.comparing((GroupChatInfo g) -> g.groupName().toLowerCase()).reversed();
-          default -> Comparator.comparing(GroupChatInfo::createdAt).reversed();
-        };
-    filtered.sort(comparator);
+    List<GroupChatInfo> filtered = controller.filterAndSortGroups(query, sortIdx);
 
     groupTableModel.setRowCount(0);
     for (GroupChatInfo g : filtered) {
@@ -288,7 +273,7 @@ public final class GroupManagementPanel extends JPanel {
     }
 
     groupCountLabel.setText(
-        "Showing " + filtered.size() + " of " + dataStore.getGroups().size() + " groups");
+        "Showing " + filtered.size() + " of " + controller.getTotalGroupCount() + " groups");
 
     if (groupTableModel.getRowCount() > 0) {
       groupTable.setRowSelectionInterval(0, 0);
@@ -323,16 +308,9 @@ public final class GroupManagementPanel extends JPanel {
             ? ""
             : memberSearchField.getText().trim().toLowerCase();
 
-    for (GroupMemberInfo m : group.members()) {
-      if (adminsOnly && !m.groupAdmin()) {
-        continue;
-      }
-      if (!memberQuery.isEmpty()
-          && !m.username().toLowerCase().contains(memberQuery)
-          && !m.fullName().toLowerCase().contains(memberQuery)) {
-        continue;
-      }
-      memberTableModel.addRow(
+    List<GroupMemberInfo> visibleMembers =
+        controller.filterMembers(group, adminsOnly, memberQuery);
+    for (GroupMemberInfo m : visibleMembers) {      memberTableModel.addRow(
           new Object[] {
             "@" + m.username(), m.fullName(), m.groupAdmin() ? "Group Admin" : "Member"
           });
@@ -346,7 +324,7 @@ public final class GroupManagementPanel extends JPanel {
     }
     String rawId = String.valueOf(groupTableModel.getValueAt(row, 0));
     String cleanId = rawId.startsWith("#") ? rawId.substring(1) : rawId;
-    return dataStore.getGroups().stream()
+    return controller.findGroupById(cleanId).stream()
         .filter(g -> g.groupId().equalsIgnoreCase(cleanId))
         .findFirst();
   }
