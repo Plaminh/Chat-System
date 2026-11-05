@@ -11,6 +11,10 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -241,6 +245,53 @@ public final class UserManagementPanel extends JPanel {
                 updateSelectedUserBanner();
               }
             });
+    setupTableContextMenu();
+  }
+
+  private void setupTableContextMenu() {
+    JPopupMenu contextMenu = new JPopupMenu();
+    JMenuItem viewHistoryItem = new JMenuItem("View History & Network");
+    JMenuItem editItem = new JMenuItem("Edit Profile");
+    JMenuItem lockToggleItem = new JMenuItem("Lock / Unlock User");
+    JMenuItem resetPassItem = new JMenuItem("Reset Password");
+    JMenuItem deleteItem = new JMenuItem("Delete User");
+
+    viewHistoryItem.addActionListener(e -> handleViewHistoryAndFriends());
+    editItem.addActionListener(e -> getSelectedUser().ifPresent(this::showAddOrEditUserDialog));
+    lockToggleItem.addActionListener(e -> handleLockToggle());
+    resetPassItem.addActionListener(e -> handlePasswordReset());
+    deleteItem.addActionListener(e -> handleDeleteUser());
+
+    contextMenu.add(viewHistoryItem);
+    contextMenu.addSeparator();
+    contextMenu.add(editItem);
+    contextMenu.add(lockToggleItem);
+    contextMenu.add(resetPassItem);
+    contextMenu.addSeparator();
+    contextMenu.add(deleteItem);
+
+    userTable.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mousePressed(MouseEvent e) {
+            handlePopup(e);
+          }
+
+          @Override
+          public void mouseReleased(MouseEvent e) {
+            handlePopup(e);
+          }
+
+          private void handlePopup(MouseEvent e) {
+            if (e.isPopupTrigger()) {
+              int row = userTable.rowAtPoint(e.getPoint());
+              if (row >= 0 && row < userTable.getRowCount()) {
+                userTable.setRowSelectionInterval(row, row);
+              }
+              contextMenu.show(e.getComponent(), e.getX(), e.getY());
+            }
+          }
+        });
   }
 
   public void refreshTableData() {
