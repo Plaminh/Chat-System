@@ -2,6 +2,7 @@ package com.chat.user.view;
 
 import com.chat.user.component.UserUiTheme;
 import com.chat.user.model.FriendRequest;
+import com.chat.user.controller.FriendsController;
 import com.chat.user.model.UserProfile;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -28,6 +29,7 @@ public final class FriendRequestsSearchPanel extends JPanel {
   private final List<UserProfile> directory;
   private final Set<String> blockedUsernames;
   private final Consumer<UserProfile> openChatHandler;
+  private final FriendsController controller = new FriendsController();
   private final Consumer<UserProfile> selectForGroupHandler;
   private final JTextField requestFilterField = UserUiTheme.createTextField(24);
   private final JTextField searchField = UserUiTheme.createTextField(24);
@@ -160,13 +162,7 @@ public final class FriendRequestsSearchPanel extends JPanel {
 
   private void renderRequests() {
     String filter = requestFilterField.getText().trim().toLowerCase(Locale.ROOT);
-    visibleRequests =
-        requests.stream()
-            .filter(request -> request.status() == FriendRequest.Status.PENDING)
-            .filter(
-                request ->
-                    request.requester().fullName().toLowerCase(Locale.ROOT).contains(filter))
-            .toList();
+    visibleRequests = controller.filterFriendRequests(requests, filter);
     requestList.removeAll();
     if (visibleRequests.isEmpty()) {
       requestList.add(emptyLabel("No matching friend requests."));
@@ -183,16 +179,7 @@ public final class FriendRequestsSearchPanel extends JPanel {
   private void renderSearchResults() {
     String entered = searchField.getText().trim().toLowerCase(Locale.ROOT);
     String usernameQuery = entered.startsWith("@") ? entered.substring(1) : entered;
-    visibleSearchResults =
-        entered.isEmpty()
-            ? List.of()
-            : directory.stream()
-                .filter(profile -> !isBlocked(profile.username()))
-                .filter(
-                    profile ->
-                        profile.username().toLowerCase(Locale.ROOT).contains(usernameQuery)
-                            || profile.fullName().toLowerCase(Locale.ROOT).contains(entered))
-                .toList();
+    visibleSearchResults = controller.searchUsers(directory, blockedUsernames, entered);
     searchResults.removeAll();
     if (entered.isEmpty()) {
       searchResults.add(emptyLabel("Enter a username or full name to start searching."));

@@ -2,6 +2,7 @@ package com.chat.user.view;
 
 import com.chat.user.component.UserNavigationSidebar;
 import com.chat.user.component.UserUiTheme;
+import com.chat.user.controller.FriendsController;
 import com.chat.user.model.Conversation;
 import com.chat.user.model.FriendEntry;
 import com.chat.user.model.GroupConversation;
@@ -60,6 +61,7 @@ public final class UserMainFrame extends JPanel {
   private ChatWorkspacePanel chatWorkspace;
   private GroupsPanel groupsPanel;
   private Destination activeDestination;
+  private final FriendsController friendsController = new FriendsController();
 
   public UserMainFrame(UserSessionState sessionState) {
     super(new BorderLayout());
@@ -292,7 +294,7 @@ public final class UserMainFrame extends JPanel {
   }
 
   private void openSpamReport(Conversation conversation) {
-    if (conversation.messages().isEmpty()) {
+    if (!friendsController.isEligibleForSpamReport(conversation)) {
       JOptionPane.showMessageDialog(
           this,
           "You can only report an account after an interaction in a sample conversation.",
@@ -300,24 +302,11 @@ public final class UserMainFrame extends JPanel {
           JOptionPane.INFORMATION_MESSAGE);
       return;
     }
-    UserProfile reportedUser =
-        knownProfiles.stream()
-            .filter(profile -> profile.username().equalsIgnoreCase(conversation.username()))
-            .findFirst()
-            .orElseGet(
-                () ->
-                    new UserProfile(
-                        conversation.username(),
-                        conversation.displayName(),
-                        conversation.username() + "@example.test",
-                        "Sample address",
-                        LocalDate.of(2000, 1, 1),
-                        "Not specified"));
+    UserProfile reportedUser = friendsController.resolveProfileForConversation(knownProfiles, conversation);
     new SpamReportDialog(reportedUser, true)
         .createDialog(javax.swing.SwingUtilities.getWindowAncestor(this))
         .setVisible(true);
   }
-
   private void openWritingAssist(String draft) {
     new WritingAssistDialog(draft, chatWorkspace::setDraftText)
         .createDialog(javax.swing.SwingUtilities.getWindowAncestor(this))

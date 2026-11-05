@@ -2,6 +2,7 @@ package com.chat.user.view;
 
 import com.chat.user.component.UserUiTheme;
 import com.chat.user.model.FriendEntry;
+import com.chat.user.controller.FriendsController;
 import com.chat.user.model.UserProfile;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -33,6 +34,7 @@ public final class FriendsPanel extends JPanel {
 
   private final List<FriendEntry> friends;
   private final Set<String> blockedUsernames;
+  private final FriendsController controller = new FriendsController();
   private final BiPredicate<FriendEntry, RelationshipAction> confirmationHandler;
   private final Consumer<FriendEntry> openChatHandler;
   private final JTextField searchField = UserUiTheme.createTextField(24);
@@ -142,12 +144,7 @@ public final class FriendsPanel extends JPanel {
   private void renderFriends() {
     String filter = searchField.getText().trim().toLowerCase(Locale.ROOT);
     boolean onlyOnline = onlineOnly.isSelected();
-    visibleFriends =
-        friends.stream()
-            .filter(friend -> !isBlocked(friend.username()))
-            .filter(friend -> friend.fullName().toLowerCase(Locale.ROOT).contains(filter))
-            .filter(friend -> !onlyOnline || friend.online())
-            .toList();
+    visibleFriends = controller.filterFriends(friends, blockedUsernames, filter, onlyOnline);
 
     friendList.removeAll();
     if (visibleFriends.isEmpty()) {

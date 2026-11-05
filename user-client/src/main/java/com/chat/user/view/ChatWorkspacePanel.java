@@ -3,6 +3,7 @@ package com.chat.user.view;
 import com.chat.user.component.MessageBubble;
 import com.chat.user.component.UserUiTheme;
 import com.chat.user.model.ChatMessage;
+import com.chat.user.controller.ChatWorkspaceController;
 import com.chat.user.model.Conversation;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -30,6 +31,7 @@ import javax.swing.event.DocumentListener;
 public final class ChatWorkspacePanel extends JPanel {
   private final List<Conversation> conversations;
   private final String currentUsername;
+  private final ChatWorkspaceController controller;
   private final DefaultListModel<Conversation> conversationListModel = new DefaultListModel<>();
   private final JList<Conversation> conversationList = new JList<>(conversationListModel);
   private final javax.swing.JTextField conversationFilter = UserUiTheme.createTextField(22);
@@ -43,9 +45,17 @@ public final class ChatWorkspacePanel extends JPanel {
   private Consumer<String> writingAssistHandler = draft -> showUnavailableAction();
 
   public ChatWorkspacePanel(List<Conversation> conversations, String currentUsername) {
+    this(conversations, currentUsername, new ChatWorkspaceController());
+  }
+
+  public ChatWorkspacePanel(
+      List<Conversation> conversations,
+      String currentUsername,
+      ChatWorkspaceController controller) {
     super(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
     this.conversations = new ArrayList<>(Objects.requireNonNull(conversations, "conversations"));
     this.currentUsername = Objects.requireNonNull(currentUsername, "currentUsername");
+    this.controller = Objects.requireNonNull(controller, "controller");
     buildContent();
     renderConversationList();
     if (!conversationListModel.isEmpty()) {
@@ -121,17 +131,7 @@ public final class ChatWorkspacePanel extends JPanel {
 
   public void openConversationFor(String username, String displayName) {
     Conversation conversation =
-        conversations.stream()
-            .filter(candidate -> candidate.username().equalsIgnoreCase(username))
-            .findFirst()
-            .orElseGet(
-                () -> {
-                  Conversation created =
-                      new Conversation(
-                          "direct-" + UUID.randomUUID(), username, displayName, List.of());
-                  conversations.add(created);
-                  return created;
-                });
+        controller.findOrCreateConversation(conversations, username, displayName);
     renderConversationList();
     conversationList.setSelectedValue(conversation, true);
   }
@@ -317,14 +317,11 @@ public final class ChatWorkspacePanel extends JPanel {
   }
 
   private void renderConversationList() {
-    String filter = conversationFilter.getText().trim().toLowerCase(java.util.Locale.ROOT);
     Conversation previous = selectedConversation;
     conversationListModel.clear();
-    for (Conversation conversation : conversations) {
-      if (conversation.displayName().toLowerCase(java.util.Locale.ROOT).contains(filter)
-          || conversation.username().toLowerCase(java.util.Locale.ROOT).contains(filter)) {
-        conversationListModel.addElement(conversation);
-      }
+    List<Conversation> matched = controller.filterConversations(conversations, conversationFilter.getText());
+    for (Conversation conversation : matched) {
+      conversationListModel.addElement(conversation);
     }
     if (previous != null) {
       conversationList.setSelectedValue(previous, true);
