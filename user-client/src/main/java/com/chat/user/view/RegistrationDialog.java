@@ -1,6 +1,6 @@
 package com.chat.user.view;
 
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.model.UserProfile;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -22,12 +22,12 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 public final class RegistrationDialog extends JPanel {
-  private final JTextField fullNameField = UserUiTheme.createTextField(28);
-  private final JTextField usernameField = UserUiTheme.createTextField(28);
-  private final JTextField emailField = UserUiTheme.createTextField(28);
-  private final JTextField addressField = UserUiTheme.createTextField(28);
-  private final JTextField dateOfBirthField = UserUiTheme.createTextField(28);
-  private final JTextField genderField = UserUiTheme.createTextField(28);
+  private final JTextField fullNameField = ChatTheme.createTextField(28);
+  private final JTextField usernameField = ChatTheme.createTextField(28);
+  private final JTextField emailField = ChatTheme.createTextField(28);
+  private final JTextField addressField = ChatTheme.createTextField(28);
+  private final JTextField dateOfBirthField = ChatTheme.createTextField(28);
+  private final JTextField genderField = ChatTheme.createTextField(28);
   private final JPasswordField passwordField = new JPasswordField(28);
   private final JPasswordField confirmPasswordField = new JPasswordField(28);
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.CENTER);
@@ -114,15 +114,15 @@ public final class RegistrationDialog extends JPanel {
         || dateOfBirth.isEmpty()
         || gender.isEmpty()
         || passwordBlank) {
-      showFeedback("Complete all required fields.", UserUiTheme.DANGER);
+      showFeedback("Complete all required fields.", ChatTheme.DANGER);
       return;
     }
     if (!isValidEmail(email)) {
-      showFeedback("Enter a valid email address.", UserUiTheme.DANGER);
+      showFeedback("Enter a valid email address.", ChatTheme.DANGER);
       return;
     }
     if (!passwordsMatch) {
-      showFeedback("The passwords do not match.", UserUiTheme.DANGER);
+      showFeedback("The passwords do not match.", ChatTheme.DANGER);
       return;
     }
 
@@ -130,23 +130,23 @@ public final class RegistrationDialog extends JPanel {
     try {
       parsedDate = LocalDate.parse(dateOfBirth);
     } catch (DateTimeParseException exception) {
-      showFeedback("Date of birth must use the YYYY-MM-DD format.", UserUiTheme.DANGER);
+      showFeedback("Date of birth must use the YYYY-MM-DD format.", ChatTheme.DANGER);
       return;
     }
 
     submittedProfile =
         new UserProfile(username, fullName, email, address, parsedDate, gender);
-    showFeedback("Sample registration complete; no account was created on the server.", UserUiTheme.SUCCESS);
+    showFeedback("Sample registration complete; no account was created on the server.", ChatTheme.SUCCESS);
   }
 
   private void buildContent() {
-    setBackground(UserUiTheme.SURFACE_WHITE);
-    setBorder(BorderFactory.createEmptyBorder(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG,
-        UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG));
+    setBackground(ChatTheme.SURFACE_WHITE);
+    setBorder(BorderFactory.createEmptyBorder(ChatTheme.SPACE_MD, ChatTheme.SPACE_LG,
+        ChatTheme.SPACE_MD, ChatTheme.SPACE_LG));
 
     JPanel form = new JPanel();
     form.setLayout(new javax.swing.BoxLayout(form, javax.swing.BoxLayout.Y_AXIS));
-    form.setBackground(UserUiTheme.SURFACE_WHITE);
+    form.setBackground(ChatTheme.SURFACE_WHITE);
     addField(form, "Full name", fullNameField);
     addField(form, "Username", usernameField);
     addField(form, "Email address", emailField);
@@ -156,13 +156,13 @@ public final class RegistrationDialog extends JPanel {
     addField(form, "Password", passwordField);
     addField(form, "Confirm password", confirmPasswordField);
 
-    feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
-    feedbackLabel.setForeground(UserUiTheme.DANGER);
+    feedbackLabel.setFont(ChatTheme.FONT_SMALL);
+    feedbackLabel.setForeground(ChatTheme.DANGER);
     form.add(feedbackLabel);
 
-    JButton submitButton = UserUiTheme.createPrimaryButton("Create Sample Account");
+    JButton submitButton = ChatTheme.createPrimaryButton("Create Sample Account");
     submitButton.addActionListener(event -> submitRegistration());
-    JButton cancelButton = UserUiTheme.createSecondaryButton("Cancel");
+    JButton cancelButton = ChatTheme.createSecondaryButton("Cancel");
     cancelButton.addActionListener(event -> cancelRegistration());
 
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -171,19 +171,19 @@ public final class RegistrationDialog extends JPanel {
     actions.add(submitButton);
 
     JLabel title = new JLabel("Create a New Account", SwingConstants.CENTER);
-    title.setFont(UserUiTheme.FONT_TITLE);
-    title.setForeground(UserUiTheme.TEXT_PRIMARY);
+    title.setFont(ChatTheme.FONT_TITLE);
+    title.setForeground(ChatTheme.TEXT_PRIMARY);
     JLabel subtitle =
         new JLabel("Enter the required account details", SwingConstants.CENTER);
-    subtitle.setFont(UserUiTheme.FONT_BODY);
-    subtitle.setForeground(UserUiTheme.TEXT_MUTED);
-    JPanel heading = new JPanel(new BorderLayout(0, UserUiTheme.SPACE_XS));
+    subtitle.setFont(ChatTheme.FONT_BODY);
+    subtitle.setForeground(ChatTheme.TEXT_MUTED);
+    JPanel heading = new JPanel(new BorderLayout(0, ChatTheme.SPACE_XS));
     heading.setOpaque(false);
     heading.add(title, BorderLayout.NORTH);
     heading.add(subtitle, BorderLayout.SOUTH);
 
-    JPanel content = new JPanel(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
-    content.setBackground(UserUiTheme.SURFACE_WHITE);
+    JPanel content = new JPanel(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
+    content.setBackground(ChatTheme.SURFACE_WHITE);
     content.add(heading, BorderLayout.NORTH);
     content.add(new JScrollPane(form), BorderLayout.CENTER);
     content.add(actions, BorderLayout.SOUTH);
@@ -192,11 +192,11 @@ public final class RegistrationDialog extends JPanel {
 
   private void addField(JPanel form, String labelText, JTextField field) {
     JLabel label = new JLabel(labelText);
-    label.setFont(UserUiTheme.FONT_BODY_BOLD);
-    label.setForeground(UserUiTheme.TEXT_SECONDARY);
+    label.setFont(ChatTheme.FONT_BODY_BOLD);
+    label.setForeground(ChatTheme.TEXT_SECONDARY);
     form.add(label);
     form.add(field);
-    form.add(javax.swing.Box.createVerticalStrut(UserUiTheme.SPACE_SM));
+    form.add(javax.swing.Box.createVerticalStrut(ChatTheme.SPACE_SM));
   }
 
   private void cancelRegistration() {

@@ -66,7 +66,7 @@ class GroupsPanelTest {
                 new GroupMember(other, GroupMember.Role.MEMBER)),
             List.of());
     GroupMembersDialog dialog =
-        new GroupMembersDialog(group, List.of(creator, other), (member, action) -> false);
+        new GroupMembersDialog(group, creator, List.of(creator, other), (member, action) -> false);
 
     assertTrue(dialog.performMemberAction("member", GroupMembersDialog.MemberAction.TOGGLE_ADMIN));
     assertEquals(GroupMember.Role.ADMIN, group.members().get(1).role());
@@ -88,7 +88,8 @@ class GroupsPanelTest {
                 new GroupMember(other, GroupMember.Role.MEMBER)),
             List.of());
     GroupMembersDialog dialog =
-        new GroupMembersDialog(group, List.of(creator, other, added), (member, action) -> true);
+        new GroupMembersDialog(
+            group, creator, List.of(creator, other, added), (member, action) -> true);
     dialog.getAddMemberSelector().setSelectedItem(added);
 
     dialog.addSelectedMember();
@@ -96,6 +97,30 @@ class GroupsPanelTest {
     assertTrue(group.containsMember("added"));
     assertTrue(dialog.performMemberAction("member", GroupMembersDialog.MemberAction.REMOVE));
     assertFalse(group.containsMember("member"));
+  }
+
+  @Test
+  void nonAdministratorCannotChangeGroupMembers() {
+    UserProfile creator = profile("creator", "Creator");
+    UserProfile member = profile("member", "Member");
+    UserProfile added = profile("added", "Added");
+    GroupConversation group =
+        new GroupConversation(
+            "group-1",
+            "Sample group",
+            List.of(
+                new GroupMember(creator, GroupMember.Role.ADMIN),
+                new GroupMember(member, GroupMember.Role.MEMBER)),
+            List.of());
+    GroupMembersDialog dialog =
+        new GroupMembersDialog(group, member, List.of(creator, member, added), (user, action) -> true);
+    dialog.getAddMemberSelector().setSelectedItem(added);
+
+    dialog.addSelectedMember();
+
+    assertFalse(group.containsMember("added"));
+    assertFalse(dialog.performMemberAction("creator", GroupMembersDialog.MemberAction.REMOVE));
+    assertEquals(2, group.members().size());
   }
 
   @Test

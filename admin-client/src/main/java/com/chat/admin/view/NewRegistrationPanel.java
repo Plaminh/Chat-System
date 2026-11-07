@@ -1,5 +1,6 @@
 package com.chat.admin.view;
 
+import com.chat.common.ui.ChatTheme;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.model.AdminUser;
 import java.awt.BorderLayout;
@@ -42,11 +43,11 @@ public final class NewRegistrationPanel extends JPanel {
 
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField nameSearchField =
-      AdminUIStyle.createSearchField("Filter by full name or username...", 18);
-  private final JTextField startDateField = AdminUIStyle.createDateField("2025/01/01");
-  private final JTextField endDateField = AdminUIStyle.createDateField("2025/12/31");
+      ChatTheme.createSearchField("Filter by full name or username...", 18);
+  private final JTextField startDateField = AdminUIComponents.createDateField("2025-01-01");
+  private final JTextField endDateField = AdminUIComponents.createDateField("2025-12-31");
   private final JComboBox<String> sortCombo =
-      AdminUIStyle.createComboBox(
+      ChatTheme.createComboBox(
           new String[] {
             "Sort: Created Time (Newest First)",
             "Sort: Created Time (Oldest First)",
@@ -65,12 +66,12 @@ public final class NewRegistrationPanel extends JPanel {
 
   private final JLabel matchingRegistrationsValueLabel = new JLabel("0 accounts");
   private final JLabel activeSignupsValueLabel = new JLabel("0 active");
-  private final JLabel activeDateWindowValueLabel = new JLabel("2025/01/01 → 2025/12/31");
+  private final JLabel activeDateWindowValueLabel = new JLabel("2025-01-01 → 2025-12-31");
   private final JLabel footerSummaryLabel = new JLabel("Showing 0 newly registered accounts");
 
   public NewRegistrationPanel() {
     setLayout(new BorderLayout(0, 14));
-    setBackground(AdminUIStyle.CANVAS_BG);
+    setBackground(ChatTheme.CANVAS_BG);
 
     JPanel topSection = new JPanel(new BorderLayout(0, 12));
     topSection.setOpaque(false);
@@ -91,19 +92,19 @@ public final class NewRegistrationPanel extends JPanel {
     row.setOpaque(false);
 
     row.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "Registrations in Period",
             matchingRegistrationsValueLabel,
             "New accounts matching selected date window",
-            AdminUIStyle.PRIMARY));
+            ChatTheme.PRIMARY));
     row.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "Active New Accounts",
             activeSignupsValueLabel,
             "Unlocked accounts among filtered signups",
-            AdminUIStyle.SUCCESS_DOT));
+            ChatTheme.SUCCESS_DOT));
     row.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "Selected Time Window",
             activeDateWindowValueLabel,
             "Inclusive Start Date → End Date filter",
@@ -112,44 +113,44 @@ public final class NewRegistrationPanel extends JPanel {
   }
 
   private JPanel buildFilterToolbar() {
-    JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(0, 10));
+    JPanel card = ChatTheme.createCardPanel(new BorderLayout(0, 10));
 
     // Top row: Date range inputs + quick range presets
     JPanel dateRow = new JPanel(new BorderLayout(10, 4));
     dateRow.setOpaque(false);
 
-    JPanel leftDateControls = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
+    JPanel leftDateControls = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
     leftDateControls.setOpaque(false);
 
     JLabel startLbl = new JLabel("Start Date:");
-    startLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    startLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    startLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    startLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
     JLabel endLbl = new JLabel("End Date:");
-    endLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    endLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    endLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    endLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
     leftDateControls.add(startLbl);
     leftDateControls.add(startDateField);
     leftDateControls.add(endLbl);
     leftDateControls.add(endDateField);
 
-    JPanel rightPresets = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.RIGHT, 6, 2));
+    JPanel rightPresets = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.RIGHT, 6, 2));
     rightPresets.setOpaque(false);
 
     JLabel presetLbl = new JLabel("Quick Presets:");
-    presetLbl.setFont(AdminUIStyle.FONT_SMALL);
-    presetLbl.setForeground(AdminUIStyle.TEXT_MUTED);
+    presetLbl.setFont(ChatTheme.FONT_SMALL);
+    presetLbl.setForeground(ChatTheme.TEXT_MUTED);
 
-    JButton q1Btn = AdminUIStyle.createSecondaryButton("Q1 2025");
-    q1Btn.addActionListener(e -> setDateRange("2025/01/01", "2025/03/31"));
+    JButton q1Btn = ChatTheme.createSecondaryButton("Q1 2025");
+    q1Btn.addActionListener(e -> setDateRange("2025-01-01", "2025-03-31"));
 
-    JButton mayBtn = AdminUIStyle.createSecondaryButton("May 2025");
-    mayBtn.addActionListener(e -> setDateRange("2025/05/01", "2025/05/31"));
+    JButton mayBtn = ChatTheme.createSecondaryButton("May 2025");
+    mayBtn.addActionListener(e -> setDateRange("2025-05-01", "2025-05-31"));
 
-    JButton fullYearBtn = AdminUIStyle.createSecondaryButton("All 2025–2026");
+    JButton fullYearBtn = ChatTheme.createSecondaryButton("All 2025–2026");
     fullYearBtn.addActionListener(
-        e -> setDateRange("2025/01/01", LocalDate.now().format(AdminUIStyle.DATE_FMT)));
+        e -> setDateRange("2025-01-01", LocalDate.now().format(ChatTheme.DATE_FMT)));
 
     rightPresets.add(presetLbl);
     rightPresets.add(q1Btn);
@@ -163,23 +164,23 @@ public final class NewRegistrationPanel extends JPanel {
     JPanel searchSortRow = new JPanel(new BorderLayout(10, 4));
     searchSortRow.setOpaque(false);
 
-    JPanel leftSearch = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
+    JPanel leftSearch = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
     leftSearch.setOpaque(false);
     JLabel nameLbl = new JLabel("Filter by Name:");
-    nameLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    nameLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    nameLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    nameLbl.setForeground(ChatTheme.TEXT_SECONDARY);
     leftSearch.add(nameLbl);
     leftSearch.add(nameSearchField);
 
     JPanel rightSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightSort.setOpaque(false);
 
-    JButton resetBtn = AdminUIStyle.createSecondaryButton("Reset All");
+    JButton resetBtn = ChatTheme.createSecondaryButton("Reset All");
     resetBtn.addActionListener(
         e -> {
           nameSearchField.setText("");
-          startDateField.setText("2025/01/01");
-          endDateField.setText(LocalDate.now().format(AdminUIStyle.DATE_FMT));
+          startDateField.setText("2025-01-01");
+          endDateField.setText(LocalDate.now().format(ChatTheme.DATE_FMT));
           sortCombo.setSelectedIndex(0);
           applyFiltersAndRefresh(false);
         });
@@ -197,9 +198,9 @@ public final class NewRegistrationPanel extends JPanel {
 
   private JPanel buildTableCard() {
     JPanel card = new JPanel(new BorderLayout());
-    card.setBackground(AdminUIStyle.SURFACE_WHITE);
+    card.setBackground(ChatTheme.SURFACE_WHITE);
 
-    AdminUIStyle.styleTable(registrationTable);
+    AdminUIComponents.styleTable(registrationTable);
     registrationTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     registrationTable.getColumnModel().getColumn(0).setPreferredWidth(115);
     registrationTable.getColumnModel().getColumn(1).setPreferredWidth(140);
@@ -212,22 +213,22 @@ public final class NewRegistrationPanel extends JPanel {
     registrationTable
         .getColumnModel()
         .getColumn(7)
-        .setCellRenderer(AdminUIStyle.createStatusBadgeRenderer());
+        .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
-    card.add(AdminUIStyle.wrapTableInScrollPane(registrationTable), BorderLayout.CENTER);
+    card.add(AdminUIComponents.wrapTableInScrollPane(registrationTable), BorderLayout.CENTER);
     return card;
   }
 
   private JPanel buildFooterSummaryBar() {
     JPanel bar = new JPanel(new BorderLayout(12, 0));
-    bar.setBackground(AdminUIStyle.SURFACE_WHITE);
+    bar.setBackground(ChatTheme.SURFACE_WHITE);
     bar.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(AdminUIStyle.BORDER_COLOR, 1, true),
+            BorderFactory.createLineBorder(ChatTheme.BORDER, 1, true),
             BorderFactory.createEmptyBorder(9, 16, 9, 16)));
 
-    footerSummaryLabel.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    footerSummaryLabel.setForeground(AdminUIStyle.TEXT_PRIMARY);
+    footerSummaryLabel.setFont(ChatTheme.FONT_BODY_BOLD);
+    footerSummaryLabel.setForeground(ChatTheme.TEXT_PRIMARY);
 
     bar.add(footerSummaryLabel, BorderLayout.CENTER);
     return bar;
@@ -260,24 +261,24 @@ public final class NewRegistrationPanel extends JPanel {
     nameSearchField.getDocument().addDocumentListener(docListener);
     startDateField.getDocument().addDocumentListener(docListener);
     endDateField.getDocument().addDocumentListener(docListener);
-    AdminUIStyle.attachDateFieldValidationTriggers(
+    AdminUIComponents.attachDateFieldValidationTriggers(
         startDateField, () -> applyFiltersAndRefresh(true));
-    AdminUIStyle.attachDateFieldValidationTriggers(
+    AdminUIComponents.attachDateFieldValidationTriggers(
         endDateField, () -> applyFiltersAndRefresh(true));
     sortCombo.addActionListener(e -> applyFiltersAndRefresh(false));
   }
 
   private void applyFiltersAndRefresh(boolean showValidationAlert) {
     LocalDate[] dateRange =
-        AdminUIStyle.parseAndValidateDateRange(
+        AdminUIComponents.parseAndValidateDateRange(
             this, startDateField, endDateField, showValidationAlert);
     if (dateRange == null) {
       return;
     }
     LocalDate startDate = dateRange[0];
     LocalDate endDate = dateRange[1];
-    String startText = startDate == null ? "" : startDate.format(AdminUIStyle.DATE_FMT);
-    String endText = endDate == null ? "" : endDate.format(AdminUIStyle.DATE_FMT);
+    String startText = startDate == null ? "" : startDate.format(ChatTheme.DATE_FMT);
+    String endText = endDate == null ? "" : endDate.format(ChatTheme.DATE_FMT);
 
     String query =
         nameSearchField.getText() == null ? "" : nameSearchField.getText().trim().toLowerCase();
@@ -324,9 +325,9 @@ public final class NewRegistrationPanel extends JPanel {
             user.getFullName(),
             user.getEmail(),
             user.getGender(),
-            user.getDateOfBirth().format(AdminUIStyle.DATE_FMT),
+            user.getDateOfBirth().format(ChatTheme.DATE_FMT),
             user.getAddress(),
-            user.getCreatedAt().format(AdminUIStyle.DATETIME_FMT),
+            user.getCreatedAt().format(ChatTheme.DATETIME_FMT),
             user.isLocked() ? "Locked" : "Active"
           });
     }

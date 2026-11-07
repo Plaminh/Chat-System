@@ -29,10 +29,10 @@ description: "Task list for Admin Client User Interface (Version 1)"
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-**Purpose**: Ensure package structure and shared UI theme/icon utilities exist inside `admin-client`.
+**Purpose**: Ensure Admin package structure and shared UI theme/icon utilities are available.
 
 - [x] T001 Verify `admin-client` Maven dependencies (`flatlaf`, `jfreechart`) and package directories (`model`, `view`, `chart`) in `admin-client/pom.xml`
-- [x] T002 [P] Implement Desktop Admin Studio color palette (`#0F172A` sidebar, `#F8FAFC` canvas, `#FFFFFF` surface, `#3B82F6` primary, `#10B981` active emerald, `#EF4444` locked rose), typography tokens (`Inter`/`SansSerif`), programmatic Java2D vector icons, and status pill `TableCellRenderer` in `admin-client/src/main/java/com/chat/admin/view/AdminUIStyle.java`
+- [x] T002 [P] Use shared color and typography tokens from `common/src/main/java/com/chat/common/ui/ChatTheme.java`; keep Admin vector icons and status pill `TableCellRenderer` in `admin-client/src/main/java/com/chat/admin/view/AdminUIComponents.java`
 
 ---
 

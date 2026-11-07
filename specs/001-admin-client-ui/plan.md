@@ -75,7 +75,7 @@ admin-client/
     │   │   │   ├── SpamReportRecord.java             # Spam report incident model
     │   │   │   └── AdminMockDataStore.java           # Centralized realistic mock dataset & state operations
     │   │   ├── view/
-    │   │   │   ├── AdminUIStyle.java                 # Shared colors, fonts, vector icons, badge renderers
+    │   │   │   ├── AdminUIComponents.java            # Admin-only vector icons, badge renderers, and table/date helpers
     │   │   │   ├── AdminMainFrame.java               # [Screen 1/Task 1] Main shell with dark sidebar & CardLayout
     │   │   │   ├── AdminLoginDialog.java             # [Screen 2/Task 2] Admin login modal dialog with validation
     │   │   │   ├── UserManagementPanel.java          # [Screen 3/Task 3] User CRUD, Lock/Unlock, Password reset
@@ -93,6 +93,8 @@ admin-client/
     │       └── images/
     └── test/
         └── java/com/chat/admin/
+common/
+└── src/main/java/com/chat/common/ui/ChatTheme.java  # Shared Admin/User design tokens and Swing primitives
 ```
 
 **Structure Decision**: Multi-module Maven desktop client structure inside `admin-client/src/main/java/com/chat/admin/` (`model`, `view`, `chart`) as defined by the repository layout and `docs/Plan_Admin_UI_Version_1.md`.

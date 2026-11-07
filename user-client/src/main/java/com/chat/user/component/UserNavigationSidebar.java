@@ -1,11 +1,13 @@
 package com.chat.user.component;
 
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.view.UserMainFrame.Destination;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -36,9 +38,9 @@ public final class UserNavigationSidebar extends JPanel {
   public UserNavigationSidebar(
       String displayName, String username, Consumer<Destination> navigationListener) {
     super(new BorderLayout());
-    setBackground(UserUiTheme.SIDEBAR_BG);
-    setPreferredSize(new Dimension(UserUiTheme.SIDEBAR_WIDTH, 0));
-    setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, UserUiTheme.SIDEBAR_DIVIDER));
+    setBackground(ChatTheme.SIDEBAR_BG);
+    setPreferredSize(new Dimension(ChatTheme.SIDEBAR_WIDTH, 0));
+    setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, ChatTheme.SIDEBAR_DIVIDER));
 
     add(buildBrandAndProfile(displayName, username), BorderLayout.NORTH);
     add(buildNavigation(navigationListener), BorderLayout.CENTER);
@@ -62,21 +64,21 @@ public final class UserNavigationSidebar extends JPanel {
   private JPanel buildBrandAndProfile(String displayName, String username) {
     JPanel top = new JPanel();
     top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
-    top.setBackground(UserUiTheme.SIDEBAR_BG);
+    top.setBackground(ChatTheme.SIDEBAR_BG);
     top.setBorder(BorderFactory.createEmptyBorder(18, 16, 12, 16));
 
     JPanel brandRow = new JPanel(new BorderLayout());
-    brandRow.setBackground(UserUiTheme.SIDEBAR_BG);
+    brandRow.setBackground(ChatTheme.SIDEBAR_BG);
     JLabel brand = new JLabel("ChatUser");
     brand.setFont(new Font("SansSerif", Font.BOLD, 17));
     brand.setForeground(Color.WHITE);
     brand.setIcon(
-        UserUiTheme.createNavigationIcon(
-            UserUiTheme.NavigationIcon.CHAT, new Color(0x60A5FA), 18));
+        ChatTheme.createNavigationIcon(
+            ChatTheme.NavigationIcon.CHAT, new Color(0x60A5FA), 18));
     brand.setIconTextGap(8);
 
     JLabel version = new JLabel("v1.0");
-    version.setFont(UserUiTheme.FONT_SECTION);
+    version.setFont(ChatTheme.FONT_SECTION);
     version.setForeground(new Color(0x93C5FD));
     version.setBorder(
         BorderFactory.createCompoundBorder(
@@ -93,7 +95,7 @@ public final class UserNavigationSidebar extends JPanel {
           protected void paintComponent(java.awt.Graphics graphics) {
             Graphics2D g = (Graphics2D) graphics.create();
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g.setColor(UserUiTheme.SIDEBAR_HOVER);
+            g.setColor(ChatTheme.SIDEBAR_HOVER);
             g.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
             g.dispose();
             super.paintComponent(graphics);
@@ -110,7 +112,7 @@ public final class UserNavigationSidebar extends JPanel {
           protected void paintComponent(Graphics graphics) {
             Graphics2D g = (Graphics2D) graphics.create();
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g.setColor(UserUiTheme.PRIMARY);
+            g.setColor(ChatTheme.PRIMARY);
             g.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6);
             g.dispose();
             super.paintComponent(graphics);
@@ -118,19 +120,23 @@ public final class UserNavigationSidebar extends JPanel {
         };
     avatar.setPreferredSize(new Dimension(32, 32));
     avatar.setForeground(Color.WHITE);
-    avatar.setFont(UserUiTheme.FONT_BODY_BOLD);
+    avatar.setFont(ChatTheme.FONT_BODY_BOLD);
     avatar.setOpaque(false);
 
     JPanel profileText = new JPanel();
     profileText.setLayout(new BoxLayout(profileText, BoxLayout.Y_AXIS));
     profileText.setOpaque(false);
     JLabel name = new JLabel(displayName);
-    name.setFont(UserUiTheme.FONT_SMALL);
+    name.setFont(ChatTheme.FONT_SMALL);
     name.setForeground(Color.WHITE);
     name.setToolTipText(displayName + " (@" + username + ")");
+    name.setText(fitText(displayName, name.getFont(), 142));
+    name.setMaximumSize(new Dimension(142, 18));
     JLabel status = new JLabel("● Online Session");
     status.setFont(new Font("SansSerif", Font.BOLD, 11));
-    status.setForeground(UserUiTheme.SUCCESS);
+    status.setForeground(ChatTheme.SUCCESS);
+    status.setToolTipText("Online Session");
+    status.setMaximumSize(new Dimension(142, 18));
     profileText.add(name);
     profileText.add(status);
 
@@ -143,7 +149,7 @@ public final class UserNavigationSidebar extends JPanel {
   private JPanel buildNavigation(Consumer<Destination> navigationListener) {
     JPanel navList = new JPanel();
     navList.setLayout(new BoxLayout(navList, BoxLayout.Y_AXIS));
-    navList.setBackground(UserUiTheme.SIDEBAR_BG);
+    navList.setBackground(ChatTheme.SIDEBAR_BG);
     navList.setBorder(BorderFactory.createEmptyBorder(8, 12, 12, 12));
 
     navList.add(createSectionLabel("M E S S A G I N G"));
@@ -165,20 +171,20 @@ public final class UserNavigationSidebar extends JPanel {
 
   private JPanel buildFooter() {
     JPanel footer = new JPanel(new BorderLayout());
-    footer.setBackground(UserUiTheme.SIDEBAR_BG);
+    footer.setBackground(ChatTheme.SIDEBAR_BG);
     footer.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(1, 0, 0, 0, UserUiTheme.SIDEBAR_DIVIDER),
+            BorderFactory.createMatteBorder(1, 0, 0, 0, ChatTheme.SIDEBAR_DIVIDER),
             BorderFactory.createEmptyBorder(12, 12, 14, 12)));
 
-    signOutButton.setFont(UserUiTheme.FONT_BODY_BOLD);
+    signOutButton.setFont(ChatTheme.FONT_BODY_BOLD);
     signOutButton.setHorizontalAlignment(SwingConstants.LEFT);
     signOutButton.setIcon(
-        UserUiTheme.createNavigationIcon(
-            UserUiTheme.NavigationIcon.LOGOUT, UserUiTheme.DANGER_SOFT, 16));
+        ChatTheme.createNavigationIcon(
+            ChatTheme.NavigationIcon.LOGOUT, ChatTheme.DANGER_SOFT, 16));
     signOutButton.setIconTextGap(10);
-    signOutButton.setBackground(UserUiTheme.SIDEBAR_HOVER);
-    signOutButton.setForeground(UserUiTheme.DANGER_SOFT);
+    signOutButton.setBackground(ChatTheme.SIDEBAR_HOVER);
+    signOutButton.setForeground(ChatTheme.DANGER_SOFT);
     signOutButton.setFocusPainted(false);
     signOutButton.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
     signOutButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -188,7 +194,7 @@ public final class UserNavigationSidebar extends JPanel {
 
   private JLabel createSectionLabel(String text) {
     JLabel label = new JLabel(text);
-    label.setFont(UserUiTheme.FONT_SECTION);
+    label.setFont(ChatTheme.FONT_SECTION);
     label.setForeground(SECTION_TEXT);
     label.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 4));
     label.setAlignmentX(LEFT_ALIGNMENT);
@@ -197,7 +203,7 @@ public final class UserNavigationSidebar extends JPanel {
 
   private JButton createNavigationButton(Destination destination) {
     JButton button = new JButton(destination.label());
-    button.setFont(UserUiTheme.FONT_BODY);
+    button.setFont(ChatTheme.FONT_BODY);
     button.setHorizontalAlignment(SwingConstants.LEFT);
     button.setIconTextGap(10);
     button.setFocusPainted(false);
@@ -211,14 +217,14 @@ public final class UserNavigationSidebar extends JPanel {
           @Override
           public void mouseEntered(MouseEvent event) {
             if (destination != activeDestination) {
-              button.setBackground(UserUiTheme.SIDEBAR_HOVER);
+              button.setBackground(ChatTheme.SIDEBAR_HOVER);
             }
           }
 
           @Override
           public void mouseExited(MouseEvent event) {
             if (destination != activeDestination) {
-              button.setBackground(UserUiTheme.SIDEBAR_BG);
+              button.setBackground(ChatTheme.SIDEBAR_BG);
             }
           }
         });
@@ -229,23 +235,23 @@ public final class UserNavigationSidebar extends JPanel {
     for (Map.Entry<Destination, JButton> entry : buttons.entrySet()) {
       boolean active = entry.getKey() == activeDestination;
       JButton button = entry.getValue();
-      button.setBackground(active ? UserUiTheme.PRIMARY : UserUiTheme.SIDEBAR_BG);
+      button.setBackground(active ? ChatTheme.PRIMARY : ChatTheme.SIDEBAR_BG);
       button.setForeground(active ? Color.WHITE : NAV_TEXT);
-      button.setFont(active ? UserUiTheme.FONT_BODY_BOLD : UserUiTheme.FONT_BODY);
-      UserUiTheme.NavigationIcon iconType = iconFor(entry.getKey());
+      button.setFont(active ? ChatTheme.FONT_BODY_BOLD : ChatTheme.FONT_BODY);
+      ChatTheme.NavigationIcon iconType = iconFor(entry.getKey());
       button.setIcon(
-          UserUiTheme.createNavigationIcon(
+          ChatTheme.createNavigationIcon(
               iconType, active ? Color.WHITE : NAV_ICON, 16));
     }
   }
 
-  private UserUiTheme.NavigationIcon iconFor(Destination destination) {
+  private ChatTheme.NavigationIcon iconFor(Destination destination) {
     return switch (destination) {
-      case CHATS -> UserUiTheme.NavigationIcon.CHAT;
-      case FRIENDS -> UserUiTheme.NavigationIcon.FRIENDS;
-      case REQUESTS -> UserUiTheme.NavigationIcon.REQUESTS;
-      case GROUPS -> UserUiTheme.NavigationIcon.GROUPS;
-      case PROFILE -> UserUiTheme.NavigationIcon.PROFILE;
+      case CHATS -> ChatTheme.NavigationIcon.CHAT;
+      case FRIENDS -> ChatTheme.NavigationIcon.FRIENDS;
+      case REQUESTS -> ChatTheme.NavigationIcon.REQUESTS;
+      case GROUPS -> ChatTheme.NavigationIcon.GROUPS;
+      case PROFILE -> ChatTheme.NavigationIcon.PROFILE;
     };
   }
 
@@ -256,5 +262,18 @@ public final class UserNavigationSidebar extends JPanel {
     }
     return (parts[0].substring(0, 1) + parts[parts.length - 1].substring(0, 1))
         .toUpperCase(java.util.Locale.ROOT);
+  }
+
+  private String fitText(String text, Font font, int width) {
+    FontMetrics metrics = getFontMetrics(font);
+    if (metrics.stringWidth(text) <= width) {
+      return text;
+    }
+    String ellipsis = "...";
+    int end = text.length();
+    while (end > 0 && metrics.stringWidth(text.substring(0, end) + ellipsis) > width) {
+      end--;
+    }
+    return text.substring(0, end) + ellipsis;
   }
 }

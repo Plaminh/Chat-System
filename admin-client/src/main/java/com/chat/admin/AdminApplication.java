@@ -1,5 +1,6 @@
 package com.chat.admin;
 
+import com.chat.common.ui.ChatTheme;
 import com.chat.admin.view.AdminLoginDialog;
 import com.chat.admin.view.AdminMainFrame;
 import com.formdev.flatlaf.FlatLightLaf;
@@ -11,6 +12,7 @@ public final class AdminApplication {
 
   public static void main(String[] args) {
     FlatLightLaf.setup();
+    ChatTheme.applyGlobalDefaults();
     SwingUtilities.invokeLater(AdminApplication::launchAdminFlow);
   }
 

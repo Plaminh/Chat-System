@@ -1,6 +1,6 @@
 package com.chat.user.view;
 
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,7 +16,7 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 public final class PasswordRecoveryDialog extends JPanel {
-  private final JTextField emailField = UserUiTheme.createTextField(30);
+  private final JTextField emailField = ChatTheme.createTextField(30);
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.CENTER);
   private JDialog dialog;
   private boolean requestSubmitted;
@@ -52,66 +52,66 @@ public final class PasswordRecoveryDialog extends JPanel {
   void submitRecoveryRequest() {
     String email = emailField.getText().trim();
     if (email.isEmpty()) {
-      showFeedback("Enter your email address.", UserUiTheme.DANGER);
+      showFeedback("Enter your email address.", ChatTheme.DANGER);
       return;
     }
     if (!isValidEmail(email)) {
-      showFeedback("Enter a valid email address.", UserUiTheme.DANGER);
+      showFeedback("Enter a valid email address.", ChatTheme.DANGER);
       return;
     }
 
     requestSubmitted = true;
     showFeedback(
         "Sample request recorded; no email or password was sent.",
-        UserUiTheme.SUCCESS);
+        ChatTheme.SUCCESS);
   }
 
   private void buildContent() {
-    setBackground(UserUiTheme.SURFACE_WHITE);
+    setBackground(ChatTheme.SURFACE_WHITE);
     setBorder(
         BorderFactory.createEmptyBorder(
-            UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG));
+            ChatTheme.SPACE_LG, ChatTheme.SPACE_LG, ChatTheme.SPACE_MD, ChatTheme.SPACE_LG));
 
     JLabel title = new JLabel("Password Recovery", SwingConstants.CENTER);
-    title.setFont(UserUiTheme.FONT_TITLE);
-    title.setForeground(UserUiTheme.TEXT_PRIMARY);
+    title.setFont(ChatTheme.FONT_TITLE);
+    title.setForeground(ChatTheme.TEXT_PRIMARY);
     JLabel description =
         new JLabel(
             "Enter the email linked to your account to view a sample response.",
             SwingConstants.CENTER);
-    description.setFont(UserUiTheme.FONT_BODY);
-    description.setForeground(UserUiTheme.TEXT_MUTED);
+    description.setFont(ChatTheme.FONT_BODY);
+    description.setForeground(ChatTheme.TEXT_MUTED);
 
     JLabel emailLabel = new JLabel("Email address");
-    emailLabel.setFont(UserUiTheme.FONT_BODY_BOLD);
-    emailLabel.setForeground(UserUiTheme.TEXT_SECONDARY);
-    JPanel form = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+    emailLabel.setFont(ChatTheme.FONT_BODY_BOLD);
+    emailLabel.setForeground(ChatTheme.TEXT_SECONDARY);
+    JPanel form = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
     form.setOpaque(false);
     form.add(emailLabel, BorderLayout.NORTH);
     form.add(emailField, BorderLayout.CENTER);
 
-    feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
-    feedbackLabel.setForeground(UserUiTheme.DANGER);
+    feedbackLabel.setFont(ChatTheme.FONT_SMALL);
+    feedbackLabel.setForeground(ChatTheme.DANGER);
 
-    JButton cancelButton = UserUiTheme.createSecondaryButton("Back to Sign In");
+    JButton cancelButton = ChatTheme.createSecondaryButton("Back to Sign In");
     cancelButton.addActionListener(event -> closeDialog());
-    JButton submitButton = UserUiTheme.createPrimaryButton("Send Sample Request");
+    JButton submitButton = ChatTheme.createPrimaryButton("Send Sample Request");
     submitButton.addActionListener(event -> submitRecoveryRequest());
-    JPanel actions = new JPanel(new FlowLayout(FlowLayout.CENTER, UserUiTheme.SPACE_SM, 0));
+    JPanel actions = new JPanel(new FlowLayout(FlowLayout.CENTER, ChatTheme.SPACE_SM, 0));
     actions.setOpaque(false);
     actions.add(cancelButton);
     actions.add(submitButton);
 
-    JPanel content = new JPanel(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    JPanel content = new JPanel(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     content.setOpaque(false);
-    JPanel heading = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+    JPanel heading = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
     heading.setOpaque(false);
     heading.add(title, BorderLayout.NORTH);
     heading.add(description, BorderLayout.SOUTH);
     content.add(heading, BorderLayout.NORTH);
     content.add(form, BorderLayout.CENTER);
 
-    JPanel footer = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+    JPanel footer = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
     footer.setOpaque(false);
     footer.add(feedbackLabel, BorderLayout.NORTH);
     footer.add(actions, BorderLayout.SOUTH);

@@ -1,7 +1,8 @@
 package com.chat.admin.view;
 
+import com.chat.common.ui.ChatTheme;
 import com.chat.admin.controller.AdminAuthController;
-import com.chat.admin.view.AdminUIStyle.NavIconType;
+import com.chat.admin.view.AdminUIComponents.NavIconType;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -43,7 +44,7 @@ public final class AdminLoginDialog extends JDialog {
 
   public AdminLoginDialog(Frame owner) {
     super(owner, "Chat Admin Console — Authentication", true);
-    AdminUIStyle.applyGlobalThemeDefaults();
+    ChatTheme.applyGlobalDefaults();
     initDialogLayout();
   }
 
@@ -62,8 +63,8 @@ public final class AdminLoginDialog extends JDialog {
     setResizable(false);
 
     JPanel root = new JPanel(new BorderLayout());
-    root.setBackground(AdminUIStyle.SURFACE_WHITE);
-    root.setBorder(BorderFactory.createLineBorder(AdminUIStyle.BORDER_COLOR, 1));
+    root.setBackground(ChatTheme.SURFACE_WHITE);
+    root.setBorder(BorderFactory.createLineBorder(ChatTheme.BORDER, 1));
 
     root.add(buildTopHeaderBanner(), BorderLayout.NORTH);
     root.add(buildFormCenter(), BorderLayout.CENTER);
@@ -80,17 +81,17 @@ public final class AdminLoginDialog extends JDialog {
 
   private JPanel buildTopHeaderBanner() {
     JPanel topBar = new JPanel(new BorderLayout());
-    topBar.setBackground(AdminUIStyle.SIDEBAR_BG);
+    topBar.setBackground(ChatTheme.SIDEBAR_BG);
     topBar.setBorder(BorderFactory.createEmptyBorder(10, 16, 10, 16));
 
     JLabel barTitle = new JLabel("Chat Admin Console — Gateway Authentication");
-    barTitle.setFont(AdminUIStyle.FONT_SMALL);
+    barTitle.setFont(ChatTheme.FONT_SMALL);
     barTitle.setForeground(new Color(0xE2E8F0));
-    barTitle.setIcon(AdminUIStyle.createVectorIcon(NavIconType.SHIELD, new Color(0x60A5FA), 14));
+    barTitle.setIcon(AdminUIComponents.createVectorIcon(NavIconType.SHIELD, new Color(0x60A5FA), 14));
     barTitle.setIconTextGap(8);
 
     JLabel versionTag = new JLabel("v1.0-FlatLaf");
-    versionTag.setFont(AdminUIStyle.FONT_MONO);
+    versionTag.setFont(ChatTheme.FONT_MONO);
     versionTag.setForeground(new Color(0x93C5FD));
 
     topBar.add(barTitle, BorderLayout.WEST);
@@ -101,31 +102,31 @@ public final class AdminLoginDialog extends JDialog {
   private JPanel buildFormCenter() {
     JPanel center = new JPanel();
     center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
-    center.setBackground(AdminUIStyle.SURFACE_WHITE);
+    center.setBackground(ChatTheme.SURFACE_WHITE);
     center.setBorder(BorderFactory.createEmptyBorder(22, 32, 16, 32));
 
     // Shield Hero Icon Badge
     JPanel iconBadge = new JPanel(new BorderLayout());
     iconBadge.setPreferredSize(new Dimension(52, 52));
     iconBadge.setMaximumSize(new Dimension(52, 52));
-    iconBadge.setBackground(AdminUIStyle.PRIMARY_SOFT_BG);
+    iconBadge.setBackground(ChatTheme.PRIMARY_SOFT_BG);
     iconBadge.setBorder(BorderFactory.createLineBorder(new Color(0xBFDBFE), 1, true));
     JLabel shieldIcon =
         new JLabel(
-            AdminUIStyle.createVectorIcon(NavIconType.SHIELD, AdminUIStyle.PRIMARY, 24),
+            AdminUIComponents.createVectorIcon(NavIconType.SHIELD, ChatTheme.PRIMARY, 24),
             SwingConstants.CENTER);
     iconBadge.add(shieldIcon, BorderLayout.CENTER);
     iconBadge.setAlignmentX(Component.CENTER_ALIGNMENT);
 
     JLabel titleLabel = new JLabel("Chat Admin Console", SwingConstants.CENTER);
     titleLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
-    titleLabel.setForeground(AdminUIStyle.TEXT_PRIMARY);
+    titleLabel.setForeground(ChatTheme.TEXT_PRIMARY);
     titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
     JLabel subtitleLabel =
         new JLabel("Sign in with administrator credentials to manage the system", SwingConstants.CENTER);
-    subtitleLabel.setFont(AdminUIStyle.FONT_SMALL);
-    subtitleLabel.setForeground(AdminUIStyle.TEXT_MUTED);
+    subtitleLabel.setFont(ChatTheme.FONT_SMALL);
+    subtitleLabel.setForeground(ChatTheme.TEXT_MUTED);
     subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
     center.add(iconBadge);
@@ -137,7 +138,7 @@ public final class AdminLoginDialog extends JDialog {
 
     // Form Fields Panel
     JPanel formGrid = new JPanel(new GridBagLayout());
-    formGrid.setBackground(AdminUIStyle.SURFACE_WHITE);
+    formGrid.setBackground(ChatTheme.SURFACE_WHITE);
     formGrid.setAlignmentX(Component.CENTER_ALIGNMENT);
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
@@ -149,14 +150,14 @@ public final class AdminLoginDialog extends JDialog {
     gbc.gridy = 0;
     gbc.insets = new Insets(0, 0, 5, 0);
     JLabel userLabel = new JLabel("Administrator Username");
-    userLabel.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    userLabel.setForeground(AdminUIStyle.TEXT_PRIMARY);
+    userLabel.setFont(ChatTheme.FONT_BODY_BOLD);
+    userLabel.setForeground(ChatTheme.TEXT_PRIMARY);
     formGrid.add(userLabel, gbc);
 
     // Username Input
     gbc.gridy = 1;
     gbc.insets = new Insets(0, 0, 14, 0);
-    usernameField.setFont(AdminUIStyle.FONT_BODY);
+    usernameField.setFont(ChatTheme.FONT_BODY);
     usernameField.setPreferredSize(new Dimension(360, 36));
     usernameField.putClientProperty("JTextField.placeholderText", "Enter admin username (e.g. admin)");
     formGrid.add(usernameField, gbc);
@@ -165,23 +166,23 @@ public final class AdminLoginDialog extends JDialog {
     gbc.gridy = 2;
     gbc.insets = new Insets(0, 0, 5, 0);
     JLabel passLabel = new JLabel("Password");
-    passLabel.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    passLabel.setForeground(AdminUIStyle.TEXT_PRIMARY);
+    passLabel.setFont(ChatTheme.FONT_BODY_BOLD);
+    passLabel.setForeground(ChatTheme.TEXT_PRIMARY);
     formGrid.add(passLabel, gbc);
 
     // Password Input + Show/Hide Toggle
     gbc.gridy = 3;
     gbc.insets = new Insets(0, 0, 10, 0);
     JPanel passRow = new JPanel(new BorderLayout(6, 0));
-    passRow.setBackground(AdminUIStyle.SURFACE_WHITE);
-    passwordField.setFont(AdminUIStyle.FONT_BODY);
+    passRow.setBackground(ChatTheme.SURFACE_WHITE);
+    passwordField.setFont(ChatTheme.FONT_BODY);
     passwordField.setPreferredSize(new Dimension(290, 36));
     passwordField.putClientProperty("JTextField.placeholderText", "Enter password");
     defaultEchoChar = passwordField.getEchoChar();
 
-    JButton toggleEchoBtn = AdminUIStyle.createSecondaryButton("Show");
+    JButton toggleEchoBtn = ChatTheme.createSecondaryButton("Show");
     toggleEchoBtn.setPreferredSize(new Dimension(68, 36));
-    toggleEchoBtn.setFont(AdminUIStyle.FONT_SMALL);
+    toggleEchoBtn.setFont(ChatTheme.FONT_SMALL);
     toggleEchoBtn.addActionListener(
         e -> {
           if (passwordField.getEchoChar() != (char) 0) {
@@ -200,14 +201,14 @@ public final class AdminLoginDialog extends JDialog {
     gbc.gridy = 4;
     gbc.insets = new Insets(0, 0, 8, 0);
     JPanel optionsRow = new JPanel(new BorderLayout());
-    optionsRow.setBackground(AdminUIStyle.SURFACE_WHITE);
-    rememberCheckBox.setFont(AdminUIStyle.FONT_SMALL);
-    rememberCheckBox.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    optionsRow.setBackground(ChatTheme.SURFACE_WHITE);
+    rememberCheckBox.setFont(ChatTheme.FONT_SMALL);
+    rememberCheckBox.setForeground(ChatTheme.TEXT_SECONDARY);
     rememberCheckBox.setOpaque(false);
 
     JButton hintBtn = new JButton("Demo Credentials?");
-    hintBtn.setFont(AdminUIStyle.FONT_SMALL);
-    hintBtn.setForeground(AdminUIStyle.PRIMARY);
+    hintBtn.setFont(ChatTheme.FONT_SMALL);
+    hintBtn.setForeground(ChatTheme.PRIMARY);
     hintBtn.setBorderPainted(false);
     hintBtn.setContentAreaFilled(false);
     hintBtn.setFocusPainted(false);
@@ -216,7 +217,7 @@ public final class AdminLoginDialog extends JDialog {
         e -> {
           usernameField.setText("admin");
           passwordField.setText("admin123");
-          errorLabel.setForeground(AdminUIStyle.SUCCESS_TEXT);
+          errorLabel.setForeground(ChatTheme.SUCCESS_TEXT);
           errorLabel.setText("✓ Filled default mock admin credentials (admin / admin123)");
         });
 
@@ -227,14 +228,14 @@ public final class AdminLoginDialog extends JDialog {
     // Error / Validation Label
     gbc.gridy = 5;
     gbc.insets = new Insets(0, 0, 10, 0);
-    errorLabel.setFont(AdminUIStyle.FONT_SMALL);
-    errorLabel.setForeground(AdminUIStyle.DANGER_TEXT);
+    errorLabel.setFont(ChatTheme.FONT_SMALL);
+    errorLabel.setForeground(ChatTheme.DANGER_TEXT);
     formGrid.add(errorLabel, gbc);
 
     // Primary Sign In Button
     gbc.gridy = 6;
     gbc.insets = new Insets(2, 0, 0, 0);
-    JButton signInBtn = AdminUIStyle.createPrimaryButton("Sign In to Admin Console  →");
+    JButton signInBtn = ChatTheme.createPrimaryButton("Sign In to Admin Console  →");
     signInBtn.setName("signInButton");
     signInBtn.setPreferredSize(new Dimension(360, 40));
     signInBtn.addActionListener(e -> attemptLogin());
@@ -246,7 +247,7 @@ public final class AdminLoginDialog extends JDialog {
 
   private JPanel buildSecurityFooter() {
     JPanel footer = new JPanel(new BorderLayout());
-    footer.setBackground(AdminUIStyle.PRIMARY_SOFT_BG);
+    footer.setBackground(ChatTheme.PRIMARY_SOFT_BG);
     footer.setBorder(
         BorderFactory.createCompoundBorder(
             BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(0xDBEAFE)),
@@ -256,8 +257,8 @@ public final class AdminLoginDialog extends JDialog {
         new JLabel(
             "Restricted Access  •  Chat Admin Console v1.0 (Mock: admin / admin123)",
             SwingConstants.CENTER);
-    lockNote.setFont(AdminUIStyle.FONT_SMALL);
-    lockNote.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    lockNote.setFont(ChatTheme.FONT_SMALL);
+    lockNote.setForeground(ChatTheme.TEXT_SECONDARY);
     footer.add(lockNote, BorderLayout.CENTER);
     return footer;
   }
@@ -285,7 +286,7 @@ public final class AdminLoginDialog extends JDialog {
 
     AdminAuthController.AuthResult result = authController.authenticate(username, password);
     if (!result.success()) {
-      errorLabel.setForeground(AdminUIStyle.DANGER_TEXT);
+      errorLabel.setForeground(ChatTheme.DANGER_TEXT);
       errorLabel.setText(result.errorMessage().contains("Authentication failed") ? "Invalid administrator username or password." : result.errorMessage());
       if (result.errorMessage().contains("username")) {
         usernameField.requestFocusInWindow();

@@ -1,5 +1,6 @@
 package com.chat.user.component;
 
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.model.ChatMessage;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -15,16 +16,16 @@ public final class MessageBubble extends JPanel {
   private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
   public MessageBubble(ChatMessage message, boolean ownMessage) {
-    super(new FlowLayout(ownMessage ? FlowLayout.RIGHT : FlowLayout.LEFT, 0, UserUiTheme.SPACE_XS));
+    super(new FlowLayout(ownMessage ? FlowLayout.RIGHT : FlowLayout.LEFT, 0, ChatTheme.SPACE_XS));
     putClientProperty("messageId", message.messageId());
-    Color background = ownMessage ? UserUiTheme.PRIMARY : UserUiTheme.SURFACE_WHITE;
-    Color foreground = ownMessage ? Color.WHITE : UserUiTheme.TEXT_PRIMARY;
+    Color background = ownMessage ? ChatTheme.PRIMARY : ChatTheme.SURFACE_WHITE;
+    Color foreground = ownMessage ? Color.WHITE : ChatTheme.TEXT_PRIMARY;
 
-    JPanel bubble = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+    JPanel bubble = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
     bubble.setBackground(background);
     bubble.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(ownMessage ? UserUiTheme.PRIMARY : UserUiTheme.BORDER),
+            BorderFactory.createLineBorder(ownMessage ? ChatTheme.PRIMARY : ChatTheme.BORDER),
             BorderFactory.createEmptyBorder(10, 12, 8, 12)));
 
     String content =
@@ -34,7 +35,7 @@ public final class MessageBubble extends JPanel {
     text.setFocusable(false);
     text.setLineWrap(true);
     text.setWrapStyleWord(true);
-    text.setFont(UserUiTheme.FONT_BODY);
+    text.setFont(ChatTheme.FONT_BODY);
     text.setForeground(foreground);
     text.setBackground(background);
     text.setBorder(null);
@@ -43,8 +44,8 @@ public final class MessageBubble extends JPanel {
     text.setPreferredSize(new Dimension(420, text.getPreferredSize().height));
 
     JLabel timestamp = new JLabel(TIME_FORMAT.format(message.sentAt()));
-    timestamp.setFont(UserUiTheme.FONT_SMALL);
-    timestamp.setForeground(ownMessage ? new Color(0xDBEAFE) : UserUiTheme.TEXT_MUTED);
+    timestamp.setFont(ChatTheme.FONT_SMALL);
+    timestamp.setForeground(ownMessage ? new Color(0xDBEAFE) : ChatTheme.TEXT_MUTED);
     JPanel metadata = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
     metadata.setOpaque(false);
     metadata.add(timestamp);

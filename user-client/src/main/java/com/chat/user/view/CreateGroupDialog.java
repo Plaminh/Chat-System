@@ -1,6 +1,6 @@
 package com.chat.user.view;
 
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.model.GroupConversation;
 import com.chat.user.model.GroupMember;
 import com.chat.user.model.UserProfile;
@@ -32,7 +32,7 @@ public final class CreateGroupDialog extends JPanel {
   private final UserProfile creator;
   private final List<UserProfile> directory;
   private final Consumer<GroupConversation> createdHandler;
-  private final JTextField groupNameField = UserUiTheme.createTextField(28);
+  private final JTextField groupNameField = ChatTheme.createTextField(28);
   private final JList<UserProfile> participantList;
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.LEFT);
   private JDialog dialog;
@@ -48,7 +48,7 @@ public final class CreateGroupDialog extends JPanel {
       List<UserProfile> directory,
       List<UserProfile> preselectedMembers,
       Consumer<GroupConversation> createdHandler) {
-    super(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    super(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     this.creator = Objects.requireNonNull(creator, "creator");
     this.directory = new ArrayList<>(Objects.requireNonNull(directory, "directory"));
     Objects.requireNonNull(preselectedMembers, "preselectedMembers");
@@ -103,11 +103,11 @@ public final class CreateGroupDialog extends JPanel {
     String name = groupNameField.getText().trim();
     List<UserProfile> selected = participantList.getSelectedValuesList();
     if (name.isEmpty()) {
-      showFeedback("Enter a group name to continue.", UserUiTheme.DANGER);
+      showFeedback("Enter a group name to continue.", ChatTheme.DANGER);
       return;
     }
     if (selected.isEmpty()) {
-      showFeedback("Select at least one other user to create a group.", UserUiTheme.DANGER);
+      showFeedback("Select at least one other user to create a group.", ChatTheme.DANGER);
       return;
     }
 
@@ -117,17 +117,17 @@ public final class CreateGroupDialog extends JPanel {
     createdGroup =
         new GroupConversation("group-" + UUID.randomUUID(), name, members, List.of());
     createdHandler.accept(createdGroup);
-    showFeedback("Sample group created for this session.", UserUiTheme.SUCCESS);
+    showFeedback("Sample group created for this session.", ChatTheme.SUCCESS);
     if (dialog != null) {
       dialog.dispose();
     }
   }
 
   private void buildContent() {
-    setBackground(UserUiTheme.SURFACE_WHITE);
+    setBackground(ChatTheme.SURFACE_WHITE);
     setBorder(
         BorderFactory.createEmptyBorder(
-            UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG));
+            ChatTheme.SPACE_LG, ChatTheme.SPACE_LG, ChatTheme.SPACE_MD, ChatTheme.SPACE_LG));
     groupNameField.putClientProperty("JTextField.placeholderText", "Group name");
     participantList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     participantList.setCellRenderer(new DefaultListCellRenderer() {
@@ -137,40 +137,40 @@ public final class CreateGroupDialog extends JPanel {
         UserProfile profile = (UserProfile) value;
         JLabel label = (JLabel) super.getListCellRendererComponent(
             list, profile.fullName() + "  •  @" + profile.username(), index, selected, focus);
-        label.setBorder(BorderFactory.createEmptyBorder(UserUiTheme.SPACE_SM,
-            UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+        label.setBorder(BorderFactory.createEmptyBorder(ChatTheme.SPACE_SM,
+            ChatTheme.SPACE_SM, ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
         return label;
       }
     });
 
     JLabel title = new JLabel("Create a New Group Chat", SwingConstants.CENTER);
-    title.setFont(UserUiTheme.FONT_TITLE);
-    title.setForeground(UserUiTheme.TEXT_PRIMARY);
+    title.setFont(ChatTheme.FONT_TITLE);
+    title.setForeground(ChatTheme.TEXT_PRIMARY);
     JLabel nameLabel = new JLabel("Group name");
-    nameLabel.setFont(UserUiTheme.FONT_BODY_BOLD);
-    nameLabel.setForeground(UserUiTheme.TEXT_SECONDARY);
+    nameLabel.setFont(ChatTheme.FONT_BODY_BOLD);
+    nameLabel.setForeground(ChatTheme.TEXT_SECONDARY);
     JLabel participantLabel = new JLabel("Add at least one other user");
-    participantLabel.setFont(UserUiTheme.FONT_BODY_BOLD);
-    participantLabel.setForeground(UserUiTheme.TEXT_SECONDARY);
+    participantLabel.setFont(ChatTheme.FONT_BODY_BOLD);
+    participantLabel.setForeground(ChatTheme.TEXT_SECONDARY);
 
-    JPanel form = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+    JPanel form = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
     form.setOpaque(false);
-    JPanel nameGroup = new JPanel(new BorderLayout(UserUiTheme.SPACE_XS, UserUiTheme.SPACE_XS));
+    JPanel nameGroup = new JPanel(new BorderLayout(ChatTheme.SPACE_XS, ChatTheme.SPACE_XS));
     nameGroup.setOpaque(false);
     nameGroup.add(nameLabel, BorderLayout.NORTH);
     nameGroup.add(groupNameField, BorderLayout.CENTER);
-    JPanel participantGroup = new JPanel(new BorderLayout(UserUiTheme.SPACE_XS, UserUiTheme.SPACE_XS));
+    JPanel participantGroup = new JPanel(new BorderLayout(ChatTheme.SPACE_XS, ChatTheme.SPACE_XS));
     participantGroup.setOpaque(false);
     participantGroup.add(participantLabel, BorderLayout.NORTH);
     participantGroup.add(new JScrollPane(participantList), BorderLayout.CENTER);
     form.add(nameGroup, BorderLayout.NORTH);
     form.add(participantGroup, BorderLayout.CENTER);
 
-    feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
-    feedbackLabel.setForeground(UserUiTheme.DANGER);
-    JButton cancel = UserUiTheme.createSecondaryButton("Cancel");
+    feedbackLabel.setFont(ChatTheme.FONT_SMALL);
+    feedbackLabel.setForeground(ChatTheme.DANGER);
+    JButton cancel = ChatTheme.createSecondaryButton("Cancel");
     cancel.addActionListener(event -> closeDialog());
-    JButton create = UserUiTheme.createPrimaryButton("Create Sample Group");
+    JButton create = ChatTheme.createPrimaryButton("Create Sample Group");
     create.addActionListener(event -> submitCreation());
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     actions.setOpaque(false);

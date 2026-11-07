@@ -1,11 +1,12 @@
 package com.chat.admin.view;
 
+import static com.chat.common.ui.ChatTheme.*;
+
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -18,14 +19,10 @@ import java.awt.event.FocusEvent;
 import java.awt.geom.Path2D;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 import java.util.Objects;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -36,94 +33,15 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.text.MaskFormatter;
 
 /**
- * Shared Desktop Admin Studio design tokens, programmatic Java2D vector icons, and reusable Swing
- * component factories for the Admin Client UI.
+ * Admin-specific Swing components, date-field behavior, table renderers, and vector icons.
  */
-public final class AdminUIStyle {
-  // Core Canvas & Surfaces (from Stitch DESIGN.md)
-  public static final Color CANVAS_BG = new Color(0xF8FAFC);
-  public static final Color SURFACE_WHITE = new Color(0xFFFFFF);
-  public static final Color SIDEBAR_BG = new Color(0x0F172A);
-  public static final Color SIDEBAR_HOVER = new Color(0x1E293B);
-  public static final Color SIDEBAR_DIVIDER = new Color(0x334155);
-
-  // Accents & Semantic Tones
-  public static final Color PRIMARY = new Color(0x2563EB);
-  public static final Color PRIMARY_HOVER = new Color(0x1D4ED8);
-  public static final Color PRIMARY_SOFT_BG = new Color(0xEFF6FF);
-
-  public static final Color SUCCESS_TEXT = new Color(0x065F46);
-  public static final Color SUCCESS_BG = new Color(0xECFDF5);
-  public static final Color SUCCESS_DOT = new Color(0x10B981);
-
-  public static final Color DANGER_TEXT = new Color(0x991B1B);
-  public static final Color DANGER_BG = new Color(0xFEF2F2);
-  public static final Color DANGER_BTN = new Color(0xDC2626);
-
-  public static final Color WARNING_TEXT = new Color(0x92400E);
-  public static final Color WARNING_BG = new Color(0xFFFBEB);
-
-  // Text & Borders
-  public static final Color TEXT_PRIMARY = new Color(0x0F172A);
-  public static final Color TEXT_SECONDARY = new Color(0x475569);
-  public static final Color TEXT_MUTED = new Color(0x64748B);
-  public static final Color BORDER_COLOR = new Color(0xE2E8F0);
-  public static final Color TABLE_ALT_ROW = new Color(0xF8FAFC);
-  public static final Color TABLE_SELECTION_BG = new Color(0xDBEAFE);
-
-  // Typography
-  public static final Font FONT_TITLE = new Font("SansSerif", Font.BOLD, 18);
-  public static final Font FONT_SUBTITLE = new Font("SansSerif", Font.BOLD, 15);
-  public static final Font FONT_SECTION = new Font("SansSerif", Font.BOLD, 11);
-  public static final Font FONT_BODY = new Font("SansSerif", Font.PLAIN, 13);
-  public static final Font FONT_BODY_BOLD = new Font("SansSerif", Font.BOLD, 13);
-  public static final Font FONT_SMALL = new Font("SansSerif", Font.PLAIN, 12);
-  public static final Font FONT_BADGE = new Font("SansSerif", Font.BOLD, 11);
-  public static final Font FONT_MONO = new Font("Monospaced", Font.PLAIN, 12);
-
-  public static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-  public static final DateTimeFormatter DATE_INPUT_FMT =
-      DateTimeFormatter.ofPattern("uuuu/MM/dd").withResolverStyle(ResolverStyle.STRICT);
-  public static final DateTimeFormatter DATETIME_FMT =
-      DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
-  public static final DateTimeFormatter FULL_DATETIME_FMT =
-      DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-
-  private AdminUIStyle() {}
-
-  /** Applies global FlatLaf rounded corners and clean table defaults. */
-  public static void applyGlobalThemeDefaults() {
-    UIManager.put("Button.arc", 8);
-    UIManager.put("Component.arc", 8);
-    UIManager.put("TextComponent.arc", 8);
-    UIManager.put("ScrollBar.width", 10);
-    UIManager.put("ScrollBar.thumbArc", 999);
-    UIManager.put("Table.rowHeight", 36);
-    UIManager.put("Table.showHorizontalLines", true);
-    UIManager.put("Table.showVerticalLines", false);
-    UIManager.put("Table.intercellSpacing", new Dimension(0, 1));
-    UIManager.put("Table.gridColor", BORDER_COLOR);
-  }
-
-  public static Border createCardBorder() {
-    return BorderFactory.createCompoundBorder(
-        BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
-        BorderFactory.createEmptyBorder(14, 16, 14, 16));
-  }
-
-  public static JPanel createCardPanel(BorderLayout layout) {
-    JPanel card = new JPanel(layout);
-    card.setBackground(SURFACE_WHITE);
-    card.setBorder(createCardBorder());
-    return card;
-  }
+public final class AdminUIComponents {
+  private AdminUIComponents() {}
 
   public static JPanel createKpiCard(String label, JLabel valueLabel, String caption, Color accent) {
     JPanel card = new JPanel(new BorderLayout(4, 4));
@@ -132,7 +50,7 @@ public final class AdminUIStyle {
         BorderFactory.createCompoundBorder(
             BorderFactory.createMatteBorder(0, 3, 0, 0, accent),
             BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(BORDER_COLOR, 1),
+                BorderFactory.createLineBorder(BORDER, 1),
                 BorderFactory.createEmptyBorder(10, 14, 10, 14))));
 
     JLabel title = new JLabel(label.toUpperCase());
@@ -226,19 +144,10 @@ public final class AdminUIStyle {
     };
   }
 
-  public static JTextField createSearchField(String placeholder, int columns) {
-    JTextField field = new JTextField(columns);
-    field.setFont(FONT_BODY);
-    field.setPreferredSize(new Dimension(field.getPreferredSize().width, 34));
-    field.putClientProperty("JTextField.placeholderText", placeholder);
-    field.putClientProperty("JTextField.showClearButton", true);
-    return field;
-  }
-
   public static JTextField createDateField(String initialValue) {
     MaskFormatter formatter;
     try {
-      formatter = new MaskFormatter("####/##/##");
+      formatter = new MaskFormatter("####-##-##");
       formatter.setPlaceholderCharacter('_');
     } catch (ParseException ex) {
       throw new IllegalStateException("Invalid date mask pattern", ex);
@@ -252,17 +161,18 @@ public final class AdminUIStyle {
             putClientProperty("JComponent.outline", null);
             setForeground(TEXT_PRIMARY);
             if (t == null || t.isBlank()) {
-              super.setText("____/__/__");
+              super.setText("____-__-__");
             } else {
-              super.setText(t.trim().replace('-', '/'));
+              super.setText(t.trim().replace('/', '-'));
             }
           }
         };
     field.setFocusLostBehavior(JFormattedTextField.PERSIST);
     field.setColumns(11);
     field.setFont(FONT_MONO);
-    field.setPreferredSize(new Dimension(Math.max(field.getPreferredSize().width, 118), 34));
-    field.setToolTipText("Format: yyyy/MM/dd (e.g. 2025/05/01)");
+    field.setPreferredSize(
+        new Dimension(Math.max(field.getPreferredSize().width, 118), BUTTON_HEIGHT));
+    field.setToolTipText("Format: yyyy-MM-dd (e.g. 2025-05-01)");
     field.setText(initialValue);
     return field;
   }
@@ -272,7 +182,7 @@ public final class AdminUIStyle {
       return true;
     }
     String trimmed = raw.trim();
-    return trimmed.isEmpty() || "____/__/__".equals(trimmed);
+    return trimmed.isEmpty() || "____-__-__".equals(trimmed);
   }
 
   public static boolean isDateMaskComplete(String raw) {
@@ -287,7 +197,7 @@ public final class AdminUIStyle {
     field.putClientProperty("JComponent.outline", hasError ? "error" : null);
     field.setForeground(hasError ? DANGER_TEXT : TEXT_PRIMARY);
     field.setToolTipText(
-        hasError && tooltip != null ? tooltip : "Format: yyyy/MM/dd (e.g. 2025/05/01)");
+        hasError && tooltip != null ? tooltip : "Format: yyyy-MM-dd (e.g. 2025-05-01)");
     if (!hasError) {
       field.putClientProperty("AdminUI.lastAlertKey", null);
     }
@@ -306,7 +216,7 @@ public final class AdminUIStyle {
   }
 
   /**
-   * Validates a pair of masked date fields ({@code yyyy/MM/dd}). Highlights invalid fields with a
+   * Validates a pair of masked date fields ({@code yyyy-MM-dd}). Highlights invalid fields with a
    * red outline and displays a non-duplicate error dialog when a complete date is invalid, when a
    * partial date is left incomplete on Enter/focus-loss, or when {@code fromDate > toDate}.
    *
@@ -365,7 +275,7 @@ public final class AdminUIStyle {
       if (checkIncomplete) {
         field.putClientProperty("JComponent.outline", "error");
         field.setForeground(DANGER_TEXT);
-        field.setToolTipText("Incomplete date. Use yyyy/MM/dd (e.g. 2025/05/01)");
+        field.setToolTipText("Incomplete date. Use yyyy-MM-dd (e.g. 2025-05-01)");
         showDateValidationErrorOnce(
             parent,
             field,
@@ -373,7 +283,7 @@ public final class AdminUIStyle {
             label
                 + " ('"
                 + raw
-                + "') is incomplete. Please enter all digits in yyyy/MM/dd format (e.g. 2025/05/01).",
+                + "') is incomplete. Please enter all digits in yyyy-MM-dd format (e.g. 2025-05-01).",
             "Incomplete Date");
       } else {
         setDateFieldError(field, false, null);
@@ -419,72 +329,13 @@ public final class AdminUIStyle {
         });
   }
 
-  public static <T> JComboBox<T> createComboBox(T[] items) {
-    JComboBox<T> combo = new JComboBox<>(items);
-    combo.setFont(FONT_BODY);
-    combo.setBackground(SURFACE_WHITE);
-    combo.setPreferredSize(new Dimension(combo.getPreferredSize().width + 16, 34));
-    return combo;
-  }
-
-  public static JButton createPrimaryButton(String text) {
-    JButton btn =
-        new JButton(text) {
-          @Override
-          public Dimension getPreferredSize() {
-            Dimension d = super.getPreferredSize();
-            return new Dimension(d.width + 12, Math.max(d.height, 34));
-          }
-        };
-    btn.setFont(FONT_BODY_BOLD);
-    btn.setBackground(PRIMARY);
-    btn.setForeground(Color.WHITE);
-    btn.setFocusPainted(false);
-    btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    return btn;
-  }
-
-  public static JButton createSecondaryButton(String text) {
-    JButton btn =
-        new JButton(text) {
-          @Override
-          public Dimension getPreferredSize() {
-            Dimension d = super.getPreferredSize();
-            return new Dimension(d.width + 12, Math.max(d.height, 34));
-          }
-        };
-    btn.setFont(FONT_BODY_BOLD);
-    btn.setBackground(SURFACE_WHITE);
-    btn.setForeground(TEXT_PRIMARY);
-    btn.setFocusPainted(false);
-    btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    return btn;
-  }
-
-  public static JButton createDangerButton(String text) {
-    JButton btn =
-        new JButton(text) {
-          @Override
-          public Dimension getPreferredSize() {
-            Dimension d = super.getPreferredSize();
-            return new Dimension(d.width + 12, Math.max(d.height, 34));
-          }
-        };
-    btn.setFont(FONT_BODY_BOLD);
-    btn.setBackground(DANGER_BTN);
-    btn.setForeground(Color.WHITE);
-    btn.setFocusPainted(false);
-    btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    return btn;
-  }
-
   public static void styleTable(JTable table) {
     table.setFont(FONT_BODY);
     table.setRowHeight(36);
     table.setFillsViewportHeight(true);
     table.setSelectionBackground(TABLE_SELECTION_BG);
     table.setSelectionForeground(TEXT_PRIMARY);
-    table.setGridColor(BORDER_COLOR);
+    table.setGridColor(BORDER);
     table.setShowVerticalLines(false);
     table.setShowHorizontalLines(true);
 
@@ -542,7 +393,7 @@ public final class AdminUIStyle {
   public static JScrollPane wrapTableInScrollPane(JTable table) {
     JScrollPane scroll = new JScrollPane(table);
     scroll.getViewport().setBackground(SURFACE_WHITE);
-    scroll.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
+    scroll.setBorder(BorderFactory.createLineBorder(BORDER, 1));
     return scroll;
   }
 

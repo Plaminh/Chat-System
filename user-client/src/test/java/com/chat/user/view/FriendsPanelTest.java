@@ -9,6 +9,7 @@ import com.chat.user.model.FriendEntry;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
 class FriendsPanelTest {
@@ -52,6 +53,20 @@ class FriendsPanelTest {
     assertFalse(blocked.isEmpty());
     assertTrue(blocked.contains("mai.anh"));
     assertTrue(panel.getVisibleFriends().isEmpty());
+  }
+
+  @Test
+  void onlineFriendCanStartGroupCreationWithThatFriendSelected() {
+    List<FriendEntry> friends = new ArrayList<>(FriendsPanel.createSampleFriends());
+    AtomicReference<FriendEntry> selectedForGroup = new AtomicReference<>();
+    FriendsPanel panel =
+        new FriendsPanel(
+            friends, new HashSet<>(), (friend, action) -> true, friend -> {}, selectedForGroup::set);
+    panel.getSearchField().setText("mai");
+
+    findButton(panel, "Create Group").doClick();
+
+    assertEquals("mai.anh", selectedForGroup.get().username());
   }
 
   private FriendsPanel createPanel(List<FriendEntry> friends) {

@@ -1,5 +1,6 @@
 package com.chat.admin.view;
 
+import com.chat.common.ui.ChatTheme;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.model.AdminUser;
 import com.chat.admin.model.FriendConnection;
@@ -58,7 +59,7 @@ public final class UserDetailHistoryDialog extends JDialog {
         true);
     this.user = user;
     this.loginScopeCombo =
-        AdminUIStyle.createComboBox(
+        ChatTheme.createComboBox(
             new String[] {
               "Scope: Selected User (@" + user.getUsername() + ")",
               "Scope: All System Users (Chronological)"
@@ -75,7 +76,7 @@ public final class UserDetailHistoryDialog extends JDialog {
     setLocationRelativeTo(getOwner());
 
     JPanel root = new JPanel(new BorderLayout(0, 0));
-    root.setBackground(AdminUIStyle.CANVAS_BG);
+    root.setBackground(ChatTheme.CANVAS_BG);
 
     root.add(buildUserProfileBanner(), BorderLayout.NORTH);
     root.add(buildTabbedCenter(), BorderLayout.CENTER);
@@ -86,17 +87,17 @@ public final class UserDetailHistoryDialog extends JDialog {
 
   private JPanel buildUserProfileBanner() {
     JPanel banner = new JPanel(new BorderLayout(14, 0));
-    banner.setBackground(AdminUIStyle.SURFACE_WHITE);
+    banner.setBackground(ChatTheme.SURFACE_WHITE);
     banner.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 1, 0, AdminUIStyle.BORDER_COLOR),
+            BorderFactory.createMatteBorder(0, 0, 1, 0, ChatTheme.BORDER),
             BorderFactory.createEmptyBorder(16, 22, 16, 22)));
 
     String initials = extractInitials(user.getFullName());
     JLabel avatarLabel = new JLabel(initials, SwingConstants.CENTER);
     avatarLabel.setPreferredSize(new Dimension(48, 48));
     avatarLabel.setOpaque(true);
-    avatarLabel.setBackground(AdminUIStyle.PRIMARY);
+    avatarLabel.setBackground(ChatTheme.PRIMARY);
     avatarLabel.setForeground(Color.WHITE);
     avatarLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
 
@@ -105,8 +106,8 @@ public final class UserDetailHistoryDialog extends JDialog {
 
     JLabel nameTitle =
         new JLabel(user.getFullName() + "   (@" + user.getUsername() + ")");
-    nameTitle.setFont(AdminUIStyle.FONT_TITLE);
-    nameTitle.setForeground(AdminUIStyle.TEXT_PRIMARY);
+    nameTitle.setFont(ChatTheme.FONT_TITLE);
+    nameTitle.setForeground(ChatTheme.TEXT_PRIMARY);
 
     JLabel subDetails =
         new JLabel(
@@ -115,9 +116,9 @@ public final class UserDetailHistoryDialog extends JDialog {
                 + "   •   Address: "
                 + user.getAddress()
                 + "   •   Registered: "
-                + user.getCreatedAt().format(AdminUIStyle.DATE_FMT));
-    subDetails.setFont(AdminUIStyle.FONT_SMALL);
-    subDetails.setForeground(AdminUIStyle.TEXT_SECONDARY);
+                + user.getCreatedAt().format(ChatTheme.DATE_FMT));
+    subDetails.setFont(ChatTheme.FONT_SMALL);
+    subDetails.setForeground(ChatTheme.TEXT_SECONDARY);
 
     identityInfo.add(nameTitle);
     identityInfo.add(subDetails);
@@ -126,25 +127,25 @@ public final class UserDetailHistoryDialog extends JDialog {
     rightBadges.setOpaque(false);
 
     JLabel statusBadge = new JLabel("● Status: " + user.getStatusText());
-    statusBadge.setFont(AdminUIStyle.FONT_BADGE);
+    statusBadge.setFont(ChatTheme.FONT_BADGE);
     statusBadge.setOpaque(true);
     if (user.isLocked()) {
-      statusBadge.setBackground(AdminUIStyle.DANGER_BG);
-      statusBadge.setForeground(AdminUIStyle.DANGER_TEXT);
+      statusBadge.setBackground(ChatTheme.DANGER_BG);
+      statusBadge.setForeground(ChatTheme.DANGER_TEXT);
     } else {
-      statusBadge.setBackground(AdminUIStyle.SUCCESS_BG);
-      statusBadge.setForeground(AdminUIStyle.SUCCESS_TEXT);
+      statusBadge.setBackground(ChatTheme.SUCCESS_BG);
+      statusBadge.setForeground(ChatTheme.SUCCESS_TEXT);
     }
     statusBadge.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
     JLabel idBadge = new JLabel("#" + user.getId());
-    idBadge.setFont(AdminUIStyle.FONT_MONO);
-    idBadge.setForeground(AdminUIStyle.TEXT_MUTED);
+    idBadge.setFont(ChatTheme.FONT_MONO);
+    idBadge.setForeground(ChatTheme.TEXT_MUTED);
     idBadge.setOpaque(true);
-    idBadge.setBackground(AdminUIStyle.CANVAS_BG);
+    idBadge.setBackground(ChatTheme.CANVAS_BG);
     idBadge.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(AdminUIStyle.BORDER_COLOR, 1, true),
+            BorderFactory.createLineBorder(ChatTheme.BORDER, 1, true),
             BorderFactory.createEmptyBorder(4, 8, 4, 8)));
 
     rightBadges.add(statusBadge);
@@ -158,8 +159,8 @@ public final class UserDetailHistoryDialog extends JDialog {
 
   private JTabbedPane buildTabbedCenter() {
     JTabbedPane tabs = new JTabbedPane();
-    tabs.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    tabs.setBackground(AdminUIStyle.SURFACE_WHITE);
+    tabs.setFont(ChatTheme.FONT_BODY_BOLD);
+    tabs.setBackground(ChatTheme.SURFACE_WHITE);
     tabs.setBorder(BorderFactory.createEmptyBorder(10, 18, 10, 18));
 
     tabs.addTab("Login History & Audit Stream", buildLoginHistoryTab());
@@ -169,7 +170,7 @@ public final class UserDetailHistoryDialog extends JDialog {
 
   private JPanel buildLoginHistoryTab() {
     JPanel tab = new JPanel(new BorderLayout(0, 12));
-    tab.setBackground(AdminUIStyle.CANVAS_BG);
+    tab.setBackground(ChatTheme.CANVAS_BG);
     tab.setBorder(BorderFactory.createEmptyBorder(12, 4, 4, 4));
 
     // Top bar with KPI and Scope Selector
@@ -179,17 +180,17 @@ public final class UserDetailHistoryDialog extends JDialog {
     JPanel kpiRow = new JPanel(new GridLayout(1, 2, 12, 0));
     kpiRow.setOpaque(false);
     kpiRow.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "Recorded Sessions",
             totalLoginsValueLabel,
             "Chronological login events",
-            AdminUIStyle.PRIMARY));
+            ChatTheme.PRIMARY));
     kpiRow.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "App Launch Count",
             new JLabel(user.getAppOpenCount() + " opens"),
             "Total application opens by @" + user.getUsername(),
-            AdminUIStyle.SUCCESS_DOT));
+            ChatTheme.SUCCESS_DOT));
 
     JPanel scopeControl = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
     scopeControl.setOpaque(false);
@@ -201,7 +202,7 @@ public final class UserDetailHistoryDialog extends JDialog {
 
     // Chronological Login Table
     JTable loginTable = new JTable(loginTableModel);
-    AdminUIStyle.styleTable(loginTable);
+    AdminUIComponents.styleTable(loginTable);
     loginTable.getColumnModel().getColumn(0).setPreferredWidth(180);
     loginTable.getColumnModel().getColumn(1).setPreferredWidth(140);
     loginTable.getColumnModel().getColumn(2).setPreferredWidth(180);
@@ -209,33 +210,33 @@ public final class UserDetailHistoryDialog extends JDialog {
     loginTable
         .getColumnModel()
         .getColumn(3)
-        .setCellRenderer(AdminUIStyle.createStatusBadgeRenderer());
+        .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
     tab.add(topBar, BorderLayout.NORTH);
-    tab.add(AdminUIStyle.wrapTableInScrollPane(loginTable), BorderLayout.CENTER);
+    tab.add(AdminUIComponents.wrapTableInScrollPane(loginTable), BorderLayout.CENTER);
     return tab;
   }
 
   private JPanel buildFriendNetworkTab() {
     JPanel tab = new JPanel(new BorderLayout(0, 12));
-    tab.setBackground(AdminUIStyle.CANVAS_BG);
+    tab.setBackground(ChatTheme.CANVAS_BG);
     tab.setBorder(BorderFactory.createEmptyBorder(12, 4, 4, 4));
 
     // Two Metric Cards: Direct Friends & Friends-of-Friends
     JPanel kpiGrid = new JPanel(new GridLayout(1, 2, 14, 0));
     kpiGrid.setOpaque(false);
     kpiGrid.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "Direct Friends (1st-Degree)",
             new JLabel(user.getDirectFriendCount() + " Users"),
             "Confirmed direct friend relationships",
-            AdminUIStyle.PRIMARY));
+            ChatTheme.PRIMARY));
     kpiGrid.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "Friends-of-Friends (2nd-Degree)",
             new JLabel(user.getFriendsOfFriendsCount() + " Extended"),
             "Second-degree friend network reach",
-            AdminUIStyle.SUCCESS_DOT));
+            ChatTheme.SUCCESS_DOT));
 
     DefaultTableModel friendModel =
         new DefaultTableModel(FRIEND_COLUMNS, 0) {
@@ -257,31 +258,31 @@ public final class UserDetailHistoryDialog extends JDialog {
     }
 
     JTable friendTable = new JTable(friendModel);
-    AdminUIStyle.styleTable(friendTable);
+    AdminUIComponents.styleTable(friendTable);
     friendTable
         .getColumnModel()
         .getColumn(3)
-        .setCellRenderer(AdminUIStyle.createStatusBadgeRenderer());
+        .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
     tab.add(kpiGrid, BorderLayout.NORTH);
-    tab.add(AdminUIStyle.wrapTableInScrollPane(friendTable), BorderLayout.CENTER);
+    tab.add(AdminUIComponents.wrapTableInScrollPane(friendTable), BorderLayout.CENTER);
     return tab;
   }
 
   private JPanel buildDialogFooter() {
     JPanel footer = new JPanel(new BorderLayout());
-    footer.setBackground(AdminUIStyle.SURFACE_WHITE);
+    footer.setBackground(ChatTheme.SURFACE_WHITE);
     footer.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(1, 0, 0, 0, AdminUIStyle.BORDER_COLOR),
+            BorderFactory.createMatteBorder(1, 0, 0, 0, ChatTheme.BORDER),
             BorderFactory.createEmptyBorder(10, 20, 10, 20)));
 
     JLabel hint =
         new JLabel("Audit records ordered chronologically (newest login timestamp first)");
-    hint.setFont(AdminUIStyle.FONT_SMALL);
-    hint.setForeground(AdminUIStyle.TEXT_MUTED);
+    hint.setFont(ChatTheme.FONT_SMALL);
+    hint.setForeground(ChatTheme.TEXT_MUTED);
 
-    JButton closeBtn = AdminUIStyle.createPrimaryButton("Close Window");
+    JButton closeBtn = ChatTheme.createPrimaryButton("Close Window");
     closeBtn.addActionListener(e -> dispose());
 
     footer.add(hint, BorderLayout.CENTER);
@@ -300,7 +301,7 @@ public final class UserDetailHistoryDialog extends JDialog {
     for (LoginRecord r : records) {
       loginTableModel.addRow(
           new Object[] {
-            r.timestamp().format(AdminUIStyle.FULL_DATETIME_FMT),
+            r.timestamp().format(ChatTheme.FULL_DATETIME_FMT),
             "@" + r.username(),
             r.fullName(),
             "Success"

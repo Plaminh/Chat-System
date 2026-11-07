@@ -18,7 +18,7 @@
 
 **Purpose**: Establish shared visual primitives for the User screens without adding dependencies.
 
-- [X] T001 Define Admin-aligned colors, spacing, typography, and shared Swing component styling in `user-client/src/main/java/com/chat/user/component/UserUiTheme.java` (Commit: `feat(user): add shared UI theme tokens`)
+- [X] T001 Use shared colors, spacing, typography, and Swing component styling from `common/src/main/java/com/chat/common/ui/ChatTheme.java` (Commit: `feat(user): add shared UI theme tokens`)
 
 ## Phase 2: Foundational
 

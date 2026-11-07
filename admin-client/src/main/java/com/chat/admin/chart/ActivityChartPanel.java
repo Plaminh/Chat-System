@@ -1,7 +1,8 @@
 package com.chat.admin.chart;
 
+import com.chat.common.ui.ChatTheme;
 import com.chat.admin.model.AdminMockDataStore;
-import com.chat.admin.view.AdminUIStyle;
+import com.chat.admin.view.AdminUIComponents;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -47,13 +48,13 @@ public final class ActivityChartPanel extends JPanel {
 
   public ActivityChartPanel() {
     setLayout(new BorderLayout(0, 10));
-    setBackground(AdminUIStyle.SURFACE_WHITE);
+    setBackground(ChatTheme.SURFACE_WHITE);
     setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(AdminUIStyle.BORDER_COLOR, 1, true),
+            BorderFactory.createLineBorder(ChatTheme.BORDER, 1, true),
             BorderFactory.createEmptyBorder(14, 16, 14, 16)));
 
-    yearCombo.setFont(AdminUIStyle.FONT_BODY_BOLD);
+    yearCombo.setFont(ChatTheme.FONT_BODY_BOLD);
     yearCombo.setSelectedItem(2025);
 
     add(buildHeaderRow(), BorderLayout.NORTH);
@@ -91,19 +92,19 @@ public final class ActivityChartPanel extends JPanel {
     JPanel titleBox = new JPanel(new GridLayout(2, 1, 0, 2));
     titleBox.setOpaque(false);
     JLabel title = new JLabel("Monthly Active Users (App Opens)");
-    title.setFont(AdminUIStyle.FONT_SUBTITLE);
-    title.setForeground(AdminUIStyle.TEXT_PRIMARY);
+    title.setFont(ChatTheme.FONT_SUBTITLE);
+    title.setForeground(ChatTheme.TEXT_PRIMARY);
     JLabel subtitle = new JLabel("12-month trend of active users by calendar year");
-    subtitle.setFont(AdminUIStyle.FONT_SMALL);
-    subtitle.setForeground(AdminUIStyle.TEXT_MUTED);
+    subtitle.setFont(ChatTheme.FONT_SMALL);
+    subtitle.setForeground(ChatTheme.TEXT_MUTED);
     titleBox.add(title);
     titleBox.add(subtitle);
 
     JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
     controls.setOpaque(false);
     JLabel yearLbl = new JLabel("Year:");
-    yearLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    yearLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    yearLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    yearLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
     controls.add(yearLbl);
     controls.add(yearCombo);
@@ -124,7 +125,7 @@ public final class ActivityChartPanel extends JPanel {
             false,
             true,
             false);
-    lineChart.setBackgroundPaint(AdminUIStyle.SURFACE_WHITE);
+    lineChart.setBackgroundPaint(ChatTheme.SURFACE_WHITE);
 
     CategoryPlot plot = lineChart.getCategoryPlot();
     plot.setBackgroundPaint(new Color(0xF8FAFC));
@@ -135,17 +136,17 @@ public final class ActivityChartPanel extends JPanel {
     plot.setDomainGridlinePaint(new Color(0xE2E8F0));
 
     CategoryAxis domainAxis = plot.getDomainAxis();
-    domainAxis.setLabelFont(AdminUIStyle.FONT_BODY_BOLD);
-    domainAxis.setLabelPaint(AdminUIStyle.TEXT_SECONDARY);
-    domainAxis.setTickLabelFont(AdminUIStyle.FONT_SMALL);
-    domainAxis.setTickLabelPaint(AdminUIStyle.TEXT_PRIMARY);
+    domainAxis.setLabelFont(ChatTheme.FONT_BODY_BOLD);
+    domainAxis.setLabelPaint(ChatTheme.TEXT_SECONDARY);
+    domainAxis.setTickLabelFont(ChatTheme.FONT_SMALL);
+    domainAxis.setTickLabelPaint(ChatTheme.TEXT_PRIMARY);
 
     NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
     rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-    rangeAxis.setLabelFont(AdminUIStyle.FONT_BODY_BOLD);
-    rangeAxis.setLabelPaint(AdminUIStyle.TEXT_SECONDARY);
-    rangeAxis.setTickLabelFont(AdminUIStyle.FONT_SMALL);
-    rangeAxis.setTickLabelPaint(AdminUIStyle.TEXT_SECONDARY);
+    rangeAxis.setLabelFont(ChatTheme.FONT_BODY_BOLD);
+    rangeAxis.setLabelPaint(ChatTheme.TEXT_SECONDARY);
+    rangeAxis.setTickLabelFont(ChatTheme.FONT_SMALL);
+    rangeAxis.setTickLabelPaint(ChatTheme.TEXT_SECONDARY);
     rangeAxis.setUpperMargin(0.18);
 
     LineAndShapeRenderer renderer = new LineAndShapeRenderer(true, true);
@@ -157,8 +158,8 @@ public final class ActivityChartPanel extends JPanel {
     renderer.setSeriesFillPaint(0, Color.WHITE);
     renderer.setDefaultItemLabelGenerator(
         new StandardCategoryItemLabelGenerator("{2}", NumberFormat.getIntegerInstance()));
-    renderer.setDefaultItemLabelFont(AdminUIStyle.FONT_BADGE);
-    renderer.setDefaultItemLabelPaint(AdminUIStyle.TEXT_PRIMARY);
+    renderer.setDefaultItemLabelFont(ChatTheme.FONT_BADGE);
+    renderer.setDefaultItemLabelPaint(ChatTheme.TEXT_PRIMARY);
     renderer.setDefaultItemLabelsVisible(true);
     plot.setRenderer(renderer);
 
@@ -168,7 +169,7 @@ public final class ActivityChartPanel extends JPanel {
     chartPanel.setMinimumDrawHeight(150);
     chartPanel.setMaximumDrawWidth(2000);
     chartPanel.setMaximumDrawHeight(1500);
-    chartPanel.setBackground(AdminUIStyle.SURFACE_WHITE);
+    chartPanel.setBackground(ChatTheme.SURFACE_WHITE);
     chartPanel.setPopupMenu(null);
     chartPanel.setDomainZoomable(false);
     chartPanel.setRangeZoomable(false);
@@ -180,12 +181,12 @@ public final class ActivityChartPanel extends JPanel {
     row.setOpaque(false);
     row.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(1, 0, 0, 0, AdminUIStyle.BORDER_COLOR),
+            BorderFactory.createMatteBorder(1, 0, 0, 0, ChatTheme.BORDER),
             BorderFactory.createEmptyBorder(10, 4, 0, 4)));
 
-    row.add(createStatPill("Annual Active Sum:", annualActiveTotalLabel, AdminUIStyle.SUCCESS_DOT));
+    row.add(createStatPill("Annual Active Sum:", annualActiveTotalLabel, ChatTheme.SUCCESS_DOT));
     row.add(createStatPill("Peak Activity Month:", peakActivityMonthLabel, new Color(0x0D9488)));
-    row.add(createStatPill("Monthly Average:", monthlyAvgActiveLabel, AdminUIStyle.TEXT_PRIMARY));
+    row.add(createStatPill("Monthly Average:", monthlyAvgActiveLabel, ChatTheme.TEXT_PRIMARY));
     return row;
   }
 
@@ -193,9 +194,9 @@ public final class ActivityChartPanel extends JPanel {
     JPanel pill = new JPanel(new GridLayout(2, 1, 0, 2));
     pill.setOpaque(false);
     JLabel title = new JLabel(labelText);
-    title.setFont(AdminUIStyle.FONT_SMALL);
-    title.setForeground(AdminUIStyle.TEXT_MUTED);
-    valueLabel.setFont(AdminUIStyle.FONT_BODY_BOLD);
+    title.setFont(ChatTheme.FONT_SMALL);
+    title.setForeground(ChatTheme.TEXT_MUTED);
+    valueLabel.setFont(ChatTheme.FONT_BODY_BOLD);
     valueLabel.setForeground(valueColor);
     pill.add(title);
     pill.add(valueLabel);

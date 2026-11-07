@@ -1,6 +1,6 @@
 package com.chat.user.view;
 
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -47,7 +47,7 @@ public final class WritingAssistDialog extends JPanel {
   private boolean accepted;
 
   public WritingAssistDialog(String draft, Consumer<String> acceptHandler) {
-    super(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    super(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     this.originalDraft = Objects.requireNonNull(draft, "draft");
     this.acceptHandler = Objects.requireNonNull(acceptHandler, "acceptHandler");
     buildContent();
@@ -84,58 +84,58 @@ public final class WritingAssistDialog extends JPanel {
   void acceptPreview() {
     String proposed = preview.getText().trim();
     if (proposed.isEmpty()) {
-      showFeedback("There is no preview content to insert.", UserUiTheme.DANGER);
+      showFeedback("There is no preview content to insert.", ChatTheme.DANGER);
       return;
     }
     acceptHandler.accept(proposed);
     accepted = true;
-    showFeedback("Sample preview accepted in the composer.", UserUiTheme.SUCCESS);
+    showFeedback("Sample preview accepted in the composer.", ChatTheme.SUCCESS);
     closeDialog();
   }
 
   private void buildContent() {
-    setBackground(UserUiTheme.SURFACE_WHITE);
+    setBackground(ChatTheme.SURFACE_WHITE);
     setBorder(
         BorderFactory.createEmptyBorder(
-            UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG));
+            ChatTheme.SPACE_LG, ChatTheme.SPACE_LG, ChatTheme.SPACE_MD, ChatTheme.SPACE_LG));
     originalDraftView.setText(originalDraft);
     originalDraftView.setEditable(false);
     originalDraftView.setLineWrap(true);
     originalDraftView.setWrapStyleWord(true);
-    originalDraftView.setFont(UserUiTheme.FONT_BODY);
+    originalDraftView.setFont(ChatTheme.FONT_BODY);
     preview.setEditable(false);
     preview.setLineWrap(true);
     preview.setWrapStyleWord(true);
-    preview.setFont(UserUiTheme.FONT_BODY);
+    preview.setFont(ChatTheme.FONT_BODY);
     preview.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createLineBorder(UserUiTheme.PRIMARY),
-        BorderFactory.createEmptyBorder(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM,
-            UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM)));
+        BorderFactory.createLineBorder(ChatTheme.PRIMARY),
+        BorderFactory.createEmptyBorder(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM,
+            ChatTheme.SPACE_SM, ChatTheme.SPACE_SM)));
 
     JLabel title = new JLabel("Message Writing Assistant", SwingConstants.CENTER);
-    title.setFont(UserUiTheme.FONT_TITLE);
-    title.setForeground(UserUiTheme.TEXT_PRIMARY);
+    title.setFont(ChatTheme.FONT_TITLE);
+    title.setForeground(ChatTheme.TEXT_PRIMARY);
     JLabel modeLabel = new JLabel("Preview mode:");
-    modeLabel.setFont(UserUiTheme.FONT_BODY_BOLD);
-    modeLabel.setForeground(UserUiTheme.TEXT_SECONDARY);
-    modeSelector.setFont(UserUiTheme.FONT_BODY);
+    modeLabel.setFont(ChatTheme.FONT_BODY_BOLD);
+    modeLabel.setForeground(ChatTheme.TEXT_SECONDARY);
+    modeSelector.setFont(ChatTheme.FONT_BODY);
     modeSelector.addActionListener(event -> updatePreview());
 
-    JPanel modeRow = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, 0));
+    JPanel modeRow = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, 0));
     modeRow.setOpaque(false);
     modeRow.add(modeLabel, BorderLayout.WEST);
     modeRow.add(modeSelector, BorderLayout.CENTER);
 
     JPanel currentBlock = createTextBlock("Current Draft", originalDraftView);
     JPanel previewBlock = createTextBlock("Sample Suggestion", preview);
-    JPanel content = new JPanel(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    JPanel content = new JPanel(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     content.setOpaque(false);
-    JPanel heading = new JPanel(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    JPanel heading = new JPanel(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     heading.setOpaque(false);
     heading.add(title, BorderLayout.NORTH);
     heading.add(modeRow, BorderLayout.SOUTH);
     content.add(heading, BorderLayout.NORTH);
-    JPanel textBlocks = new JPanel(new GridLayout(1, 2, UserUiTheme.SPACE_MD, 0));
+    JPanel textBlocks = new JPanel(new GridLayout(1, 2, ChatTheme.SPACE_MD, 0));
     textBlocks.setOpaque(false);
     textBlocks.add(currentBlock);
     textBlocks.add(previewBlock);
@@ -143,24 +143,24 @@ public final class WritingAssistDialog extends JPanel {
 
     JLabel disclaimer =
         new JLabel("Local sample only; no language model or external service is called.");
-    disclaimer.setFont(UserUiTheme.FONT_SMALL);
-    disclaimer.setForeground(UserUiTheme.TEXT_MUTED);
-    feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
-    feedbackLabel.setForeground(UserUiTheme.TEXT_MUTED);
-    JPanel footerInfo = new JPanel(new BorderLayout(UserUiTheme.SPACE_XS, UserUiTheme.SPACE_XS));
+    disclaimer.setFont(ChatTheme.FONT_SMALL);
+    disclaimer.setForeground(ChatTheme.TEXT_MUTED);
+    feedbackLabel.setFont(ChatTheme.FONT_SMALL);
+    feedbackLabel.setForeground(ChatTheme.TEXT_MUTED);
+    JPanel footerInfo = new JPanel(new BorderLayout(ChatTheme.SPACE_XS, ChatTheme.SPACE_XS));
     footerInfo.setOpaque(false);
     footerInfo.add(feedbackLabel, BorderLayout.NORTH);
     footerInfo.add(disclaimer, BorderLayout.SOUTH);
 
-    JButton discard = UserUiTheme.createSecondaryButton("Discard");
+    JButton discard = ChatTheme.createSecondaryButton("Discard");
     discard.addActionListener(event -> closeDialog());
-    JButton accept = UserUiTheme.createPrimaryButton("Insert into Composer");
+    JButton accept = ChatTheme.createPrimaryButton("Insert into Composer");
     accept.addActionListener(event -> acceptPreview());
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     actions.setOpaque(false);
     actions.add(discard);
     actions.add(accept);
-    JPanel footer = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+    JPanel footer = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
     footer.setOpaque(false);
     footer.add(footerInfo, BorderLayout.CENTER);
     footer.add(actions, BorderLayout.SOUTH);
@@ -169,12 +169,12 @@ public final class WritingAssistDialog extends JPanel {
   }
 
   private JPanel createTextBlock(String titleText, JTextArea textArea) {
-    JPanel block = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
-    block.setBackground(UserUiTheme.SURFACE_WHITE);
-    block.setBorder(UserUiTheme.createCardBorder());
+    JPanel block = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
+    block.setBackground(ChatTheme.SURFACE_WHITE);
+    block.setBorder(ChatTheme.createCardBorder());
     JLabel title = new JLabel(titleText);
-    title.setFont(UserUiTheme.FONT_BODY_BOLD);
-    title.setForeground(UserUiTheme.TEXT_SECONDARY);
+    title.setFont(ChatTheme.FONT_BODY_BOLD);
+    title.setForeground(ChatTheme.TEXT_SECONDARY);
     block.add(title, BorderLayout.NORTH);
     block.add(new JScrollPane(textArea), BorderLayout.CENTER);
     return block;

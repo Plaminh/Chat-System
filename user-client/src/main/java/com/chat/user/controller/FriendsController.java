@@ -31,18 +31,36 @@ public final class FriendsController {
   }
 
   public List<FriendRequest> filterFriendRequests(List<FriendRequest> requests, String query) {
+    return filterFriendRequests(requests, Set.of(), Set.of(), query);
+  }
+
+  public List<FriendRequest> filterFriendRequests(
+      List<FriendRequest> requests,
+      Set<String> blockedByMe,
+      Set<String> blockedMe,
+      String query) {
     if (requests == null) {
       return List.of();
     }
     String filter = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
     return requests.stream()
         .filter(request -> request.status() == FriendRequest.Status.PENDING)
+        .filter(request -> !isBlocked(request.requester().username(), blockedByMe))
+        .filter(request -> !isBlocked(request.requester().username(), blockedMe))
         .filter(request -> filter.isEmpty() || request.requester().fullName().toLowerCase(Locale.ROOT).contains(filter))
         .toList();
   }
 
   public List<UserProfile> searchUsers(
       List<UserProfile> directory, Set<String> blockedUsernames, String searchText) {
+    return searchUsers(directory, blockedUsernames, Set.of(), searchText);
+  }
+
+  public List<UserProfile> searchUsers(
+      List<UserProfile> directory,
+      Set<String> blockedByMe,
+      Set<String> blockedMe,
+      String searchText) {
     if (directory == null || searchText == null) {
       return List.of();
     }
@@ -52,7 +70,8 @@ public final class FriendsController {
     }
     String usernameQuery = entered.startsWith("@") ? entered.substring(1) : entered;
     return directory.stream()
-        .filter(profile -> !isBlocked(profile.username(), blockedUsernames))
+        .filter(profile -> !isBlocked(profile.username(), blockedByMe))
+        .filter(profile -> !isBlocked(profile.username(), blockedMe))
         .filter(
             profile ->
                 profile.username().toLowerCase(Locale.ROOT).contains(usernameQuery)

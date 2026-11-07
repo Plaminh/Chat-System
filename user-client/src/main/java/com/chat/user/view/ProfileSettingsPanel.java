@@ -1,6 +1,6 @@
 package com.chat.user.view;
 
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.model.UserProfile;
 import com.chat.user.model.UserSessionState;
 import java.awt.BorderLayout;
@@ -21,16 +21,16 @@ import javax.swing.SwingUtilities;
 
 public final class ProfileSettingsPanel extends JPanel {
   private final UserSessionState sessionState;
-  private final JTextField fullNameField = UserUiTheme.createTextField(24);
-  private final JTextField usernameField = UserUiTheme.createTextField(24);
-  private final JTextField emailField = UserUiTheme.createTextField(24);
-  private final JTextField addressField = UserUiTheme.createTextField(24);
-  private final JTextField dateOfBirthField = UserUiTheme.createTextField(24);
-  private final JTextField genderField = UserUiTheme.createTextField(24);
+  private final JTextField fullNameField = ChatTheme.createTextField(24);
+  private final JTextField usernameField = ChatTheme.createTextField(24);
+  private final JTextField emailField = ChatTheme.createTextField(24);
+  private final JTextField addressField = ChatTheme.createTextField(24);
+  private final JTextField dateOfBirthField = ChatTheme.createTextField(24);
+  private final JTextField genderField = ChatTheme.createTextField(24);
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.RIGHT);
 
   public ProfileSettingsPanel(UserSessionState sessionState) {
-    super(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    super(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     this.sessionState = Objects.requireNonNull(sessionState, "sessionState");
     buildContent();
     loadProfile();
@@ -73,11 +73,11 @@ public final class ProfileSettingsPanel extends JPanel {
 
     if (fullName.isEmpty() || email.isEmpty() || address.isEmpty() || dateOfBirth.isEmpty()
         || gender.isEmpty()) {
-      showFeedback("Complete all required fields.", UserUiTheme.DANGER);
+      showFeedback("Complete all required fields.", ChatTheme.DANGER);
       return;
     }
     if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
-      showFeedback("Enter a valid email address.", UserUiTheme.DANGER);
+      showFeedback("Enter a valid email address.", ChatTheme.DANGER);
       return;
     }
 
@@ -85,7 +85,7 @@ public final class ProfileSettingsPanel extends JPanel {
     try {
       parsedDate = LocalDate.parse(dateOfBirth);
     } catch (DateTimeParseException exception) {
-      showFeedback("Date of birth must use the YYYY-MM-DD format.", UserUiTheme.DANGER);
+      showFeedback("Date of birth must use the YYYY-MM-DD format.", ChatTheme.DANGER);
       return;
     }
 
@@ -94,33 +94,33 @@ public final class ProfileSettingsPanel extends JPanel {
         new UserProfile(
             oldProfile.username(), fullName, email, address, parsedDate, gender));
     loadProfile();
-    showFeedback("Sample profile updated for this session.", UserUiTheme.SUCCESS);
+    showFeedback("Sample profile updated for this session.", ChatTheme.SUCCESS);
   }
 
   void cancelChanges() {
     loadProfile();
-    showFeedback(" ", UserUiTheme.TEXT_MUTED);
+    showFeedback(" ", ChatTheme.TEXT_MUTED);
   }
 
   private void buildContent() {
-    setBackground(UserUiTheme.CANVAS_BG);
+    setBackground(ChatTheme.CANVAS_BG);
     setBorder(BorderFactory.createEmptyBorder(
-        UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+        ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
 
-    JPanel profileCard = UserUiTheme.createCardPanel();
-    profileCard.setLayout(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    JPanel profileCard = ChatTheme.createCardPanel();
+    profileCard.setLayout(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     JLabel title = new JLabel("Profile & Account");
-    title.setFont(UserUiTheme.FONT_TITLE);
-    title.setForeground(UserUiTheme.TEXT_PRIMARY);
+    title.setFont(ChatTheme.FONT_TITLE);
+    title.setForeground(ChatTheme.TEXT_PRIMARY);
     JLabel subtitle = new JLabel("View and edit your account details.");
-    subtitle.setFont(UserUiTheme.FONT_BODY);
-    subtitle.setForeground(UserUiTheme.TEXT_MUTED);
-    JPanel heading = new JPanel(new BorderLayout(UserUiTheme.SPACE_XS, UserUiTheme.SPACE_XS));
+    subtitle.setFont(ChatTheme.FONT_BODY);
+    subtitle.setForeground(ChatTheme.TEXT_MUTED);
+    JPanel heading = new JPanel(new BorderLayout(ChatTheme.SPACE_XS, ChatTheme.SPACE_XS));
     heading.setOpaque(false);
     heading.add(title, BorderLayout.NORTH);
     heading.add(subtitle, BorderLayout.SOUTH);
 
-    JPanel fields = new JPanel(new GridLayout(0, 2, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    JPanel fields = new JPanel(new GridLayout(0, 2, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     fields.setOpaque(false);
     addField(fields, "Full name", fullNameField);
     usernameField.setEditable(false);
@@ -130,9 +130,9 @@ public final class ProfileSettingsPanel extends JPanel {
     addField(fields, "Date of birth (YYYY-MM-DD)", dateOfBirthField);
     addField(fields, "Gender", genderField);
 
-    JButton cancelButton = UserUiTheme.createSecondaryButton("Cancel");
+    JButton cancelButton = ChatTheme.createSecondaryButton("Cancel");
     cancelButton.addActionListener(event -> cancelChanges());
-    JButton saveButton = UserUiTheme.createPrimaryButton("Save Changes");
+    JButton saveButton = ChatTheme.createPrimaryButton("Save Changes");
     saveButton.addActionListener(event -> saveProfile());
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     actions.setOpaque(false);
@@ -140,18 +140,18 @@ public final class ProfileSettingsPanel extends JPanel {
     actions.add(cancelButton);
     actions.add(saveButton);
 
-    JPanel profileContent = new JPanel(new BorderLayout(UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG));
+    JPanel profileContent = new JPanel(new BorderLayout(ChatTheme.SPACE_LG, ChatTheme.SPACE_LG));
     profileContent.setOpaque(false);
     profileContent.add(heading, BorderLayout.NORTH);
     profileContent.add(fields, BorderLayout.CENTER);
     profileContent.add(actions, BorderLayout.SOUTH);
     profileCard.add(profileContent, BorderLayout.CENTER);
 
-    JPanel passwordCard = UserUiTheme.createCardPanel();
+    JPanel passwordCard = ChatTheme.createCardPanel();
     JLabel passwordInfo = new JLabel("<html><b>Account Password</b><br>Change your password using the sample form.</html>");
-    passwordInfo.setFont(UserUiTheme.FONT_BODY);
-    passwordInfo.setForeground(UserUiTheme.TEXT_SECONDARY);
-    JButton changePasswordButton = UserUiTheme.createPrimaryButton("Change Password");
+    passwordInfo.setFont(ChatTheme.FONT_BODY);
+    passwordInfo.setForeground(ChatTheme.TEXT_SECONDARY);
+    JButton changePasswordButton = ChatTheme.createPrimaryButton("Change Password");
     changePasswordButton.addActionListener(event -> showChangePasswordDialog());
     passwordCard.add(passwordInfo, BorderLayout.CENTER);
     passwordCard.add(changePasswordButton, BorderLayout.EAST);
@@ -161,11 +161,11 @@ public final class ProfileSettingsPanel extends JPanel {
   }
 
   private void addField(JPanel parent, String labelText, JTextField field) {
-    JPanel group = new JPanel(new BorderLayout(UserUiTheme.SPACE_XS, UserUiTheme.SPACE_XS));
+    JPanel group = new JPanel(new BorderLayout(ChatTheme.SPACE_XS, ChatTheme.SPACE_XS));
     group.setOpaque(false);
     JLabel label = new JLabel(labelText);
-    label.setFont(UserUiTheme.FONT_BODY_BOLD);
-    label.setForeground(UserUiTheme.TEXT_SECONDARY);
+    label.setFont(ChatTheme.FONT_BODY_BOLD);
+    label.setForeground(ChatTheme.TEXT_SECONDARY);
     group.add(label, BorderLayout.NORTH);
     group.add(field, BorderLayout.CENTER);
     parent.add(group);

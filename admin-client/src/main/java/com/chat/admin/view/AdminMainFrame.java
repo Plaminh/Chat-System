@@ -1,9 +1,10 @@
 package com.chat.admin.view;
 
+import com.chat.common.ui.ChatTheme;
 import com.chat.admin.chart.ActivityChartPanel;
 import com.chat.admin.chart.RegistrationChartPanel;
 import com.chat.admin.model.AdminMockDataStore;
-import com.chat.admin.view.AdminUIStyle.NavIconType;
+import com.chat.admin.view.AdminUIComponents.NavIconType;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -62,7 +63,6 @@ public final class AdminMainFrame extends JFrame {
   public AdminMainFrame(String adminUsername) {
     super("ChatAdmin Console v1.0 — System Administration");
     this.adminUsername = adminUsername == null || adminUsername.isBlank() ? "admin" : adminUsername;
-    AdminUIStyle.applyGlobalThemeDefaults();
     initFrameLayout();
     registerDefaultCards();
     showCard(CARD_USERS);
@@ -94,13 +94,13 @@ public final class AdminMainFrame extends JFrame {
       String key = entry.getKey();
       JButton btn = entry.getValue();
       boolean active = key.equals(cardKey);
-      btn.setBackground(active ? AdminUIStyle.PRIMARY : AdminUIStyle.SIDEBAR_BG);
+      btn.setBackground(active ? ChatTheme.PRIMARY : ChatTheme.SIDEBAR_BG);
       btn.setForeground(active ? Color.WHITE : new Color(0xCBD5E1));
-      btn.setFont(active ? AdminUIStyle.FONT_BODY_BOLD : AdminUIStyle.FONT_BODY);
+      btn.setFont(active ? ChatTheme.FONT_BODY_BOLD : ChatTheme.FONT_BODY);
       NavIconType iconType = navIcons.get(key);
       if (iconType != null) {
         btn.setIcon(
-            AdminUIStyle.createVectorIcon(
+            AdminUIComponents.createVectorIcon(
                 iconType, active ? Color.WHITE : new Color(0x94A3B8), 16));
       }
     }
@@ -113,15 +113,15 @@ public final class AdminMainFrame extends JFrame {
     setLocationRelativeTo(null);
 
     JPanel root = new JPanel(new BorderLayout());
-    root.setBackground(AdminUIStyle.CANVAS_BG);
+    root.setBackground(ChatTheme.CANVAS_BG);
 
     root.add(buildSidebar(), BorderLayout.WEST);
 
     JPanel centerWrapper = new JPanel(new BorderLayout());
-    centerWrapper.setBackground(AdminUIStyle.CANVAS_BG);
+    centerWrapper.setBackground(ChatTheme.CANVAS_BG);
     centerWrapper.add(buildTopHeader(), BorderLayout.NORTH);
 
-    cardContainer.setBackground(AdminUIStyle.CANVAS_BG);
+    cardContainer.setBackground(ChatTheme.CANVAS_BG);
     cardContainer.setBorder(BorderFactory.createEmptyBorder(16, 20, 16, 20));
     centerWrapper.add(cardContainer, BorderLayout.CENTER);
     centerWrapper.add(buildStatusFooter(), BorderLayout.SOUTH);
@@ -132,30 +132,30 @@ public final class AdminMainFrame extends JFrame {
 
   private JPanel buildSidebar() {
     JPanel sidebar = new JPanel(new BorderLayout());
-    sidebar.setBackground(AdminUIStyle.SIDEBAR_BG);
-    sidebar.setPreferredSize(new Dimension(245, 800));
+    sidebar.setBackground(ChatTheme.SIDEBAR_BG);
+    sidebar.setPreferredSize(new Dimension(ChatTheme.SIDEBAR_WIDTH, 800));
     sidebar.setBorder(
-        BorderFactory.createMatteBorder(0, 0, 0, 1, AdminUIStyle.SIDEBAR_DIVIDER));
+        BorderFactory.createMatteBorder(0, 0, 0, 1, ChatTheme.SIDEBAR_DIVIDER));
 
     JPanel topBox = new JPanel();
     topBox.setLayout(new BoxLayout(topBox, BoxLayout.Y_AXIS));
-    topBox.setBackground(AdminUIStyle.SIDEBAR_BG);
+    topBox.setBackground(ChatTheme.SIDEBAR_BG);
     topBox.setBorder(BorderFactory.createEmptyBorder(18, 16, 12, 16));
 
     // Brand row
     JPanel brandRow = new JPanel(new BorderLayout());
-    brandRow.setBackground(AdminUIStyle.SIDEBAR_BG);
+    brandRow.setBackground(ChatTheme.SIDEBAR_BG);
     brandRow.setAlignmentX(Component.LEFT_ALIGNMENT);
 
     JLabel logoLabel = new JLabel("ChatAdmin");
     logoLabel.setFont(new Font("SansSerif", Font.BOLD, 17));
     logoLabel.setForeground(Color.WHITE);
     logoLabel.setIcon(
-        AdminUIStyle.createVectorIcon(NavIconType.SHIELD, new Color(0x60A5FA), 18));
+        AdminUIComponents.createVectorIcon(NavIconType.SHIELD, new Color(0x60A5FA), 18));
     logoLabel.setIconTextGap(8);
 
     JLabel suiteBadge = new JLabel("v1.0");
-    suiteBadge.setFont(AdminUIStyle.FONT_BADGE);
+    suiteBadge.setFont(ChatTheme.FONT_BADGE);
     suiteBadge.setForeground(new Color(0x93C5FD));
     suiteBadge.setBorder(
         BorderFactory.createCompoundBorder(
@@ -169,7 +169,7 @@ public final class AdminMainFrame extends JFrame {
 
     // Admin Profile Snippet Card
     JPanel profileCard = new JPanel(new BorderLayout(10, 0));
-    profileCard.setBackground(AdminUIStyle.SIDEBAR_HOVER);
+    profileCard.setBackground(ChatTheme.SIDEBAR_HOVER);
     profileCard.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
     profileCard.setAlignmentX(Component.LEFT_ALIGNMENT);
     profileCard.setMaximumSize(new Dimension(220, 54));
@@ -177,18 +177,18 @@ public final class AdminMainFrame extends JFrame {
     JLabel avatarBadge = new JLabel("SA", SwingConstants.CENTER);
     avatarBadge.setPreferredSize(new Dimension(32, 32));
     avatarBadge.setOpaque(true);
-    avatarBadge.setBackground(AdminUIStyle.PRIMARY);
+    avatarBadge.setBackground(ChatTheme.PRIMARY);
     avatarBadge.setForeground(Color.WHITE);
-    avatarBadge.setFont(AdminUIStyle.FONT_BODY_BOLD);
+    avatarBadge.setFont(ChatTheme.FONT_BODY_BOLD);
 
     JPanel profileText = new JPanel(new GridLayout(2, 1));
     profileText.setOpaque(false);
     JLabel adminName = new JLabel("System Admin (@" + adminUsername + ")");
-    adminName.setFont(AdminUIStyle.FONT_SMALL);
+    adminName.setFont(ChatTheme.FONT_SMALL);
     adminName.setForeground(Color.WHITE);
     JLabel onlineDot = new JLabel("● Online Session");
     onlineDot.setFont(new Font("SansSerif", Font.BOLD, 11));
-    onlineDot.setForeground(AdminUIStyle.SUCCESS_DOT);
+    onlineDot.setForeground(ChatTheme.SUCCESS_DOT);
     profileText.add(adminName);
     profileText.add(onlineDot);
 
@@ -201,7 +201,7 @@ public final class AdminMainFrame extends JFrame {
     // Navigation Menu List
     JPanel navList = new JPanel();
     navList.setLayout(new BoxLayout(navList, BoxLayout.Y_AXIS));
-    navList.setBackground(AdminUIStyle.SIDEBAR_BG);
+    navList.setBackground(ChatTheme.SIDEBAR_BG);
     navList.setBorder(BorderFactory.createEmptyBorder(8, 12, 12, 12));
 
     navList.add(createSidebarSectionLabel("OVERSIGHT & MANAGEMENT"));
@@ -262,17 +262,17 @@ public final class AdminMainFrame extends JFrame {
 
     // Bottom Sign Out Area
     JPanel bottomPanel = new JPanel(new BorderLayout());
-    bottomPanel.setBackground(AdminUIStyle.SIDEBAR_BG);
+    bottomPanel.setBackground(ChatTheme.SIDEBAR_BG);
     bottomPanel.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(1, 0, 0, 0, AdminUIStyle.SIDEBAR_DIVIDER),
+            BorderFactory.createMatteBorder(1, 0, 0, 0, ChatTheme.SIDEBAR_DIVIDER),
             BorderFactory.createEmptyBorder(12, 12, 14, 12)));
 
     JButton signOutBtn = new JButton("Sign Out");
-    signOutBtn.setFont(AdminUIStyle.FONT_BODY_BOLD);
+    signOutBtn.setFont(ChatTheme.FONT_BODY_BOLD);
     signOutBtn.setHorizontalAlignment(SwingConstants.LEFT);
     signOutBtn.setIcon(
-        AdminUIStyle.createVectorIcon(NavIconType.LOGOUT, new Color(0xFCA5A5), 16));
+        AdminUIComponents.createVectorIcon(NavIconType.LOGOUT, new Color(0xFCA5A5), 16));
     signOutBtn.setIconTextGap(10);
     signOutBtn.setBackground(new Color(0x1E293B));
     signOutBtn.setForeground(new Color(0xFCA5A5));
@@ -289,7 +289,7 @@ public final class AdminMainFrame extends JFrame {
 
   private JLabel createSidebarSectionLabel(String text) {
     JLabel label = new JLabel(text);
-    label.setFont(AdminUIStyle.FONT_SECTION);
+    label.setFont(ChatTheme.FONT_SECTION);
     label.setForeground(new Color(0x64748B));
     label.setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 4));
     label.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -302,7 +302,7 @@ public final class AdminMainFrame extends JFrame {
     navIcons.put(cardKey, iconType);
 
     JButton btn = new JButton(menuText);
-    btn.setFont(AdminUIStyle.FONT_BODY);
+    btn.setFont(ChatTheme.FONT_BODY);
     btn.setHorizontalAlignment(SwingConstants.LEFT);
     btn.setIconTextGap(10);
     btn.setFocusPainted(false);
@@ -319,18 +319,22 @@ public final class AdminMainFrame extends JFrame {
 
   private JPanel buildTopHeader() {
     JPanel header = new JPanel(new BorderLayout(16, 0));
-    header.setBackground(AdminUIStyle.SURFACE_WHITE);
+    header.setBackground(ChatTheme.SURFACE_WHITE);
     header.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 1, 0, AdminUIStyle.BORDER_COLOR),
-            BorderFactory.createEmptyBorder(12, 20, 12, 20)));
+            BorderFactory.createMatteBorder(0, 0, 1, 0, ChatTheme.BORDER),
+            BorderFactory.createEmptyBorder(
+                ChatTheme.HEADER_PADDING_VERTICAL,
+                ChatTheme.HEADER_PADDING_HORIZONTAL,
+                ChatTheme.HEADER_PADDING_VERTICAL,
+                ChatTheme.HEADER_PADDING_HORIZONTAL)));
 
     JPanel leftTitles = new JPanel(new BorderLayout(0, 2));
     leftTitles.setOpaque(false);
-    headerBreadcrumbLabel.setFont(AdminUIStyle.FONT_SMALL);
-    headerBreadcrumbLabel.setForeground(AdminUIStyle.TEXT_MUTED);
-    headerTitleLabel.setFont(AdminUIStyle.FONT_TITLE);
-    headerTitleLabel.setForeground(AdminUIStyle.TEXT_PRIMARY);
+    headerBreadcrumbLabel.setFont(ChatTheme.FONT_SMALL);
+    headerBreadcrumbLabel.setForeground(ChatTheme.TEXT_MUTED);
+    headerTitleLabel.setFont(ChatTheme.FONT_TITLE);
+    headerTitleLabel.setForeground(ChatTheme.TEXT_PRIMARY);
     leftTitles.add(headerBreadcrumbLabel, BorderLayout.NORTH);
     leftTitles.add(headerTitleLabel, BorderLayout.SOUTH);
 
@@ -338,21 +342,21 @@ public final class AdminMainFrame extends JFrame {
     rightInfo.setOpaque(false);
 
     JLabel dateBadge =
-        new JLabel("Session Date: " + LocalDateTime.now().format(AdminUIStyle.DATETIME_FMT));
-    dateBadge.setFont(AdminUIStyle.FONT_MONO);
-    dateBadge.setForeground(AdminUIStyle.TEXT_SECONDARY);
+        new JLabel("Session Date: " + LocalDateTime.now().format(ChatTheme.DATETIME_FMT));
+    dateBadge.setFont(ChatTheme.FONT_MONO);
+    dateBadge.setForeground(ChatTheme.TEXT_SECONDARY);
     dateBadge.setOpaque(true);
-    dateBadge.setBackground(AdminUIStyle.CANVAS_BG);
+    dateBadge.setBackground(ChatTheme.CANVAS_BG);
     dateBadge.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(AdminUIStyle.BORDER_COLOR, 1, true),
+            BorderFactory.createLineBorder(ChatTheme.BORDER, 1, true),
             BorderFactory.createEmptyBorder(4, 10, 4, 10)));
 
     JLabel roleBadge = new JLabel("● Role: Administrator");
-    roleBadge.setFont(AdminUIStyle.FONT_BADGE);
-    roleBadge.setForeground(AdminUIStyle.SUCCESS_TEXT);
+    roleBadge.setFont(ChatTheme.FONT_BADGE);
+    roleBadge.setForeground(ChatTheme.SUCCESS_TEXT);
     roleBadge.setOpaque(true);
-    roleBadge.setBackground(AdminUIStyle.SUCCESS_BG);
+    roleBadge.setBackground(ChatTheme.SUCCESS_BG);
     roleBadge.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
     rightInfo.add(dateBadge);
@@ -365,10 +369,10 @@ public final class AdminMainFrame extends JFrame {
 
   private JPanel buildStatusFooter() {
     JPanel footer = new JPanel(new BorderLayout());
-    footer.setBackground(AdminUIStyle.SURFACE_WHITE);
+    footer.setBackground(ChatTheme.SURFACE_WHITE);
     footer.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(1, 0, 0, 0, AdminUIStyle.BORDER_COLOR),
+            BorderFactory.createMatteBorder(1, 0, 0, 0, ChatTheme.BORDER),
             BorderFactory.createEmptyBorder(6, 20, 6, 20)));
 
     AdminMockDataStore store = AdminMockDataStore.getInstance();
@@ -380,8 +384,8 @@ public final class AdminMainFrame extends JFrame {
                 + store.getGroups().size()
                 + "   |   Spam Reports: "
                 + store.getSpamReports().size());
-    leftStatus.setFont(AdminUIStyle.FONT_SMALL);
-    leftStatus.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    leftStatus.setFont(ChatTheme.FONT_SMALL);
+    leftStatus.setForeground(ChatTheme.TEXT_SECONDARY);
 
     store.addChangeListener(
         () ->
@@ -422,29 +426,29 @@ public final class AdminMainFrame extends JFrame {
 
   private JPanel buildVisualChartsView() {
     JPanel root = new JPanel(new BorderLayout(0, 14));
-    root.setBackground(AdminUIStyle.CANVAS_BG);
+    root.setBackground(ChatTheme.CANVAS_BG);
 
     RegistrationChartPanel registrationChartPanel = new RegistrationChartPanel();
     ActivityChartPanel activityChartPanel = new ActivityChartPanel();
 
-    JPanel topToolbar = AdminUIStyle.createCardPanel(new BorderLayout(12, 6));
-    JPanel leftInfo = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 10, 2));
+    JPanel topToolbar = ChatTheme.createCardPanel(new BorderLayout(12, 6));
+    JPanel leftInfo = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 10, 2));
     leftInfo.setOpaque(false);
     JLabel infoLabel =
         new JLabel(
             "Annual Analytics Dashboard — Compare 12-month New Registrations (Bar) & Active App Users (Line)");
-    infoLabel.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    infoLabel.setForeground(AdminUIStyle.TEXT_PRIMARY);
+    infoLabel.setFont(ChatTheme.FONT_BODY_BOLD);
+    infoLabel.setForeground(ChatTheme.TEXT_PRIMARY);
     leftInfo.add(infoLabel);
 
     JPanel rightControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightControls.setOpaque(false);
     JLabel syncYearLbl = new JLabel("Sync Both Charts to Year:");
-    syncYearLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    syncYearLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    syncYearLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    syncYearLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
     JComboBox<Integer> globalYearCombo = new JComboBox<>(new Integer[] {2024, 2025, 2026});
-    globalYearCombo.setFont(AdminUIStyle.FONT_BODY_BOLD);
+    globalYearCombo.setFont(ChatTheme.FONT_BODY_BOLD);
     globalYearCombo.setSelectedItem(2025);
     globalYearCombo.addActionListener(
         e -> {
@@ -472,10 +476,10 @@ public final class AdminMainFrame extends JFrame {
   }
 
   private JPanel createOverviewPlaceholderCard(String title) {
-    JPanel panel = AdminUIStyle.createCardPanel(new BorderLayout(16, 16));
+    JPanel panel = ChatTheme.createCardPanel(new BorderLayout(16, 16));
     JLabel heading = new JLabel(title, SwingConstants.CENTER);
-    heading.setFont(AdminUIStyle.FONT_TITLE);
-    heading.setForeground(AdminUIStyle.TEXT_PRIMARY);
+    heading.setFont(ChatTheme.FONT_TITLE);
+    heading.setForeground(ChatTheme.TEXT_PRIMARY);
     panel.add(heading, BorderLayout.CENTER);
     return panel;
   }

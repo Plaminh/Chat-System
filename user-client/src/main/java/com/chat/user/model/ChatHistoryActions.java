@@ -12,10 +12,11 @@ public final class ChatHistoryActions {
   }
 
   public void applyMessageAction(
-      Action action, Conversation conversation, Set<String> messageIds) {
+      Action action, Conversation conversation, Set<String> messageIds, String currentUsername) {
     Objects.requireNonNull(action, "action");
     Objects.requireNonNull(conversation, "conversation");
     Objects.requireNonNull(messageIds, "messageIds");
+    Objects.requireNonNull(currentUsername, "currentUsername");
     if (action == Action.CLEAR_HISTORY) {
       throw new IllegalArgumentException("Clear history does not target individual messages");
     }
@@ -29,6 +30,13 @@ public final class ChatHistoryActions {
             .collect(java.util.stream.Collectors.toSet());
     if (!existingIds.containsAll(messageIds)) {
       throw new IllegalArgumentException("Selected messages are not in the conversation");
+    }
+    if (action == Action.UNSEND
+        && conversation.messages().stream()
+            .filter(message -> messageIds.contains(message.messageId()))
+            .anyMatch(
+                message -> !message.senderUsername().equalsIgnoreCase(currentUsername))) {
+      throw new IllegalArgumentException("Only your own messages can be unsent");
     }
 
     Set<String> remaining = new HashSet<>(messageIds);

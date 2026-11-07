@@ -1,7 +1,7 @@
 package com.chat.user.view;
 
 import com.chat.user.component.MessageBubble;
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.model.ChatMessage;
 import com.chat.user.model.GroupConversation;
 import com.chat.user.model.GroupMember;
@@ -30,11 +30,11 @@ public final class GroupChatPanel extends JPanel {
   private Runnable backHandler =
       () -> {
         feedbackLabel.setText("Select Groups in the navigation to return.");
-        feedbackLabel.setForeground(UserUiTheme.TEXT_MUTED);
+        feedbackLabel.setForeground(ChatTheme.TEXT_MUTED);
       };
 
   public GroupChatPanel(GroupConversation group, String currentUsername) {
-    super(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    super(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     this.group = Objects.requireNonNull(group, "group");
     this.currentUsername = Objects.requireNonNull(currentUsername, "currentUsername");
     buildContent();
@@ -70,7 +70,7 @@ public final class GroupChatPanel extends JPanel {
     String content = composer.getText().trim();
     if (content.isEmpty()) {
       feedbackLabel.setText("Enter a message before continuing.");
-      feedbackLabel.setForeground(UserUiTheme.DANGER);
+      feedbackLabel.setForeground(ChatTheme.DANGER);
       return;
     }
 
@@ -84,77 +84,82 @@ public final class GroupChatPanel extends JPanel {
             false));
     composer.setText("");
     feedbackLabel.setText("Sample group messages are kept in this session only.");
-    feedbackLabel.setForeground(UserUiTheme.TEXT_MUTED);
+    feedbackLabel.setForeground(ChatTheme.TEXT_MUTED);
     renderMessages();
   }
 
   private void buildContent() {
-    setBackground(UserUiTheme.CANVAS_BG);
+    setBackground(ChatTheme.CANVAS_BG);
     setBorder(BorderFactory.createEmptyBorder(
-        UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+        ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
 
-    JPanel chatPane = new JPanel(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
-    chatPane.setBackground(UserUiTheme.CANVAS_BG);
-    JPanel header = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
-    header.setBackground(UserUiTheme.SURFACE_WHITE);
+    JPanel chatPane = new JPanel(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
+    chatPane.setBackground(ChatTheme.CANVAS_BG);
+    JPanel header = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
+    header.setBackground(ChatTheme.SURFACE_WHITE);
     header.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createMatteBorder(0, 0, 1, 0, UserUiTheme.BORDER),
-        BorderFactory.createEmptyBorder(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD,
-            UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD)));
+        BorderFactory.createMatteBorder(0, 0, 1, 0, ChatTheme.BORDER),
+        BorderFactory.createEmptyBorder(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD,
+            ChatTheme.SPACE_MD, ChatTheme.SPACE_MD)));
     JLabel groupName = new JLabel(group.name());
-    groupName.setFont(UserUiTheme.FONT_SUBTITLE);
-    groupName.setForeground(UserUiTheme.TEXT_PRIMARY);
-    encryptionPlaceholder.setFont(UserUiTheme.FONT_SMALL);
-    encryptionPlaceholder.setForeground(UserUiTheme.TEXT_MUTED);
+    groupName.setFont(ChatTheme.FONT_SUBTITLE);
+    groupName.setForeground(ChatTheme.TEXT_PRIMARY);
+    encryptionPlaceholder.setFont(ChatTheme.FONT_SMALL);
+    encryptionPlaceholder.setForeground(ChatTheme.TEXT_MUTED);
     header.add(groupName, BorderLayout.WEST);
-    JButton back = UserUiTheme.createSecondaryButton("Back to Groups");
+    JButton back = ChatTheme.createSecondaryButton("Back to Groups");
     back.addActionListener(event -> backHandler.run());
-    JPanel headerActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, UserUiTheme.SPACE_XS, 0));
+    JPanel headerActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, ChatTheme.SPACE_XS, 0));
     headerActions.setOpaque(false);
     headerActions.add(encryptionPlaceholder);
     headerActions.add(back);
     header.add(headerActions, BorderLayout.EAST);
 
     messageList.setLayout(new javax.swing.BoxLayout(messageList, javax.swing.BoxLayout.Y_AXIS));
-    messageList.setBackground(UserUiTheme.CANVAS_BG);
+    messageList.setBackground(ChatTheme.CANVAS_BG);
     JScrollPane messageScroll = new JScrollPane(messageList);
     messageScroll.setBorder(BorderFactory.createEmptyBorder());
-    messageScroll.getViewport().setBackground(UserUiTheme.CANVAS_BG);
+    messageScroll.getViewport().setBackground(ChatTheme.CANVAS_BG);
 
-    composer.setFont(UserUiTheme.FONT_BODY);
+    composer.setFont(ChatTheme.FONT_BODY);
     composer.setLineWrap(true);
     composer.setWrapStyleWord(true);
     composer.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createLineBorder(UserUiTheme.BORDER),
-        BorderFactory.createEmptyBorder(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM,
-            UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM)));
-    JButton send = UserUiTheme.createPrimaryButton("Send Sample");
+        BorderFactory.createLineBorder(ChatTheme.BORDER),
+        BorderFactory.createEmptyBorder(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM,
+            ChatTheme.SPACE_SM, ChatTheme.SPACE_SM)));
+    JButton send = ChatTheme.createPrimaryButton("Send Sample");
     send.addActionListener(event -> sendSampleMessage());
     JPanel actionRow = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     actionRow.setOpaque(false);
     actionRow.add(feedbackLabel);
     actionRow.add(send);
-    JPanel composerPane = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
-    composerPane.setBackground(UserUiTheme.SURFACE_WHITE);
-    composerPane.setBorder(BorderFactory.createEmptyBorder(UserUiTheme.SPACE_SM,
-        UserUiTheme.SPACE_MD, UserUiTheme.SPACE_SM, UserUiTheme.SPACE_MD));
+    JPanel composerPane = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
+    composerPane.setBackground(ChatTheme.SURFACE_WHITE);
+    composerPane.setBorder(BorderFactory.createEmptyBorder(ChatTheme.SPACE_SM,
+        ChatTheme.SPACE_MD, ChatTheme.SPACE_SM, ChatTheme.SPACE_MD));
     composerPane.add(composer, BorderLayout.CENTER);
     composerPane.add(actionRow, BorderLayout.SOUTH);
 
     memberList.setLayout(new javax.swing.BoxLayout(memberList, javax.swing.BoxLayout.Y_AXIS));
-    memberList.setBackground(UserUiTheme.SURFACE_WHITE);
-    JPanel membersCard = UserUiTheme.createCardPanel();
-    membersCard.setLayout(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+    memberList.setBackground(ChatTheme.SURFACE_WHITE);
+    JPanel membersCard = ChatTheme.createCardPanel();
+    membersCard.setLayout(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
     JLabel membersTitle = new JLabel("Members & Roles");
-    membersTitle.setFont(UserUiTheme.FONT_SUBTITLE);
-    membersTitle.setForeground(UserUiTheme.TEXT_PRIMARY);
+    membersTitle.setFont(ChatTheme.FONT_SUBTITLE);
+    membersTitle.setForeground(ChatTheme.TEXT_PRIMARY);
     membersCard.add(membersTitle, BorderLayout.NORTH);
-    membersCard.add(memberList, BorderLayout.CENTER);
+    JScrollPane memberScroll = new JScrollPane(memberList);
+    memberScroll.setBorder(BorderFactory.createEmptyBorder());
+    memberScroll.getViewport().setBackground(ChatTheme.SURFACE_WHITE);
+    membersCard.add(memberScroll, BorderLayout.CENTER);
 
     javax.swing.JSplitPane splitPane =
         new javax.swing.JSplitPane(javax.swing.JSplitPane.HORIZONTAL_SPLIT, chatPane, membersCard);
     splitPane.setResizeWeight(0.78);
-    splitPane.setDividerLocation(820);
+    splitPane.setDividerLocation(0.78);
+    chatPane.setMinimumSize(new java.awt.Dimension(420, 0));
+    membersCard.setMinimumSize(new java.awt.Dimension(180, 0));
     splitPane.setBorder(null);
     chatPane.add(header, BorderLayout.NORTH);
     chatPane.add(messageScroll, BorderLayout.CENTER);
@@ -172,8 +177,8 @@ public final class GroupChatPanel extends JPanel {
     }
     if (group.messages().isEmpty()) {
       JLabel empty = new JLabel("No messages in this group yet.", SwingConstants.CENTER);
-      empty.setFont(UserUiTheme.FONT_BODY);
-      empty.setForeground(UserUiTheme.TEXT_MUTED);
+      empty.setFont(ChatTheme.FONT_BODY);
+      empty.setForeground(ChatTheme.TEXT_MUTED);
       messageList.add(empty);
     }
     messageList.add(javax.swing.Box.createVerticalGlue());
@@ -186,17 +191,17 @@ public final class GroupChatPanel extends JPanel {
     for (GroupMember member : group.members()) {
       JLabel identity = new JLabel(
           member.user().fullName() + "  •  @" + member.user().username());
-      identity.setFont(UserUiTheme.FONT_BODY_BOLD);
+      identity.setFont(ChatTheme.FONT_BODY_BOLD);
       JLabel role = new JLabel(
           member.role() == GroupMember.Role.ADMIN ? "Administrator" : "Member");
-      role.setFont(UserUiTheme.FONT_SMALL);
+      role.setFont(ChatTheme.FONT_SMALL);
       role.setForeground(member.role() == GroupMember.Role.ADMIN
-          ? UserUiTheme.PRIMARY
-          : UserUiTheme.TEXT_MUTED);
-      JPanel memberRow = new JPanel(new BorderLayout(UserUiTheme.SPACE_XS, UserUiTheme.SPACE_XS));
+          ? ChatTheme.PRIMARY
+          : ChatTheme.TEXT_MUTED);
+      JPanel memberRow = new JPanel(new BorderLayout(ChatTheme.SPACE_XS, ChatTheme.SPACE_XS));
       memberRow.setOpaque(false);
       memberRow.setBorder(BorderFactory.createEmptyBorder(
-          UserUiTheme.SPACE_SM, 0, UserUiTheme.SPACE_SM, 0));
+          ChatTheme.SPACE_SM, 0, ChatTheme.SPACE_SM, 0));
       memberRow.add(identity, BorderLayout.NORTH);
       memberRow.add(role, BorderLayout.SOUTH);
       memberList.add(memberRow);

@@ -1,6 +1,6 @@
 package com.chat.user.view;
 
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.model.GroupConversation;
 import com.chat.user.model.UserProfile;
 import java.awt.BorderLayout;
@@ -36,7 +36,7 @@ public final class GroupsPanel extends JPanel {
       Set<String> blockedUsernames,
       BiPredicate<GroupConversation, GroupMembersDialog.MemberAction> memberConfirmationHandler,
       Consumer<GroupConversation> openChatHandler) {
-    super(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    super(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     this.currentUser = Objects.requireNonNull(currentUser, "currentUser");
     this.groups = new ArrayList<>(Objects.requireNonNull(groups, "groups"));
     this.directory = new ArrayList<>(Objects.requireNonNull(directory, "directory"));
@@ -91,23 +91,23 @@ public final class GroupsPanel extends JPanel {
   }
 
   private void buildContent() {
-    setBackground(UserUiTheme.CANVAS_BG);
+    setBackground(ChatTheme.CANVAS_BG);
     setBorder(BorderFactory.createEmptyBorder(
-        UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+        ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     JLabel title = new JLabel("Groups");
-    title.setFont(UserUiTheme.FONT_TITLE);
-    title.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JButton create = UserUiTheme.createPrimaryButton("Create Group");
+    title.setFont(ChatTheme.FONT_TITLE);
+    title.setForeground(ChatTheme.TEXT_PRIMARY);
+    JButton create = ChatTheme.createPrimaryButton("Create Group");
     create.addActionListener(event -> openCreateDialog());
     JPanel heading = new JPanel(new BorderLayout());
     heading.setOpaque(false);
     heading.add(title, BorderLayout.WEST);
     heading.add(create, BorderLayout.EAST);
     groupList.setLayout(new javax.swing.BoxLayout(groupList, javax.swing.BoxLayout.Y_AXIS));
-    groupList.setBackground(UserUiTheme.CANVAS_BG);
+    groupList.setBackground(ChatTheme.CANVAS_BG);
     JScrollPane scroll = new JScrollPane(groupList);
     scroll.setBorder(BorderFactory.createEmptyBorder());
-    scroll.getViewport().setBackground(UserUiTheme.CANVAS_BG);
+    scroll.getViewport().setBackground(ChatTheme.CANVAS_BG);
     add(heading, BorderLayout.NORTH);
     add(scroll, BorderLayout.CENTER);
   }
@@ -128,13 +128,13 @@ public final class GroupsPanel extends JPanel {
     groupList.removeAll();
     if (groups.isEmpty()) {
       JLabel empty = new JLabel("No groups yet.", SwingConstants.CENTER);
-      empty.setFont(UserUiTheme.FONT_BODY);
-      empty.setForeground(UserUiTheme.TEXT_MUTED);
+      empty.setFont(ChatTheme.FONT_BODY);
+      empty.setForeground(ChatTheme.TEXT_MUTED);
       groupList.add(empty);
     } else {
       for (GroupConversation group : groups) {
         groupList.add(createGroupRow(group));
-        groupList.add(javax.swing.Box.createVerticalStrut(UserUiTheme.SPACE_SM));
+        groupList.add(javax.swing.Box.createVerticalStrut(ChatTheme.SPACE_SM));
       }
     }
     groupList.revalidate();
@@ -142,17 +142,17 @@ public final class GroupsPanel extends JPanel {
   }
 
   private JPanel createGroupRow(GroupConversation group) {
-    JPanel row = UserUiTheme.createCardPanel();
-    row.setLayout(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    JPanel row = ChatTheme.createCardPanel();
+    row.setLayout(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     JLabel info = new JLabel(
         group.name() + "  •  " + group.members().size() + " members");
-    info.setFont(UserUiTheme.FONT_BODY_BOLD);
-    info.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JButton chat = UserUiTheme.createPrimaryButton("Open Chat");
+    info.setFont(ChatTheme.FONT_BODY_BOLD);
+    info.setForeground(ChatTheme.TEXT_PRIMARY);
+    JButton chat = ChatTheme.createPrimaryButton("Open Chat");
     chat.addActionListener(event -> openChatHandler.accept(group));
-    JButton members = UserUiTheme.createSecondaryButton("Members");
+    JButton members = ChatTheme.createSecondaryButton("Members");
     members.addActionListener(event -> openMembersDialog(group));
-    JButton rename = UserUiTheme.createSecondaryButton("Rename");
+    JButton rename = ChatTheme.createSecondaryButton("Rename");
     rename.addActionListener(event -> promptRename(group));
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     actions.setOpaque(false);
@@ -168,6 +168,7 @@ public final class GroupsPanel extends JPanel {
     GroupMembersDialog dialog =
         new GroupMembersDialog(
             group,
+            currentUser,
             directory.stream().filter(profile -> !isBlocked(profile.username())).toList(),
             (member, action) -> memberConfirmationHandler.test(group, action));
     dialog.createDialog(javax.swing.SwingUtilities.getWindowAncestor(this)).setVisible(true);

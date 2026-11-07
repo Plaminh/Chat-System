@@ -1,5 +1,6 @@
 package com.chat.admin.view;
 
+import com.chat.common.ui.ChatTheme;
 import com.chat.admin.controller.GroupManagementController;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.model.GroupChatInfo;
@@ -40,9 +41,9 @@ public final class GroupManagementPanel extends JPanel {
   private final GroupManagementController controller = new GroupManagementController();
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField searchGroupField =
-      AdminUIStyle.createSearchField("Filter group chats by group name...", 18);
+      ChatTheme.createSearchField("Filter group chats by group name...", 18);
   private final JComboBox<String> sortCombo =
-      AdminUIStyle.createComboBox(
+      ChatTheme.createComboBox(
           new String[] {
             "Sort: Created Date (Newest)",
             "Sort: Created Date (Oldest)",
@@ -64,10 +65,10 @@ public final class GroupManagementPanel extends JPanel {
   private final JLabel inspectorTitleLabel = new JLabel("Roster Inspector: Select a Group");
   private final JLabel inspectorMetaLabel = new JLabel("Created Date: —   |   Total Members: 0");
   private final JComboBox<String> roleFilterCombo =
-      AdminUIStyle.createComboBox(
+      ChatTheme.createComboBox(
           new String[] {"View: All Group Members", "View: Group Admins Only"});
   private final JTextField memberSearchField =
-      AdminUIStyle.createSearchField("Filter members by name or username...", 12);
+      ChatTheme.createSearchField("Filter members by name or username...", 12);
   private final DefaultTableModel memberTableModel =
       new DefaultTableModel(MEMBER_COLUMNS, 0) {
         @Override
@@ -79,7 +80,7 @@ public final class GroupManagementPanel extends JPanel {
 
   public GroupManagementPanel() {
     setLayout(new BorderLayout(0, 14));
-    setBackground(AdminUIStyle.CANVAS_BG);
+    setBackground(ChatTheme.CANVAS_BG);
 
     add(buildTopFilterToolbar(), BorderLayout.NORTH);
     add(buildSplitWorkspace(), BorderLayout.CENTER);
@@ -89,14 +90,14 @@ public final class GroupManagementPanel extends JPanel {
   }
 
   private JPanel buildTopFilterToolbar() {
-    JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(12, 6));
+    JPanel card = ChatTheme.createCardPanel(new BorderLayout(12, 6));
 
-    JPanel leftControls = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 10, 2));
+    JPanel leftControls = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 10, 2));
     leftControls.setOpaque(false);
 
     JLabel filterLbl = new JLabel("Group Filter:");
-    filterLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    filterLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    filterLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    filterLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
     leftControls.add(filterLbl);
     leftControls.add(searchGroupField);
@@ -105,7 +106,7 @@ public final class GroupManagementPanel extends JPanel {
     JPanel rightControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightControls.setOpaque(false);
 
-    JButton resetBtn = AdminUIStyle.createSecondaryButton("Reset Filter");
+    JButton resetBtn = ChatTheme.createSecondaryButton("Reset Filter");
     resetBtn.addActionListener(
         e -> {
           searchGroupField.setText("");
@@ -137,20 +138,20 @@ public final class GroupManagementPanel extends JPanel {
   }
 
   private JPanel buildLeftGroupListCard() {
-    JPanel panel = AdminUIStyle.createCardPanel(new BorderLayout(0, 10));
+    JPanel panel = ChatTheme.createCardPanel(new BorderLayout(0, 10));
     panel.setPreferredSize(new Dimension(560, 500));
 
     JPanel header = new JPanel(new BorderLayout());
     header.setOpaque(false);
     JLabel title = new JLabel("Registered Group Chats");
-    title.setFont(AdminUIStyle.FONT_SUBTITLE);
-    title.setForeground(AdminUIStyle.TEXT_PRIMARY);
-    groupCountLabel.setFont(AdminUIStyle.FONT_SMALL);
-    groupCountLabel.setForeground(AdminUIStyle.TEXT_MUTED);
+    title.setFont(ChatTheme.FONT_SUBTITLE);
+    title.setForeground(ChatTheme.TEXT_PRIMARY);
+    groupCountLabel.setFont(ChatTheme.FONT_SMALL);
+    groupCountLabel.setForeground(ChatTheme.TEXT_MUTED);
     header.add(title, BorderLayout.WEST);
     header.add(groupCountLabel, BorderLayout.EAST);
 
-    AdminUIStyle.styleTable(groupTable);
+    AdminUIComponents.styleTable(groupTable);
     groupTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     groupTable.getColumnModel().getColumn(0).setPreferredWidth(100);
     groupTable.getColumnModel().getColumn(1).setPreferredWidth(195);
@@ -159,23 +160,23 @@ public final class GroupManagementPanel extends JPanel {
     groupTable.getColumnModel().getColumn(4).setPreferredWidth(95);
 
     panel.add(header, BorderLayout.NORTH);
-    panel.add(AdminUIStyle.wrapTableInScrollPane(groupTable), BorderLayout.CENTER);
+    panel.add(AdminUIComponents.wrapTableInScrollPane(groupTable), BorderLayout.CENTER);
     return panel;
   }
 
   private JPanel buildRightMemberInspectorCard() {
-    JPanel panel = AdminUIStyle.createCardPanel(new BorderLayout(0, 10));
+    JPanel panel = ChatTheme.createCardPanel(new BorderLayout(0, 10));
     panel.setPreferredSize(new Dimension(410, 500));
 
     JPanel topSection = new JPanel(new BorderLayout(0, 8));
     topSection.setOpaque(false);
 
     JPanel metaBlock = new JPanel(new GridLayout(2, 1, 0, 3));
-    metaBlock.setBackground(AdminUIStyle.SIDEBAR_BG);
+    metaBlock.setBackground(ChatTheme.SIDEBAR_BG);
     metaBlock.setBorder(BorderFactory.createEmptyBorder(10, 14, 10, 14));
-    inspectorTitleLabel.setFont(AdminUIStyle.FONT_SUBTITLE);
-    inspectorTitleLabel.setForeground(AdminUIStyle.SURFACE_WHITE);
-    inspectorMetaLabel.setFont(AdminUIStyle.FONT_SMALL);
+    inspectorTitleLabel.setFont(ChatTheme.FONT_SUBTITLE);
+    inspectorTitleLabel.setForeground(ChatTheme.SURFACE_WHITE);
+    inspectorMetaLabel.setFont(ChatTheme.FONT_SMALL);
     inspectorMetaLabel.setForeground(new java.awt.Color(0x93C5FD));
     metaBlock.add(inspectorTitleLabel);
     metaBlock.add(inspectorMetaLabel);
@@ -188,17 +189,17 @@ public final class GroupManagementPanel extends JPanel {
     topSection.add(metaBlock, BorderLayout.NORTH);
     topSection.add(filterRow, BorderLayout.SOUTH);
 
-    AdminUIStyle.styleTable(memberTable);
+    AdminUIComponents.styleTable(memberTable);
     memberTable.getColumnModel().getColumn(0).setPreferredWidth(115);
     memberTable.getColumnModel().getColumn(1).setPreferredWidth(145);
     memberTable.getColumnModel().getColumn(2).setPreferredWidth(125);
     memberTable
         .getColumnModel()
         .getColumn(2)
-        .setCellRenderer(AdminUIStyle.createStatusBadgeRenderer());
+        .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
     panel.add(topSection, BorderLayout.NORTH);
-    panel.add(AdminUIStyle.wrapTableInScrollPane(memberTable), BorderLayout.CENTER);
+    panel.add(AdminUIComponents.wrapTableInScrollPane(memberTable), BorderLayout.CENTER);
     return panel;
   }
 
@@ -266,7 +267,7 @@ public final class GroupManagementPanel extends JPanel {
           new Object[] {
             "#" + g.groupId(),
             g.groupName(),
-            g.createdAt().format(AdminUIStyle.DATE_FMT),
+            g.createdAt().format(ChatTheme.DATE_FMT),
             g.getMemberCount() + " members",
             g.getAdminCount() + " admins"
           });
@@ -296,7 +297,7 @@ public final class GroupManagementPanel extends JPanel {
     inspectorTitleLabel.setText("Roster: #" + group.groupId() + " — " + group.groupName());
     inspectorMetaLabel.setText(
         "Created: "
-            + group.createdAt().format(AdminUIStyle.DATE_FMT)
+            + group.createdAt().format(ChatTheme.DATE_FMT)
             + "   •   Members: "
             + group.getMemberCount()
             + "   •   Group Admins: "

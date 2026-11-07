@@ -1,6 +1,6 @@
 package com.chat.user.view;
 
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.model.UserProfile;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -27,7 +27,7 @@ public final class SpamReportDialog extends JPanel {
   private boolean reportSubmitted;
 
   public SpamReportDialog(UserProfile reportedUser, boolean hasPriorConversation) {
-    super(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    super(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     this.reportedUser = Objects.requireNonNull(reportedUser, "reportedUser");
     this.hasPriorConversation = hasPriorConversation;
     buildContent();
@@ -60,60 +60,60 @@ public final class SpamReportDialog extends JPanel {
     if (!hasPriorConversation) {
       showFeedback(
           "You can only report an account after a conversation has taken place.",
-          UserUiTheme.DANGER);
+          ChatTheme.DANGER);
       return;
     }
     if (reasonField.getText().trim().isEmpty()) {
-      showFeedback("Enter a reason for the report before continuing.", UserUiTheme.DANGER);
+      showFeedback("Enter a reason for the report before continuing.", ChatTheme.DANGER);
       return;
     }
     reportSubmitted = true;
     showFeedback(
         "Sample report recorded in the UI; it was not sent to the server.",
-        UserUiTheme.SUCCESS);
+        ChatTheme.SUCCESS);
   }
 
   private void buildContent() {
-    setBackground(UserUiTheme.SURFACE_WHITE);
+    setBackground(ChatTheme.SURFACE_WHITE);
     setBorder(
         BorderFactory.createEmptyBorder(
-            UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG));
+            ChatTheme.SPACE_LG, ChatTheme.SPACE_LG, ChatTheme.SPACE_MD, ChatTheme.SPACE_LG));
     JLabel title = new JLabel("Report Conversation", SwingConstants.CENTER);
-    title.setFont(UserUiTheme.FONT_TITLE);
-    title.setForeground(UserUiTheme.TEXT_PRIMARY);
+    title.setFont(ChatTheme.FONT_TITLE);
+    title.setForeground(ChatTheme.TEXT_PRIMARY);
     JLabel target =
         new JLabel(
             "Reported account: "
                 + reportedUser.fullName()
                 + "  •  @"
                 + reportedUser.username());
-    target.setFont(UserUiTheme.FONT_BODY_BOLD);
-    target.setForeground(UserUiTheme.TEXT_SECONDARY);
+    target.setFont(ChatTheme.FONT_BODY_BOLD);
+    target.setForeground(ChatTheme.TEXT_SECONDARY);
     JLabel reasonLabel = new JLabel("Reason for report");
-    reasonLabel.setFont(UserUiTheme.FONT_BODY_BOLD);
-    reasonLabel.setForeground(UserUiTheme.TEXT_SECONDARY);
-    reasonField.setFont(UserUiTheme.FONT_BODY);
+    reasonLabel.setFont(ChatTheme.FONT_BODY_BOLD);
+    reasonLabel.setForeground(ChatTheme.TEXT_SECONDARY);
+    reasonField.setFont(ChatTheme.FONT_BODY);
     reasonField.setLineWrap(true);
     reasonField.setWrapStyleWord(true);
     reasonField.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createLineBorder(UserUiTheme.BORDER),
-        BorderFactory.createEmptyBorder(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM,
-            UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM)));
+        BorderFactory.createLineBorder(ChatTheme.BORDER),
+        BorderFactory.createEmptyBorder(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM,
+            ChatTheme.SPACE_SM, ChatTheme.SPACE_SM)));
 
-    JPanel form = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+    JPanel form = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
     form.setOpaque(false);
     form.add(target, BorderLayout.NORTH);
-    JPanel reasonGroup = new JPanel(new BorderLayout(UserUiTheme.SPACE_XS, UserUiTheme.SPACE_XS));
+    JPanel reasonGroup = new JPanel(new BorderLayout(ChatTheme.SPACE_XS, ChatTheme.SPACE_XS));
     reasonGroup.setOpaque(false);
     reasonGroup.add(reasonLabel, BorderLayout.NORTH);
     reasonGroup.add(new JScrollPane(reasonField), BorderLayout.CENTER);
     form.add(reasonGroup, BorderLayout.CENTER);
 
-    feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
-    feedbackLabel.setForeground(UserUiTheme.DANGER);
-    JButton cancel = UserUiTheme.createSecondaryButton("Cancel");
+    feedbackLabel.setFont(ChatTheme.FONT_SMALL);
+    feedbackLabel.setForeground(ChatTheme.DANGER);
+    JButton cancel = ChatTheme.createSecondaryButton("Cancel");
     cancel.addActionListener(event -> closeDialog());
-    JButton submit = UserUiTheme.createPrimaryButton("Submit Sample Report");
+    JButton submit = ChatTheme.createPrimaryButton("Submit Sample Report");
     submit.addActionListener(event -> submitReport());
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     actions.setOpaque(false);
@@ -121,7 +121,7 @@ public final class SpamReportDialog extends JPanel {
     actions.add(cancel);
     actions.add(submit);
 
-    JPanel content = new JPanel(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    JPanel content = new JPanel(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     content.setOpaque(false);
     content.add(title, BorderLayout.NORTH);
     content.add(form, BorderLayout.CENTER);

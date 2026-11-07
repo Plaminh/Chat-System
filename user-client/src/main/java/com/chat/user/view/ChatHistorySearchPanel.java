@@ -1,13 +1,12 @@
 package com.chat.user.view;
 
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.model.ChatHistoryActions;
 import com.chat.user.model.ChatMessage;
 import com.chat.user.model.Conversation;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -58,31 +57,32 @@ public final class ChatHistorySearchPanel extends JPanel {
     }
   }
 
-  private static final DateTimeFormatter DATE_FORMAT =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
   private final List<Conversation> conversations;
   private final Conversation currentConversation;
+  private final String currentUsername;
   private final Consumer<SearchResult> navigationHandler;
   private final Predicate<ActionConfirmation> confirmationHandler;
   private final ChatHistoryActions actions = new ChatHistoryActions();
-  private final JTextField searchField = UserUiTheme.createTextField(28);
+  private final JTextField searchField = ChatTheme.createTextField(28);
   private final JComboBox<Scope> scope = new JComboBox<>(Scope.values());
   private final JPanel resultsPanel = new JPanel();
   private final Map<SearchResult, JCheckBox> selectionByResult = new LinkedHashMap<>();
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.LEFT);
+  private final JButton unsendButton = ChatTheme.createDangerButton("Unsend Message");
   private List<SearchResult> visibleResults = List.of();
   private Runnable backHandler =
-      () -> showFeedback("Return to the conversation from navigation.", UserUiTheme.TEXT_MUTED);
+      () -> showFeedback("Return to the conversation from navigation.", ChatTheme.TEXT_MUTED);
 
   public ChatHistorySearchPanel(
       List<Conversation> conversations,
       Conversation currentConversation,
+      String currentUsername,
       Consumer<SearchResult> navigationHandler,
       Predicate<ActionConfirmation> confirmationHandler) {
-    super(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    super(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     this.conversations = new ArrayList<>(Objects.requireNonNull(conversations, "conversations"));
     this.currentConversation = currentConversation;
+    this.currentUsername = Objects.requireNonNull(currentUsername, "currentUsername");
     this.navigationHandler = Objects.requireNonNull(navigationHandler, "navigationHandler");
     this.confirmationHandler =
         Objects.requireNonNull(confirmationHandler, "confirmationHandler");
@@ -106,6 +106,10 @@ public final class ChatHistorySearchPanel extends JPanel {
     return feedbackLabel;
   }
 
+  javax.swing.JButton getUnsendButton() {
+    return unsendButton;
+  }
+
   public void setBackHandler(Runnable backHandler) {
     this.backHandler = Objects.requireNonNull(backHandler, "backHandler");
   }
@@ -116,6 +120,7 @@ public final class ChatHistorySearchPanel extends JPanel {
       throw new IllegalArgumentException("Search result is not visible");
     }
     selected.setSelected(true);
+    updateUnsendAvailability();
   }
 
   void applySelectedMessageAction(ChatHistoryActions.Action action) {
@@ -132,7 +137,20 @@ public final class ChatHistorySearchPanel extends JPanel {
                     Collectors.mapping(
                         entry -> entry.getKey().message().messageId(), Collectors.toSet())));
     if (selectedByConversation.isEmpty()) {
-      showFeedback("Select at least one message first.", UserUiTheme.DANGER);
+      showFeedback("Select at least one message first.", ChatTheme.DANGER);
+      return;
+    }
+    if (action == ChatHistoryActions.Action.UNSEND
+        && selectionByResult.entrySet().stream()
+            .filter(entry -> entry.getValue().isSelected())
+            .map(Map.Entry::getKey)
+            .anyMatch(
+                result ->
+                    !result.message().senderUsername().equalsIgnoreCase(currentUsername))) {
+      showFeedback(
+          "Unsend is available only when every selected message was sent by you.",
+          ChatTheme.DANGER);
+      updateUnsendAvailability();
       return;
     }
 
@@ -148,14 +166,15 @@ public final class ChatHistorySearchPanel extends JPanel {
     }
 
     selectedByConversation.forEach(
-        (conversation, messageIds) -> actions.applyMessageAction(action, conversation, messageIds));
-    showFeedback("Sample actions apply to this session only.", UserUiTheme.TEXT_MUTED);
+        (conversation, messageIds) ->
+            actions.applyMessageAction(action, conversation, messageIds, currentUsername));
+    showFeedback("Sample actions apply to this session only.", ChatTheme.TEXT_MUTED);
     renderResults();
   }
 
   void clearCurrentHistory() {
     if (currentConversation == null) {
-      showFeedback("No conversation is selected.", UserUiTheme.DANGER);
+      showFeedback("No conversation is selected.", ChatTheme.DANGER);
       return;
     }
     ActionConfirmation confirmation =
@@ -167,67 +186,67 @@ public final class ChatHistorySearchPanel extends JPanel {
       return;
     }
     actions.clearHistory(currentConversation);
-    showFeedback("Sample history was cleared from this session.", UserUiTheme.TEXT_MUTED);
+    showFeedback("Sample history was cleared from this session.", ChatTheme.TEXT_MUTED);
     renderResults();
   }
 
   private void buildContent() {
-    setBackground(UserUiTheme.CANVAS_BG);
+    setBackground(ChatTheme.CANVAS_BG);
     setBorder(BorderFactory.createEmptyBorder(
-        UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+        ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
 
     JLabel title = new JLabel("Search Message History");
-    title.setFont(UserUiTheme.FONT_TITLE);
-    title.setForeground(UserUiTheme.TEXT_PRIMARY);
+    title.setFont(ChatTheme.FONT_TITLE);
+    title.setForeground(ChatTheme.TEXT_PRIMARY);
     JLabel subtitle = new JLabel("Search messages across your sample conversations.");
-    subtitle.setFont(UserUiTheme.FONT_BODY);
-    subtitle.setForeground(UserUiTheme.TEXT_MUTED);
-    JPanel titleBlock = new JPanel(new GridLayout(0, 1, 0, UserUiTheme.SPACE_XS));
+    subtitle.setFont(ChatTheme.FONT_BODY);
+    subtitle.setForeground(ChatTheme.TEXT_MUTED);
+    JPanel titleBlock = new JPanel(new GridLayout(0, 1, 0, ChatTheme.SPACE_XS));
     titleBlock.setOpaque(false);
     titleBlock.add(title);
     titleBlock.add(subtitle);
 
     searchField.putClientProperty("JTextField.placeholderText", "Enter a message keyword");
-    scope.setFont(UserUiTheme.FONT_BODY);
+    scope.setFont(ChatTheme.FONT_BODY);
     scope.setEnabled(currentConversation != null);
     scope.addActionListener(event -> renderResults());
-    JPanel filters = new JPanel(new FlowLayout(FlowLayout.LEFT, UserUiTheme.SPACE_SM, 0));
+    JPanel filters = new JPanel(new FlowLayout(FlowLayout.LEFT, ChatTheme.SPACE_SM, 0));
     filters.setOpaque(false);
     filters.add(scope);
     filters.add(searchField);
-    JButton deleteForMe = UserUiTheme.createSecondaryButton("Delete for Me");
+    JButton deleteForMe = ChatTheme.createDangerButton("Delete for Me");
     deleteForMe.addActionListener(
         event -> applySelectedMessageAction(ChatHistoryActions.Action.DELETE_FOR_ME));
-    JButton unsend = UserUiTheme.createSecondaryButton("Unsend Message");
-    unsend.addActionListener(
+    unsendButton.addActionListener(
         event -> applySelectedMessageAction(ChatHistoryActions.Action.UNSEND));
-    JButton clearHistory = UserUiTheme.createSecondaryButton("Clear Conversation History");
+    unsendButton.setToolTipText("Select only messages sent by you to enable Unsend.");
+    JButton clearHistory = ChatTheme.createDangerButton("Clear Conversation History");
     clearHistory.addActionListener(event -> clearCurrentHistory());
-    JButton back = UserUiTheme.createSecondaryButton("Back to Chat");
+    JButton back = ChatTheme.createSecondaryButton("Back to Chat");
     back.addActionListener(event -> backHandler.run());
-    JPanel actionsRow = new JPanel(new FlowLayout(FlowLayout.LEFT, UserUiTheme.SPACE_XS, 0));
+    JPanel actionsRow = new JPanel(new FlowLayout(FlowLayout.LEFT, ChatTheme.SPACE_XS, 0));
     actionsRow.setOpaque(false);
     actionsRow.add(back);
     actionsRow.add(deleteForMe);
-    actionsRow.add(unsend);
+    actionsRow.add(unsendButton);
     actionsRow.add(clearHistory);
 
-    JPanel heading = new JPanel(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    JPanel heading = new JPanel(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     heading.setOpaque(false);
     heading.add(titleBlock, BorderLayout.NORTH);
-    JPanel controls = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+    JPanel controls = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
     controls.setOpaque(false);
     controls.add(filters, BorderLayout.NORTH);
     controls.add(actionsRow, BorderLayout.SOUTH);
     heading.add(controls, BorderLayout.SOUTH);
     resultsPanel.setLayout(new javax.swing.BoxLayout(resultsPanel, javax.swing.BoxLayout.Y_AXIS));
-    resultsPanel.setBackground(UserUiTheme.CANVAS_BG);
+    resultsPanel.setBackground(ChatTheme.CANVAS_BG);
     JScrollPane scroll = new JScrollPane(resultsPanel);
     scroll.setBorder(BorderFactory.createEmptyBorder());
-    scroll.getViewport().setBackground(UserUiTheme.CANVAS_BG);
+    scroll.getViewport().setBackground(ChatTheme.CANVAS_BG);
 
-    feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
-    feedbackLabel.setForeground(UserUiTheme.TEXT_MUTED);
+    feedbackLabel.setFont(ChatTheme.FONT_SMALL);
+    feedbackLabel.setForeground(ChatTheme.TEXT_MUTED);
     add(heading, BorderLayout.NORTH);
     add(scroll, BorderLayout.CENTER);
     add(feedbackLabel, BorderLayout.SOUTH);
@@ -277,30 +296,32 @@ public final class ChatHistorySearchPanel extends JPanel {
     } else {
       for (SearchResult result : visibleResults) {
         JCheckBox selected = new JCheckBox(result.message().displayContent());
-        selected.setFont(UserUiTheme.FONT_BODY);
+        selected.setFont(ChatTheme.FONT_BODY);
         selected.setOpaque(false);
+        selected.addActionListener(event -> updateUnsendAvailability());
         selectionByResult.put(result, selected);
         resultsPanel.add(createResultRow(result, selected));
-        resultsPanel.add(javax.swing.Box.createVerticalStrut(UserUiTheme.SPACE_SM));
+        resultsPanel.add(javax.swing.Box.createVerticalStrut(ChatTheme.SPACE_SM));
       }
     }
     resultsPanel.revalidate();
     resultsPanel.repaint();
+    updateUnsendAvailability();
   }
 
   private JPanel createResultRow(SearchResult result, JCheckBox selected) {
-    JPanel card = UserUiTheme.createCardPanel();
-    card.setLayout(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+    JPanel card = ChatTheme.createCardPanel();
+    card.setLayout(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
     JLabel context =
         new JLabel(
             result.conversation().displayName()
                 + "  •  "
-                + DATE_FORMAT.format(result.message().sentAt()));
-    context.setFont(UserUiTheme.FONT_SMALL);
-    context.setForeground(UserUiTheme.TEXT_MUTED);
-    JButton navigate = UserUiTheme.createPrimaryButton("Go to Message");
+                + ChatTheme.DATETIME_FMT.format(result.message().sentAt()));
+    context.setFont(ChatTheme.FONT_SMALL);
+    context.setForeground(ChatTheme.TEXT_MUTED);
+    JButton navigate = ChatTheme.createPrimaryButton("Go to Message");
     navigate.addActionListener(event -> navigationHandler.accept(result));
-    JPanel bottom = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+    JPanel bottom = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
     bottom.setOpaque(false);
     bottom.add(context, BorderLayout.CENTER);
     bottom.add(navigate, BorderLayout.EAST);
@@ -311,15 +332,39 @@ public final class ChatHistorySearchPanel extends JPanel {
 
   private JLabel emptyState(String text) {
     JLabel label = new JLabel(text);
-    label.setFont(UserUiTheme.FONT_BODY);
-    label.setForeground(UserUiTheme.TEXT_MUTED);
+    label.setFont(ChatTheme.FONT_BODY);
+    label.setForeground(ChatTheme.TEXT_MUTED);
     label.setBorder(BorderFactory.createEmptyBorder(
-        UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD));
+        ChatTheme.SPACE_LG, ChatTheme.SPACE_MD, ChatTheme.SPACE_LG, ChatTheme.SPACE_MD));
     return label;
   }
 
   private void showFeedback(String message, java.awt.Color color) {
     feedbackLabel.setText(message);
     feedbackLabel.setForeground(color);
+  }
+
+  private void updateUnsendAvailability() {
+    List<SearchResult> selected =
+        selectionByResult.entrySet().stream()
+            .filter(entry -> entry.getValue().isSelected())
+            .map(Map.Entry::getKey)
+            .toList();
+    boolean allOwned =
+        !selected.isEmpty()
+            && selected.stream()
+                .allMatch(
+                    result ->
+                        result.message().senderUsername().equalsIgnoreCase(currentUsername));
+    unsendButton.setEnabled(allOwned);
+    if (!selected.isEmpty() && !allOwned) {
+      showFeedback(
+          "Unsend is available only when every selected message was sent by you.",
+          ChatTheme.DANGER);
+    } else if (allOwned) {
+      showFeedback("Selected messages were sent by you.", ChatTheme.TEXT_MUTED);
+    } else {
+      showFeedback("Select messages sent by you to enable Unsend.", ChatTheme.TEXT_MUTED);
+    }
   }
 }

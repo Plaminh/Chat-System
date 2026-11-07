@@ -1,6 +1,6 @@
 package com.chat.user.view;
 
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.model.FriendRequest;
 import com.chat.user.controller.FriendsController;
 import com.chat.user.model.UserProfile;
@@ -9,6 +9,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -27,12 +28,15 @@ import javax.swing.event.DocumentListener;
 public final class FriendRequestsSearchPanel extends JPanel {
   private final List<FriendRequest> requests;
   private final List<UserProfile> directory;
-  private final Set<String> blockedUsernames;
+  private final Set<String> blockedByMeUsernames;
+  private final Set<String> blockedMeUsernames;
+  private final Set<String> friendUsernames;
+  private final Set<String> outgoingRequestUsernames;
   private final Consumer<UserProfile> openChatHandler;
   private final FriendsController controller = new FriendsController();
   private final Consumer<UserProfile> selectForGroupHandler;
-  private final JTextField requestFilterField = UserUiTheme.createTextField(24);
-  private final JTextField searchField = UserUiTheme.createTextField(24);
+  private final JTextField requestFilterField = ChatTheme.createTextField(24);
+  private final JTextField searchField = ChatTheme.createTextField(24);
   private final JPanel requestList = new JPanel();
   private final JPanel searchResults = new JPanel();
   private List<FriendRequest> visibleRequests = List.of();
@@ -44,10 +48,35 @@ public final class FriendRequestsSearchPanel extends JPanel {
       Set<String> blockedUsernames,
       Consumer<UserProfile> openChatHandler,
       Consumer<UserProfile> selectForGroupHandler) {
+    this(
+        requests,
+        directory,
+        blockedUsernames,
+        Set.of(),
+        new HashSet<>(),
+        new HashSet<>(),
+        openChatHandler,
+        selectForGroupHandler);
+  }
+
+  public FriendRequestsSearchPanel(
+      List<FriendRequest> requests,
+      List<UserProfile> directory,
+      Set<String> blockedByMeUsernames,
+      Set<String> blockedMeUsernames,
+      Set<String> friendUsernames,
+      Set<String> outgoingRequestUsernames,
+      Consumer<UserProfile> openChatHandler,
+      Consumer<UserProfile> selectForGroupHandler) {
     super(new BorderLayout());
     this.requests = new ArrayList<>(Objects.requireNonNull(requests, "requests"));
     this.directory = new ArrayList<>(Objects.requireNonNull(directory, "directory"));
-    this.blockedUsernames = Objects.requireNonNull(blockedUsernames, "blockedUsernames");
+    this.blockedByMeUsernames =
+        Objects.requireNonNull(blockedByMeUsernames, "blockedByMeUsernames");
+    this.blockedMeUsernames = Objects.requireNonNull(blockedMeUsernames, "blockedMeUsernames");
+    this.friendUsernames = Objects.requireNonNull(friendUsernames, "friendUsernames");
+    this.outgoingRequestUsernames =
+        Objects.requireNonNull(outgoingRequestUsernames, "outgoingRequestUsernames");
     this.openChatHandler = Objects.requireNonNull(openChatHandler, "openChatHandler");
     this.selectForGroupHandler =
         Objects.requireNonNull(selectForGroupHandler, "selectForGroupHandler");
@@ -93,12 +122,12 @@ public final class FriendRequestsSearchPanel extends JPanel {
   }
 
   private void buildContent() {
-    setBackground(UserUiTheme.CANVAS_BG);
+    setBackground(ChatTheme.CANVAS_BG);
     setBorder(BorderFactory.createEmptyBorder(
-        UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+        ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
 
     JTabbedPane tabs = new JTabbedPane();
-    tabs.setFont(UserUiTheme.FONT_BODY_BOLD);
+    tabs.setFont(ChatTheme.FONT_BODY_BOLD);
     tabs.addTab("Friend Requests", buildRequestsTab());
     tabs.addTab("Find People", buildSearchTab());
     add(tabs, BorderLayout.CENTER);
@@ -110,51 +139,51 @@ public final class FriendRequestsSearchPanel extends JPanel {
   }
 
   private JPanel buildRequestsTab() {
-    JPanel panel = new JPanel(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
-    panel.setBackground(UserUiTheme.CANVAS_BG);
+    JPanel panel = new JPanel(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
+    panel.setBackground(ChatTheme.CANVAS_BG);
     panel.setBorder(BorderFactory.createEmptyBorder(
-        UserUiTheme.SPACE_MD, 0, 0, 0));
+        ChatTheme.SPACE_MD, 0, 0, 0));
     JLabel title = new JLabel("Friend Requests");
-    title.setFont(UserUiTheme.FONT_TITLE);
-    title.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JPanel heading = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+    title.setFont(ChatTheme.FONT_TITLE);
+    title.setForeground(ChatTheme.TEXT_PRIMARY);
+    JPanel heading = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
     heading.setOpaque(false);
     heading.add(title, BorderLayout.NORTH);
     heading.add(requestFilterField, BorderLayout.SOUTH);
     requestList.setLayout(new javax.swing.BoxLayout(requestList, javax.swing.BoxLayout.Y_AXIS));
-    requestList.setBackground(UserUiTheme.CANVAS_BG);
+    requestList.setBackground(ChatTheme.CANVAS_BG);
     JScrollPane scroll = new JScrollPane(requestList);
     scroll.setBorder(BorderFactory.createEmptyBorder());
-    scroll.getViewport().setBackground(UserUiTheme.CANVAS_BG);
+    scroll.getViewport().setBackground(ChatTheme.CANVAS_BG);
     panel.add(heading, BorderLayout.NORTH);
     panel.add(scroll, BorderLayout.CENTER);
     return panel;
   }
 
   private JPanel buildSearchTab() {
-    JPanel panel = new JPanel(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
-    panel.setBackground(UserUiTheme.CANVAS_BG);
+    JPanel panel = new JPanel(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
+    panel.setBackground(ChatTheme.CANVAS_BG);
     panel.setBorder(BorderFactory.createEmptyBorder(
-        UserUiTheme.SPACE_MD, 0, 0, 0));
+        ChatTheme.SPACE_MD, 0, 0, 0));
     JLabel title = new JLabel("Find People");
-    title.setFont(UserUiTheme.FONT_TITLE);
-    title.setForeground(UserUiTheme.TEXT_PRIMARY);
+    title.setFont(ChatTheme.FONT_TITLE);
+    title.setForeground(ChatTheme.TEXT_PRIMARY);
     JLabel description = new JLabel("Search by username or full name.");
-    description.setFont(UserUiTheme.FONT_BODY);
-    description.setForeground(UserUiTheme.TEXT_MUTED);
-    JPanel heading = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+    description.setFont(ChatTheme.FONT_BODY);
+    description.setForeground(ChatTheme.TEXT_MUTED);
+    JPanel heading = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
     heading.setOpaque(false);
-    JPanel titleBlock = new JPanel(new GridLayout(0, 1, 0, UserUiTheme.SPACE_XS));
+    JPanel titleBlock = new JPanel(new GridLayout(0, 1, 0, ChatTheme.SPACE_XS));
     titleBlock.setOpaque(false);
     titleBlock.add(title);
     titleBlock.add(description);
     heading.add(titleBlock, BorderLayout.NORTH);
     heading.add(searchField, BorderLayout.SOUTH);
     searchResults.setLayout(new javax.swing.BoxLayout(searchResults, javax.swing.BoxLayout.Y_AXIS));
-    searchResults.setBackground(UserUiTheme.CANVAS_BG);
+    searchResults.setBackground(ChatTheme.CANVAS_BG);
     JScrollPane scroll = new JScrollPane(searchResults);
     scroll.setBorder(BorderFactory.createEmptyBorder());
-    scroll.getViewport().setBackground(UserUiTheme.CANVAS_BG);
+    scroll.getViewport().setBackground(ChatTheme.CANVAS_BG);
     panel.add(heading, BorderLayout.NORTH);
     panel.add(scroll, BorderLayout.CENTER);
     return panel;
@@ -162,14 +191,16 @@ public final class FriendRequestsSearchPanel extends JPanel {
 
   private void renderRequests() {
     String filter = requestFilterField.getText().trim().toLowerCase(Locale.ROOT);
-    visibleRequests = controller.filterFriendRequests(requests, filter);
+    visibleRequests =
+        controller.filterFriendRequests(
+            requests, blockedByMeUsernames, blockedMeUsernames, filter);
     requestList.removeAll();
     if (visibleRequests.isEmpty()) {
       requestList.add(emptyLabel("No matching friend requests."));
     } else {
       for (FriendRequest request : visibleRequests) {
         requestList.add(createRequestRow(request));
-        requestList.add(javax.swing.Box.createVerticalStrut(UserUiTheme.SPACE_SM));
+        requestList.add(javax.swing.Box.createVerticalStrut(ChatTheme.SPACE_SM));
       }
     }
     requestList.revalidate();
@@ -178,8 +209,8 @@ public final class FriendRequestsSearchPanel extends JPanel {
 
   private void renderSearchResults() {
     String entered = searchField.getText().trim().toLowerCase(Locale.ROOT);
-    String usernameQuery = entered.startsWith("@") ? entered.substring(1) : entered;
-    visibleSearchResults = controller.searchUsers(directory, blockedUsernames, entered);
+    visibleSearchResults =
+        controller.searchUsers(directory, blockedByMeUsernames, blockedMeUsernames, entered);
     searchResults.removeAll();
     if (entered.isEmpty()) {
       searchResults.add(emptyLabel("Enter a username or full name to start searching."));
@@ -188,7 +219,7 @@ public final class FriendRequestsSearchPanel extends JPanel {
     } else {
       for (UserProfile profile : visibleSearchResults) {
         searchResults.add(createSearchResultRow(profile));
-        searchResults.add(javax.swing.Box.createVerticalStrut(UserUiTheme.SPACE_SM));
+        searchResults.add(javax.swing.Box.createVerticalStrut(ChatTheme.SPACE_SM));
       }
     }
     searchResults.revalidate();
@@ -196,17 +227,17 @@ public final class FriendRequestsSearchPanel extends JPanel {
   }
 
   private JPanel createRequestRow(FriendRequest request) {
-    JPanel row = UserUiTheme.createCardPanel();
-    row.setLayout(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    JPanel row = ChatTheme.createCardPanel();
+    row.setLayout(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     JLabel identity = new JLabel(
         request.requester().fullName() + "  •  @" + request.requester().username());
-    identity.setFont(UserUiTheme.FONT_BODY_BOLD);
-    identity.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JButton accept = UserUiTheme.createPrimaryButton("Accept");
+    identity.setFont(ChatTheme.FONT_BODY_BOLD);
+    identity.setForeground(ChatTheme.TEXT_PRIMARY);
+    JButton accept = ChatTheme.createPrimaryButton("Accept");
     accept.addActionListener(event -> updateRequest(request, FriendRequest.Status.ACCEPTED));
-    JButton decline = UserUiTheme.createSecondaryButton("Decline");
+    JButton decline = ChatTheme.createSecondaryButton("Decline");
     decline.addActionListener(event -> updateRequest(request, FriendRequest.Status.DECLINED));
-    JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, UserUiTheme.SPACE_XS, 0));
+    JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, ChatTheme.SPACE_XS, 0));
     actions.setOpaque(false);
     actions.add(accept);
     actions.add(decline);
@@ -216,17 +247,41 @@ public final class FriendRequestsSearchPanel extends JPanel {
   }
 
   private JPanel createSearchResultRow(UserProfile profile) {
-    JPanel row = UserUiTheme.createCardPanel();
-    row.setLayout(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    JPanel row = ChatTheme.createCardPanel();
+    row.setLayout(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     JLabel identity = new JLabel(profile.fullName() + "  •  @" + profile.username());
-    identity.setFont(UserUiTheme.FONT_BODY_BOLD);
-    identity.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JButton chat = UserUiTheme.createPrimaryButton("Message");
+    identity.setFont(ChatTheme.FONT_BODY_BOLD);
+    identity.setForeground(ChatTheme.TEXT_PRIMARY);
+    JButton chat = ChatTheme.createPrimaryButton("Message");
     chat.addActionListener(event -> openChatHandler.accept(profile));
-    JButton addToGroup = UserUiTheme.createSecondaryButton("Add to Group");
+    JButton addToGroup = ChatTheme.createSecondaryButton("Add to Group");
     addToGroup.addActionListener(event -> selectForGroupHandler.accept(profile));
-    JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, UserUiTheme.SPACE_XS, 0));
+    JButton addFriend = ChatTheme.createSecondaryButton("Add Friend");
+    boolean alreadyFriend = containsUsername(friendUsernames, profile.username());
+    boolean incomingRequest =
+        requests.stream()
+            .anyMatch(
+                request ->
+                    request.status() == FriendRequest.Status.PENDING
+                        && request.requester().username().equalsIgnoreCase(profile.username()));
+    boolean outgoingRequest = containsUsername(outgoingRequestUsernames, profile.username());
+    if (alreadyFriend) {
+      addFriend.setText("Friends");
+    } else if (incomingRequest) {
+      addFriend.setText("Request Received");
+    } else if (outgoingRequest) {
+      addFriend.setText("Request Sent");
+    } else {
+      addFriend.addActionListener(
+          event -> {
+            outgoingRequestUsernames.add(profile.username());
+            renderSearchResults();
+          });
+    }
+    addFriend.setEnabled(!alreadyFriend && !incomingRequest && !outgoingRequest);
+    JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, ChatTheme.SPACE_XS, 0));
     actions.setOpaque(false);
+    actions.add(addFriend);
     actions.add(chat);
     actions.add(addToGroup);
     row.add(identity, BorderLayout.CENTER);
@@ -238,20 +293,26 @@ public final class FriendRequestsSearchPanel extends JPanel {
     int index = requests.indexOf(request);
     if (index >= 0) {
       requests.set(index, request.withStatus(status));
+      if (status == FriendRequest.Status.ACCEPTED) {
+        friendUsernames.add(request.requester().username());
+        outgoingRequestUsernames.removeIf(
+            username -> username.equalsIgnoreCase(request.requester().username()));
+      }
       renderRequests();
+      renderSearchResults();
     }
   }
 
-  private boolean isBlocked(String username) {
-    return blockedUsernames.stream().anyMatch(blocked -> blocked.equalsIgnoreCase(username));
+  private boolean containsUsername(Set<String> usernames, String username) {
+    return usernames.stream().anyMatch(candidate -> candidate.equalsIgnoreCase(username));
   }
 
   private JLabel emptyLabel(String text) {
     JLabel label = new JLabel(text);
-    label.setFont(UserUiTheme.FONT_BODY);
-    label.setForeground(UserUiTheme.TEXT_MUTED);
+    label.setFont(ChatTheme.FONT_BODY);
+    label.setForeground(ChatTheme.TEXT_MUTED);
     label.setBorder(BorderFactory.createEmptyBorder(
-        UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD));
+        ChatTheme.SPACE_LG, ChatTheme.SPACE_MD, ChatTheme.SPACE_LG, ChatTheme.SPACE_MD));
     return label;
   }
 

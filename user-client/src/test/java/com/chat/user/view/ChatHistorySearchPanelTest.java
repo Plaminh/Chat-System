@@ -17,7 +17,8 @@ class ChatHistorySearchPanelTest {
         new ArrayList<>(ChatWorkspacePanel.createSampleConversations());
     List<ChatHistorySearchPanel.SearchResult> navigated = new ArrayList<>();
     ChatHistorySearchPanel panel =
-        new ChatHistorySearchPanel(conversations, conversations.get(0), navigated::add, request -> true);
+        new ChatHistorySearchPanel(
+            conversations, conversations.get(0), "alex.morgan", navigated::add, request -> true);
     panel.getSearchField().setText("sample document");
 
     assertTrue(panel.getVisibleResults().size() >= 1);
@@ -33,7 +34,8 @@ class ChatHistorySearchPanelTest {
         new ArrayList<>(ChatWorkspacePanel.createSampleConversations());
     Conversation conversation = conversations.get(0);
     ChatHistorySearchPanel panel =
-        new ChatHistorySearchPanel(conversations, conversation, result -> {}, request -> true);
+        new ChatHistorySearchPanel(
+            conversations, conversation, "alex.morgan", result -> {}, request -> true);
     panel.getSearchField().setText("sample document");
     ChatHistorySearchPanel.SearchResult first = panel.getVisibleResults().get(0);
     panel.selectResult(first);
@@ -65,11 +67,46 @@ class ChatHistorySearchPanelTest {
     Conversation conversation = conversations.get(0);
     int initialCount = conversation.messages().size();
     ChatHistorySearchPanel panel =
-        new ChatHistorySearchPanel(conversations, conversation, result -> {}, request -> false);
+        new ChatHistorySearchPanel(
+            conversations, conversation, "alex.morgan", result -> {}, request -> false);
 
     panel.clearCurrentHistory();
 
     assertEquals(initialCount, conversation.messages().size());
+  }
+
+  @Test
+  void unsendIsDisabledForOtherUsersMessagesAndMixedSelectionIsRejected() {
+    List<Conversation> conversations =
+        new ArrayList<>(ChatWorkspacePanel.createSampleConversations());
+    Conversation conversation = conversations.get(0);
+    conversation.addMessage(
+        new com.chat.user.model.ChatMessage(
+            "own-sample",
+            "alex.morgan",
+            "sample reply",
+            java.time.LocalDateTime.now(),
+            false,
+            false));
+    ChatHistorySearchPanel panel =
+        new ChatHistorySearchPanel(
+            conversations, conversation, "alex.morgan", result -> {}, request -> true);
+    panel.getSearchField().setText("sample");
+
+    assertFalse(panel.getUnsendButton().isEnabled());
+    panel.selectResult(
+        panel.getVisibleResults().stream()
+            .filter(result -> result.message().senderUsername().equals("mai.anh"))
+            .findFirst()
+            .orElseThrow());
+    assertFalse(panel.getUnsendButton().isEnabled());
+    panel.selectResult(
+        panel.getVisibleResults().stream()
+            .filter(result -> result.message().senderUsername().equals("alex.morgan"))
+            .findFirst()
+            .orElseThrow());
+    assertFalse(panel.getUnsendButton().isEnabled());
+    assertTrue(panel.getFeedbackLabel().getText().contains("only when every selected message"));
   }
 
   private javax.swing.JButton findButton(java.awt.Container container, String text) {

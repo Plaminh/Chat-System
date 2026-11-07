@@ -1,6 +1,6 @@
 package com.chat.user;
 
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.model.UserSessionState;
 import com.chat.user.view.LoginPanel;
 import com.chat.user.view.PasswordRecoveryDialog;
@@ -17,7 +17,7 @@ public final class UserApplication {
 
   public static void main(String[] args) {
     FlatLightLaf.setup();
-    UserUiTheme.applyGlobalDefaults();
+    ChatTheme.applyGlobalDefaults();
     SwingUtilities.invokeLater(UserApplication::showWindow);
   }
 
@@ -40,7 +40,21 @@ public final class UserApplication {
   }
 
   private static void showWorkspace(JFrame frame, UserSessionState sessionState) {
-    frame.setContentPane(new UserMainFrame(sessionState));
+    frame.setContentPane(new UserMainFrame(sessionState, () -> showLogin(frame, sessionState)));
+    frame.setTitle("Chat System - User Client");
+    frame.revalidate();
+    frame.repaint();
+  }
+
+  private static void showLogin(JFrame frame, UserSessionState sessionState) {
+    sessionState.signOut();
+    LoginPanel loginPanel =
+        new LoginPanel(
+            sessionState,
+            () -> showWorkspace(frame, sessionState),
+            () -> showRegistrationDialog(frame),
+            () -> showRecoveryDialog(frame));
+    frame.setContentPane(loginPanel);
     frame.setTitle("Chat System - User Client");
     frame.revalidate();
     frame.repaint();

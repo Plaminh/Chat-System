@@ -1,5 +1,6 @@
 package com.chat.admin.view;
 
+import com.chat.common.ui.ChatTheme;
 import com.chat.admin.controller.SpamModerationController;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.model.AdminUser;
@@ -45,11 +46,11 @@ public final class SpamReportPanel extends JPanel {
   private final SpamModerationController controller = new SpamModerationController();
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField usernameFilterField =
-      AdminUIStyle.createSearchField("Filter by reported or reporting username...", 15);
-  private final JTextField fromDateField = AdminUIStyle.createDateField("2025/01/01");
-  private final JTextField toDateField = AdminUIStyle.createDateField("2025/12/31");
+      ChatTheme.createSearchField("Filter by reported or reporting username...", 15);
+  private final JTextField fromDateField = AdminUIComponents.createDateField("2025-01-01");
+  private final JTextField toDateField = AdminUIComponents.createDateField("2025-12-31");
   private final JComboBox<String> sortCombo =
-      AdminUIStyle.createComboBox(
+      ChatTheme.createComboBox(
           new String[] {
             "Sort: Time (Newest First)",
             "Sort: Time (Oldest First)",
@@ -71,11 +72,11 @@ public final class SpamReportPanel extends JPanel {
   private final JLabel selectedIncidentLabel =
       new JLabel("SELECTED INCIDENT: None");
   private final JButton lockOffenderButton =
-      AdminUIStyle.createDangerButton("Lock Offending Account");
+      ChatTheme.createDangerButton("Lock Offending Account");
 
   public SpamReportPanel() {
     setLayout(new BorderLayout(0, 14));
-    setBackground(AdminUIStyle.CANVAS_BG);
+    setBackground(ChatTheme.CANVAS_BG);
 
     JPanel topSection = new JPanel(new BorderLayout(0, 12));
     topSection.setOpaque(false);
@@ -96,43 +97,43 @@ public final class SpamReportPanel extends JPanel {
     row.setOpaque(false);
 
     row.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "Total Spam Reports",
             new JLabel(dataStore.getSpamReports().size() + " reports"),
             "User-submitted abuse & spam reports",
-            AdminUIStyle.PRIMARY));
+            ChatTheme.PRIMARY));
     row.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "Pending Review",
             openReportsValueLabel,
             "Awaiting administrator action",
             new Color(0xF59E0B)));
     row.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "Sanctioned / Locked Accounts",
             lockedOffendersValueLabel,
             "Offending accounts locked by admin",
-            AdminUIStyle.DANGER_BTN));
+            ChatTheme.DANGER));
     return row;
   }
 
   private JPanel buildFilterToolbar() {
-    JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(10, 6));
+    JPanel card = ChatTheme.createCardPanel(new BorderLayout(10, 6));
 
-    JPanel leftFilters = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
+    JPanel leftFilters = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
     leftFilters.setOpaque(false);
 
     JLabel userLbl = new JLabel("Username:");
-    userLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    userLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    userLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    userLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
     JLabel fromLbl = new JLabel("From:");
-    fromLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    fromLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    fromLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    fromLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
     JLabel toLbl = new JLabel("To:");
-    toLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    toLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    toLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    toLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
     leftFilters.add(userLbl);
     leftFilters.add(usernameFilterField);
@@ -144,12 +145,12 @@ public final class SpamReportPanel extends JPanel {
     JPanel rightSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightSort.setOpaque(false);
 
-    JButton resetBtn = AdminUIStyle.createSecondaryButton("Reset");
+    JButton resetBtn = ChatTheme.createSecondaryButton("Reset");
     resetBtn.addActionListener(
         e -> {
           usernameFilterField.setText("");
-          fromDateField.setText("2025/01/01");
-          toDateField.setText("2025/12/31");
+          fromDateField.setText("2025-01-01");
+          toDateField.setText("2025-12-31");
           sortCombo.setSelectedIndex(0);
           applyFiltersAndRefresh(false);
         });
@@ -164,9 +165,9 @@ public final class SpamReportPanel extends JPanel {
 
   private JPanel buildReportsTableCard() {
     JPanel card = new JPanel(new BorderLayout());
-    card.setBackground(AdminUIStyle.SURFACE_WHITE);
+    card.setBackground(ChatTheme.SURFACE_WHITE);
 
-    AdminUIStyle.styleTable(reportTable);
+    AdminUIComponents.styleTable(reportTable);
     reportTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     reportTable.getColumnModel().getColumn(0).setPreferredWidth(90);
     reportTable.getColumnModel().getColumn(1).setPreferredWidth(125);
@@ -177,18 +178,18 @@ public final class SpamReportPanel extends JPanel {
     reportTable
         .getColumnModel()
         .getColumn(5)
-        .setCellRenderer(AdminUIStyle.createStatusBadgeRenderer());
+        .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
-    card.add(AdminUIStyle.wrapTableInScrollPane(reportTable), BorderLayout.CENTER);
+    card.add(AdminUIComponents.wrapTableInScrollPane(reportTable), BorderLayout.CENTER);
     return card;
   }
 
   private JPanel buildBottomModerationBar() {
     JPanel bar = new JPanel(new BorderLayout(12, 6));
-    bar.setBackground(AdminUIStyle.SIDEBAR_BG);
+    bar.setBackground(ChatTheme.SIDEBAR_BG);
     bar.setBorder(BorderFactory.createEmptyBorder(10, 16, 10, 16));
 
-    selectedIncidentLabel.setFont(AdminUIStyle.FONT_BODY_BOLD);
+    selectedIncidentLabel.setFont(ChatTheme.FONT_BODY_BOLD);
     selectedIncidentLabel.setForeground(Color.WHITE);
 
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
@@ -223,9 +224,9 @@ public final class SpamReportPanel extends JPanel {
     usernameFilterField.getDocument().addDocumentListener(docListener);
     fromDateField.getDocument().addDocumentListener(docListener);
     toDateField.getDocument().addDocumentListener(docListener);
-    AdminUIStyle.attachDateFieldValidationTriggers(
+    AdminUIComponents.attachDateFieldValidationTriggers(
         fromDateField, () -> applyFiltersAndRefresh(true));
-    AdminUIStyle.attachDateFieldValidationTriggers(
+    AdminUIComponents.attachDateFieldValidationTriggers(
         toDateField, () -> applyFiltersAndRefresh(true));
     sortCombo.addActionListener(e -> applyFiltersAndRefresh(false));
 
@@ -241,7 +242,7 @@ public final class SpamReportPanel extends JPanel {
 
   private void applyFiltersAndRefresh(boolean showValidationAlert) {
     LocalDate[] dateRange =
-        AdminUIStyle.parseAndValidateDateRange(
+        AdminUIComponents.parseAndValidateDateRange(
             this, fromDateField, toDateField, showValidationAlert);
     if (dateRange == null) {
       return;
@@ -274,7 +275,7 @@ public final class SpamReportPanel extends JPanel {
             "@" + r.getReporterUsername(),
             "@" + r.getReportedUsername(),
             r.getReason(),
-            r.getReportedAt().format(AdminUIStyle.FULL_DATETIME_FMT),
+            r.getReportedAt().format(ChatTheme.FULL_DATETIME_FMT),
             statusBadge
           });
     }

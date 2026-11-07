@@ -1,5 +1,31 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-07 — Refine User Client sample interactions
+
+Tool: AI assistant (Copilot SDK in VS Code).
+
+Asked for: Apply the User portion of `Chinh-sua.md` only, leave Admin files untouched, and do not commit or push before the developer reviews the app.
+
+Kept: The four Maven modules, the existing User Client sample-only behavior, Swing/FlatLaf, and all Admin Client files.
+
+Changed: Added sample friend-request states and online-friend group creation; wired Sign Out back to login with a fresh workspace on the next sign-in; enforced group-admin-only member management; made Unsend available only for the current user's messages; separated both block directions in search/request filtering; made the group member area scrollable and adjusted its split sizing; clipped long sidebar profile names with a tooltip.
+
+Deferred initially: Shared `ChatTheme` integration affected `common` and Admin, so it was held until the developer explicitly approved the expanded scope. It was implemented in the follow-up entry below.
+
+By hand: Reviewed `Chinh-sua.md`, the project constitution, and the User Client source. `mvn -pl user-client -am test` passed (51 User Client tests and 2 Common tests). No Admin files were changed, and no commit or push was performed. The developer should visually review the packaged app before requesting a commit.
+
+## 2026-11-07 — Consolidate Admin and User themes
+
+Tool: AI assistant (Copilot SDK in VS Code).
+
+Asked for: After clarifying scope, create the shared theme in `common` and migrate both clients to it.
+
+Kept: Exactly four Maven modules; `common` has no Admin/User business logic; Admin-only date validation, tables, badge renderers, and vector icons remain in `admin-client`.
+
+Changed: Added `common/ui/ChatTheme` as the shared source for palette, typography, spacing, Swing defaults, card/button/text-field helpers, navigation icons, and date/time formats. Migrated User and Admin references to it, renamed the remaining Admin-specific helper class to `AdminUIComponents`, updated Admin date entry/display to `yyyy-MM-dd` and date-time display to `yyyy-MM-dd HH:mm`, and refreshed the affected Spec Kit path references.
+
+By hand: Verified `mvn package` passed across the reactor (62 tests, 0 failures), including shared-theme and Admin date-format tests; both client JARs were packaged. No commit or push was performed; the developer should inspect both clients before requesting one.
+
 ## 2026-10-22 — Initialize Java chat framework
 
 Tool: ChatGPT (architecture planning and Codex prompt); OpenAI Codex (VS Code, code generation).

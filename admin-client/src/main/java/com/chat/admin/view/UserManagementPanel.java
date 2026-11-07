@@ -1,5 +1,6 @@
 package com.chat.admin.view;
 
+import com.chat.common.ui.ChatTheme;
 import com.chat.admin.controller.UserManagementController;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.model.AdminUser;
@@ -61,11 +62,11 @@ public final class UserManagementPanel extends JPanel {
   private final UserManagementController controller = new UserManagementController();
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField searchField =
-      AdminUIStyle.createSearchField("Search by username, full name, or email...", 18);
+      ChatTheme.createSearchField("Search by username, full name, or email...", 18);
   private final JComboBox<String> statusCombo =
-      AdminUIStyle.createComboBox(new String[] {"All Statuses", "Active", "Locked"});
+      ChatTheme.createComboBox(new String[] {"All Statuses", "Active", "Locked"});
   private final JComboBox<String> sortCombo =
-      AdminUIStyle.createComboBox(
+      ChatTheme.createComboBox(
           new String[] {
             "Sort: Created Date (Newest)",
             "Sort: Created Date (Oldest)",
@@ -83,12 +84,12 @@ public final class UserManagementPanel extends JPanel {
   private final JTable userTable = new JTable(tableModel);
   private final JLabel countSummaryLabel = new JLabel("Showing 0 accounts");
   private final JLabel selectedUserLabel = new JLabel("SELECTED: None");
-  private final JButton lockToggleBtn = AdminUIStyle.createSecondaryButton("Lock / Unlock");
+  private final JButton lockToggleBtn = ChatTheme.createSecondaryButton("Lock / Unlock");
   private Consumer<AdminUser> historyInspectorCallback;
 
   public UserManagementPanel() {
     setLayout(new BorderLayout(0, 14));
-    setBackground(AdminUIStyle.CANVAS_BG);
+    setBackground(ChatTheme.CANVAS_BG);
 
     add(buildTopFilterToolbar(), BorderLayout.NORTH);
     add(buildTableCenterCard(), BorderLayout.CENTER);
@@ -104,14 +105,14 @@ public final class UserManagementPanel extends JPanel {
   }
 
   private JPanel buildTopFilterToolbar() {
-    JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(12, 6));
+    JPanel card = ChatTheme.createCardPanel(new BorderLayout(12, 6));
 
-    JPanel leftFilters = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 10, 2));
+    JPanel leftFilters = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 10, 2));
     leftFilters.setOpaque(false);
 
     JLabel searchLbl = new JLabel("Filter:");
-    searchLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    searchLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    searchLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    searchLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
     leftFilters.add(searchLbl);
     leftFilters.add(searchField);
@@ -121,7 +122,7 @@ public final class UserManagementPanel extends JPanel {
     JPanel rightActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightActions.setOpaque(false);
 
-    JButton resetBtn = AdminUIStyle.createSecondaryButton("Reset");
+    JButton resetBtn = ChatTheme.createSecondaryButton("Reset");
     resetBtn.addActionListener(
         e -> {
           searchField.setText("");
@@ -130,7 +131,7 @@ public final class UserManagementPanel extends JPanel {
           refreshTableData();
         });
 
-    JButton addUserBtn = AdminUIStyle.createPrimaryButton("+ Add New User");
+    JButton addUserBtn = ChatTheme.createPrimaryButton("+ Add New User");
     addUserBtn.addActionListener(e -> showAddOrEditUserDialog(null));
 
     rightActions.add(resetBtn);
@@ -143,9 +144,9 @@ public final class UserManagementPanel extends JPanel {
 
   private JPanel buildTableCenterCard() {
     JPanel card = new JPanel(new BorderLayout(0, 0));
-    card.setBackground(AdminUIStyle.SURFACE_WHITE);
+    card.setBackground(ChatTheme.SURFACE_WHITE);
 
-    AdminUIStyle.styleTable(userTable);
+    AdminUIComponents.styleTable(userTable);
     userTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     userTable.getColumnModel().getColumn(0).setPreferredWidth(95);
     userTable.getColumnModel().getColumn(1).setPreferredWidth(125);
@@ -159,18 +160,18 @@ public final class UserManagementPanel extends JPanel {
     userTable
         .getColumnModel()
         .getColumn(8)
-        .setCellRenderer(AdminUIStyle.createStatusBadgeRenderer());
+        .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
-    card.add(AdminUIStyle.wrapTableInScrollPane(userTable), BorderLayout.CENTER);
+    card.add(AdminUIComponents.wrapTableInScrollPane(userTable), BorderLayout.CENTER);
 
     JPanel tableFooter = new JPanel(new BorderLayout());
-    tableFooter.setBackground(AdminUIStyle.SURFACE_WHITE);
+    tableFooter.setBackground(ChatTheme.SURFACE_WHITE);
     tableFooter.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 1, 1, 1, AdminUIStyle.BORDER_COLOR),
+            BorderFactory.createMatteBorder(0, 1, 1, 1, ChatTheme.BORDER),
             BorderFactory.createEmptyBorder(8, 14, 8, 14)));
-    countSummaryLabel.setFont(AdminUIStyle.FONT_SMALL);
-    countSummaryLabel.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    countSummaryLabel.setFont(ChatTheme.FONT_SMALL);
+    countSummaryLabel.setForeground(ChatTheme.TEXT_SECONDARY);
     tableFooter.add(countSummaryLabel, BorderLayout.WEST);
 
     card.add(tableFooter, BorderLayout.SOUTH);
@@ -179,29 +180,29 @@ public final class UserManagementPanel extends JPanel {
 
   private JPanel buildBottomActionBar() {
     JPanel bar = new JPanel(new BorderLayout(12, 6));
-    bar.setBackground(AdminUIStyle.SIDEBAR_BG);
+    bar.setBackground(ChatTheme.SIDEBAR_BG);
     bar.setBorder(BorderFactory.createEmptyBorder(10, 16, 10, 16));
 
-    selectedUserLabel.setFont(AdminUIStyle.FONT_BODY_BOLD);
+    selectedUserLabel.setFont(ChatTheme.FONT_BODY_BOLD);
     selectedUserLabel.setForeground(Color.WHITE);
     selectedUserLabel.setMinimumSize(new Dimension(120, 24));
 
-    JPanel actionButtons = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.RIGHT, 8, 2));
+    JPanel actionButtons = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.RIGHT, 8, 2));
     actionButtons.setOpaque(false);
 
-    JButton editBtn = AdminUIStyle.createSecondaryButton("Edit Profile");
+    JButton editBtn = ChatTheme.createSecondaryButton("Edit Profile");
     editBtn.addActionListener(
         e -> getSelectedUser().ifPresent(this::showAddOrEditUserDialog));
 
     lockToggleBtn.addActionListener(e -> handleLockToggle());
 
-    JButton resetPassBtn = AdminUIStyle.createSecondaryButton("Reset Password");
+    JButton resetPassBtn = ChatTheme.createSecondaryButton("Reset Password");
     resetPassBtn.addActionListener(e -> handlePasswordReset());
 
-    JButton deleteBtn = AdminUIStyle.createDangerButton("Delete User");
+    JButton deleteBtn = ChatTheme.createDangerButton("Delete User");
     deleteBtn.addActionListener(e -> handleDeleteUser());
 
-    JButton historyBtn = AdminUIStyle.createPrimaryButton("View History & Network");
+    JButton historyBtn = ChatTheme.createPrimaryButton("View History & Network");
     historyBtn.addActionListener(e -> handleViewHistoryAndFriends());
 
     actionButtons.add(editBtn);
@@ -316,9 +317,9 @@ public final class UserManagementPanel extends JPanel {
             u.getFullName(),
             u.getEmail(),
             u.getGender(),
-            u.getDateOfBirth().format(AdminUIStyle.DATE_FMT),
+            u.getDateOfBirth().format(ChatTheme.DATE_FMT),
             u.getAddress(),
-            u.getCreatedAt().format(AdminUIStyle.DATETIME_FMT),
+            u.getCreatedAt().format(ChatTheme.DATETIME_FMT),
             u.getStatusText()
           });
       if (selectedUsername != null && u.getUsername().equalsIgnoreCase(selectedUsername)) {
@@ -392,7 +393,7 @@ public final class UserManagementPanel extends JPanel {
     dialog.setLocationRelativeTo(this);
 
     JPanel form = new JPanel(new GridBagLayout());
-    form.setBackground(AdminUIStyle.SURFACE_WHITE);
+    form.setBackground(ChatTheme.SURFACE_WHITE);
     form.setBorder(BorderFactory.createEmptyBorder(18, 24, 18, 24));
 
     JTextField usernameInput =
@@ -404,10 +405,10 @@ public final class UserManagementPanel extends JPanel {
     JTextField addressInput =
         new JTextField(isEdit ? existingUser.getAddress() : "TP.HCM", 20);
     JTextField dobInput =
-        AdminUIStyle.createDateField(
+        AdminUIComponents.createDateField(
             isEdit
-                ? existingUser.getDateOfBirth().format(AdminUIStyle.DATE_FMT)
-                : "2002/01/15");
+                ? existingUser.getDateOfBirth().format(ChatTheme.DATE_FMT)
+                : "2002-01-15");
     JComboBox<String> genderInput =
         new JComboBox<>(new String[] {"Male", "Female", "Other"});
     if (isEdit) {
@@ -434,26 +435,26 @@ public final class UserManagementPanel extends JPanel {
       gbc.gridy = i;
       gbc.weightx = 0.35;
       JLabel lbl = new JLabel(labels[i]);
-      lbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
+      lbl.setFont(ChatTheme.FONT_BODY_BOLD);
       form.add(lbl, gbc);
 
       gbc.gridx = 1;
       gbc.weightx = 0.65;
       if (fields[i] != dobInput) {
-        fields[i].setFont(AdminUIStyle.FONT_BODY);
+        fields[i].setFont(ChatTheme.FONT_BODY);
       }
       form.add(fields[i], gbc);
     }
 
     JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 10));
-    footer.setBackground(AdminUIStyle.CANVAS_BG);
-    footer.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, AdminUIStyle.BORDER_COLOR));
+    footer.setBackground(ChatTheme.CANVAS_BG);
+    footer.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, ChatTheme.BORDER));
 
-    JButton cancelBtn = AdminUIStyle.createSecondaryButton("Cancel");
+    JButton cancelBtn = ChatTheme.createSecondaryButton("Cancel");
     cancelBtn.addActionListener(e -> dialog.dispose());
 
     JButton saveBtn =
-        AdminUIStyle.createPrimaryButton(isEdit ? "Save Changes" : "Create Account");
+        ChatTheme.createPrimaryButton(isEdit ? "Save Changes" : "Create Account");
     saveBtn.addActionListener(
         e -> {
           String username = usernameInput.getText().trim();
@@ -467,7 +468,7 @@ public final class UserManagementPanel extends JPanel {
               || fullName.isEmpty()
               || email.isEmpty()
               || address.isEmpty()
-              || AdminUIStyle.isDateMaskBlank(dobStr)) {
+              || AdminUIComponents.isDateMaskBlank(dobStr)) {
             JOptionPane.showMessageDialog(
                 dialog,
                 "All fields marked with (*) are required.",
@@ -485,12 +486,12 @@ public final class UserManagementPanel extends JPanel {
           }
           LocalDate dob;
           try {
-            if (!AdminUIStyle.isDateMaskComplete(dobStr)) {
+            if (!AdminUIComponents.isDateMaskComplete(dobStr)) {
               throw new DateTimeParseException("Incomplete date mask", dobStr, 0);
             }
-            dob = LocalDate.parse(dobStr, AdminUIStyle.DATE_INPUT_FMT);
+            dob = LocalDate.parse(dobStr, ChatTheme.DATE_INPUT_FMT);
             if (!dob.isBefore(LocalDate.now())) {
-              AdminUIStyle.setDateFieldError(
+              AdminUIComponents.setDateFieldError(
                   dobInput, true, "Date of birth must be in the past");
               JOptionPane.showMessageDialog(
                   dialog,
@@ -499,9 +500,9 @@ public final class UserManagementPanel extends JPanel {
                   JOptionPane.ERROR_MESSAGE);
               return;
             }
-            AdminUIStyle.setDateFieldError(dobInput, false, null);
+            AdminUIComponents.setDateFieldError(dobInput, false, null);
           } catch (DateTimeParseException ex) {
-            AdminUIStyle.setDateFieldError(
+            AdminUIComponents.setDateFieldError(
                 dobInput, true, "Invalid calendar date: " + dobStr);
             JOptionPane.showMessageDialog(
                 dialog,

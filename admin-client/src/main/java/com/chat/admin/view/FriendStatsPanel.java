@@ -1,5 +1,6 @@
 package com.chat.admin.view;
 
+import com.chat.common.ui.ChatTheme;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.model.AdminUser;
 import java.awt.BorderLayout;
@@ -44,9 +45,9 @@ public final class FriendStatsPanel extends JPanel {
 
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField nameSearchField =
-      AdminUIStyle.createSearchField("Filter by full name or username...", 15);
+      ChatTheme.createSearchField("Filter by full name or username...", 15);
   private final JComboBox<String> operatorCombo =
-      AdminUIStyle.createComboBox(
+      ChatTheme.createComboBox(
           new String[] {
             "All Counts",
             "= (Equal to)",
@@ -55,7 +56,7 @@ public final class FriendStatsPanel extends JPanel {
           });
   private final JTextField thresholdField = new JTextField("", 6);
   private final JComboBox<String> sortCombo =
-      AdminUIStyle.createComboBox(
+      ChatTheme.createComboBox(
           new String[] {
             "Sort: Full Name (A-Z)",
             "Sort: Full Name (Z-A)",
@@ -79,7 +80,7 @@ public final class FriendStatsPanel extends JPanel {
 
   public FriendStatsPanel() {
     setLayout(new BorderLayout(0, 14));
-    setBackground(AdminUIStyle.CANVAS_BG);
+    setBackground(ChatTheme.CANVAS_BG);
 
     JPanel topSection = new JPanel(new BorderLayout(0, 12));
     topSection.setOpaque(false);
@@ -100,19 +101,19 @@ public final class FriendStatsPanel extends JPanel {
     row.setOpaque(false);
 
     row.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "Users Matching Filter",
             matchedUsersValueLabel,
             "Accounts matching name & friend threshold",
-            AdminUIStyle.PRIMARY));
+            ChatTheme.PRIMARY));
     row.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "Avg. Direct Friends",
             avgDirectFriendsValueLabel,
             "Mean 1st-degree connections in result set",
-            AdminUIStyle.SUCCESS_DOT));
+            ChatTheme.SUCCESS_DOT));
     row.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "Peak 2nd-Degree Network",
             maxExtendedReachValueLabel,
             "Highest friends-of-friends count in view",
@@ -121,20 +122,20 @@ public final class FriendStatsPanel extends JPanel {
   }
 
   private JPanel buildFilterToolbar() {
-    JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(10, 6));
+    JPanel card = ChatTheme.createCardPanel(new BorderLayout(10, 6));
 
-    JPanel leftControls = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
+    JPanel leftControls = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
     leftControls.setOpaque(false);
 
     JLabel nameLbl = new JLabel("Name:");
-    nameLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    nameLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    nameLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    nameLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
     JLabel friendFilterLbl = new JLabel("Direct Friends:");
-    friendFilterLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    friendFilterLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    friendFilterLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    friendFilterLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
-    thresholdField.setFont(AdminUIStyle.FONT_MONO);
+    thresholdField.setFont(ChatTheme.FONT_MONO);
     thresholdField.putClientProperty("JTextField.placeholderText", "Count");
     thresholdField.setEnabled(false);
 
@@ -147,7 +148,7 @@ public final class FriendStatsPanel extends JPanel {
     JPanel rightControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightControls.setOpaque(false);
 
-    JButton resetBtn = AdminUIStyle.createSecondaryButton("Reset");
+    JButton resetBtn = ChatTheme.createSecondaryButton("Reset");
     resetBtn.addActionListener(
         e -> {
           nameSearchField.setText("");
@@ -168,9 +169,9 @@ public final class FriendStatsPanel extends JPanel {
 
   private JPanel buildTableCard() {
     JPanel card = new JPanel(new BorderLayout());
-    card.setBackground(AdminUIStyle.SURFACE_WHITE);
+    card.setBackground(ChatTheme.SURFACE_WHITE);
 
-    AdminUIStyle.styleTable(friendStatsTable);
+    AdminUIComponents.styleTable(friendStatsTable);
     friendStatsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     friendStatsTable.getColumnModel().getColumn(0).setPreferredWidth(130);
     friendStatsTable.getColumnModel().getColumn(1).setPreferredWidth(155);
@@ -195,10 +196,10 @@ public final class FriendStatsPanel extends JPanel {
                     super.getTableCellRendererComponent(
                         table, value, isSelected, hasFocus, row, column);
             cell.setHorizontalAlignment(SwingConstants.CENTER);
-            cell.setFont(AdminUIStyle.FONT_BODY_BOLD);
+            cell.setFont(ChatTheme.FONT_BODY_BOLD);
             if (!isSelected) {
               cell.setForeground(
-                  column == 4 ? AdminUIStyle.PRIMARY : new Color(0x4F46E5));
+                  column == 4 ? ChatTheme.PRIMARY : new Color(0x4F46E5));
             }
             return cell;
           }
@@ -208,22 +209,22 @@ public final class FriendStatsPanel extends JPanel {
     friendStatsTable
         .getColumnModel()
         .getColumn(6)
-        .setCellRenderer(AdminUIStyle.createStatusBadgeRenderer());
+        .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
-    card.add(AdminUIStyle.wrapTableInScrollPane(friendStatsTable), BorderLayout.CENTER);
+    card.add(AdminUIComponents.wrapTableInScrollPane(friendStatsTable), BorderLayout.CENTER);
     return card;
   }
 
   private JPanel buildFooterBar() {
     JPanel bar = new JPanel(new BorderLayout(12, 0));
-    bar.setBackground(AdminUIStyle.SURFACE_WHITE);
+    bar.setBackground(ChatTheme.SURFACE_WHITE);
     bar.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(AdminUIStyle.BORDER_COLOR, 1, true),
+            BorderFactory.createLineBorder(ChatTheme.BORDER, 1, true),
             BorderFactory.createEmptyBorder(9, 16, 9, 16)));
 
-    footerSummaryLabel.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    footerSummaryLabel.setForeground(AdminUIStyle.TEXT_PRIMARY);
+    footerSummaryLabel.setFont(ChatTheme.FONT_BODY_BOLD);
+    footerSummaryLabel.setForeground(ChatTheme.TEXT_PRIMARY);
 
     bar.add(footerSummaryLabel, BorderLayout.CENTER);
     return bar;
@@ -358,7 +359,7 @@ public final class FriendStatsPanel extends JPanel {
             "@" + user.getUsername(),
             user.getFullName(),
             user.getEmail(),
-            user.getCreatedAt().format(AdminUIStyle.DATETIME_FMT),
+            user.getCreatedAt().format(ChatTheme.DATETIME_FMT),
             user.getDirectFriendCount() + " friends",
             user.getFriendsOfFriendsCount() + " network reach",
             user.getStatusText()

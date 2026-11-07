@@ -1,6 +1,6 @@
 package com.chat.user.view;
 
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.model.UserSessionState;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -30,7 +30,7 @@ public final class LoginPanel extends JPanel {
   private final Runnable signInHandler;
   private final Runnable registrationHandler;
   private final Runnable recoveryHandler;
-  private final JTextField usernameField = UserUiTheme.createTextField(32);
+  private final JTextField usernameField = ChatTheme.createTextField(32);
   private final JPasswordField passwordField = new JPasswordField(32);
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.CENTER);
 
@@ -67,65 +67,65 @@ public final class LoginPanel extends JPanel {
     passwordField.setText("");
 
     if (username.isEmpty() || passwordBlank) {
-      showFeedback("Enter your username/email and password.", UserUiTheme.DANGER);
+      showFeedback("Enter your username/email and password.", ChatTheme.DANGER);
       return;
     }
 
     sessionState.signIn();
-    showFeedback("Sample sign-in succeeded; your account was not authenticated.", UserUiTheme.SUCCESS);
+    showFeedback("Sample sign-in succeeded; your account was not authenticated.", ChatTheme.SUCCESS);
     signInHandler.run();
   }
 
   private void buildContent() {
-    setBackground(UserUiTheme.CANVAS_BG);
+    setBackground(ChatTheme.CANVAS_BG);
 
     JPanel card = new JPanel(new BorderLayout());
-    card.setBackground(UserUiTheme.SURFACE_WHITE);
-    card.setBorder(BorderFactory.createLineBorder(UserUiTheme.BORDER));
+    card.setBackground(ChatTheme.SURFACE_WHITE);
+    card.setBorder(BorderFactory.createLineBorder(ChatTheme.BORDER));
     card.setPreferredSize(new Dimension(480, 560));
     card.setMinimumSize(new Dimension(480, 560));
 
     JLabel windowTitle = new JLabel("ChatUser  —  Sign In");
-    windowTitle.setFont(UserUiTheme.FONT_BODY_BOLD);
+    windowTitle.setFont(ChatTheme.FONT_BODY_BOLD);
     windowTitle.setForeground(Color.WHITE);
     windowTitle.setBorder(
-        BorderFactory.createEmptyBorder(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG,
-            UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG));
+        BorderFactory.createEmptyBorder(ChatTheme.SPACE_MD, ChatTheme.SPACE_LG,
+            ChatTheme.SPACE_MD, ChatTheme.SPACE_LG));
     JPanel titleBar = new JPanel(new BorderLayout());
-    titleBar.setBackground(UserUiTheme.SIDEBAR_BG);
+    titleBar.setBackground(ChatTheme.SIDEBAR_BG);
     titleBar.add(windowTitle, BorderLayout.CENTER);
 
     JPanel form = new JPanel();
     form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
-    form.setBackground(UserUiTheme.SURFACE_WHITE);
+    form.setBackground(ChatTheme.SURFACE_WHITE);
     form.setBorder(
         BorderFactory.createEmptyBorder(
-            UserUiTheme.SPACE_LG, 34, UserUiTheme.SPACE_LG, 34));
+            ChatTheme.SPACE_LG, 34, ChatTheme.SPACE_LG, 34));
 
     JLabel brand = new JLabel("ChatUser", SwingConstants.CENTER);
     brand.setFont(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 24));
-    brand.setForeground(UserUiTheme.TEXT_PRIMARY);
+    brand.setForeground(ChatTheme.TEXT_PRIMARY);
     brand.setAlignmentX(CENTER_ALIGNMENT);
     JLabel subtitle = new JLabel("Sign in to your account to start messaging");
-    subtitle.setFont(UserUiTheme.FONT_BODY);
-    subtitle.setForeground(UserUiTheme.TEXT_MUTED);
+    subtitle.setFont(ChatTheme.FONT_BODY);
+    subtitle.setForeground(ChatTheme.TEXT_MUTED);
     subtitle.setAlignmentX(CENTER_ALIGNMENT);
 
     form.add(Box.createVerticalGlue());
     form.add(brand);
-    form.add(Box.createVerticalStrut(UserUiTheme.SPACE_SM));
+    form.add(Box.createVerticalStrut(ChatTheme.SPACE_SM));
     form.add(subtitle);
     form.add(Box.createVerticalStrut(20));
-    usernameField.setFont(UserUiTheme.FONT_BODY.deriveFont(14f));
+    usernameField.setFont(ChatTheme.FONT_BODY.deriveFont(14f));
     form.add(
         createFormWrapper(
             createFieldLabel("Username or Email"), 20, BorderLayout.WEST));
-    form.add(Box.createVerticalStrut(UserUiTheme.SPACE_XS));
+    form.add(Box.createVerticalStrut(ChatTheme.SPACE_XS));
     form.add(createFormWrapper(usernameField, 36, BorderLayout.CENTER));
     form.add(Box.createVerticalStrut(12));
     form.add(createFormWrapper(createFieldLabel("Password"), 20, BorderLayout.WEST));
-    form.add(Box.createVerticalStrut(UserUiTheme.SPACE_XS));
-    passwordField.setFont(UserUiTheme.FONT_BODY.deriveFont(14f));
+    form.add(Box.createVerticalStrut(ChatTheme.SPACE_XS));
+    passwordField.setFont(ChatTheme.FONT_BODY.deriveFont(14f));
     form.add(createFormWrapper(passwordField, 36, BorderLayout.CENTER));
 
     JPanel links = new JPanel(new BorderLayout());
@@ -139,34 +139,34 @@ public final class LoginPanel extends JPanel {
     links.add(recoveryButton, BorderLayout.EAST);
     form.add(createFormWrapper(links, 28, BorderLayout.CENTER));
 
-    feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
-    feedbackLabel.setForeground(UserUiTheme.DANGER);
-    form.add(Box.createVerticalStrut(UserUiTheme.SPACE_XS));
+    feedbackLabel.setFont(ChatTheme.FONT_SMALL);
+    feedbackLabel.setForeground(ChatTheme.DANGER);
+    form.add(Box.createVerticalStrut(ChatTheme.SPACE_XS));
     form.add(createFormWrapper(feedbackLabel, 20, BorderLayout.CENTER));
 
-    JButton signInButton = UserUiTheme.createPrimaryButton("Sign In");
+    JButton signInButton = ChatTheme.createPrimaryButton("Sign In");
     signInButton.addActionListener(event -> submitSignIn());
     form.add(Box.createVerticalStrut(10));
     form.add(createFormWrapper(signInButton, 42, BorderLayout.CENTER));
 
-    JPanel registrationRow = new JPanel(new FlowLayout(FlowLayout.CENTER, UserUiTheme.SPACE_XS, 0));
+    JPanel registrationRow = new JPanel(new FlowLayout(FlowLayout.CENTER, ChatTheme.SPACE_XS, 0));
     registrationRow.setOpaque(false);
     registrationRow.add(new JLabel("Don't have an account?"));
     JButton registrationButton = createTextButton("Register now");
     registrationButton.addActionListener(event -> registrationHandler.run());
     registrationRow.add(registrationButton);
-    form.add(Box.createVerticalStrut(UserUiTheme.SPACE_MD));
+    form.add(Box.createVerticalStrut(ChatTheme.SPACE_MD));
     form.add(createFormWrapper(registrationRow, 32, BorderLayout.CENTER));
     form.add(Box.createVerticalGlue());
 
     JPanel footer = new JPanel(new GridLayout(1, 1));
-    footer.setBackground(UserUiTheme.PRIMARY_SOFT_BG);
+    footer.setBackground(ChatTheme.PRIMARY_SOFT_BG);
     JLabel footerText =
         new JLabel(
             "Sample UI v1.0  •  Account services are not connected",
             SwingConstants.CENTER);
-    footerText.setFont(UserUiTheme.FONT_SMALL);
-    footerText.setForeground(UserUiTheme.TEXT_SECONDARY);
+    footerText.setFont(ChatTheme.FONT_SMALL);
+    footerText.setForeground(ChatTheme.TEXT_SECONDARY);
     footerText.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
     footer.add(footerText);
 
@@ -204,16 +204,16 @@ public final class LoginPanel extends JPanel {
 
   private JLabel createFieldLabel(String text) {
     JLabel label = new JLabel(text);
-    label.setFont(UserUiTheme.FONT_BODY_BOLD);
-    label.setForeground(UserUiTheme.TEXT_SECONDARY);
+    label.setFont(ChatTheme.FONT_BODY_BOLD);
+    label.setForeground(ChatTheme.TEXT_SECONDARY);
     label.setAlignmentX(CENTER_ALIGNMENT);
     return label;
   }
 
   private JButton createTextButton(String text) {
     JButton button = new JButton(text);
-    button.setFont(UserUiTheme.FONT_BODY_BOLD);
-    button.setForeground(UserUiTheme.PRIMARY);
+    button.setFont(ChatTheme.FONT_BODY_BOLD);
+    button.setForeground(ChatTheme.PRIMARY);
     button.setBorderPainted(false);
     button.setContentAreaFilled(false);
     button.setFocusPainted(false);

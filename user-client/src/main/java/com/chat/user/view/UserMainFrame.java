@@ -1,7 +1,7 @@
 package com.chat.user.view;
 
 import com.chat.user.component.UserNavigationSidebar;
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.controller.FriendsController;
 import com.chat.user.model.Conversation;
 import com.chat.user.model.FriendEntry;
@@ -15,7 +15,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -54,7 +53,10 @@ public final class UserMainFrame extends JPanel {
   private final JPanel cardContainer = new JPanel(cardLayout);
   private final UserNavigationSidebar navigationSidebar;
   private final Map<Destination, JComponent> views = new EnumMap<>(Destination.class);
-  private final Set<String> blockedUsernames = new HashSet<>();
+  private final Set<String> blockedByMeUsernames = new HashSet<>();
+  private final Set<String> blockedMeUsernames = new HashSet<>();
+  private final Set<String> friendUsernames = new HashSet<>();
+  private final Set<String> outgoingRequestUsernames = new HashSet<>();
   private final List<UserProfile> knownProfiles = new ArrayList<>();
   private final JLabel headerTitle = new JLabel();
   private final JLabel headerBreadcrumb = new JLabel();
@@ -62,6 +64,12 @@ public final class UserMainFrame extends JPanel {
   private GroupsPanel groupsPanel;
   private Destination activeDestination;
   private final FriendsController friendsController = new FriendsController();
+  private Runnable signOutHandler = () -> {};
+
+  public UserMainFrame(UserSessionState sessionState, Runnable signOutHandler) {
+    this(sessionState);
+    this.signOutHandler = Objects.requireNonNull(signOutHandler, "signOutHandler");
+  }
 
   public UserMainFrame(UserSessionState sessionState) {
     super(new BorderLayout());
@@ -71,7 +79,8 @@ public final class UserMainFrame extends JPanel {
             sessionState.getProfile().fullName(),
             sessionState.getProfile().username(),
             this::showDestination);
-    UserUiTheme.applyGlobalDefaults();
+    navigationSidebar.getSignOutButton().addActionListener(event -> signOutHandler.run());
+    ChatTheme.applyGlobalDefaults();
     buildLayout();
     for (Destination destination : Destination.values()) {
       registerView(destination, createPlaceholder(destination));
@@ -121,18 +130,18 @@ public final class UserMainFrame extends JPanel {
   }
 
   private void buildLayout() {
-    setBackground(UserUiTheme.CANVAS_BG);
-    navigationSidebar.setPreferredSize(new Dimension(UserUiTheme.SIDEBAR_WIDTH, 0));
+    setBackground(ChatTheme.CANVAS_BG);
+    navigationSidebar.setPreferredSize(new Dimension(ChatTheme.SIDEBAR_WIDTH, 0));
     add(navigationSidebar, BorderLayout.WEST);
 
     JPanel workspace = new JPanel(new BorderLayout());
-    workspace.setBackground(UserUiTheme.CANVAS_BG);
+    workspace.setBackground(ChatTheme.CANVAS_BG);
     workspace.add(buildHeader(), BorderLayout.NORTH);
 
-    cardContainer.setBackground(UserUiTheme.CANVAS_BG);
+    cardContainer.setBackground(ChatTheme.CANVAS_BG);
     cardContainer.setBorder(
         BorderFactory.createEmptyBorder(
-            UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG));
+            ChatTheme.SPACE_LG, ChatTheme.SPACE_LG, ChatTheme.SPACE_LG, ChatTheme.SPACE_LG));
     workspace.add(cardContainer, BorderLayout.CENTER);
     workspace.add(buildStatusFooter(), BorderLayout.SOUTH);
     add(workspace, BorderLayout.CENTER);
@@ -140,40 +149,42 @@ public final class UserMainFrame extends JPanel {
 
   private JPanel buildHeader() {
     JPanel header = new JPanel(new BorderLayout());
-    header.setBackground(UserUiTheme.SURFACE_WHITE);
+    header.setBackground(ChatTheme.SURFACE_WHITE);
     header.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 1, 0, UserUiTheme.BORDER),
-            BorderFactory.createEmptyBorder(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG,
-                UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG)));
+            BorderFactory.createMatteBorder(0, 0, 1, 0, ChatTheme.BORDER),
+            BorderFactory.createEmptyBorder(
+                ChatTheme.HEADER_PADDING_VERTICAL,
+                ChatTheme.HEADER_PADDING_HORIZONTAL,
+                ChatTheme.HEADER_PADDING_VERTICAL,
+                ChatTheme.HEADER_PADDING_HORIZONTAL)));
 
-    headerBreadcrumb.setFont(UserUiTheme.FONT_SMALL);
-    headerBreadcrumb.setForeground(UserUiTheme.TEXT_MUTED);
-    headerTitle.setFont(UserUiTheme.FONT_TITLE);
-    headerTitle.setForeground(UserUiTheme.TEXT_PRIMARY);
-    JPanel titleBlock = new JPanel(new BorderLayout(0, UserUiTheme.SPACE_XS));
+    headerBreadcrumb.setFont(ChatTheme.FONT_SMALL);
+    headerBreadcrumb.setForeground(ChatTheme.TEXT_MUTED);
+    headerTitle.setFont(ChatTheme.FONT_TITLE);
+    headerTitle.setForeground(ChatTheme.TEXT_PRIMARY);
+    JPanel titleBlock = new JPanel(new BorderLayout(0, ChatTheme.SPACE_XS));
     titleBlock.setOpaque(false);
     titleBlock.add(headerBreadcrumb, BorderLayout.NORTH);
     titleBlock.add(headerTitle, BorderLayout.SOUTH);
 
     JLabel sessionDate =
         new JLabel(
-            "Session Date: "
-                + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(LocalDateTime.now()));
-    sessionDate.setFont(UserUiTheme.FONT_SMALL);
-    sessionDate.setForeground(UserUiTheme.TEXT_SECONDARY);
+            "Session Date: " + ChatTheme.DATETIME_FMT.format(LocalDateTime.now()));
+    sessionDate.setFont(ChatTheme.FONT_SMALL);
+    sessionDate.setForeground(ChatTheme.TEXT_SECONDARY);
     sessionDate.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(UserUiTheme.BORDER),
+            BorderFactory.createLineBorder(ChatTheme.BORDER),
             BorderFactory.createEmptyBorder(5, 8, 5, 8)));
     JLabel role = new JLabel("Role: Member");
-    role.setFont(UserUiTheme.FONT_SMALL);
-    role.setForeground(UserUiTheme.PRIMARY);
+    role.setFont(ChatTheme.FONT_SMALL);
+    role.setForeground(ChatTheme.PRIMARY);
     role.setBorder(
         BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(0xBFDBFE)),
             BorderFactory.createEmptyBorder(5, 8, 5, 8)));
-    JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, UserUiTheme.SPACE_SM, 0));
+    JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, ChatTheme.SPACE_SM, 0));
     right.setOpaque(false);
     right.add(sessionDate);
     right.add(role);
@@ -185,18 +196,18 @@ public final class UserMainFrame extends JPanel {
 
   private JPanel buildStatusFooter() {
     JPanel footer = new JPanel(new BorderLayout());
-    footer.setBackground(UserUiTheme.SURFACE_WHITE);
+    footer.setBackground(ChatTheme.SURFACE_WHITE);
     footer.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(1, 0, 0, 0, UserUiTheme.BORDER),
-            BorderFactory.createEmptyBorder(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_MD,
-                UserUiTheme.SPACE_SM, UserUiTheme.SPACE_MD)));
+            BorderFactory.createMatteBorder(1, 0, 0, 0, ChatTheme.BORDER),
+            BorderFactory.createEmptyBorder(ChatTheme.SPACE_SM, ChatTheme.SPACE_MD,
+                ChatTheme.SPACE_SM, ChatTheme.SPACE_MD)));
     JLabel status = new JLabel("● Workspace Ready  |  Sample data only");
-    status.setFont(UserUiTheme.FONT_SMALL);
-    status.setForeground(UserUiTheme.TEXT_SECONDARY);
+    status.setFont(ChatTheme.FONT_SMALL);
+    status.setForeground(ChatTheme.TEXT_SECONDARY);
     JLabel version = new JLabel("Chat System — User Client UI (Version 1.0)");
-    version.setFont(UserUiTheme.FONT_SMALL);
-    version.setForeground(UserUiTheme.TEXT_MUTED);
+    version.setFont(ChatTheme.FONT_SMALL);
+    version.setForeground(ChatTheme.TEXT_MUTED);
     footer.add(status, BorderLayout.WEST);
     footer.add(version, BorderLayout.EAST);
     return footer;
@@ -204,8 +215,11 @@ public final class UserMainFrame extends JPanel {
 
   private void installSampleViews() {
     UserProfile currentUser = sessionState.getProfile();
+    blockedByMeUsernames.add("blocked.user");
+    blockedMeUsernames.add("thu.nguyen");
     List<FriendEntry> friends = FriendsPanel.createSampleFriends();
     List<UserProfile> directory = FriendRequestsSearchPanel.createSampleDirectory();
+    friends.forEach(friend -> friendUsernames.add(friend.username()));
     knownProfiles.addAll(directory);
     for (FriendEntry friend : friends) {
       if (knownProfiles.stream()
@@ -223,14 +237,21 @@ public final class UserMainFrame extends JPanel {
     FriendsPanel friendsPanel =
         new FriendsPanel(
             friends,
-            blockedUsernames,
+            blockedByMeUsernames,
             this::confirmFriendAction,
-            friend -> openChat(friend.username(), friend.fullName()));
+            friend -> openChat(friend.username(), friend.fullName()),
+            friend -> {
+              showDestination(Destination.GROUPS);
+              groupsPanel.startGroupCreationWith(friend.profile());
+            });
     FriendRequestsSearchPanel requestsPanel =
         new FriendRequestsSearchPanel(
             FriendRequestsSearchPanel.createSampleRequests(),
             directory,
-            blockedUsernames,
+            blockedByMeUsernames,
+            blockedMeUsernames,
+            friendUsernames,
+            outgoingRequestUsernames,
             profile -> openChat(profile.username(), profile.fullName()),
             profile -> {
               showDestination(Destination.GROUPS);
@@ -243,7 +264,7 @@ public final class UserMainFrame extends JPanel {
             currentUser,
             sampleGroups,
             directory,
-            blockedUsernames,
+            blockedByMeUsernames,
             this::confirmGroupMemberAction,
             this::openGroupChat);
     ProfileSettingsPanel profilePanel = new ProfileSettingsPanel(sessionState);
@@ -276,6 +297,7 @@ public final class UserMainFrame extends JPanel {
         new ChatHistorySearchPanel(
             chatWorkspace.getConversations(),
             chatWorkspace.getSelectedConversation(),
+            sessionState.getProfile().username(),
             this::navigateToSearchResult,
             this::confirmHistoryAction);
     historyPanel.setBackHandler(this::showChatWorkspace);
@@ -366,11 +388,11 @@ public final class UserMainFrame extends JPanel {
 
   private JComponent createPlaceholder(Destination destination) {
     JPanel placeholder = new JPanel(new BorderLayout());
-    placeholder.setBackground(UserUiTheme.SURFACE_WHITE);
-    placeholder.setBorder(UserUiTheme.createCardBorder());
+    placeholder.setBackground(ChatTheme.SURFACE_WHITE);
+    placeholder.setBorder(ChatTheme.createCardBorder());
     JLabel message = new JLabel(destination.label() + " screen", SwingConstants.CENTER);
-    message.setFont(UserUiTheme.FONT_SUBTITLE);
-    message.setForeground(UserUiTheme.TEXT_MUTED);
+    message.setFont(ChatTheme.FONT_SUBTITLE);
+    message.setForeground(ChatTheme.TEXT_MUTED);
     placeholder.add(message, BorderLayout.CENTER);
     return placeholder;
   }

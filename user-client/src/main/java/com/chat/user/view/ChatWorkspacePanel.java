@@ -1,7 +1,7 @@
 package com.chat.user.view;
 
 import com.chat.user.component.MessageBubble;
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.model.ChatMessage;
 import com.chat.user.controller.ChatWorkspaceController;
 import com.chat.user.model.Conversation;
@@ -34,7 +34,7 @@ public final class ChatWorkspacePanel extends JPanel {
   private final ChatWorkspaceController controller;
   private final DefaultListModel<Conversation> conversationListModel = new DefaultListModel<>();
   private final JList<Conversation> conversationList = new JList<>(conversationListModel);
-  private final javax.swing.JTextField conversationFilter = UserUiTheme.createTextField(22);
+  private final javax.swing.JTextField conversationFilter = ChatTheme.createTextField(22);
   private final JPanel messageList = new JPanel();
   private final JTextArea composer = new JTextArea(3, 32);
   private final JLabel conversationTitle = new JLabel("Conversation");
@@ -52,7 +52,7 @@ public final class ChatWorkspacePanel extends JPanel {
       List<Conversation> conversations,
       String currentUsername,
       ChatWorkspaceController controller) {
-    super(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    super(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     this.conversations = new ArrayList<>(Objects.requireNonNull(conversations, "conversations"));
     this.currentUsername = Objects.requireNonNull(currentUsername, "currentUsername");
     this.controller = Objects.requireNonNull(controller, "controller");
@@ -160,12 +160,12 @@ public final class ChatWorkspacePanel extends JPanel {
     String content = composer.getText().trim();
     if (content.isEmpty()) {
       feedbackLabel.setText("Enter a message before continuing.");
-      feedbackLabel.setForeground(UserUiTheme.DANGER);
+      feedbackLabel.setForeground(ChatTheme.DANGER);
       return;
     }
     if (selectedConversation == null) {
       feedbackLabel.setText("Select a conversation before composing a message.");
-      feedbackLabel.setForeground(UserUiTheme.DANGER);
+      feedbackLabel.setForeground(ChatTheme.DANGER);
       return;
     }
 
@@ -179,15 +179,15 @@ public final class ChatWorkspacePanel extends JPanel {
             false));
     composer.setText("");
     feedbackLabel.setText("Sample message added to this session; it was not sent.");
-    feedbackLabel.setForeground(UserUiTheme.TEXT_MUTED);
+    feedbackLabel.setForeground(ChatTheme.TEXT_MUTED);
     renderMessages();
     renderConversationList();
   }
 
   private void buildContent() {
-    setBackground(UserUiTheme.CANVAS_BG);
+    setBackground(ChatTheme.CANVAS_BG);
     setBorder(BorderFactory.createEmptyBorder(
-        UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+        ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
 
     JPanel conversationPane = buildConversationPane();
     JPanel chatPane = buildChatPane();
@@ -200,22 +200,22 @@ public final class ChatWorkspacePanel extends JPanel {
   }
 
   private JPanel buildConversationPane() {
-    JPanel pane = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
-    pane.setBackground(UserUiTheme.SURFACE_WHITE);
+    JPanel pane = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
+    pane.setBackground(ChatTheme.SURFACE_WHITE);
     pane.setBorder(BorderFactory.createEmptyBorder(
-        UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+        ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     JLabel title = new JLabel("Conversations");
-    title.setFont(UserUiTheme.FONT_TITLE);
-    title.setForeground(UserUiTheme.TEXT_PRIMARY);
+    title.setFont(ChatTheme.FONT_TITLE);
+    title.setForeground(ChatTheme.TEXT_PRIMARY);
     conversationFilter.putClientProperty("JTextField.placeholderText", "Search conversations");
-    JPanel heading = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+    JPanel heading = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
     heading.setOpaque(false);
     heading.add(title, BorderLayout.NORTH);
     heading.add(conversationFilter, BorderLayout.SOUTH);
 
     conversationList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     conversationList.setCellRenderer(new ConversationCellRenderer());
-    conversationList.setBackground(UserUiTheme.SURFACE_WHITE);
+    conversationList.setBackground(ChatTheme.SURFACE_WHITE);
     conversationList.setFixedCellHeight(64);
     conversationList.addListSelectionListener(
         event -> {
@@ -247,22 +247,22 @@ public final class ChatWorkspacePanel extends JPanel {
   }
 
   private JPanel buildChatPane() {
-    JPanel pane = new JPanel(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
-    pane.setBackground(UserUiTheme.CANVAS_BG);
+    JPanel pane = new JPanel(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
+    pane.setBackground(ChatTheme.CANVAS_BG);
     JPanel header = new JPanel(new BorderLayout());
-    header.setBackground(UserUiTheme.SURFACE_WHITE);
+    header.setBackground(ChatTheme.SURFACE_WHITE);
     header.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createMatteBorder(0, 0, 1, 0, UserUiTheme.BORDER),
-        BorderFactory.createEmptyBorder(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD,
-            UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD)));
-    conversationTitle.setFont(UserUiTheme.FONT_SUBTITLE);
-    conversationTitle.setForeground(UserUiTheme.TEXT_PRIMARY);
+        BorderFactory.createMatteBorder(0, 0, 1, 0, ChatTheme.BORDER),
+        BorderFactory.createEmptyBorder(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD,
+            ChatTheme.SPACE_MD, ChatTheme.SPACE_MD)));
+    conversationTitle.setFont(ChatTheme.FONT_SUBTITLE);
+    conversationTitle.setForeground(ChatTheme.TEXT_PRIMARY);
     JLabel sampleBadge = new JLabel("Sample");
-    sampleBadge.setFont(UserUiTheme.FONT_SMALL);
-    sampleBadge.setForeground(UserUiTheme.TEXT_MUTED);
-    JButton historySearch = UserUiTheme.createSecondaryButton("Search History");
+    sampleBadge.setFont(ChatTheme.FONT_SMALL);
+    sampleBadge.setForeground(ChatTheme.TEXT_MUTED);
+    JButton historySearch = ChatTheme.createSecondaryButton("Search History");
     historySearch.addActionListener(event -> historySearchHandler.run());
-    JButton report = UserUiTheme.createSecondaryButton("Report");
+    JButton report = ChatTheme.createSecondaryButton("Report");
     report.addActionListener(
         event -> {
           if (selectedConversation == null) {
@@ -271,7 +271,7 @@ public final class ChatWorkspacePanel extends JPanel {
           }
           reportHandler.accept(selectedConversation);
         });
-    JPanel headerActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, UserUiTheme.SPACE_XS, 0));
+    JPanel headerActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, ChatTheme.SPACE_XS, 0));
     headerActions.setOpaque(false);
     headerActions.add(sampleBadge);
     headerActions.add(historySearch);
@@ -280,22 +280,22 @@ public final class ChatWorkspacePanel extends JPanel {
     header.add(headerActions, BorderLayout.EAST);
 
     messageList.setLayout(new javax.swing.BoxLayout(messageList, javax.swing.BoxLayout.Y_AXIS));
-    messageList.setBackground(UserUiTheme.CANVAS_BG);
+    messageList.setBackground(ChatTheme.CANVAS_BG);
     JScrollPane messageScroll = new JScrollPane(messageList);
     messageScroll.setBorder(BorderFactory.createEmptyBorder());
-    messageScroll.getViewport().setBackground(UserUiTheme.CANVAS_BG);
+    messageScroll.getViewport().setBackground(ChatTheme.CANVAS_BG);
 
-    composer.setFont(UserUiTheme.FONT_BODY);
+    composer.setFont(ChatTheme.FONT_BODY);
     composer.setLineWrap(true);
     composer.setWrapStyleWord(true);
     composer.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createLineBorder(UserUiTheme.BORDER),
-        BorderFactory.createEmptyBorder(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM,
-            UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM)));
+        BorderFactory.createLineBorder(ChatTheme.BORDER),
+        BorderFactory.createEmptyBorder(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM,
+            ChatTheme.SPACE_SM, ChatTheme.SPACE_SM)));
     composer.setText("");
-    JButton sendButton = UserUiTheme.createPrimaryButton("Send Sample");
+    JButton sendButton = ChatTheme.createPrimaryButton("Send Sample");
     sendButton.addActionListener(event -> sendSampleMessage());
-    JButton assistButton = UserUiTheme.createSecondaryButton("Writing Assistant");
+    JButton assistButton = ChatTheme.createSecondaryButton("Writing Assistant");
     assistButton.addActionListener(event -> writingAssistHandler.accept(composer.getText()));
     JPanel composeActions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     composeActions.setOpaque(false);
@@ -303,10 +303,10 @@ public final class ChatWorkspacePanel extends JPanel {
     composeActions.add(assistButton);
     composeActions.add(sendButton);
 
-    JPanel composerPane = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
-    composerPane.setBackground(UserUiTheme.SURFACE_WHITE);
-    composerPane.setBorder(BorderFactory.createEmptyBorder(UserUiTheme.SPACE_SM,
-        UserUiTheme.SPACE_MD, UserUiTheme.SPACE_SM, UserUiTheme.SPACE_MD));
+    JPanel composerPane = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
+    composerPane.setBackground(ChatTheme.SURFACE_WHITE);
+    composerPane.setBorder(BorderFactory.createEmptyBorder(ChatTheme.SPACE_SM,
+        ChatTheme.SPACE_MD, ChatTheme.SPACE_SM, ChatTheme.SPACE_MD));
     composerPane.add(composer, BorderLayout.CENTER);
     composerPane.add(composeActions, BorderLayout.SOUTH);
 
@@ -334,7 +334,7 @@ public final class ChatWorkspacePanel extends JPanel {
 
   private void showUnavailableAction() {
     feedbackLabel.setText("This action is not connected.");
-    feedbackLabel.setForeground(UserUiTheme.TEXT_MUTED);
+    feedbackLabel.setForeground(ChatTheme.TEXT_MUTED);
   }
 
   private void renderMessages() {
@@ -342,8 +342,8 @@ public final class ChatWorkspacePanel extends JPanel {
     if (selectedConversation == null) {
       conversationTitle.setText("Conversation");
       JLabel empty = new JLabel("Select a conversation to view messages.");
-      empty.setFont(UserUiTheme.FONT_BODY);
-      empty.setForeground(UserUiTheme.TEXT_MUTED);
+      empty.setFont(ChatTheme.FONT_BODY);
+      empty.setForeground(ChatTheme.TEXT_MUTED);
       empty.setAlignmentX(CENTER_ALIGNMENT);
       messageList.add(empty);
     } else {
@@ -356,8 +356,8 @@ public final class ChatWorkspacePanel extends JPanel {
       }
       if (selectedConversation.messages().isEmpty()) {
         JLabel empty = new JLabel("No messages in this conversation yet.");
-        empty.setFont(UserUiTheme.FONT_BODY);
-        empty.setForeground(UserUiTheme.TEXT_MUTED);
+        empty.setFont(ChatTheme.FONT_BODY);
+        empty.setForeground(ChatTheme.TEXT_MUTED);
         messageList.add(empty);
       }
     }
@@ -380,9 +380,9 @@ public final class ChatWorkspacePanel extends JPanel {
               + escapeHtml(preview) + "</html>");
       label.setPreferredSize(new Dimension(240, 56));
       label.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
-      label.setFont(UserUiTheme.FONT_BODY);
-      label.setForeground(UserUiTheme.TEXT_PRIMARY);
-      label.setBackground(isSelected ? UserUiTheme.PRIMARY_SOFT_BG : UserUiTheme.SURFACE_WHITE);
+      label.setFont(ChatTheme.FONT_BODY);
+      label.setForeground(ChatTheme.TEXT_PRIMARY);
+      label.setBackground(isSelected ? ChatTheme.PRIMARY_SOFT_BG : ChatTheme.SURFACE_WHITE);
       label.setOpaque(true);
       return label;
     }

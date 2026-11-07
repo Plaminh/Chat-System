@@ -45,11 +45,22 @@ class UserMainFrameTest {
     assertEquals("Requests", frame.getNavigationButton(UserMainFrame.Destination.REQUESTS).getText());
     assertEquals("Sign Out", frame.getNavigationSidebar().getSignOutButton().getText());
     assertNotNull(frame.getNavigationSidebar().getSignOutButton().getIcon());
-    assertEquals(0, frame.getNavigationSidebar().getSignOutButton().getActionListeners().length);
+    assertEquals(1, frame.getNavigationSidebar().getSignOutButton().getActionListeners().length);
 
     frame.getNavigationSidebar().getSignOutButton().doClick();
 
     assertEquals(UserMainFrame.Destination.CHATS, frame.getActiveDestination());
+  }
+
+  @Test
+  void signOutInvokesTheConfiguredHandler() {
+    java.util.concurrent.atomic.AtomicInteger signOutCalls =
+        new java.util.concurrent.atomic.AtomicInteger();
+    UserMainFrame frame = new UserMainFrame(UserSessionState.createSample(), signOutCalls::incrementAndGet);
+
+    frame.getNavigationSidebar().getSignOutButton().doClick();
+
+    assertEquals(1, signOutCalls.get());
   }
 
   @Test

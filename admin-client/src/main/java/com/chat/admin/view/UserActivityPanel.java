@@ -1,5 +1,6 @@
 package com.chat.admin.view;
 
+import com.chat.common.ui.ChatTheme;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.model.AdminUser;
 import com.chat.admin.model.LoginRecord;
@@ -48,12 +49,12 @@ public final class UserActivityPanel extends JPanel {
   };
 
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
-  private final JTextField fromDateField = AdminUIStyle.createDateField("2025/01/01");
-  private final JTextField toDateField = AdminUIStyle.createDateField("2025/12/31");
+  private final JTextField fromDateField = AdminUIComponents.createDateField("2025-01-01");
+  private final JTextField toDateField = AdminUIComponents.createDateField("2025-12-31");
   private final JTextField nameSearchField =
-      AdminUIStyle.createSearchField("Filter by full name or username...", 16);
+      ChatTheme.createSearchField("Filter by full name or username...", 16);
   private final JComboBox<String> operatorCombo =
-      AdminUIStyle.createComboBox(
+      ChatTheme.createComboBox(
           new String[] {
             "All Activity",
             "= (Equal to)",
@@ -62,7 +63,7 @@ public final class UserActivityPanel extends JPanel {
           });
   private final JTextField thresholdField = new JTextField("", 6);
   private final JComboBox<String> sortCombo =
-      AdminUIStyle.createComboBox(
+      ChatTheme.createComboBox(
           new String[] {
             "Sort: Full Name (A-Z)",
             "Sort: Full Name (Z-A)",
@@ -86,7 +87,7 @@ public final class UserActivityPanel extends JPanel {
 
   public UserActivityPanel() {
     setLayout(new BorderLayout(0, 14));
-    setBackground(AdminUIStyle.CANVAS_BG);
+    setBackground(ChatTheme.CANVAS_BG);
 
     JPanel topSection = new JPanel(new BorderLayout(0, 12));
     topSection.setOpaque(false);
@@ -107,19 +108,19 @@ public final class UserActivityPanel extends JPanel {
     row.setOpaque(false);
 
     row.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "Active Users in Period",
             activeUsersCountValueLabel,
             "Users matching date window & activity filter",
-            AdminUIStyle.PRIMARY));
+            ChatTheme.PRIMARY));
     row.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "Total App Opens",
             totalAppOpensValueLabel,
             "Cumulative app launches across filtered users",
-            AdminUIStyle.SUCCESS_DOT));
+            ChatTheme.SUCCESS_DOT));
     row.add(
-        AdminUIStyle.createKpiCard(
+        AdminUIComponents.createKpiCard(
             "Chat Engagement Reach",
             totalChatInteractionsValueLabel,
             "Combined direct chat partners & group participations",
@@ -128,44 +129,44 @@ public final class UserActivityPanel extends JPanel {
   }
 
   private JPanel buildFilterToolbar() {
-    JPanel card = AdminUIStyle.createCardPanel(new BorderLayout(0, 10));
+    JPanel card = ChatTheme.createCardPanel(new BorderLayout(0, 10));
 
     // Top row: Date range filter + quick presets
     JPanel dateRow = new JPanel(new BorderLayout(10, 4));
     dateRow.setOpaque(false);
 
-    JPanel leftDateControls = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
+    JPanel leftDateControls = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
     leftDateControls.setOpaque(false);
 
     JLabel fromLbl = new JLabel("From Date:");
-    fromLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    fromLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    fromLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    fromLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
     JLabel toLbl = new JLabel("To Date:");
-    toLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    toLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    toLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    toLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
     leftDateControls.add(fromLbl);
     leftDateControls.add(fromDateField);
     leftDateControls.add(toLbl);
     leftDateControls.add(toDateField);
 
-    JPanel rightPresets = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.RIGHT, 6, 2));
+    JPanel rightPresets = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.RIGHT, 6, 2));
     rightPresets.setOpaque(false);
 
     JLabel presetLbl = new JLabel("Presets:");
-    presetLbl.setFont(AdminUIStyle.FONT_SMALL);
-    presetLbl.setForeground(AdminUIStyle.TEXT_MUTED);
+    presetLbl.setFont(ChatTheme.FONT_SMALL);
+    presetLbl.setForeground(ChatTheme.TEXT_MUTED);
 
-    JButton mayPresetBtn = AdminUIStyle.createSecondaryButton("May 2025");
-    mayPresetBtn.addActionListener(e -> setDateRange("2025/05/01", "2025/05/31"));
+    JButton mayPresetBtn = ChatTheme.createSecondaryButton("May 2025");
+    mayPresetBtn.addActionListener(e -> setDateRange("2025-05-01", "2025-05-31"));
 
-    JButton q1Q2PresetBtn = AdminUIStyle.createSecondaryButton("H1 2025");
-    q1Q2PresetBtn.addActionListener(e -> setDateRange("2025/01/01", "2025/06/30"));
+    JButton q1Q2PresetBtn = ChatTheme.createSecondaryButton("H1 2025");
+    q1Q2PresetBtn.addActionListener(e -> setDateRange("2025-01-01", "2025-06-30"));
 
-    JButton fullPeriodBtn = AdminUIStyle.createSecondaryButton("All 2025–2026");
+    JButton fullPeriodBtn = ChatTheme.createSecondaryButton("All 2025–2026");
     fullPeriodBtn.addActionListener(
-        e -> setDateRange("2025/01/01", LocalDate.now().format(AdminUIStyle.DATE_FMT)));
+        e -> setDateRange("2025-01-01", LocalDate.now().format(ChatTheme.DATE_FMT)));
 
     rightPresets.add(presetLbl);
     rightPresets.add(mayPresetBtn);
@@ -179,18 +180,18 @@ public final class UserActivityPanel extends JPanel {
     JPanel bottomRow = new JPanel(new BorderLayout(10, 4));
     bottomRow.setOpaque(false);
 
-    JPanel leftFilters = new JPanel(AdminUIStyle.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
+    JPanel leftFilters = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
     leftFilters.setOpaque(false);
 
     JLabel nameLbl = new JLabel("Name:");
-    nameLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    nameLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    nameLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    nameLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
     JLabel activityLbl = new JLabel("App Opens:");
-    activityLbl.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    activityLbl.setForeground(AdminUIStyle.TEXT_SECONDARY);
+    activityLbl.setFont(ChatTheme.FONT_BODY_BOLD);
+    activityLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
-    thresholdField.setFont(AdminUIStyle.FONT_MONO);
+    thresholdField.setFont(ChatTheme.FONT_MONO);
     thresholdField.putClientProperty("JTextField.placeholderText", "Opens");
     thresholdField.setEnabled(false);
 
@@ -203,11 +204,11 @@ public final class UserActivityPanel extends JPanel {
     JPanel rightSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightSort.setOpaque(false);
 
-    JButton resetBtn = AdminUIStyle.createSecondaryButton("Reset");
+    JButton resetBtn = ChatTheme.createSecondaryButton("Reset");
     resetBtn.addActionListener(
         e -> {
-          fromDateField.setText("2025/01/01");
-          toDateField.setText(LocalDate.now().format(AdminUIStyle.DATE_FMT));
+          fromDateField.setText("2025-01-01");
+          toDateField.setText(LocalDate.now().format(ChatTheme.DATE_FMT));
           nameSearchField.setText("");
           operatorCombo.setSelectedIndex(0);
           thresholdField.setText("");
@@ -229,9 +230,9 @@ public final class UserActivityPanel extends JPanel {
 
   private JPanel buildTableCard() {
     JPanel card = new JPanel(new BorderLayout());
-    card.setBackground(AdminUIStyle.SURFACE_WHITE);
+    card.setBackground(ChatTheme.SURFACE_WHITE);
 
-    AdminUIStyle.styleTable(activityTable);
+    AdminUIComponents.styleTable(activityTable);
     activityTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     activityTable.getColumnModel().getColumn(0).setPreferredWidth(125);
     activityTable.getColumnModel().getColumn(1).setPreferredWidth(155);
@@ -256,10 +257,10 @@ public final class UserActivityPanel extends JPanel {
                     super.getTableCellRendererComponent(
                         table, value, isSelected, hasFocus, row, column);
             cell.setHorizontalAlignment(SwingConstants.CENTER);
-            cell.setFont(AdminUIStyle.FONT_BODY_BOLD);
+            cell.setFont(ChatTheme.FONT_BODY_BOLD);
             if (!isSelected) {
               if (column == 3) {
-                cell.setForeground(AdminUIStyle.PRIMARY);
+                cell.setForeground(ChatTheme.PRIMARY);
               } else if (column == 4) {
                 cell.setForeground(new Color(0x0D9488));
               } else {
@@ -275,22 +276,22 @@ public final class UserActivityPanel extends JPanel {
     activityTable
         .getColumnModel()
         .getColumn(6)
-        .setCellRenderer(AdminUIStyle.createStatusBadgeRenderer());
+        .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
-    card.add(AdminUIStyle.wrapTableInScrollPane(activityTable), BorderLayout.CENTER);
+    card.add(AdminUIComponents.wrapTableInScrollPane(activityTable), BorderLayout.CENTER);
     return card;
   }
 
   private JPanel buildFooterBar() {
     JPanel bar = new JPanel(new BorderLayout(12, 0));
-    bar.setBackground(AdminUIStyle.SURFACE_WHITE);
+    bar.setBackground(ChatTheme.SURFACE_WHITE);
     bar.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(AdminUIStyle.BORDER_COLOR, 1, true),
+            BorderFactory.createLineBorder(ChatTheme.BORDER, 1, true),
             BorderFactory.createEmptyBorder(9, 16, 9, 16)));
 
-    footerSummaryLabel.setFont(AdminUIStyle.FONT_BODY_BOLD);
-    footerSummaryLabel.setForeground(AdminUIStyle.TEXT_PRIMARY);
+    footerSummaryLabel.setFont(ChatTheme.FONT_BODY_BOLD);
+    footerSummaryLabel.setForeground(ChatTheme.TEXT_PRIMARY);
 
     bar.add(footerSummaryLabel, BorderLayout.CENTER);
     return bar;
@@ -323,9 +324,9 @@ public final class UserActivityPanel extends JPanel {
     nameSearchField.getDocument().addDocumentListener(docListener);
     fromDateField.getDocument().addDocumentListener(docListener);
     toDateField.getDocument().addDocumentListener(docListener);
-    AdminUIStyle.attachDateFieldValidationTriggers(
+    AdminUIComponents.attachDateFieldValidationTriggers(
         fromDateField, () -> applyFiltersAndRefresh(true));
-    AdminUIStyle.attachDateFieldValidationTriggers(
+    AdminUIComponents.attachDateFieldValidationTriggers(
         toDateField, () -> applyFiltersAndRefresh(true));
     thresholdField.getDocument().addDocumentListener(docListener);
 
@@ -346,15 +347,15 @@ public final class UserActivityPanel extends JPanel {
 
   private void applyFiltersAndRefresh(boolean showValidationAlert) {
     LocalDate[] dateRange =
-        AdminUIStyle.parseAndValidateDateRange(
+        AdminUIComponents.parseAndValidateDateRange(
             this, fromDateField, toDateField, showValidationAlert);
     if (dateRange == null) {
       return;
     }
     LocalDate fromDate = dateRange[0];
     LocalDate toDate = dateRange[1];
-    String fromText = fromDate == null ? "" : fromDate.format(AdminUIStyle.DATE_FMT);
-    String toText = toDate == null ? "" : toDate.format(AdminUIStyle.DATE_FMT);
+    String fromText = fromDate == null ? "" : fromDate.format(ChatTheme.DATE_FMT);
+    String toText = toDate == null ? "" : toDate.format(ChatTheme.DATE_FMT);
 
     int opIdx = operatorCombo.getSelectedIndex();
     Integer threshold = null;
@@ -466,7 +467,7 @@ public final class UserActivityPanel extends JPanel {
           new Object[] {
             "@" + user.getUsername(),
             user.getFullName(),
-            user.getCreatedAt().format(AdminUIStyle.DATETIME_FMT),
+            user.getCreatedAt().format(ChatTheme.DATETIME_FMT),
             user.getAppOpenCount() + " opens",
             user.getChattedUsersCount() + " users",
             user.getChattedGroupsCount() + " groups",

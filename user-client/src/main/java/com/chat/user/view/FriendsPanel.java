@@ -1,6 +1,6 @@
 package com.chat.user.view;
 
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.model.FriendEntry;
 import com.chat.user.controller.FriendsController;
 import com.chat.user.model.UserProfile;
@@ -37,7 +37,8 @@ public final class FriendsPanel extends JPanel {
   private final FriendsController controller = new FriendsController();
   private final BiPredicate<FriendEntry, RelationshipAction> confirmationHandler;
   private final Consumer<FriendEntry> openChatHandler;
-  private final JTextField searchField = UserUiTheme.createTextField(24);
+  private final Consumer<FriendEntry> createGroupHandler;
+  private final JTextField searchField = ChatTheme.createTextField(24);
   private final JCheckBox onlineOnly = new JCheckBox("Show online only");
   private final JPanel friendList = new JPanel();
   private List<FriendEntry> visibleFriends = List.of();
@@ -47,13 +48,23 @@ public final class FriendsPanel extends JPanel {
       Set<String> blockedUsernames,
       BiPredicate<FriendEntry, RelationshipAction> confirmationHandler,
       Consumer<FriendEntry> openChatHandler) {
-    super(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    this(friends, blockedUsernames, confirmationHandler, openChatHandler, friend -> {});
+  }
+
+  public FriendsPanel(
+      List<FriendEntry> friends,
+      Set<String> blockedUsernames,
+      BiPredicate<FriendEntry, RelationshipAction> confirmationHandler,
+      Consumer<FriendEntry> openChatHandler,
+      Consumer<FriendEntry> createGroupHandler) {
+    super(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     this.friends = new ArrayList<>(Objects.requireNonNull(friends, "friends"));
     this.blockedUsernames =
         Objects.requireNonNull(blockedUsernames, "blockedUsernames");
     this.confirmationHandler =
         Objects.requireNonNull(confirmationHandler, "confirmationHandler");
     this.openChatHandler = Objects.requireNonNull(openChatHandler, "openChatHandler");
+    this.createGroupHandler = Objects.requireNonNull(createGroupHandler, "createGroupHandler");
     buildContent();
     renderFriends();
   }
@@ -85,40 +96,40 @@ public final class FriendsPanel extends JPanel {
   }
 
   private void buildContent() {
-    setBackground(UserUiTheme.CANVAS_BG);
+    setBackground(ChatTheme.CANVAS_BG);
     setBorder(BorderFactory.createEmptyBorder(
-        UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+        ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
 
     JLabel title = new JLabel("Friends");
-    title.setFont(UserUiTheme.FONT_TITLE);
-    title.setForeground(UserUiTheme.TEXT_PRIMARY);
+    title.setFont(ChatTheme.FONT_TITLE);
+    title.setForeground(ChatTheme.TEXT_PRIMARY);
     JLabel subtitle = new JLabel("Find friends, check their status, and start a conversation.");
-    subtitle.setFont(UserUiTheme.FONT_BODY);
-    subtitle.setForeground(UserUiTheme.TEXT_MUTED);
-    JPanel heading = new JPanel(new GridLayout(0, 1, 0, UserUiTheme.SPACE_XS));
+    subtitle.setFont(ChatTheme.FONT_BODY);
+    subtitle.setForeground(ChatTheme.TEXT_MUTED);
+    JPanel heading = new JPanel(new GridLayout(0, 1, 0, ChatTheme.SPACE_XS));
     heading.setOpaque(false);
     heading.add(title);
     heading.add(subtitle);
 
     searchField.putClientProperty("JTextField.placeholderText", "Search by name");
-    onlineOnly.setFont(UserUiTheme.FONT_BODY);
-    onlineOnly.setForeground(UserUiTheme.TEXT_SECONDARY);
+    onlineOnly.setFont(ChatTheme.FONT_BODY);
+    onlineOnly.setForeground(ChatTheme.TEXT_SECONDARY);
     onlineOnly.setOpaque(false);
-    JPanel filters = new JPanel(new FlowLayout(FlowLayout.LEFT, UserUiTheme.SPACE_SM, 0));
+    JPanel filters = new JPanel(new FlowLayout(FlowLayout.LEFT, ChatTheme.SPACE_SM, 0));
     filters.setOpaque(false);
     filters.add(searchField);
     filters.add(onlineOnly);
 
-    JPanel top = new JPanel(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    JPanel top = new JPanel(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     top.setOpaque(false);
     top.add(heading, BorderLayout.NORTH);
     top.add(filters, BorderLayout.SOUTH);
 
     friendList.setLayout(new javax.swing.BoxLayout(friendList, javax.swing.BoxLayout.Y_AXIS));
-    friendList.setBackground(UserUiTheme.CANVAS_BG);
+    friendList.setBackground(ChatTheme.CANVAS_BG);
     JScrollPane scrollPane = new JScrollPane(friendList);
     scrollPane.setBorder(BorderFactory.createEmptyBorder());
-    scrollPane.getViewport().setBackground(UserUiTheme.CANVAS_BG);
+    scrollPane.getViewport().setBackground(ChatTheme.CANVAS_BG);
     add(top, BorderLayout.NORTH);
     add(scrollPane, BorderLayout.CENTER);
 
@@ -149,15 +160,15 @@ public final class FriendsPanel extends JPanel {
     friendList.removeAll();
     if (visibleFriends.isEmpty()) {
       JLabel empty = new JLabel("No matching friends found.");
-      empty.setFont(UserUiTheme.FONT_BODY);
-      empty.setForeground(UserUiTheme.TEXT_MUTED);
-      empty.setBorder(BorderFactory.createEmptyBorder(UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD,
-          UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD));
+      empty.setFont(ChatTheme.FONT_BODY);
+      empty.setForeground(ChatTheme.TEXT_MUTED);
+      empty.setBorder(BorderFactory.createEmptyBorder(ChatTheme.SPACE_LG, ChatTheme.SPACE_MD,
+          ChatTheme.SPACE_LG, ChatTheme.SPACE_MD));
       friendList.add(empty);
     } else {
       for (FriendEntry friend : visibleFriends) {
         friendList.add(createFriendRow(friend));
-        friendList.add(javax.swing.Box.createVerticalStrut(UserUiTheme.SPACE_SM));
+        friendList.add(javax.swing.Box.createVerticalStrut(ChatTheme.SPACE_SM));
       }
     }
     friendList.revalidate();
@@ -165,31 +176,36 @@ public final class FriendsPanel extends JPanel {
   }
 
   private JPanel createFriendRow(FriendEntry friend) {
-    JPanel row = UserUiTheme.createCardPanel();
-    row.setLayout(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
-    JPanel identity = new JPanel(new GridLayout(0, 1, 0, UserUiTheme.SPACE_XS));
+    JPanel row = ChatTheme.createCardPanel();
+    row.setLayout(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
+    JPanel identity = new JPanel(new GridLayout(0, 1, 0, ChatTheme.SPACE_XS));
     identity.setOpaque(false);
     JLabel name = new JLabel(friend.fullName());
-    name.setFont(UserUiTheme.FONT_BODY_BOLD);
-    name.setForeground(UserUiTheme.TEXT_PRIMARY);
+    name.setFont(ChatTheme.FONT_BODY_BOLD);
+    name.setForeground(ChatTheme.TEXT_PRIMARY);
     JLabel handle = new JLabel(
         "@" + friend.username() + "  •  " + (friend.online() ? "Online" : "Offline"));
-    handle.setFont(UserUiTheme.FONT_SMALL);
-    handle.setForeground(friend.online() ? UserUiTheme.SUCCESS : UserUiTheme.TEXT_SECONDARY);
+    handle.setFont(ChatTheme.FONT_SMALL);
+    handle.setForeground(friend.online() ? ChatTheme.SUCCESS : ChatTheme.TEXT_SECONDARY);
     identity.add(name);
     identity.add(handle);
 
-    JButton chatButton = UserUiTheme.createPrimaryButton("Message");
+    JButton chatButton = ChatTheme.createPrimaryButton("Message");
     chatButton.addActionListener(event -> openChatHandler.accept(friend));
-    JButton unfriendButton = UserUiTheme.createSecondaryButton("Remove Friend");
+    JButton unfriendButton = ChatTheme.createDangerButton("Remove Friend");
     unfriendButton.addActionListener(
         event -> handleRelationshipAction(friend, RelationshipAction.UNFRIEND));
-    JButton blockButton = UserUiTheme.createSecondaryButton("Block");
+    JButton blockButton = ChatTheme.createDangerButton("Block");
     blockButton.addActionListener(
         event -> handleRelationshipAction(friend, RelationshipAction.BLOCK));
 
-    JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, UserUiTheme.SPACE_XS, 0));
+    JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, ChatTheme.SPACE_XS, 0));
     actions.setOpaque(false);
+    if (friend.online()) {
+      JButton createGroupButton = ChatTheme.createSecondaryButton("Create Group");
+      createGroupButton.addActionListener(event -> createGroupHandler.accept(friend));
+      actions.add(createGroupButton);
+    }
     actions.add(chatButton);
     actions.add(unfriendButton);
     actions.add(blockButton);

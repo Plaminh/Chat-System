@@ -1,6 +1,6 @@
 package com.chat.user.view;
 
-import com.chat.user.component.UserUiTheme;
+import com.chat.common.ui.ChatTheme;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -76,29 +76,29 @@ public final class ChangePasswordDialog extends JPanel {
     confirmPasswordField.setText("");
 
     if (currentBlank || newBlank || confirmationBlank) {
-      showFeedback("Complete all password fields.", UserUiTheme.DANGER);
+      showFeedback("Complete all password fields.", ChatTheme.DANGER);
       return;
     }
     if (!matches) {
-      showFeedback("The new password and confirmation do not match.", UserUiTheme.DANGER);
+      showFeedback("The new password and confirmation do not match.", ChatTheme.DANGER);
       return;
     }
 
     changeSubmitted = true;
     showFeedback(
         "Sample password change requested; the server password was not changed.",
-        UserUiTheme.SUCCESS);
+        ChatTheme.SUCCESS);
   }
 
   private void buildContent() {
-    setBackground(UserUiTheme.SURFACE_WHITE);
+    setBackground(ChatTheme.SURFACE_WHITE);
     setBorder(
         BorderFactory.createEmptyBorder(
-            UserUiTheme.SPACE_LG, UserUiTheme.SPACE_LG, UserUiTheme.SPACE_MD, UserUiTheme.SPACE_LG));
+            ChatTheme.SPACE_LG, ChatTheme.SPACE_LG, ChatTheme.SPACE_MD, ChatTheme.SPACE_LG));
 
     JLabel title = new JLabel("Change Password", SwingConstants.CENTER);
-    title.setFont(UserUiTheme.FONT_TITLE);
-    title.setForeground(UserUiTheme.TEXT_PRIMARY);
+    title.setFont(ChatTheme.FONT_TITLE);
+    title.setForeground(ChatTheme.TEXT_PRIMARY);
     JPanel form = new JPanel();
     form.setLayout(new javax.swing.BoxLayout(form, javax.swing.BoxLayout.Y_AXIS));
     form.setOpaque(false);
@@ -106,22 +106,22 @@ public final class ChangePasswordDialog extends JPanel {
     addField(form, "New password", newPasswordField);
     addField(form, "Confirm new password", confirmPasswordField);
 
-    feedbackLabel.setFont(UserUiTheme.FONT_SMALL);
-    feedbackLabel.setForeground(UserUiTheme.DANGER);
-    JButton cancelButton = UserUiTheme.createSecondaryButton("Cancel");
+    feedbackLabel.setFont(ChatTheme.FONT_SMALL);
+    feedbackLabel.setForeground(ChatTheme.DANGER);
+    JButton cancelButton = ChatTheme.createSecondaryButton("Cancel");
     cancelButton.addActionListener(event -> closeDialog());
-    JButton submitButton = UserUiTheme.createPrimaryButton("Confirm Sample Change");
+    JButton submitButton = ChatTheme.createPrimaryButton("Confirm Sample Change");
     submitButton.addActionListener(event -> submitChange());
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     actions.setOpaque(false);
     actions.add(cancelButton);
     actions.add(submitButton);
 
-    JPanel content = new JPanel(new BorderLayout(UserUiTheme.SPACE_MD, UserUiTheme.SPACE_MD));
+    JPanel content = new JPanel(new BorderLayout(ChatTheme.SPACE_MD, ChatTheme.SPACE_MD));
     content.setOpaque(false);
     content.add(title, BorderLayout.NORTH);
     content.add(form, BorderLayout.CENTER);
-    JPanel footer = new JPanel(new BorderLayout(UserUiTheme.SPACE_SM, UserUiTheme.SPACE_SM));
+    JPanel footer = new JPanel(new BorderLayout(ChatTheme.SPACE_SM, ChatTheme.SPACE_SM));
     footer.setOpaque(false);
     footer.add(feedbackLabel, BorderLayout.NORTH);
     footer.add(actions, BorderLayout.SOUTH);
@@ -131,11 +131,11 @@ public final class ChangePasswordDialog extends JPanel {
 
   private void addField(JPanel form, String labelText, JPasswordField field) {
     JLabel label = new JLabel(labelText);
-    label.setFont(UserUiTheme.FONT_BODY_BOLD);
-    label.setForeground(UserUiTheme.TEXT_SECONDARY);
+    label.setFont(ChatTheme.FONT_BODY_BOLD);
+    label.setForeground(ChatTheme.TEXT_SECONDARY);
     form.add(label);
     form.add(field);
-    form.add(javax.swing.Box.createVerticalStrut(UserUiTheme.SPACE_SM));
+    form.add(javax.swing.Box.createVerticalStrut(ChatTheme.SPACE_SM));
   }
 
   private void closeDialog() {
