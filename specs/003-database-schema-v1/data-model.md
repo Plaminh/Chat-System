@@ -24,15 +24,33 @@ One row per administrator or normal user account.
 | `date_of_birth` | `DATE` | No | Earlier than `CURRENT_DATE` at insert/update time |
 | `gender` | `VARCHAR(10)` | Yes | `male`, `female`, `other`, or `NULL` |
 | `role` | `VARCHAR(10)` | No | `admin` or `user`; default `user` |
-| `account_status` | `VARCHAR(10)` | No | `active` or `locked`; default `active` |
+| `account_status` | `VARCHAR(10)` | No | `active`, `locked`, or terminal `deleted`; default `active` |
 | `locked_at` | `TIMESTAMPTZ` | Yes | Present exactly when status is `locked` |
+| `deleted_at` | `TIMESTAMPTZ` | Yes | Present exactly when status is `deleted` |
 | `password_changed_at` | `TIMESTAMPTZ` | No | Defaults to current time |
 | `created_at` | `TIMESTAMPTZ` | No | Defaults to current time |
 | `updated_at` | `TIMESTAMPTZ` | No | Not before `created_at`; maintained by Version 2 backend |
 
 Indexes support account status filtering, registration chronology, and case-insensitive full-name search. Friend and activity counters are derived and never stored here.
 
-## 2. `login_history`
+## 2. `user_public_keys`
+
+Versioned public encryption keys for the per-user recipient model. V1 permits one active key per user; it does not model independent device keys.
+
+| Field | Type | Null | Rule |
+|---|---|---:|---|
+| `user_public_key_id` | `BIGINT` identity | No | Primary key |
+| `user_id` | `BIGINT` | No | FK to `users`, delete cascades |
+| `key_version` | `INTEGER` | No | Positive; unique per user |
+| `key_algorithm` | `VARCHAR(40)` | No | `DHKEM-X25519-HKDF-SHA256` |
+| `public_key_format` | `VARCHAR(20)` | No | `RFC9180-RAW` |
+| `public_key` | `BYTEA` | No | Exactly 32 serialized public-key bytes |
+| `created_at` | `TIMESTAMPTZ` | No | Defaults current time |
+| `retired_at` | `TIMESTAMPTZ` | Yes | Not before creation |
+
+Only public material is stored. The corresponding private key remains on the User Client. Retired rows remain referenced by historical group-key envelopes.
+
+## 3. `login_history`
 
 One row per authenticated session boundary.
 
@@ -45,7 +63,7 @@ One row per authenticated session boundary.
 
 An index on `(user_id, logged_in_at DESC)` supports the Admin chronological history dialog.
 
-## 3. `friend_requests`
+## 4. `friend_requests`
 
 A directed request from sender to receiver with one active request allowed per unordered pair.
 
@@ -60,7 +78,7 @@ A directed request from sender to receiver with one active request allowed per u
 
 A partial unique expression index on `LEAST(sender_user_id, receiver_user_id), GREATEST(...)` where status is pending prevents simultaneous or repeated active requests in either direction while preserving request history.
 
-## 4. `friendships`
+## 5. `friendships`
 
 One canonical unordered connection between two users.
 
@@ -74,7 +92,7 @@ One canonical unordered connection between two users.
 
 `UNIQUE(user_low_id, user_high_id)` prevents both same-order and reversed duplicates when callers obey the enforced low/high check.
 
-## 5. `user_blocks`
+## 6. `user_blocks`
 
 A directed block from one user to another.
 
@@ -87,7 +105,7 @@ A directed block from one user to another.
 
 The directed pair is unique. Backend transactions in Version 2 remove or reject incompatible pending requests/friendships when a block is created.
 
-## 6. `conversations`
+## 7. `conversations`
 
 Shared metadata for direct and group conversations.
 
@@ -97,13 +115,13 @@ Shared metadata for direct and group conversations.
 | `conversation_type` | `VARCHAR(10)` | No | `direct` or `group` |
 | `name` | `VARCHAR(100)` | Conditional | `NULL` for direct; trimmed non-blank for group |
 | `owner_user_id` | `BIGINT` | Conditional | `NULL` for direct; required FK to `users` for group; delete restricted |
-| `encryption_enabled` | `BOOLEAN` | No | Defaults false; metadata only in Version 1 |
+| `encryption_enabled` | `BOOLEAN` | No | Defaults false; permitted only for groups; selected at group creation |
 | `created_at` | `TIMESTAMPTZ` | No | Defaults current time |
 | `updated_at` | `TIMESTAMPTZ` | No | Not before creation; maintained by Version 2 backend |
 
-Indexes support type/name filtering, owner lookup, and creation chronology.
+Indexes support type/name filtering, owner lookup, and creation chronology. Version 2 treats `encryption_enabled` as immutable after group creation: switching mode requires another group, and historical messages are never converted. The composite message foreign key enforces that each stored message matches its parent's current mode, but an empty group can still be updated directly; therefore the foreign key is not a complete immutability guarantee. This cross-row workflow rule belongs in the V2 server, not a V1 trigger.
 
-## 7. `direct_conversations`
+## 8. `direct_conversations`
 
 One-to-one specialization that assigns a canonical user pair to a direct conversation.
 
@@ -115,7 +133,7 @@ One-to-one specialization that assigns a canonical user pair to a direct convers
 
 The user pair is unique. A Version 2 transaction verifies the parent type is `direct` and creates exactly two active membership rows.
 
-## 8. `conversation_members`
+## 9. `conversation_members`
 
 Participation and per-user view state for direct and group conversations.
 
@@ -129,9 +147,38 @@ Participation and per-user view state for direct and group conversations.
 | `left_at` | `TIMESTAMPTZ` | Yes | Not before join |
 | `history_cleared_at` | `TIMESTAMPTZ` | Yes | Not before join; hides earlier messages only for this member |
 
-The conversation/user pair is unique. Indexes support active membership, user conversation lists, and Admin group rosters.
+The conversation/user pair is unique. Indexes support active membership, user conversation lists, and Admin group rosters. Rejoining updates this row and sets a new `joined_at` visibility boundary; complete join/leave episode history is not retained.
 
-## 9. `messages`
+## 10. `conversation_key_versions`
+
+One metadata row per client-generated encrypted-group key epoch. It contains no plaintext or server-decryptable group key.
+
+| Field | Type | Null | Rule |
+|---|---|---:|---|
+| `conversation_key_version_id` | `BIGINT` identity | No | Primary key |
+| `conversation_id` | `BIGINT` | No | FK to `conversations`, delete cascades |
+| `key_version` | `INTEGER` | No | Positive; unique per conversation |
+| `encryption_algorithm` | `VARCHAR(30)` | No | `AES-256-GCM` |
+| `created_at` | `TIMESTAMPTZ` | No | Defaults current time |
+| `retired_at` | `TIMESTAMPTZ` | Yes | Not before creation |
+
+## 11. `conversation_key_envelopes`
+
+One HPKE base-mode envelope for each authorized recipient public key and group-key epoch.
+
+| Field | Type | Null | Rule |
+|---|---|---:|---|
+| `conversation_key_envelope_id` | `BIGINT` identity | No | Primary key |
+| `conversation_key_version_id` | `BIGINT` | No | FK to `conversation_key_versions`, delete cascades |
+| `recipient_public_key_id` | `BIGINT` | No | FK to `user_public_keys`, delete restricted |
+| `envelope_algorithm` | `VARCHAR(64)` | No | `HPKE-BASE-X25519-HKDF-SHA256-AES-256-GCM` |
+| `encapsulated_key` | `BYTEA` | No | Exactly 32 bytes for RFC 9180 X25519 encapsulation |
+| `encrypted_group_key` | `BYTEA` | No | Exactly 48 bytes: encrypted 32-byte group key plus 16-byte AEAD tag |
+| `created_at` | `TIMESTAMPTZ` | No | Defaults current time |
+
+The epoch/recipient-key pair is unique. The storage profile uses RFC 9180 base mode with KEM `0x0020` (DHKEM X25519/HKDF-SHA256), KDF `0x0001` (HKDF-SHA256), and AEAD `0x0002` (AES-256-GCM). `encapsulated_key` is the 32-byte HPKE `enc` value; `encrypted_group_key` is `Seal()` output for a 32-byte group key including its 16-byte tag. The HPKE `info` value is UTF-8 `JavaChatSystem-V1-GroupKey`. AAD is the UTF-8 string `JavaChatSystem-V1|conversation=<conversation_id>|epoch=<key_version>|recipient-user=<user_id>|recipient-key=<key_version>` using unsigned base-10 integers without padding. These values are derived through the two envelope FKs and need no duplicated columns. The server stores/forwards the opaque result but has no private key that can open it. Membership eligibility, directory authenticity, and complete envelope distribution are V2 authorization/transaction rules.
+
+## 12. `messages`
 
 Ordered message content and global recall metadata.
 
@@ -140,14 +187,23 @@ Ordered message content and global recall metadata.
 | `message_id` | `BIGINT` identity | No | Primary key |
 | `conversation_id` | `BIGINT` | No | FK to `conversations`, delete cascades |
 | `sender_user_id` | `BIGINT` | Yes | FK to `users`, set null after account deletion |
-| `body` | `TEXT` | No | Non-blank source content while sent; exactly `[Message unsent]` after recall |
+| `body` | `TEXT` | Conditional | Non-blank plaintext message, non-null `[Message unsent]` for every recalled message, or `NULL` only for sent encrypted content |
+| `content_encrypted` | `BOOLEAN` | No | Must equal the parent conversation's `encryption_enabled` flag |
+| `ciphertext` | `BYTEA` | Conditional | Non-empty only for encrypted content |
+| `encryption_key_version` | `INTEGER` | Conditional | Composite FK with conversation to its key version |
+| `encryption_nonce` | `BYTEA` | Conditional | Exactly 12 bytes for AES-GCM encrypted content |
+| `authentication_tag` | `BYTEA` | Conditional | Exactly 16 bytes for AES-GCM encrypted content |
 | `created_at` | `TIMESTAMPTZ` | No | Defaults current time |
 | `unsent_at` | `TIMESTAMPTZ` | Yes | Not before creation |
 | `unsent_by` | `BIGINT` | Yes | FK to `users`, set null; cannot be set without `unsent_at` |
 
-Indexes support conversation chronology, sender history, and PostgreSQL simple-text token search. The full-text index does not support arbitrary substring matching; Version 2 uses an escaped case-insensitive `LIKE` strategy when the UI requires substrings. Search applies only to visible, non-recalled plaintext Version 1 content; future encrypted content requires a separately approved search policy.
+Each normal message is exactly one of plaintext or complete encrypted state. A composite foreign key binds that state to the parent conversation, preventing plaintext content in encrypted groups without a trigger. Unsent rows discard the server copy of either original representation, including ciphertext, key version, nonce, and tag, and retain only the canonical placeholder; this cannot erase copies already received by clients.
 
-## 10. `message_deletions`
+For each new AES-GCM encryption operation, the User Client generates a fresh 12-byte nonce with Java `SecureRandom`. It must not derive nonces solely from timestamps or counters that can reset, and it must never reuse a nonce with the same group key. Random generation gives probabilistic collision resistance, not absolute uniqueness; V2 must set message-volume limits and key-rotation policy appropriate to this construction. Partial unique index `uq_messages_conversation_key_nonce` rejects duplicate `(conversation_id, encryption_key_version, encryption_nonce)` values among retained encrypted rows. Because unsending clears the indexed key version and nonce, the index cannot detect later reuse of removed values and does not replace correct client nonce generation.
+
+Network retry is a separate V2 concern. Retrying the same logical message retransmits the same message identifier and ciphertext; the server must process that retry idempotently. Performing encryption again creates a new ciphertext operation and therefore requires a new nonce. V1 has no client retry identifier or database-level retry-idempotency guarantee. Other indexes support chronology and sender history. Plaintext substring search uses escaped `LIKE`; encrypted history search occurs only on an authorized User Client after decryption and never creates a server-side plaintext index.
+
+## 13. `message_deletions`
 
 One user's decision to hide one message without changing other users' views.
 
@@ -160,7 +216,7 @@ One user's decision to hide one message without changing other users' views.
 
 The `(message_id, user_id)` pair is unique. A Version 2 transaction verifies the user is a conversation participant.
 
-## 11. `spam_reports`
+## 14. `spam_reports`
 
 A moderation case that remains separate from account locking.
 
@@ -177,9 +233,9 @@ A moderation case that remains separate from account locking.
 | `created_at` | `TIMESTAMPTZ` | No | Defaults current time |
 | `resolved_at` | `TIMESTAMPTZ` | Conditional | Required only for resolved/dismissed; not before creation |
 
-Indexes support reported-account, status/date, reporter, reviewer, and referenced-message queries. No report state automatically changes `users.account_status`.
+Indexes support reported-account, status/date, reporter, reviewer, and referenced-message queries. No report state automatically changes `users.account_status`. For an encrypted message, `message_id` supplies metadata only; V1 does not store a hidden plaintext evidence copy, so an administrator cannot decrypt the reported content from server data.
 
-## 12. `user_activity_logs`
+## 15. `user_activity_logs`
 
 Source events for engagement and distinct-user statistics.
 
@@ -188,24 +244,26 @@ Source events for engagement and distinct-user statistics.
 | `user_activity_log_id` | `BIGINT` identity | No | Primary key |
 | `user_id` | `BIGINT` | No | FK to `users`, delete cascades |
 | `activity_type` | `VARCHAR(12)` | No | `app_open`, `direct_chat`, or `group_chat` |
-| `conversation_id` | `BIGINT` | Conditional | `NULL` for app open; required FK for chat events; set null is not allowed by the check, so conversation deletion cascades activity |
+| `conversation_id` | `BIGINT` | Yes | `NULL` for app open and set null when a referenced conversation is deleted |
+| `conversation_id_snapshot` | `BIGINT` | Conditional | Required immutable identifier for chat events; no FK so it survives deletion |
+| `counterpart_user_id_snapshot` | `BIGINT` | Conditional | Required other endpoint for direct-chat events; null for app/group events |
 | `occurred_at` | `TIMESTAMPTZ` | No | Defaults current time |
 
-Indexes support user/time history, type/time charts, and conversation activity. Version 2 transactions verify direct/group activity matches the referenced conversation type.
+Indexes support user/time history, type/time charts, and historical conversation activity. The snapshots preserve distinct conversation/group and direct-counterpart identity after deletion. Version 2 supplies matching live/snapshot IDs plus the validated other endpoint for new direct-chat events and avoids retry duplicates.
 
 ## Relationship summary
 
-- A user owns many login events, directed requests, blocks, memberships, messages, reports, and activity events.
+- A user owns many login events, public-key versions, directed requests, blocks, memberships, messages, reports, and activity events.
 - A friendship and direct conversation each use one canonical unordered user pair.
-- A conversation owns its direct specialization (when applicable), memberships, messages, and activity.
+- A conversation owns its direct specialization (when applicable), memberships, group-key epochs, recipient envelopes, and messages; activity survives conversation deletion with a null reference.
 - A message owns per-user deletion records and may be referenced by spam reports.
 
 ## State transitions
 
-- User: `active ↔ locked`; `locked_at` follows state.
+- User: `active ↔ locked → deleted` or `active → deleted`; timestamps follow state and deletion is terminal.
 - Friend request: `pending → accepted | declined | canceled`; final states do not transition again in V1.
 - Membership: active (`left_at IS NULL`) → left (`left_at IS NOT NULL`) → reactivated by updating the one existing row in Version 2. Reactivation resets the current interval and cannot preserve multiple membership episodes in V1.
-- Message: sent (`unsent_at IS NULL`) → unsent (`unsent_at IS NOT NULL`, `body = '[Message unsent]'`); recall is not reversed in V1.
+- Message: sent (`unsent_at IS NULL`) → unsent (`unsent_at IS NOT NULL`, `body IS NOT NULL`, `body = '[Message unsent]'`); recall is not reversed in V1.
 - Spam report: `pending → reviewing → resolved | dismissed`, with direct `pending → resolved | dismissed` also allowed by the model.
 
 ## Version 2 transaction rules
@@ -220,6 +278,27 @@ The following cannot be guaranteed by same-row constraints and MUST be enforced 
 6. Permit spam reports only after eligible prior interaction and prevent self-reporting even when deleted-user references later become null.
 7. Match activity type to conversation type and avoid double-counting events during retries.
 8. Maintain all `updated_at` values and account lock timestamp/state changes atomically.
-9. Define ciphertext storage, keys, device membership, rotation, search, and recovery before enabling effective E2EE; Version 1's flag is not a security claim.
-10. Exclude both directions of `user_blocks` from user search before results leave the backend.
-11. Reactivate a former group member by updating the unique existing membership row; reset the active interval/view boundary and accept that earlier membership episodes are not retained by V1.
+9. For encrypted groups, authorize an active member's User Client to create/rotate a random 32-byte group key, publish one HPKE envelope for every current authorized member's verified active public key, and atomically persist the complete epoch/envelope set before accepting messages. Membership changes and public-key replacement must be serialized with rotation so an incomplete or stale recipient set is never published. The server validates authorization and stores/forwards opaque data; it never decrypts or generates the plaintext group key.
+10. Handle encrypted-message retries idempotently at the protocol/service boundary: a retry of one logical message reuses its message identifier and ciphertext, while a new encryption operation uses a new `SecureRandom` nonce. V1 persistence alone does not provide retry idempotency.
+11. Exclude both directions of `user_blocks` from user search before results leave the backend.
+12. Reactivate a former group member by updating the unique existing membership row; reset the active interval/view boundary and accept that earlier membership episodes are not retained by V1.
+
+## Lifecycle and authorization decisions for Version 2
+
+- Ordinary account deletion is a soft-delete transaction, never `DELETE FROM users`. The server locks the target account and its owned groups, resolves every ownership transfer, marks active group memberships as left, then sets `account_status = 'deleted'`, clears `locked_at`, and sets `deleted_at/updated_at`. Login sessions are invalidated after commit and every later operation rejects deleted accounts.
+- A group owner may leave or be deleted only after ownership moves to another active member. The replacement is promoted to `admin` if necessary; other admins remain admins. If the owner is the final active member, leave/deletion is rejected until an active replacement joins. This preserves the group and message history instead of silently deleting it.
+- Deleted rows retain username and email reservations because the case-insensitive unique indexes include all account states. History continues to reference the stable `user_id`; presentation substitutes a deleted-account label.
+- Current members see messages from their current `joined_at` through `left_at` (or now), further limited by `history_cleared_at`, per-message deletion, and unsend state. Rejoining overwrites the single membership interval and starts visibility at the new `joined_at`; earlier history is not restored.
+- A group chooses plaintext or encrypted mode at creation. The mode never changes; users create another group to use another mode, and historical messages are not converted.
+- Creating an encrypted group creates epoch 1 and one envelope for every active member, including the creator, before the first encrypted message is accepted.
+- Adding, removing, or rejoining a member rotates the group key for future messages. New and rejoining members receive only the new epoch by default and cannot access earlier encrypted history. Removed members receive no later envelope, although copies and keys already delivered to their clients cannot be revoked.
+- A public-key replacement first verifies the replacement through the chosen V2 key-authenticity mechanism, retires the old public-key row, and registers a higher version. Every encrypted group the user currently belongs to then pauses sending while an authorized member's User Client generates a new group key and publishes a complete new epoch for all current authorized members. Sending resumes only after the epoch is complete; it never falls back to plaintext. Membership changes and replacement rotation must be coordinated so neither uses an incomplete or outdated recipient set.
+- Old public-key rows and their existing envelopes remain unchanged. Old history requires the matching old private key; historical ciphertext and envelopes are not rewritten automatically.
+- Logout does not delete private keys. A supported client must retain them in protected local storage across restart. This per-user design does not support independent multi-device keys or server-side key synchronization.
+- Changing a password does not rotate or recover encryption keys. Password reset or loss of local private keys does not restore encrypted history; no server-accessible recovery secret exists in V1.
+- Public-key registration/authenticity, protection against key substitution, send pausing, membership/replacement coordination, complete envelope distribution, and atomic rotation are V2 responsibilities. The server directory alone is not proof that a public key belongs to a user.
+- Unsend removes ciphertext/nonce/tag/key version from server storage and stores the canonical placeholder, but cannot erase content already received by another client. Encrypted history search runs on authorized clients after decryption.
+- The server never submits encrypted-group plaintext to an LLM. Any future LLM assistance requires an explicit user action that discloses selected text under a documented consent/retention policy.
+- Accepting a friend request verifies the authenticated receiver, exact sender/receiver pair, `pending` state, no block, and no existing friendship; request update and friendship insert are one transaction. Blocking deletes the canonical friendship, cancels pending requests in both directions, and prevents later requests/search in both directions until unblock.
+- A message-linked spam report verifies that `reported_user_id` is the message sender and that the reporter could access the message under membership/visibility rules. Report review requires an active `admin`; ordinary `CHECK` constraints do not attempt these cross-table authorization queries.
+- `updated_at` is maintained explicitly by Version 2 application transactions. No trigger also updates it.
