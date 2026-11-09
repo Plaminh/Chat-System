@@ -2,7 +2,6 @@
 
 ## Prerequisites
 
-- Java 21 and Maven for repository regression checks.
 - PowerShell 5.1 or later for static validation and initialization.
 - Optional: PostgreSQL command-line tools on `PATH` and an explicitly isolated empty test database for runtime SQL validation.
 
@@ -16,7 +15,7 @@ From the repository root after Phase 12:
 & .\script\tests\validate-schema.ps1
 ```
 
-Expected outcome: twelve required table definitions, required constraints/indexes, artifact consistency, and prohibited construct checks all pass.
+Expected outcome: the six schema modules, transaction boundaries, required table names, DBML synchronization, and prohibited-construct checks pass.
 
 ## 2. Isolated PostgreSQL validation
 
@@ -31,6 +30,8 @@ Remove-Item Env:PGPASSWORD
 
 Expected outcome: schema creation succeeds; validation notices show representative constraint rejections; the test transaction rolls back fixture rows.
 
+The repository does not prove compatibility with or upgrade an existing schema. Never point the runtime fixture at a normal development database.
+
 ## 3. Development initialization
 
 After Phase 14, initialize a new development database and optionally load fictional data:
@@ -41,18 +42,9 @@ After Phase 14, initialize a new development database and optionally load fictio
 
 The script prompts through PostgreSQL tooling as configured by the local environment, does not accept or embed a password parameter, and refuses to overwrite an existing database unless the caller explicitly chooses schema application behavior documented in `docs/database/SETUP_V1.md`.
 
-## 4. Repository regression checks
+## 4. Manual review
 
-```powershell
-mvn clean verify
-mvn spotless:check
-```
-
-Expected outcome: the four-module Java build and formatting check remain successful. Database V1 does not change Java source.
-
-## 5. Manual review
-
-- Compare the twelve tables with [data-model.md](data-model.md) and [schema-contract.md](contracts/schema-contract.md).
+- Compare the fifteen tables with [data-model.md](data-model.md) and [schema-contract.md](contracts/schema-contract.md).
 - Compare Admin/User mappings with `docs/database/UI_DATA_MAPPING_V1.md`.
 - Confirm schema table count and validation evidence in `docs/database/VALIDATION_V1.md`.
-- Confirm no repositories, services, protocol actions, UI changes, or encryption-key management were introduced.
+- Confirm no repositories, services, cryptographic operations, protocol actions, UI changes, or plaintext/secret key storage were introduced.

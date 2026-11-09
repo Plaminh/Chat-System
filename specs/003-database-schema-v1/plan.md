@@ -6,17 +6,17 @@
 
 ## Summary
 
-Deliver a normalized PostgreSQL Version 1 data foundation for the Java Chat System as exactly twelve core tables. Implementation is intentionally limited to SQL schema and seed scripts, safe PowerShell initialization, validation fixtures, and design/setup documentation. Existing Admin and User UI branches are treated as read-only requirements sources; JDBC repositories, business services, protocol changes, and UI integration remain Version 2 work.
+Deliver a normalized PostgreSQL Version 1 data foundation for the Java Chat System as fifteen required tables: the original twelve plus per-user public keys, encrypted-group key epochs, and recipient envelopes. Implementation is limited to the modular schema, seed, safe initialization, validation fixtures, and design/setup documentation. JDBC repositories, cryptographic services, protocol changes, and UI integration remain Version 2 work.
 
 ## Technical Context
 
-**Language/Version**: PostgreSQL SQL (compatible with PostgreSQL 14+) and PowerShell 5.1+; existing Java 21 project remains unchanged
+**Language/Version**: PostgreSQL SQL (compatible with PostgreSQL 14+) and PowerShell 5.1+; existing Java 25 project remains unchanged
 
 **Primary Dependencies**: PostgreSQL command-line tools (`psql`, `createdb`) for runtime setup; GitHub Spec Kit 1.2.2 for artifacts
 
 **Storage**: PostgreSQL, UTF-8 database encoding, normalized relational schema
 
-**Testing**: Static PowerShell assertions for artifact/schema structure; PostgreSQL transactional SQL tests when an isolated database is available; root Maven verification to detect project regressions
+**Testing**: Focused static PowerShell assertions for entry-point/artifact synchronization; PostgreSQL transactional SQL tests against an isolated PostgreSQL 16 database
 
 **Target Platform**: PostgreSQL server reachable from Windows; initialization helper runs in Windows PowerShell
 
@@ -24,9 +24,9 @@ Deliver a normalized PostgreSQL Version 1 data foundation for the Java Chat Syst
 
 **Performance Goals**: Index all required foreign-key lookup, chronological history, account search, message search, moderation filter, and activity aggregation paths for the expected university-project workload
 
-**Constraints**: Exactly twelve core tables; no triggers, stored procedures, schema migrations framework, live repositories, UI changes, protocol changes, embedded credentials, destructive existing-database behavior, or E2EE key management
+**Constraints**: Fifteen justified tables; no triggers, stored procedures, migration framework, live repositories, UI/protocol changes, embedded credentials, destructive existing-database behavior, plaintext/private key storage, or claim that SQL implements/proves E2EE
 
-**Scale/Scope**: Twelve tables, one schema script, one development seed script, one isolated validation suite, one initialization script, and the associated ERD/DBML/setup/review documentation
+**Scale/Scope**: Fifteen tables, one modular schema entry point, one development seed script, focused static/runtime validation, one initialization script, and the associated ERD/DBML/setup/review documentation
 
 ## Constitution Check
 
@@ -39,7 +39,7 @@ Deliver a normalized PostgreSQL Version 1 data foundation for the Java Chat Syst
 | Module boundaries | No Maven module or Java dependency changes are planned. |
 | Architecture responsibilities | Only future server-side code may access this schema; clients receive no database access. |
 | Code quality | Constraints and names are explicit; speculative tables, triggers, procedures, and abstractions are excluded. |
-| Testing | Static checks are mandatory; isolated PostgreSQL runtime tests are used only when safe and available; root Maven verification remains required. |
+| Testing | Focused static checks are mandatory; isolated PostgreSQL runtime tests are used only when safe and available. |
 | Development workflow | Work stays on `feature/database-schema-v1`; one authorized atomic commit is created per completed roadmap phase; no push or merge occurs. |
 | AI transparency | Every phase updates `AI-LOG.md` with actual validation and limitations. |
 
@@ -49,7 +49,7 @@ Deliver a normalized PostgreSQL Version 1 data foundation for the Java Chat Syst
 
 ## Post-Review Remediation Scope
 
-Preserve the twelve-table design while tightening recalled-message consistency, making schema/seed initialization atomic, broadening PostgreSQL foreign-key error portability, and synchronizing setup/search/membership documentation. No Java, protocol, UI, module, or database-credential change is in scope.
+Preserve the original entity names while replacing server-controlled key wrapping with `user_public_keys`, metadata-only `conversation_key_versions`, and recipient-specific `conversation_key_envelopes`. Compose initializes only an empty `public` schema and otherwise skips without compatibility claims; PowerShell keeps its existing-database refusal and explicit `-UseExistingEmpty` override. No Java, protocol, UI, module, or database-credential change is in scope.
 
 ## Project Structure
 
@@ -72,6 +72,7 @@ specs/003-database-schema-v1/
 ```text
 script/
 ├── schema.sql
+├── schema/
 ├── seed.sql
 └── tests/
     ├── validate-schema.ps1
