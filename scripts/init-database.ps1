@@ -112,14 +112,13 @@ if ($databaseExists) {
 }
 
 if ($LoadSeed) {
-    Write-Host "Applying schema and fictional development data in one transaction from '$schemaPath' and '$seedPath'..."
+    Write-Host "Applying the schema, then fictional development data, using each script's transaction..."
 } else {
-    Write-Host "Applying schema in one transaction from '$schemaPath'..."
+    Write-Host "Applying the schema transaction from '$schemaPath'..."
 }
 
 $initializationArguments = @(
     '-X',
-    '--single-transaction',
     '-v', 'ON_ERROR_STOP=1',
     '-h', $HostName,
     '-p', $Port,
@@ -128,10 +127,23 @@ $initializationArguments = @(
     '-f', $schemaPath
 )
 
-if ($LoadSeed) {
-    $initializationArguments += @('-f', $seedPath)
-}
-
 Invoke-PostgreSqlTool -Tool $psql -Arguments $initializationArguments -Operation 'Transactional database initialization'
+
+if ($LoadSeed) {
+    $seedArguments = @(
+        '-X',
+        '-v', 'ON_ERROR_STOP=1',
+        '-h', $HostName,
+        '-p', $Port,
+        '-U', $Username,
+        '-d', $DatabaseName,
+        '-f', $seedPath
+    )
+    try {
+        Invoke-PostgreSqlTool -Tool $psql -Arguments $seedArguments -Operation 'Transactional seed loading'
+    } catch {
+        throw "Development seed loading failed. The valid schema remains initialized and the seed transaction left no partial fixture rows. After correcting the cause, run seed.sql directly only if every application table is still empty. $($_.Exception.Message)"
+    }
+}
 
 Write-Host "Database V1 initialization completed for '$DatabaseName'."
