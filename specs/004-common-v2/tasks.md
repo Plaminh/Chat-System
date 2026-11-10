@@ -79,11 +79,19 @@
 - [ ] T028 [P] [US5] Add contract validation utilities/exceptions in `common/src/main/java/com/chat/common/protocol/ProtocolValidator.java` and `common/src/main/java/com/chat/common/exception/ProtocolValidationException.java`
 - [ ] T029 [P] [US5] Harden envelope invariants in `common/src/main/java/com/chat/common/dto/RequestEnvelope.java`, `ResponseEnvelope.java`, and `EventEnvelope.java`
 - [ ] T030 [P] [US5] Add LF/CRLF/EOF/limit tests in `common/src/test/java/com/chat/common/protocol/JsonLineReaderTest.java`
-- [ ] T031 [US5] Standardize malformed/unknown/unsupported errors in `server/src/main/java/com/chat/server/handler/RequestHandler.java`
-- [ ] T032 [US5] Add server protocol regressions in `server/src/test/java/com/chat/server/handler/RequestHandlerTest.java`
-- [ ] T033 Relocate legacy Swing theme out of Common into `admin-client/src/main/java/com/chat/admin/ui/ChatTheme.java` and `user-client/src/main/java/com/chat/user/ui/ChatTheme.java`, updating imports/tests in both clients
 
-**Checkpoint**: Invalid input fails predictably, PING remains compatible, and Common contains no presentation code.
+**Checkpoint**: Common framing, envelope, and validation tests produce predictable results while preserving the PING contract.
+
+---
+
+## Deferred Server V2 Traceability *(not Common V2 implementation tasks)*
+
+| Former Common V2 ID | Deferred feature | Deferred work |
+|---|---|---|
+| T031 | `feature/server-v2` | Map malformed, unknown, invalid, and unsupported Common protocol outcomes in `server/src/main/java/com/chat/server/handler/RequestHandler.java`. |
+| T032 | `feature/server-v2` | Add Server request-handler protocol regressions in `server/src/test/java/com/chat/server/handler/RequestHandlerTest.java`. |
+
+These IDs are reserved for traceability and are excluded from Common V2 completion counts and implementation scope.
 
 ---
 
@@ -91,6 +99,7 @@
 
 **Goal**: Verify integration, reconcile artifacts, and prepare Server/User/Admin handover.
 
+- [x] T033 Verify against V1 baseline `67107ac` that `common/src/main/java/com/chat/common/ui/ChatTheme.java` and its test are unchanged, no additional `ChatTheme` exists, Admin/User source has no delta, Server does not import `com.chat.common.ui`, and V2 DTO/protocol code has no Swing imports
 - [ ] T034 Expand envelope/null/empty/payload serialization coverage in `common/src/test/java/com/chat/common/dto/`
 - [ ] T035 Reconcile implemented actions/DTOs/examples with `specs/004-common-v2/contracts/` and `specs/004-common-v2/data-model.md`
 - [ ] T036 Update integration/verification instructions in `specs/004-common-v2/quickstart.md`
@@ -108,6 +117,7 @@
 - Phase 3 precedes Phase 4 because events reuse business DTOs.
 - Phase 4 precedes Phase 5 validation integration.
 - Phase 6 requires Phases 1–5.
+- Former T031 and T032 are excluded from this dependency graph and deferred to `feature/server-v2`.
 - `[P]` tasks may be implemented concurrently only when they do not touch the same file.
 
 ## Independent Test Criteria

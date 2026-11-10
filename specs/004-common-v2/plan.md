@@ -4,7 +4,7 @@
 
 ## Summary
 
-Extend the PING-only shared protocol into a typed Version 2 contract for all required User/Admin flows. Preserve NDJSON and envelope compatibility, add immutable wire DTOs and boundary validation, model realtime events and V1 client-side encrypted-group metadata, and verify serialization and four-module compilation. Common remains contract-only.
+Extend the PING-only shared protocol into a typed Version 2 contract for all required User/Admin flows. Preserve NDJSON and envelope compatibility, add immutable wire DTOs and Common-only boundary validation, model realtime events and V1 client-side encrypted-group metadata, and verify serialization and dependent-module compilation without modifying Server, Admin, or User source. Common remains contract-only apart from the approved legacy theme exception.
 
 ## Technical Context
 
@@ -15,7 +15,7 @@ Extend the PING-only shared protocol into a typed Version 2 contract for all req
 **Target Platform**: Windows desktop clients and non-web server exchanging UTF-8 NDJSON over TCP
 **Project Type**: Four-module Maven desktop/client-server application
 **Performance Goals**: Deterministic linear framing up to 65,536 characters
-**Constraints**: Exactly four modules; no REST/WebSocket/JPA; no Swing/Spring/JDBC/business/crypto implementation in Common
+**Constraints**: Exactly four modules; preserve the existing shared `common.ui.ChatTheme` unchanged; V2 DTO/protocol/validation code must not depend on Swing; no REST/WebSocket/JPA; no Spring/JDBC/business/crypto implementation in Common
 **Scale/Scope**: 9 Admin and 12 User functional groups; shared contracts only
 
 ## Constitution Check
@@ -28,11 +28,18 @@ Extend the PING-only shared protocol into a typed Version 2 contract for all req
 - PASS: Persistence and business logic remain Server responsibilities.
 - PASS: Focused tests and full reactor verification are planned.
 - PASS: Git work remains on `feature/common-v2`; AI work will be logged.
-- REMEDIATION REQUIRED: Existing `common/ui/ChatTheme.java` is legacy Swing presentation code. Move equivalent helpers into each client and update imports before final acceptance; do not create a fifth module.
+- APPROVED EXCEPTION: Preserve the existing `common/ui/ChatTheme.java`, its test, client imports, FlatLaf setup, and Look and Feel behavior exactly. Do not move, duplicate, refactor, or expose it to Server code.
+- GOVERNANCE REVIEW REQUIRED: Constitution line 39 says, “Keep shared protocol definitions in `common` without Swing, Spring, or database dependencies.” Common V2 satisfies the protocol-package boundary, but the wording can be read as a module-wide Swing prohibition.
 
 ### Post-design gate
 
-The design introduces only records, enums, protocol utilities, validation, exceptions, and tests in Common. Encryption types contain public/opaque material only. The planned ChatTheme relocation removes the known boundary violation without changing UI behavior. All gates pass after that task.
+The V2 design introduces only records, enums, protocol utilities, validation, exceptions, and tests in Common. Encryption types contain public/opaque material only. The pre-existing `common.ui.ChatTheme` remains byte-identical as the sole approved UI exception; no V2 contract type imports Swing.
+
+### Proposed constitution amendment for review
+
+Do not modify the constitution as part of this feature. Proposed narrow replacement for line 39:
+
+> Keep shared DTO and protocol definitions in `common` independent of Swing, Spring, and database APIs. The existing `common.ui.ChatTheme` is the sole approved Swing exception and must remain presentation-only, unchanged, unused by Server code, and must not authorize additional UI infrastructure in Common.
 
 ## Existing Architecture Audit
 
@@ -65,7 +72,7 @@ common/src/main/java/com/chat/common/
 └── exception/                   # contract validation exceptions
 ```
 
-Client-local `ChatTheme` copies remain in `admin-client` and `user-client`; imports change only to enforce the boundary.
+The existing `common/ui/ChatTheme.java` remains at its V1 path. Both clients retain their existing `com.chat.common.ui.ChatTheme` imports. No client-local theme implementation is created, and Server must not import `com.chat.common.ui`.
 
 ### Protocol design
 
@@ -79,8 +86,9 @@ Client-local `ChatTheme` copies remain in `admin-client` and `user-client`; impo
 ### Validation strategy
 
 - Record constructors validate context-free invariants.
-- `ProtocolValidator` validates envelope shape, payload presence, IDs, date ranges, paging, byte lengths, and exclusive content.
+- `ProtocolValidator` validates envelope shape, payload presence, IDs, date ranges, paging, byte lengths, and exclusive content inside Common.
 - Existence, credentials, permissions, and database state remain Server validation.
+- Mapping Common validation outcomes to Server responses and adding Server handler regressions are deferred to `feature/server-v2` as former T031 and T032.
 - Messages name invalid fields but never include sensitive values or internal exceptions.
 
 ### Testing strategy
@@ -98,14 +106,14 @@ Client-local `ChatTheme` copies remain in `admin-client` and `user-client`; impo
 2. Actions & Enums
 3. Business DTOs
 4. Realtime & Encryption Contracts
-5. Protocol & Validation
+5. Common Protocol & Validation
 6. Testing, Documentation & Handover
 
 ## Dependency Impact
 
 - Common keeps only Jackson plus JUnit test scope.
-- Server receives only the RequestHandler adjustment required by new errors/validation.
-- Clients receive ChatTheme relocation/import updates; networking integration remains deferred.
+- Server, Admin, and User source receive no Common V2 changes.
+- Server request-handler error mapping and its regression tests are deferred to `feature/server-v2` with traceability to former T031 and T032.
 - No database schema or Maven-module changes.
 
 ## Architectural Trade-offs
@@ -117,4 +125,4 @@ Client-local `ChatTheme` copies remain in `admin-client` and `user-client`; impo
 
 ## Complexity Tracking
 
-No constitution exception remains after the planned ChatTheme relocation.
+The existing shared theme is a deliberately narrow compatibility exception. Its scope is limited to `common.ui.ChatTheme` and its existing test; DTO/protocol packages remain UI-independent, Server remains UI-independent, no fifth module is introduced, and the proposed constitution wording awaits human review.

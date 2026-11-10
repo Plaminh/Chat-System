@@ -48,10 +48,12 @@
 - **Alternatives**: Server decryption or speculative searchable encryption.
 
 ## R10 — Legacy Swing in Common
-- **Selected**: Move equivalent ChatTheme helpers/tests into both existing clients.
-- **Reason**: Satisfies module boundaries without a fifth module.
-- **Alternatives**: Retain violation or add a UI module.
-- **Consequences**: Small controlled duplication, unchanged UI behavior.
+- **Problem**: The established UI uses one shared Swing `ChatTheme` in Common, while constitution line 39 can be read as excluding Swing from Common.
+- **Selected**: Preserve `common/src/main/java/com/chat/common/ui/ChatTheme.java`, its existing test, all client imports, theme initialization, and behavior exactly. Treat it as the sole approved legacy UI exception while keeping every V2 DTO/protocol/validation package Swing-independent.
+- **Reason**: Avoids duplicate styling logic, prevents Admin/User visual drift, and preserves the verified V1 UI without changing either client or creating a fifth module.
+- **Alternatives**: Client-local copies were rejected because they duplicate styling and violate the preservation decision; a fifth UI module was rejected by the four-module constraint; refactoring or replacing the theme was rejected as unrelated risk; moving UI constants into DTO/protocol code was rejected as boundary leakage.
+- **Trade-offs**: Common retains a Java-standard Swing dependency for the legacy theme, so headless consumers must avoid `common.ui`; the exception requires an explicit governance note and must not expand to new presentation infrastructure.
+- **Constitution follow-up**: Propose clarifying line 39 so DTO/protocol definitions—not the entire Common module—must remain Swing-independent, with `common.ui.ChatTheme` named as the sole unchanged exception. Constitution amendment is deferred to human review.
 
 ## R11 — Error taxonomy
 - **Selected**: Stable protocol/domain categories only where clients need different behavior.

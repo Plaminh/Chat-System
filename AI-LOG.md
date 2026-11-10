@@ -851,3 +851,27 @@ Kept: The six schema modules, account/social/conversation/moderation/statistics 
 Changed: Added versioned per-user X25519 public keys and recipient-specific RFC 9180 HPKE envelopes; reduced conversation key versions to epoch metadata; removed server-controlled wrapped-key fields; updated seed/runtime tests, ERD/DBML, setup/mapping/spec artifacts, E2EE lifecycle/search/LLM/spam limitations, and active terminology. The supported recipient model is per-user, not per-device.
 
 By hand: Disposable PostgreSQL 16.15 schema creation, 63-row seed, runtime integrity fixture, PowerShell schema-only initialization, isolated Compose initialization/rerun, static schema/DBML consistency, PowerShell parsing, Compose configuration, active-reference scans, and diff checks passed. All named verification resources were removed. SQL storage supports the intended E2EE boundary but does not implement or prove cryptography; Maven/Spotless were not run because no Java code changed.
+
+## 2026-11-10 - Approve shared ChatTheme exception
+
+Tool: OpenAI Codex.
+
+Asked for: Record the approved decision to preserve the existing shared `common.ui.ChatTheme`, keep both clients and Server source untouched, keep V2 contracts Swing-independent, and propose any required constitution clarification without changing governance text.
+
+Kept: The V1 `ChatTheme` source/test, Admin/User imports and initialization, FlatLaf and Look and Feel behavior, four-module structure, Server UI isolation, and all implementation source files.
+
+Changed: Updated only Common V2 specification, plan, research, task, quickstart, and AI transparency documentation. Replaced the relocation strategy with a baseline-verification task and documented a proposed narrow amendment to constitution line 39 for human review.
+
+Verification: Compared source against V1 baseline `67107ac`, checked theme blob identity and uniqueness, scanned Server and Common V2 packages for prohibited UI imports, and compiled both clients. No commit or push was performed; the documentation diff remains for developer review.
+
+## 2026-11-10 - Restrict Common V2 Phase 05 scope
+
+Tool: OpenAI Codex.
+
+Asked for: Remove Server implementation and test work from Common V2, preserve former T031/T032 traceability for `feature/server-v2`, and reconcile the Common V2 specification, plan, tasks, and quickstart without touching implementation files.
+
+Kept: The approved shared `ChatTheme` decision and evidence, pending constitution amendment, Common V2 feature requirements, existing source, Maven configuration, UI, and database artifacts.
+
+Changed: Phase 05 now contains only Common implementation/tests. Former T031 and T032 are recorded in a traceability-only Server V2 deferral table; Server response mapping and handler regressions are explicitly excluded from Common V2. Updated the plan, specification, and quickstart to require no Admin, User, or Server source changes.
+
+Verification: Spec Kit prerequisites passed; cross-artifact scope scans found no remaining Common V2 task requiring consumer/server source changes; source and configuration files remain untouched; `git diff --check` passed. No commit or push was performed.

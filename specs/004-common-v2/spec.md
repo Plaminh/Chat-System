@@ -114,14 +114,17 @@ Module developers receive consistent validation for missing fields, unknown iden
 - **FR-020**: Encrypted content uses AES-256-GCM metadata with positive version, 12-byte nonce, 16-byte tag, non-empty ciphertext, and no body.
 - **FR-021**: Key envelopes use the V1 RFC 9180 profile, 32-byte encapsulated key, 48-byte encrypted group key, recipient-key identity, and no plaintext private/group key.
 - **FR-022**: Document that key replacement and membership changes require a new epoch, new/rejoining members receive no old epochs by default, and sending may pause pending distribution.
-- **FR-023**: Validate envelope fields, blank IDs, enum values, payload presence/type, positive IDs, required text, paging, date ranges, and encryption invariants without database-dependent validation.
+- **FR-023**: Validate envelope fields, blank IDs, enum values, payload presence/type, positive IDs, required text, paging, date ranges, and encryption invariants inside Common without database-dependent or Server-handler validation.
 - **FR-024**: Preserve UTF-8 NDJSON, LF/CRLF handling, the 65,536-character maximum, and EOF behavior.
 - **FR-025**: Errors are predictable and never disclose stack traces, credentials, secrets, keys, or database details.
 - **FR-026**: Empty lists use empty collections and stable paging metadata.
 - **FR-027**: Contracts remain independent of UI, business services, socket lifecycle, persistence, email, external AI calls, and cryptographic operations.
-- **FR-028**: Preserve supported behavior and dependent-module compilation unless a documented tested change is unavoidable.
+- **FR-028**: Preserve supported behavior and dependent-module compilation without modifying Admin, User, or Server source.
 - **FR-029**: Envelopes, enums, payload families, framing boundaries, and validation rules receive focused automated tests.
 - **FR-030**: Integration guidance covers requests, responses, errors, events, and encryption metadata without presenting deferred runtime behavior as implemented.
+- **FR-031**: Preserve the existing `common/src/main/java/com/chat/common/ui/ChatTheme.java`, its Swing utilities, client imports, theme initialization, and UI behavior unchanged; do not relocate, rename, duplicate, refactor, or expose it to Server code.
+- **FR-032**: Keep every Common V2 DTO, enum, protocol, validation, and exception type independent of Swing even though the approved legacy `common.ui.ChatTheme` remains in the Common module.
+- **FR-033**: Defer Server request-handler mapping and Server protocol regression tests to `feature/server-v2`, retaining former task IDs T031 and T032 as traceability references rather than Common V2 implementation tasks.
 
 ### Key Entities
 
@@ -140,15 +143,17 @@ Module developers receive consistent validation for missing fields, unknown iden
 - **SC-001**: All 9 Admin and 12 User functional groups map to documented action contracts with actor, access, request, success, errors, and events.
 - **SC-002**: Representative JSON for every envelope and payload family round-trips without loss.
 - **SC-003**: Below-limit, exact-limit, and above-limit NDJSON tests produce documented outcomes.
-- **SC-004**: Every FR-023 invalid-input category has a deterministic test and no response exposes internal exception text.
-- **SC-005**: Common and four-module integration checks pass, or unrelated baseline blockers are reported with exact commands and causes.
+- **SC-004**: Every FR-023 invalid-input category has a deterministic Common test and no Common validation result exposes internal exception text.
+- **SC-005**: Common tests and read-only dependent-module compilation checks pass without Admin, User, or Server source changes, or unrelated baseline blockers are reported with exact commands and causes.
 - **SC-006**: Developers can find action, payload, error, access, and event implications for each functional group in one contract set.
-- **SC-007**: Dependency inspection finds no UI, server framework, database, email, external AI, or cryptographic implementation dependency in Common.
+- **SC-007**: Dependency inspection confirms that Swing references in Common are confined to the unchanged legacy `common.ui.ChatTheme` and its test; DTO, enum, protocol, validation, and exception packages contain no Swing imports or dependencies.
 - **SC-008**: Existing PING serialization and handling remain compatible.
+- **SC-009**: V1-baseline comparison finds the original shared `ChatTheme` at the same path with identical content, no additional theme implementation, no Admin/User source delta, and no Server import of the shared UI package.
 
 ## Assumptions
 
 - The constitution is authoritative: Java 25 and exactly four modules remain unchanged.
+- The approved architecture decision retains the pre-existing shared Swing theme as a narrow compatibility exception; it does not authorize additional presentation code in Common.
 - V1 numeric IDs and lifecycle rules are authoritative; wire names do not promise physical database names.
 - Runtime authentication, authorization, persistence, email, AI calls, encryption/decryption, and key authenticity belong to later features.
 - Timestamps use ISO-8601 offsets; dates use ISO calendar dates; paging is zero-based with positive sizes.
@@ -156,7 +161,8 @@ Module developers receive consistent validation for missing fields, unknown iden
 
 ## Explicit Exclusions
 
-- Swing/client UI behavior and server handlers beyond minimum compatibility integration.
+- Changes to Swing/client UI behavior, styling, FlatLaf setup, Look and Feel initialization, or theme utilities. The existing shared `ChatTheme` is retained unchanged rather than treated as new V2 implementation scope.
+- Admin Client, User Client, and Server source or test changes. Server request-handler error mapping and regressions are deferred to `feature/server-v2` as former T031 and T032.
 - Database changes, repositories, JDBC, migrations, socket/session lifecycle, and delivery scheduling.
 - Authentication/authorization implementation, password hashing, email delivery, and token storage.
 - Cryptographic operations, key generation, private-key storage, and key authenticity implementation.
