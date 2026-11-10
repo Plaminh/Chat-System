@@ -1,6 +1,6 @@
 package com.chat.admin;
 
-import com.chat.admin.ui.ChatTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.admin.view.AdminLoginDialog;
 import com.chat.admin.view.AdminMainFrame;
 import com.formdev.flatlaf.FlatLightLaf;

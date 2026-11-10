@@ -8,7 +8,7 @@
 
 ## Module usage
 
-Consumer modules already depend on `com.chat:common`. Create the canonical mapper with `ProtocolJson.newObjectMapper()` so ISO offset date-times retain their offsets. Construct a domain request record, convert it to `JsonNode`, and place it in `RequestEnvelope`. Deserialize the envelope first and map `data` to the action's documented type. Apply the same pattern to response and event data.
+Consumer modules already depend on `com.chat:common`. Construct a domain request record, convert it to `JsonNode`, and place it in `RequestEnvelope`. Deserialize the envelope first and map `data` to the action's documented type. Apply the same pattern to response and event data.
 
 ## Routing rules
 

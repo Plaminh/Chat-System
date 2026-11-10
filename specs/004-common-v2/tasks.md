@@ -76,12 +76,12 @@
 
 **Goal**: Enforce predictable framing/envelope behavior while preserving PING.
 
-- [x] T028 [P] [US5] Add contract validation utilities/exceptions in `common/src/main/java/com/chat/common/protocol/ProtocolValidator.java` and `common/src/main/java/com/chat/common/exception/ProtocolValidationException.java`
-- [x] T029 [P] [US5] Harden envelope invariants in `common/src/main/java/com/chat/common/dto/RequestEnvelope.java`, `ResponseEnvelope.java`, and `EventEnvelope.java`
-- [x] T030 [P] [US5] Add LF/CRLF/EOF/limit tests in `common/src/test/java/com/chat/common/protocol/JsonLineReaderTest.java`
-- [x] T031 [US5] Standardize malformed/unknown/unsupported errors in `server/src/main/java/com/chat/server/handler/RequestHandler.java`
-- [x] T032 [US5] Add server protocol regressions in `server/src/test/java/com/chat/server/handler/RequestHandlerTest.java`
-- [x] T033 Relocate legacy Swing theme out of Common into `admin-client/src/main/java/com/chat/admin/ui/ChatTheme.java` and `user-client/src/main/java/com/chat/user/ui/ChatTheme.java`, updating imports/tests in both clients
+- [ ] T028 [P] [US5] Add contract validation utilities/exceptions in `common/src/main/java/com/chat/common/protocol/ProtocolValidator.java` and `common/src/main/java/com/chat/common/exception/ProtocolValidationException.java`
+- [ ] T029 [P] [US5] Harden envelope invariants in `common/src/main/java/com/chat/common/dto/RequestEnvelope.java`, `ResponseEnvelope.java`, and `EventEnvelope.java`
+- [ ] T030 [P] [US5] Add LF/CRLF/EOF/limit tests in `common/src/test/java/com/chat/common/protocol/JsonLineReaderTest.java`
+- [ ] T031 [US5] Standardize malformed/unknown/unsupported errors in `server/src/main/java/com/chat/server/handler/RequestHandler.java`
+- [ ] T032 [US5] Add server protocol regressions in `server/src/test/java/com/chat/server/handler/RequestHandlerTest.java`
+- [ ] T033 Relocate legacy Swing theme out of Common into `admin-client/src/main/java/com/chat/admin/ui/ChatTheme.java` and `user-client/src/main/java/com/chat/user/ui/ChatTheme.java`, updating imports/tests in both clients
 
 **Checkpoint**: Invalid input fails predictably, PING remains compatible, and Common contains no presentation code.
 
@@ -91,13 +91,13 @@
 
 **Goal**: Verify integration, reconcile artifacts, and prepare Server/User/Admin handover.
 
-- [x] T034 Expand envelope/null/empty/payload serialization coverage in `common/src/test/java/com/chat/common/dto/`
-- [x] T035 Reconcile implemented actions/DTOs/examples with `specs/004-common-v2/contracts/` and `specs/004-common-v2/data-model.md`
-- [x] T036 Update integration/verification instructions in `specs/004-common-v2/quickstart.md`
-- [x] T037 Record meaningful AI work and actual verification evidence in `AI-LOG.md`
-- [x] T038 Run `.tools/apache-maven-3.9.9/bin/mvn.cmd -pl common -am test` and record actual result
-- [x] T039 Run `.tools/apache-maven-3.9.9/bin/mvn.cmd test` and `clean verify` and record actual results
-- [x] T040 Run `.tools/apache-maven-3.9.9/bin/mvn.cmd spotless:check`, `git diff --check`, dependency/boundary scans, and record actual results
+- [ ] T034 Expand envelope/null/empty/payload serialization coverage in `common/src/test/java/com/chat/common/dto/`
+- [ ] T035 Reconcile implemented actions/DTOs/examples with `specs/004-common-v2/contracts/` and `specs/004-common-v2/data-model.md`
+- [ ] T036 Update integration/verification instructions in `specs/004-common-v2/quickstart.md`
+- [ ] T037 Record meaningful AI work and actual verification evidence in `AI-LOG.md`
+- [ ] T038 Run `.tools/apache-maven-3.9.9/bin/mvn.cmd -pl common -am test` and record actual result
+- [ ] T039 Run `.tools/apache-maven-3.9.9/bin/mvn.cmd test` and `clean verify` and record actual results
+- [ ] T040 Run `.tools/apache-maven-3.9.9/bin/mvn.cmd spotless:check`, `git diff --check`, dependency/boundary scans, and record actual results
 
 **Checkpoint**: Artifacts, code, tests, and handover agree; all results are evidence-based.
 

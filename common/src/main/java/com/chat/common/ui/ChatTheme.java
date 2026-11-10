@@ -1,4 +1,4 @@
-package com.chat.user.ui;
+package com.chat.common.ui;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -12,9 +12,9 @@ import java.awt.RenderingHints;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;

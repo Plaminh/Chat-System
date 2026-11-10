@@ -1,6 +1,6 @@
 package com.chat.admin.view;
 
-import com.chat.admin.ui.ChatTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.admin.controller.AdminAuthController;
 import com.chat.admin.view.AdminUIComponents.NavIconType;
 import java.awt.BorderLayout;

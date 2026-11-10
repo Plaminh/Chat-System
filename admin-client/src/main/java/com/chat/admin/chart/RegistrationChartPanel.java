@@ -1,6 +1,6 @@
 package com.chat.admin.chart;
 
-import com.chat.admin.ui.ChatTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.view.AdminUIComponents;
 import java.awt.BasicStroke;

@@ -43,7 +43,8 @@ class EncryptionDtoTest {
   @Test
   void rejectsDuplicateRecipientEnvelopes() {
     RecipientKeyEnvelope envelope =
-        new RecipientKeyEnvelope(5, EncryptionAlgorithms.KEY_ENVELOPE, new byte[32], new byte[48]);
+        new RecipientKeyEnvelope(
+            5, EncryptionAlgorithms.KEY_ENVELOPE, new byte[32], new byte[48]);
     assertThrows(
         IllegalArgumentException.class,
         () ->

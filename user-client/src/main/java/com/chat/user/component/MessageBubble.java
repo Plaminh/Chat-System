@@ -1,6 +1,6 @@
 package com.chat.user.component;
 
-import com.chat.user.ui.ChatTheme;
+import com.chat.common.ui.ChatTheme;
 import com.chat.user.model.ChatMessage;
 import java.awt.BorderLayout;
 import java.awt.Color;
