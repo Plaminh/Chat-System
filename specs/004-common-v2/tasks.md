@@ -28,12 +28,12 @@
 
 **Goal**: Provide stable operation, error, event, and domain-state identifiers.
 
-- [ ] T007 [US1] Add account/social/admin operation identifiers to `common/src/main/java/com/chat/common/enums/ActionType.java`
-- [ ] T008 [US2] Add chat/group/encryption/report/writing operation identifiers to `common/src/main/java/com/chat/common/enums/ActionType.java`
-- [ ] T009 [P] [US5] Extend error taxonomy in `common/src/main/java/com/chat/common/enums/ErrorCode.java`
-- [ ] T010 [P] [US3] Extend realtime event identifiers in `common/src/main/java/com/chat/common/enums/MessageType.java`
-- [ ] T011 [P] Add typed domain enums under `common/src/main/java/com/chat/common/enums/`
-- [ ] T012 Add enum JSON regression coverage in `common/src/test/java/com/chat/common/enums/ProtocolEnumJsonTest.java`
+- [x] T007 [US1] Add account/social/admin operation identifiers to `common/src/main/java/com/chat/common/enums/ActionType.java`
+- [x] T008 [US2] Add chat/group/encryption/report/writing operation identifiers to `common/src/main/java/com/chat/common/enums/ActionType.java`
+- [x] T009 [P] [US5] Extend error taxonomy in `common/src/main/java/com/chat/common/enums/ErrorCode.java`
+- [x] T010 [P] [US3] Extend realtime event identifiers in `common/src/main/java/com/chat/common/enums/MessageType.java`
+- [x] T011 [P] Add typed domain enums under `common/src/main/java/com/chat/common/enums/`
+- [x] T012 Add enum JSON regression coverage in `common/src/test/java/com/chat/common/enums/ProtocolEnumJsonTest.java`
 
 **Checkpoint**: Identifiers serialize by stable names and retain V1 constants.
 
