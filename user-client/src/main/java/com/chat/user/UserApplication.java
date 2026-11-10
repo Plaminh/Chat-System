@@ -1,6 +1,6 @@
 package com.chat.user;
 
-import com.chat.common.ui.ChatTheme;
+import com.chat.user.ui.ChatTheme;
 import com.chat.user.model.UserSessionState;
 import com.chat.user.view.LoginPanel;
 import com.chat.user.view.PasswordRecoveryDialog;

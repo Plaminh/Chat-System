@@ -1,6 +1,6 @@
 package com.chat.admin.view;
 
-import static com.chat.common.ui.ChatTheme.*;
+import static com.chat.admin.ui.ChatTheme.*;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;

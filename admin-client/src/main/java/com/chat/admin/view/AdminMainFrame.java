@@ -1,6 +1,6 @@
 package com.chat.admin.view;
 
-import com.chat.common.ui.ChatTheme;
+import com.chat.admin.ui.ChatTheme;
 import com.chat.admin.chart.ActivityChartPanel;
 import com.chat.admin.chart.RegistrationChartPanel;
 import com.chat.admin.model.AdminMockDataStore;

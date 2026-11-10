@@ -1,6 +1,6 @@
 package com.chat.user.view;
 
-import com.chat.common.ui.ChatTheme;
+import com.chat.user.ui.ChatTheme;
 import com.chat.user.model.FriendRequest;
 import com.chat.user.controller.FriendsController;
 import com.chat.user.model.UserProfile;

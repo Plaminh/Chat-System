@@ -4,6 +4,8 @@ import com.chat.common.dto.RequestEnvelope;
 import com.chat.common.dto.ResponseEnvelope;
 import com.chat.common.enums.ActionType;
 import com.chat.common.enums.ErrorCode;
+import com.chat.common.exception.ProtocolValidationException;
+import com.chat.common.protocol.ProtocolValidator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,22 +17,15 @@ public class RequestHandler {
     public RequestHandler(ObjectMapper mapper) { this.mapper = mapper; }
 
     public String handle(String jsonLine) {
-        String requestId = null;
         try {
-            JsonNode tree = mapper.readTree(jsonLine);
-            if (tree == null || !tree.isObject())
-                return write(error(null, ErrorCode.INVALID_REQUEST, "Request must be a JSON object"));
-            if (tree != null && tree.hasNonNull("requestId")) requestId = tree.get("requestId").asText();
-            RequestEnvelope request = mapper.treeToValue(tree, RequestEnvelope.class);
-            if (request.requestId() == null || request.requestId().isBlank() || request.action() == null)
-                return write(error(requestId, ErrorCode.INVALID_REQUEST, "requestId and action are required"));
+            RequestEnvelope request = ProtocolValidator.parseRequest(mapper, jsonLine);
             if (request.action() == ActionType.PING) {
                 JsonNode data = mapper.createObjectNode().put("message", "PONG");
                 return write(new ResponseEnvelope(request.requestId(), true, data, null, null));
             }
-            return write(error(request.requestId(), ErrorCode.INVALID_REQUEST, "Unsupported action"));
-        } catch (JsonProcessingException | IllegalArgumentException exception) {
-            return write(error(requestId, ErrorCode.INVALID_JSON, "Malformed JSON protocol message"));
+            return write(error(request.requestId(), ErrorCode.UNSUPPORTED_OPERATION, "Unsupported action"));
+        } catch (ProtocolValidationException exception) {
+            return write(error(exception.requestId(), exception.errorCode(), exception.getMessage()));
         }
     }
 

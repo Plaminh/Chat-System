@@ -1,7 +1,7 @@
 package com.chat.user.view;
 
 import com.chat.user.component.MessageBubble;
-import com.chat.common.ui.ChatTheme;
+import com.chat.user.ui.ChatTheme;
 import com.chat.user.model.ChatMessage;
 import com.chat.user.controller.ChatWorkspaceController;
 import com.chat.user.model.Conversation;

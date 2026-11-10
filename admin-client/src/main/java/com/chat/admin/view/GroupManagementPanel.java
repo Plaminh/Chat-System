@@ -1,6 +1,6 @@
 package com.chat.admin.view;
 
-import com.chat.common.ui.ChatTheme;
+import com.chat.admin.ui.ChatTheme;
 import com.chat.admin.controller.GroupManagementController;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.model.GroupChatInfo;

@@ -1,7 +1,7 @@
 package com.chat.user.view;
 
 import com.chat.user.component.UserNavigationSidebar;
-import com.chat.common.ui.ChatTheme;
+import com.chat.user.ui.ChatTheme;
 import com.chat.user.controller.FriendsController;
 import com.chat.user.model.Conversation;
 import com.chat.user.model.FriendEntry;
