@@ -43,16 +43,16 @@
 
 **Goal**: Deliver immutable shared wire payloads for account, social, chat, group, admin, statistics, and writing-assistance flows.
 
-- [ ] T013 [P] [US1] Implement shared paging/filter records in `common/src/main/java/com/chat/common/dto/common/`
-- [ ] T014 [P] [US1] Implement authentication records in `common/src/main/java/com/chat/common/dto/auth/`
-- [ ] T015 [P] [US1] Implement user/profile records in `common/src/main/java/com/chat/common/dto/user/`
-- [ ] T016 [P] [US1] Implement social records in `common/src/main/java/com/chat/common/dto/social/`
-- [ ] T017 [P] [US2] Implement conversation/message/search records in `common/src/main/java/com/chat/common/dto/chat/`
-- [ ] T018 [P] [US2] Implement group/member/role records in `common/src/main/java/com/chat/common/dto/group/`
-- [ ] T019 [P] [US1] Implement administration/moderation records in `common/src/main/java/com/chat/common/dto/admin/`
-- [ ] T020 [P] [US1] Implement required statistic records in `common/src/main/java/com/chat/common/dto/statistics/`
-- [ ] T021 [P] [US1] Implement writing-assistance records in `common/src/main/java/com/chat/common/dto/writing/`
-- [ ] T022 Add representative business DTO round-trip tests in `common/src/test/java/com/chat/common/dto/BusinessDtoJsonTest.java`
+- [x] T013 [P] [US1] Implement shared paging/filter records in `common/src/main/java/com/chat/common/dto/common/`
+- [x] T014 [P] [US1] Implement authentication records in `common/src/main/java/com/chat/common/dto/auth/`
+- [x] T015 [P] [US1] Implement user/profile records in `common/src/main/java/com/chat/common/dto/user/`
+- [x] T016 [P] [US1] Implement social records in `common/src/main/java/com/chat/common/dto/social/`
+- [x] T017 [P] [US2] Implement conversation/message/search records in `common/src/main/java/com/chat/common/dto/chat/`
+- [x] T018 [P] [US2] Implement group/member/role records in `common/src/main/java/com/chat/common/dto/group/`
+- [x] T019 [P] [US1] Implement administration/moderation records in `common/src/main/java/com/chat/common/dto/admin/`
+- [x] T020 [P] [US1] Implement required statistic records in `common/src/main/java/com/chat/common/dto/statistics/`
+- [x] T021 [P] [US1] Implement writing-assistance records in `common/src/main/java/com/chat/common/dto/writing/`
+- [x] T022 Add representative business DTO round-trip tests in `common/src/test/java/com/chat/common/dto/BusinessDtoJsonTest.java`
 
 **Checkpoint**: Business payloads round-trip and expose no password hash or internal entity.
 
