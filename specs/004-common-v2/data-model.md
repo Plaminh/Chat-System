@@ -14,7 +14,7 @@ This is the JSON wire model, not the Server domain model or PostgreSQL schema.
 | Model | Fields | Invariant |
 |---|---|---|
 | RequestEnvelope | requestId, action, data | non-blank ID; action required; action determines payload |
-| ResponseEnvelope | requestId, success, data, errorCode, message | success excludes errors; failure requires errorCode |
+| ResponseEnvelope | requestId, success, data, errorCode, message | success requires correlation and excludes errors; failure requires errorCode and safe text; an unreadable request may produce an uncorrelated failure |
 | EventEnvelope | eventId, type, data | non-blank ID; type and object data required |
 
 ## Shared query models
@@ -26,6 +26,7 @@ This is the JSON wire model, not the Server domain model or PostgreSQL schema.
 | DateRange | from, to | both required; from <= to |
 | SortSpec | field, direction | field non-blank; Server allow-lists per action |
 | NumericFilter | operator, value | EQ, GT, or LT |
+| YearRequest | year | positive calendar year |
 
 ## Authentication and accounts
 
@@ -38,6 +39,7 @@ This is the JSON wire model, not the Server domain model or PostgreSQL schema.
 - `UserSummary`: userId, username, fullName, accountStatus, presence.
 - `UserAccountDetail`: summary plus email, address, birth date, gender, role, createdAt, updatedAt.
 - `UpdateProfileRequest`: fullName, email, address, birth date, gender.
+- `UserSearchRequest`: non-blank query plus paging.
 
 ## Social
 
@@ -45,6 +47,7 @@ This is the JSON wire model, not the Server domain model or PostgreSQL schema.
 - `FriendRequestInfo`: requestId, sender, receiver, status, createdAt, respondedAt.
 - `FriendRequestTarget`: targetUserId.
 - `FriendRequestDecisionRequest`: requestId and ACCEPT/DECLINE decision.
+- `FriendRequestListRequest`: optional status filter plus paging.
 - `UserTarget`: targetUserId for remove/block/unblock.
 - `PresenceUpdate`: userId, presence, changedAt.
 
@@ -63,7 +66,7 @@ Normal messages have exactly one content form. Recalled messages have neither or
 
 ## Groups
 
-- `CreateGroupRequest`: name, initial member IDs, encryptionEnabled, optional initial rotation.
+- `CreateGroupRequest`: name, initial member IDs, and encryptionEnabled. Key rotation is a separate request.
 - `GroupInfo`: group/conversation ID, name, owner, encryption flag, members, timestamps.
 - `GroupMemberInfo`: user summary, ADMIN/MEMBER role, joinedAt.
 - `RenameGroupRequest`: groupId, name.
@@ -76,11 +79,17 @@ Group IDs are conversation IDs whose type is GROUP. Minimum membership is a Serv
 ## Administration and moderation
 
 - `AdminUserFilter`: query/status, sort, page.
-- `AdminUserMutation`: editable account fields; passwords belong only to create/reset requests.
+- `AdminCreateUserRequest`: registration fields plus role; passwords are request-only.
+- `AdminUpdateUserRequest`: positive user ID, editable profile, and role.
+- `AdminPasswordResetRequest`: positive user ID plus request-only new password.
+- `AdminUserInfo`: safe `UserAccountDetail` wrapper with no credential material.
+- `AdminGroupFilter`: optional query plus required sort and page.
 - `AccountStatusUpdate`: userId and ACTIVE/LOCKED.
 - `LoginHistoryEntry`: record ID, user ID, login/logout instants.
+- `LoginHistoryRequest`: positive user ID plus page.
 - `FriendNetworkInfo`: user ID, direct friends, direct count, second-degree count.
 - `GroupInspection`: group information and member count.
+- `SpamReportCreateRequest`: reported user, optional message ID, and non-blank reason.
 - `SpamReportInfo`: report ID, reporter/reported users, message ID, reason, status, reviewer, resolution, timestamps.
 - `SpamReportFilter`: date range, username, status, sort, page.
 - `SpamReportUpdate`: report ID, status, optional resolution note.
@@ -91,7 +100,9 @@ Group IDs are conversation IDs whose type is GROUP. Minimum membership is a Serv
 - `MonthlyCount`: year, month 1–12, count.
 - `FriendStatistic`: user, direct count, second-degree count.
 - `UserActivityStatistic`: user, range, app opens, chatted contacts, chatted groups.
-- List requests combine criteria with `NumericFilter`, `SortSpec`, and `PageRequest`.
+- `FriendStatisticsRequest`: optional direct/second-degree numeric filters plus required sort and page.
+- `UserActivityStatisticsRequest`: required range, optional numeric filters, required sort, and page.
+- `YearRequest`: shared positive-year input for monthly reports.
 
 ## Writing assistance
 
@@ -108,8 +119,21 @@ No provider credentials or provider-specific objects appear.
 - `GroupKeyRotationRequest`: group ID, positive key version, AES algorithm, non-empty recipient envelopes.
 - `GroupKeyEpochInfo`: epoch ID, group ID, key version, algorithm, timestamps.
 - `EncryptedMessageContent`: key version, non-empty ciphertext, 12-byte nonce, 16-byte authentication tag.
+- `PublicKeyDirectoryRequest`: unique, non-empty positive user IDs.
+- `GroupKeyEnvelopeRequest`: positive group ID and key version.
+- `EncryptionAlgorithms`: fixed wire constants only; it performs no cryptography.
 
 Algorithms are `DHKEM-X25519-HKDF-SHA256`, `RFC9180-RAW`, `AES-256-GCM`, and `HPKE-BASE-X25519-HKDF-SHA256-AES-256-GCM`. No private-key or plaintext-group-key type exists.
+
+## Realtime event payloads
+
+- `MessageEvent`: wraps a validated `MessageInfo` for direct or group delivery.
+- `FriendRequestEvent`: wraps a validated `FriendRequestInfo`.
+- `GroupMembershipEvent`: group, affected user, ADDED/REMOVED/LEFT change, and occurrence time.
+- `GroupRoleEvent`: group, affected user, new role, and occurrence time.
+- `GroupKeyRotationEvent`: group, required key version, and occurrence time.
+
+These are Common wire contracts only. Event publication, authorization, offline delivery, and client routing remain Server/User/Admin integration work.
 
 ## Model boundaries
 

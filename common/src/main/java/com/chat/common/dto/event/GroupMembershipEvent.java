@@ -8,10 +8,7 @@ import com.chat.common.enums.GroupMembershipChangeType;
 import java.time.OffsetDateTime;
 
 public record GroupMembershipEvent(
-    long groupId,
-    UserSummary user,
-    GroupMembershipChangeType change,
-    OffsetDateTime occurredAt) {
+    long groupId, UserSummary user, GroupMembershipChangeType change, OffsetDateTime occurredAt) {
   public GroupMembershipEvent {
     groupId = positive(groupId, "groupId");
     user = required(user, "user");

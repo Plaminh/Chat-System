@@ -4,7 +4,7 @@
 
 - UTF-8 NDJSON over the existing TCP connection; one JSON object per line.
 - Maximum line content is 65,536 Java characters, excluding CR/LF terminators.
-- Requests use `requestId`, `action`, and `data`; responses reuse `requestId`; unsolicited events use `eventId`, `type`, and `data`.
+- Requests use `requestId`, `action`, and `data`; successful responses reuse that non-blank `requestId`; an error for input whose ID cannot be read may use a null response `requestId`; unsolicited events use `eventId`, `type`, and `data`.
 - Payload-bearing actions/events require object `data`. Payload-free actions may use `{}`.
 - Successful empty results use `[]` inside a valid page/result object, never null collections.
 
@@ -61,6 +61,29 @@
 | Server | INTERNAL_ERROR | Safe generic message; no implementation detail |
 
 Failures require `success=false`, an `errorCode`, null data unless documented, and safe text. Success requires `success=true` and null error fields.
+
+## Common validation boundary
+
+- `ProtocolValidator.parseRequest` distinguishes malformed JSON, invalid envelope shape, missing/blank identifiers, unknown actions, and missing/non-object data.
+- `ProtocolValidator.parseEvent` applies the equivalent event identity, type, and object-data checks.
+- `ProtocolValidator.decodePayload` maps JSON type mismatches to `INVALID_PAYLOAD` and DTO constructor invariant failures to `VALIDATION_FAILED` without copying exception internals or sensitive values into its message.
+- Envelope constructors reject contradictory response states and invalid request/event correlation fields.
+- DTO constructors remain the single source for context-free positive-ID, required-text, paging, date-range, collection, message-state, and encryption-metadata rules.
+- Existence, credentials, permissions, resource state, persistence, handler-to-response mapping, and socket lifecycle remain Server V2 responsibilities.
+
+## Event identifiers
+
+| MessageType | Payload/meaning |
+|---|---|
+| SERVER_EVENT | Preserved legacy generic event identifier |
+| DIRECT_MESSAGE_RECEIVED | `MessageEvent` for a direct conversation |
+| GROUP_MESSAGE_RECEIVED | `MessageEvent` for a group conversation |
+| PRESENCE_CHANGED | `PresenceUpdate` |
+| FRIEND_REQUEST_CHANGED | `FriendRequestEvent` |
+| GROUP_MEMBERSHIP_CHANGED | `GroupMembershipEvent` |
+| GROUP_ROLE_CHANGED | `GroupRoleEvent` |
+| GROUP_KEY_ROTATION_REQUIRED | `GroupKeyRotationEvent` |
+| ACCOUNT_STATUS_CHANGED | Safe account-status notification; Server publication and client handling are deferred |
 
 ## Message lifecycle
 

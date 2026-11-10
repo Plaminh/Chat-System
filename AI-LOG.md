@@ -875,3 +875,17 @@ Kept: The approved shared `ChatTheme` decision and evidence, pending constitutio
 Changed: Phase 05 now contains only Common implementation/tests. Former T031 and T032 are recorded in a traceability-only Server V2 deferral table; Server response mapping and handler regressions are explicitly excluded from Common V2. Updated the plan, specification, and quickstart to require no Admin, User, or Server source changes.
 
 Verification: Spec Kit prerequisites passed; cross-artifact scope scans found no remaining Common V2 task requiring consumer/server source changes; source and configuration files remain untouched; `git diff --check` passed. No commit or push was performed.
+
+## 2026-11-10 - Complete Common V2 protocol and handover
+
+Tool: OpenAI Codex.
+
+Asked for: Implement, test, document, commit, and push the remaining Common V2 validation, envelope, framing, coverage, and handover work on `feature/common-v2` without changing Admin, User, Server, database, script, or configuration source.
+
+Changed: Added typed `ProtocolValidationException` and `ProtocolValidator` request/event parsing plus safe DTO payload decoding; hardened request, response, and event envelope invariants; added complete NDJSON boundary tests and focused envelope/payload coverage; expanded pagination, null/empty collection, date/time, recall, group, Admin/User, enum, and encryption-copy regressions; reconciled the wire model and protocol contract; finalized the integration quickstart; and marked only evidence-backed Spec Kit tasks complete. Kept DTO constructors as the single source of context-free domain invariants. Added a narrow Spotless exclusion for the immutable legacy `ChatTheme.java` and `ChatThemeTest.java`, which remain byte-identical to V1, and formatted only flagged Common V2/framing files.
+
+Verification: Temurin JDK 25.0.5 and bundled Maven 3.9.9 were used. `mvn -pl common -am test` passed 48 tests; `mvn test` and `mvn clean verify` passed 107 reactor tests (Common 48, Admin 2, User 52, Server 5), with zero failures/errors/skips. Common-only `mvn -pl common spotless:check` passed 110 files, and `git diff --check` plus module/dependency/theme boundary scans passed. Root `mvn spotless:check` reached a clean Common module but failed on 29 pre-existing Admin Client formatting violations; Admin source is forbidden scope and was not modified or reformatted.
+
+Kept: Exactly four Maven modules, Java 25, Jackson/NDJSON field names, the 65,536-character limit, PING compatibility, numeric IDs, offset-aware time, client-side encryption metadata only, and the shared ChatTheme/client behavior. No credentials, persistence, sockets, Swing/AWT dependencies in V2 contracts, cryptographic operations, or business workflows were introduced.
+
+Deferred: Server V2 former T031/T032 still own handler error mapping and regressions. Authentication, authorization, persistence, event delivery, email, external writing assistance, client routing/UI behavior, and actual key generation/encryption/decryption remain later Server/User/Admin work. Human requirements-checklist sign-off and the proposed constitution wording clarification remain pending.

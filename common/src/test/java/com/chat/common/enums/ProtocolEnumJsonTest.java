@@ -32,5 +32,11 @@ class ProtocolEnumJsonTest {
     assertThrows(
         JsonMappingException.class,
         () -> mapper.readValue("\"NOT_A_REAL_ACTION\"", ActionType.class));
+    assertThrows(
+        JsonMappingException.class,
+        () -> mapper.readValue("\"NOT_A_REAL_ERROR\"", ErrorCode.class));
+    assertThrows(
+        JsonMappingException.class,
+        () -> mapper.readValue("\"NOT_A_REAL_EVENT\"", MessageType.class));
   }
 }

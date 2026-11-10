@@ -62,6 +62,10 @@
                 <configuration>
                     <lineEndings>UNIX</lineEndings>
                     <java>
+                        <excludes>
+                            <exclude>**/ui/ChatTheme.java</exclude>
+                            <exclude>**/ui/ChatThemeTest.java</exclude>
+                        </excludes>
                         <googleJavaFormat>
                             <version>${google-java-format.version}</version>
                             <style>GOOGLE</style>
