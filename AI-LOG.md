@@ -1,5 +1,17 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-10 — Finalize Admin Client V1 UI wording and layout
+
+Tool: OpenAI Codex.
+
+Asked for: Review the completed Admin Client V1 and apply only minimal corrections for soft-delete wording, shared Sign Out styling, monthly active-user chart semantics, and minimum-size layout safety without changing mock behavior or Version 2 logic.
+
+Kept: All nine Admin requirement groups, existing controllers and in-memory mock interactions, the four Maven modules, shared theme structure, database and User Client files, and Git history.
+
+Changed: Reworded account-deletion confirmation as soft deactivation; reused existing shared theme colors for Sign Out; clarified that the activity chart represents monthly distinct active users; enabled horizontal scrolling while retaining designed table column widths; added tooltips for long table and selected-user text; made the User toolbar wrap at 980 px; kept chart month/metric labels readable at minimum size; corrected the user-dialog date-format hint to `YYYY-MM-DD`.
+
+By hand: The developer must manually review the Admin UI before any commit. No commit was created.
+
 ## 2026-11-07 — Refine User Client sample interactions
 
 Tool: AI assistant (Copilot SDK in VS Code).

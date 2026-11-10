@@ -105,22 +105,19 @@ public final class UserManagementPanel extends JPanel {
   }
 
   private JPanel buildTopFilterToolbar() {
-    JPanel card = ChatTheme.createCardPanel(new BorderLayout(12, 6));
+    JPanel card = ChatTheme.createCardPanel(new BorderLayout());
 
-    JPanel leftFilters = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 10, 2));
-    leftFilters.setOpaque(false);
+    JPanel controls = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 10, 2));
+    controls.setOpaque(false);
 
     JLabel searchLbl = new JLabel("Filter:");
     searchLbl.setFont(ChatTheme.FONT_BODY_BOLD);
     searchLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
-    leftFilters.add(searchLbl);
-    leftFilters.add(searchField);
-    leftFilters.add(statusCombo);
-    leftFilters.add(sortCombo);
-
-    JPanel rightActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
-    rightActions.setOpaque(false);
+    controls.add(searchLbl);
+    controls.add(searchField);
+    controls.add(statusCombo);
+    controls.add(sortCombo);
 
     JButton resetBtn = ChatTheme.createSecondaryButton("Reset");
     resetBtn.addActionListener(
@@ -134,11 +131,10 @@ public final class UserManagementPanel extends JPanel {
     JButton addUserBtn = ChatTheme.createPrimaryButton("+ Add New User");
     addUserBtn.addActionListener(e -> showAddOrEditUserDialog(null));
 
-    rightActions.add(resetBtn);
-    rightActions.add(addUserBtn);
+    controls.add(resetBtn);
+    controls.add(addUserBtn);
 
-    card.add(leftFilters, BorderLayout.CENTER);
-    card.add(rightActions, BorderLayout.EAST);
+    card.add(controls, BorderLayout.CENTER);
     return card;
   }
 
@@ -346,7 +342,7 @@ public final class UserManagementPanel extends JPanel {
     Optional<AdminUser> selected = getSelectedUserWithoutPrompt();
     if (selected.isPresent()) {
       AdminUser u = selected.get();
-      selectedUserLabel.setText(
+      String selectedUserText =
           "SELECTED: @"
               + u.getUsername()
               + " ("
@@ -355,10 +351,13 @@ public final class UserManagementPanel extends JPanel {
               + u.getId()
               + " • "
               + u.getStatusText()
-              + ")");
+              + ")";
+      selectedUserLabel.setText(selectedUserText);
+      selectedUserLabel.setToolTipText(selectedUserText);
       lockToggleBtn.setText(u.isLocked() ? "Unlock Account" : "Lock Account");
     } else {
       selectedUserLabel.setText("SELECTED: None (Select a row to manage account)");
+      selectedUserLabel.setToolTipText(null);
       lockToggleBtn.setText("Lock / Unlock");
     }
   }
@@ -420,7 +419,7 @@ public final class UserManagementPanel extends JPanel {
       "Full Name (*):",
       "Email Address (*):",
       "Address (*):",
-      "Date of Birth (YYYY/MM/DD):",
+      "Date of Birth (YYYY-MM-DD):",
       "Gender:"
     };
     java.awt.Component[] fields = {
@@ -508,7 +507,7 @@ public final class UserManagementPanel extends JPanel {
                 dialog,
                 "Invalid Date of Birth ('"
                     + dobStr
-                    + "'). Please enter a valid calendar date in YYYY/MM/DD format.",
+                    + "'). Please enter a valid calendar date in YYYY-MM-DD format.",
                 "Validation Error",
                 JOptionPane.ERROR_MESSAGE);
             return;
@@ -608,12 +607,12 @@ public final class UserManagementPanel extends JPanel {
               int confirm =
                   JOptionPane.showConfirmDialog(
                       this,
-                      "Are you sure you want to permanently delete user account @"
+                      "Are you sure you want to deactivate user account @"
                           + user.getUsername()
                           + " ("
                           + user.getFullName()
-                          + ")?",
-                      "Confirm Delete Account",
+                          + ")? The account will be soft-deleted, not permanently erased.",
+                      "Confirm Account Deactivation",
                       JOptionPane.YES_NO_OPTION,
                       JOptionPane.WARNING_MESSAGE);
               if (confirm == JOptionPane.YES_OPTION) {

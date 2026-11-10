@@ -19,6 +19,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
@@ -27,10 +28,11 @@ import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 /**
- * Annual Active Users (App Opens) Line Chart Panel (Task 10 / T017).
+ * Annual Monthly Distinct Active Users Line Chart Panel (Task 10 / T017).
  *
  * <p>Covers Requirement 1.2.9: Allow selecting a year and render a 12-month JFreeChart line chart
- * showing the number of users who opened the application in each month of the selected year.
+ * showing the number of distinct users who opened the application at least once in each month of
+ * the selected year.
  */
 public final class ActivityChartPanel extends JPanel {
   private static final String[] MONTHS = {
@@ -41,7 +43,7 @@ public final class ActivityChartPanel extends JPanel {
   private final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
   private final JComboBox<Integer> yearCombo =
       new JComboBox<>(new Integer[] {2024, 2025, 2026});
-  private final JLabel annualActiveTotalLabel = new JLabel("0 active sessions");
+  private final JLabel annualActiveTotalLabel = new JLabel("0 monthly users");
   private final JLabel peakActivityMonthLabel = new JLabel("Aug (0)");
   private final JLabel monthlyAvgActiveLabel = new JLabel("0.0 / month");
   private JFreeChart lineChart;
@@ -91,10 +93,10 @@ public final class ActivityChartPanel extends JPanel {
 
     JPanel titleBox = new JPanel(new GridLayout(2, 1, 0, 2));
     titleBox.setOpaque(false);
-    JLabel title = new JLabel("Monthly Active Users (App Opens)");
+    JLabel title = new JLabel("Distinct Active Users");
     title.setFont(ChatTheme.FONT_SUBTITLE);
     title.setForeground(ChatTheme.TEXT_PRIMARY);
-    JLabel subtitle = new JLabel("12-month trend of active users by calendar year");
+    JLabel subtitle = new JLabel("Users with at least one app open in each calendar month");
     subtitle.setFont(ChatTheme.FONT_SMALL);
     subtitle.setForeground(ChatTheme.TEXT_MUTED);
     titleBox.add(title);
@@ -119,7 +121,7 @@ public final class ActivityChartPanel extends JPanel {
         ChartFactory.createLineChart(
             null,
             "Month of Year",
-            "Active Users (App Opens)",
+            "Distinct Active Users",
             dataset,
             PlotOrientation.VERTICAL,
             false,
@@ -140,6 +142,7 @@ public final class ActivityChartPanel extends JPanel {
     domainAxis.setLabelPaint(ChatTheme.TEXT_SECONDARY);
     domainAxis.setTickLabelFont(ChatTheme.FONT_SMALL);
     domainAxis.setTickLabelPaint(ChatTheme.TEXT_PRIMARY);
+    domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
 
     NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
     rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
@@ -184,9 +187,11 @@ public final class ActivityChartPanel extends JPanel {
             BorderFactory.createMatteBorder(1, 0, 0, 0, ChatTheme.BORDER),
             BorderFactory.createEmptyBorder(10, 4, 0, 4)));
 
-    row.add(createStatPill("Annual Active Sum:", annualActiveTotalLabel, ChatTheme.SUCCESS_DOT));
-    row.add(createStatPill("Peak Activity Month:", peakActivityMonthLabel, new Color(0x0D9488)));
-    row.add(createStatPill("Monthly Average:", monthlyAvgActiveLabel, ChatTheme.TEXT_PRIMARY));
+    row.add(
+        createStatPill(
+            "Monthly Sum:", annualActiveTotalLabel, ChatTheme.SUCCESS_DOT));
+    row.add(createStatPill("Peak Month:", peakActivityMonthLabel, new Color(0x0D9488)));
+    row.add(createStatPill("Monthly Avg:", monthlyAvgActiveLabel, ChatTheme.TEXT_PRIMARY));
     return row;
   }
 
@@ -212,7 +217,7 @@ public final class ActivityChartPanel extends JPanel {
     int maxMonthIdx = 0;
 
     for (int i = 0; i < MONTHS.length && i < values.length; i++) {
-      dataset.addValue(values[i], "Active Users (" + year + ")", MONTHS[i]);
+      dataset.addValue(values[i], "Distinct Active Users (" + year + ")", MONTHS[i]);
       total += values[i];
       if (values[i] > maxVal) {
         maxVal = values[i];
@@ -221,8 +226,8 @@ public final class ActivityChartPanel extends JPanel {
     }
 
     double avg = values.length == 0 ? 0.0 : (double) total / values.length;
-    annualActiveTotalLabel.setText(total + " active (" + year + ")");
+    annualActiveTotalLabel.setText(NumberFormat.getIntegerInstance().format(total));
     peakActivityMonthLabel.setText(MONTHS[maxMonthIdx] + " (" + maxVal + ")");
-    monthlyAvgActiveLabel.setText(String.format("%.1f / month", avg));
+    monthlyAvgActiveLabel.setText(String.format("%.1f users", avg));
   }
 }

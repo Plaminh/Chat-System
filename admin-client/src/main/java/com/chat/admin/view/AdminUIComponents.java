@@ -359,6 +359,7 @@ public final class AdminUIComponents {
             }
             if (c instanceof JComponent jc) {
               jc.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+              jc.setToolTipText(value == null ? null : value.toString());
             }
             return c;
           }
@@ -391,6 +392,7 @@ public final class AdminUIComponents {
   }
 
   public static JScrollPane wrapTableInScrollPane(JTable table) {
+    table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     JScrollPane scroll = new JScrollPane(table);
     scroll.getViewport().setBackground(SURFACE_WHITE);
     scroll.setBorder(BorderFactory.createLineBorder(BORDER, 1));

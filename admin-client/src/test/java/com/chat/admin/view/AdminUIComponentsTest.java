@@ -2,8 +2,11 @@ package com.chat.admin.view;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.time.LocalDate;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import org.junit.jupiter.api.Test;
 
@@ -19,5 +22,15 @@ class AdminUIComponentsTest {
     assertNotNull(range);
     assertEquals(LocalDate.of(2025, 5, 1), range[0]);
     assertEquals(LocalDate.of(2025, 5, 31), range[1]);
+  }
+
+  @Test
+  void tableScrollPanesPreserveColumnWidthsForHorizontalScrolling() {
+    JTable table = new JTable(1, 2);
+
+    JScrollPane scrollPane = AdminUIComponents.wrapTableInScrollPane(table);
+
+    assertEquals(JTable.AUTO_RESIZE_OFF, table.getAutoResizeMode());
+    assertSame(table, scrollPane.getViewport().getView());
   }
 }

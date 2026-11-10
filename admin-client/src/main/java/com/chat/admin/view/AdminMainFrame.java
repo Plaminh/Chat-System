@@ -272,10 +272,10 @@ public final class AdminMainFrame extends JFrame {
     signOutBtn.setFont(ChatTheme.FONT_BODY_BOLD);
     signOutBtn.setHorizontalAlignment(SwingConstants.LEFT);
     signOutBtn.setIcon(
-        AdminUIComponents.createVectorIcon(NavIconType.LOGOUT, new Color(0xFCA5A5), 16));
+        AdminUIComponents.createVectorIcon(NavIconType.LOGOUT, ChatTheme.DANGER_SOFT, 16));
     signOutBtn.setIconTextGap(10);
-    signOutBtn.setBackground(new Color(0x1E293B));
-    signOutBtn.setForeground(new Color(0xFCA5A5));
+    signOutBtn.setBackground(ChatTheme.SIDEBAR_HOVER);
+    signOutBtn.setForeground(ChatTheme.DANGER_SOFT);
     signOutBtn.setFocusPainted(false);
     signOutBtn.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
     signOutBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -436,7 +436,7 @@ public final class AdminMainFrame extends JFrame {
     leftInfo.setOpaque(false);
     JLabel infoLabel =
         new JLabel(
-            "Annual Analytics Dashboard — Compare 12-month New Registrations (Bar) & Active App Users (Line)");
+            "Annual Analytics: Registrations vs. Distinct Active Users");
     infoLabel.setFont(ChatTheme.FONT_BODY_BOLD);
     infoLabel.setForeground(ChatTheme.TEXT_PRIMARY);
     leftInfo.add(infoLabel);

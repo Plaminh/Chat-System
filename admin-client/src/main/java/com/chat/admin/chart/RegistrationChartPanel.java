@@ -18,6 +18,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
@@ -91,7 +92,7 @@ public final class RegistrationChartPanel extends JPanel {
 
     JPanel titleBox = new JPanel(new GridLayout(2, 1, 0, 2));
     titleBox.setOpaque(false);
-    JLabel title = new JLabel("Monthly New User Registrations");
+    JLabel title = new JLabel("New User Registrations");
     title.setFont(ChatTheme.FONT_SUBTITLE);
     title.setForeground(ChatTheme.TEXT_PRIMARY);
     JLabel subtitle = new JLabel("12-month signup distribution by calendar year");
@@ -139,6 +140,7 @@ public final class RegistrationChartPanel extends JPanel {
     domainAxis.setLabelPaint(ChatTheme.TEXT_SECONDARY);
     domainAxis.setTickLabelFont(ChatTheme.FONT_SMALL);
     domainAxis.setTickLabelPaint(ChatTheme.TEXT_PRIMARY);
+    domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
 
     NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
     rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
@@ -181,8 +183,8 @@ public final class RegistrationChartPanel extends JPanel {
             BorderFactory.createEmptyBorder(10, 4, 0, 4)));
 
     row.add(createStatPill("Annual Total:", annualTotalLabel, ChatTheme.PRIMARY));
-    row.add(createStatPill("Peak Signup Month:", peakMonthLabel, new Color(0x4F46E5)));
-    row.add(createStatPill("Monthly Average:", monthlyAvgLabel, ChatTheme.TEXT_PRIMARY));
+    row.add(createStatPill("Peak Month:", peakMonthLabel, new Color(0x4F46E5)));
+    row.add(createStatPill("Monthly Avg:", monthlyAvgLabel, ChatTheme.TEXT_PRIMARY));
     return row;
   }
 
@@ -217,8 +219,8 @@ public final class RegistrationChartPanel extends JPanel {
     }
 
     double avg = values.length == 0 ? 0.0 : (double) total / values.length;
-    annualTotalLabel.setText(total + " signups (" + year + ")");
+    annualTotalLabel.setText(NumberFormat.getIntegerInstance().format(total));
     peakMonthLabel.setText(MONTHS[maxMonthIdx] + " (" + maxVal + ")");
-    monthlyAvgLabel.setText(String.format("%.1f / month", avg));
+    monthlyAvgLabel.setText(String.format("%.1f users", avg));
   }
 }
