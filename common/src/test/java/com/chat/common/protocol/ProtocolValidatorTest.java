@@ -25,20 +25,15 @@ class ProtocolValidatorTest {
   @Test
   void distinguishesMalformedUnknownAndInvalidPayload() {
     assertCode(ErrorCode.INVALID_JSON, "{not-json");
-    assertCode(
-        ErrorCode.UNKNOWN_ACTION,
-        "{\"requestId\":\"r1\",\"action\":\"NOPE\",\"data\":{}}");
-    assertCode(
-        ErrorCode.INVALID_PAYLOAD,
-        "{\"requestId\":\"r1\",\"action\":\"PING\",\"data\":[]}");
+    assertCode(ErrorCode.UNKNOWN_ACTION, "{\"requestId\":\"r1\",\"action\":\"NOPE\",\"data\":{}}");
+    assertCode(ErrorCode.INVALID_PAYLOAD, "{\"requestId\":\"r1\",\"action\":\"PING\",\"data\":[]}");
     assertCode(ErrorCode.INVALID_REQUEST, "{}");
   }
 
   private void assertCode(ErrorCode expected, String json) {
     ProtocolValidationException exception =
         assertThrows(
-            ProtocolValidationException.class,
-            () -> ProtocolValidator.parseRequest(mapper, json));
+            ProtocolValidationException.class, () -> ProtocolValidator.parseRequest(mapper, json));
     assertEquals(expected, exception.errorCode());
   }
 }

@@ -63,7 +63,7 @@ Normal messages have exactly one content form. Recalled messages have neither or
 
 ## Groups
 
-- `CreateGroupRequest`: name, initial member IDs, encryptionEnabled, optional initial rotation.
+- `CreateGroupRequest`: name, initial member IDs, and immutable encryptionEnabled selection. Encrypted groups use the separate key-rotation action before encrypted sending begins.
 - `GroupInfo`: group/conversation ID, name, owner, encryption flag, members, timestamps.
 - `GroupMemberInfo`: user summary, ADMIN/MEMBER role, joinedAt.
 - `RenameGroupRequest`: groupId, name.

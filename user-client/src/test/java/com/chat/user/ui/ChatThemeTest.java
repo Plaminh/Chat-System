@@ -2,7 +2,6 @@ package com.chat.user.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.awt.Dimension;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
@@ -23,9 +22,7 @@ class ChatThemeTest {
     assertEquals(
         ChatTheme.BUTTON_HEIGHT,
         ChatTheme.createPrimaryButton("Continue").getPreferredSize().height);
-    assertEquals(
-        ChatTheme.BUTTON_HEIGHT,
-        ChatTheme.createTextField(12).getPreferredSize().height);
+    assertEquals(ChatTheme.BUTTON_HEIGHT, ChatTheme.createTextField(12).getPreferredSize().height);
     assertEquals(36, ChatTheme.BUTTON_HEIGHT);
   }
 

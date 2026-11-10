@@ -46,8 +46,7 @@ class RequestHandlerTest {
 
   @Test
   void missingAndInvalidPayloadFieldsArePredictable() throws Exception {
-    ResponseEnvelope missing =
-        read(handler.handle("{\"requestId\":\"r1\",\"action\":\"PING\"}"));
+    ResponseEnvelope missing = read(handler.handle("{\"requestId\":\"r1\",\"action\":\"PING\"}"));
     ResponseEnvelope wrongType =
         read(handler.handle("{\"requestId\":\"r2\",\"action\":\"PING\",\"data\":[]}"));
 

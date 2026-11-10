@@ -851,3 +851,19 @@ Kept: The six schema modules, account/social/conversation/moderation/statistics 
 Changed: Added versioned per-user X25519 public keys and recipient-specific RFC 9180 HPKE envelopes; reduced conversation key versions to epoch metadata; removed server-controlled wrapped-key fields; updated seed/runtime tests, ERD/DBML, setup/mapping/spec artifacts, E2EE lifecycle/search/LLM/spam limitations, and active terminology. The supported recipient model is per-user, not per-device.
 
 By hand: Disposable PostgreSQL 16.15 schema creation, 63-row seed, runtime integrity fixture, PowerShell schema-only initialization, isolated Compose initialization/rerun, static schema/DBML consistency, PowerShell parsing, Compose configuration, active-reference scans, and diff checks passed. All named verification resources were removed. SQL storage supports the intended E2EE boundary but does not implement or prove cryptography; Maven/Spotless were not run because no Java code changed.
+
+## 2026-11-10 - Common V2 Foundation
+
+Tool: OpenAI Codex.
+
+Asked for: Execute the full Spec Kit workflow and implement, test, document, commit, and push the Common V2 protocol foundation in six phases on `feature/common-v2`.
+
+Kept: Exactly four Maven modules; Java 25 project target; TCP UTF-8 NDJSON; existing envelope field names and PING behavior; Jackson; V1 numeric identity, message-deletion, statistics, and client-side encrypted-group policies; Server-only persistence/business boundaries.
+
+Changed: Added one `specs/004-common-v2` feature with requirements, plan, research, wire model, contracts, checklists, quickstart, and six-phase tasks. Extended protocol actions, errors, events, and domain enums. Added immutable account, social, chat, group, admin, statistics, writing-assistance, public-key, HPKE-envelope, key-epoch, encrypted-message, and event records with local invariant checks. Added the canonical Java-time-aware `ProtocolJson` mapper, raw request validation, distinct malformed/unknown/invalid/unsupported outcomes, NDJSON boundary tests, and envelope/DTO/event/encryption tests. Relocated the legacy Swing `ChatTheme` into both client modules to remove UI code from Common without adding a module or changing UI behavior. Added `*.java text eol=lf` to keep Spotless stable on Windows.
+
+Verification: The configured Java 25 commands `mvn -pl common -am test` and `mvn test` could not compile because the environment exposes only Microsoft OpenJDK 21 (`release version 25 not supported`). With the temporary command-line override `-Djava.version=21`, `mvn clean verify` passed all five reactor projects and 91 tests (25 Common, 5 Admin Client, 55 User Client, 6 Server), including packaging. `mvn -pl common spotless:check` passed all 110 Common Java files. Root `mvn spotless:check` reached Common successfully and then reported 28 pre-existing Admin Client formatting violations, including untouched `package-info.java` files; they were not reformatted because that would be unrelated scope. No Common Spring, Swing/AWT, JDBC, or database dependency/import remains.
+
+Rejected: REST/WebSocket/JPA, a fifth module, server-side/private group keys, crypto implementation, business services in Common, database/schema changes, speculative actions, fabricated reviewer checklist approval, force push, and unrelated Admin/User source formatting.
+
+By hand: Developers must review the protocol/security contracts, run the build on JDK 25, and complete the reviewer-owned protocol checklist before merge. Server V2 still owns authentication, authorization, persistence, sessions, email, AI-provider calls, offline delivery, and encryption-rotation transactions; User V2 owns private keys and cryptographic operations.

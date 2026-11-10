@@ -91,13 +91,13 @@
 
 **Goal**: Verify integration, reconcile artifacts, and prepare Server/User/Admin handover.
 
-- [ ] T034 Expand envelope/null/empty/payload serialization coverage in `common/src/test/java/com/chat/common/dto/`
-- [ ] T035 Reconcile implemented actions/DTOs/examples with `specs/004-common-v2/contracts/` and `specs/004-common-v2/data-model.md`
-- [ ] T036 Update integration/verification instructions in `specs/004-common-v2/quickstart.md`
-- [ ] T037 Record meaningful AI work and actual verification evidence in `AI-LOG.md`
-- [ ] T038 Run `.tools/apache-maven-3.9.9/bin/mvn.cmd -pl common -am test` and record actual result
-- [ ] T039 Run `.tools/apache-maven-3.9.9/bin/mvn.cmd test` and `clean verify` and record actual results
-- [ ] T040 Run `.tools/apache-maven-3.9.9/bin/mvn.cmd spotless:check`, `git diff --check`, dependency/boundary scans, and record actual results
+- [x] T034 Expand envelope/null/empty/payload serialization coverage in `common/src/test/java/com/chat/common/dto/`
+- [x] T035 Reconcile implemented actions/DTOs/examples with `specs/004-common-v2/contracts/` and `specs/004-common-v2/data-model.md`
+- [x] T036 Update integration/verification instructions in `specs/004-common-v2/quickstart.md`
+- [x] T037 Record meaningful AI work and actual verification evidence in `AI-LOG.md`
+- [x] T038 Run `.tools/apache-maven-3.9.9/bin/mvn.cmd -pl common -am test` and record actual result
+- [x] T039 Run `.tools/apache-maven-3.9.9/bin/mvn.cmd test` and `clean verify` and record actual results
+- [x] T040 Run `.tools/apache-maven-3.9.9/bin/mvn.cmd spotless:check`, `git diff --check`, dependency/boundary scans, and record actual results
 
 **Checkpoint**: Artifacts, code, tests, and handover agree; all results are evidence-based.
 
