@@ -1,5 +1,15 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-10 — Correct confirmed Admin V1 layout defects
+
+Tool: OpenAI Codex.
+
+Asked for: Apply only the confirmed Admin V1 fixes for Friend Network column widths, selected-user action-bar responsiveness, and minimum-size User Activity table height, without verification or business-logic changes.
+
+Changed: Added local Friend Network column widths; separated selected-user information from its wrapping action row; reduced accumulated vertical spacing around the User Activity table; clarified the activity-chart monthly sum label; renamed the visible soft-delete action to Deactivate User.
+
+By hand: No build, automated test, or GUI verification was performed for this task. The developer must review and verify the changes before any commit.
+
 ## 2026-11-10 — Finalize Admin Client V1 UI wording and layout
 
 Tool: OpenAI Codex.

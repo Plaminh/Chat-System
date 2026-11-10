@@ -189,7 +189,7 @@ public final class ActivityChartPanel extends JPanel {
 
     row.add(
         createStatPill(
-            "Monthly Sum:", annualActiveTotalLabel, ChatTheme.SUCCESS_DOT));
+            "Sum of Monthly Users:", annualActiveTotalLabel, ChatTheme.SUCCESS_DOT));
     row.add(createStatPill("Peak Month:", peakActivityMonthLabel, new Color(0x0D9488)));
     row.add(createStatPill("Monthly Avg:", monthlyAvgActiveLabel, ChatTheme.TEXT_PRIMARY));
     return row;

@@ -259,6 +259,10 @@ public final class UserDetailHistoryDialog extends JDialog {
 
     JTable friendTable = new JTable(friendModel);
     AdminUIComponents.styleTable(friendTable);
+    friendTable.getColumnModel().getColumn(0).setPreferredWidth(180);
+    friendTable.getColumnModel().getColumn(1).setPreferredWidth(220);
+    friendTable.getColumnModel().getColumn(2).setPreferredWidth(180);
+    friendTable.getColumnModel().getColumn(3).setPreferredWidth(140);
     friendTable
         .getColumnModel()
         .getColumn(3)

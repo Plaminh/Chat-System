@@ -6,7 +6,6 @@ import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.model.AdminUser;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -175,13 +174,12 @@ public final class UserManagementPanel extends JPanel {
   }
 
   private JPanel buildBottomActionBar() {
-    JPanel bar = new JPanel(new BorderLayout(12, 6));
+    JPanel bar = new JPanel(new BorderLayout(0, 6));
     bar.setBackground(ChatTheme.SIDEBAR_BG);
     bar.setBorder(BorderFactory.createEmptyBorder(10, 16, 10, 16));
 
     selectedUserLabel.setFont(ChatTheme.FONT_BODY_BOLD);
     selectedUserLabel.setForeground(Color.WHITE);
-    selectedUserLabel.setMinimumSize(new Dimension(120, 24));
 
     JPanel actionButtons = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.RIGHT, 8, 2));
     actionButtons.setOpaque(false);
@@ -195,7 +193,7 @@ public final class UserManagementPanel extends JPanel {
     JButton resetPassBtn = ChatTheme.createSecondaryButton("Reset Password");
     resetPassBtn.addActionListener(e -> handlePasswordReset());
 
-    JButton deleteBtn = ChatTheme.createDangerButton("Delete User");
+    JButton deleteBtn = ChatTheme.createDangerButton("Deactivate User");
     deleteBtn.addActionListener(e -> handleDeleteUser());
 
     JButton historyBtn = ChatTheme.createPrimaryButton("View History & Network");
@@ -207,8 +205,8 @@ public final class UserManagementPanel extends JPanel {
     actionButtons.add(deleteBtn);
     actionButtons.add(historyBtn);
 
-    bar.add(selectedUserLabel, BorderLayout.CENTER);
-    bar.add(actionButtons, BorderLayout.EAST);
+    bar.add(selectedUserLabel, BorderLayout.NORTH);
+    bar.add(actionButtons, BorderLayout.CENTER);
     return bar;
   }
 

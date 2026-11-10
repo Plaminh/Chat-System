@@ -86,10 +86,10 @@ public final class UserActivityPanel extends JPanel {
   private final JLabel footerSummaryLabel = new JLabel("Showing 0 active user records");
 
   public UserActivityPanel() {
-    setLayout(new BorderLayout(0, 14));
+    setLayout(new BorderLayout(0, 8));
     setBackground(ChatTheme.CANVAS_BG);
 
-    JPanel topSection = new JPanel(new BorderLayout(0, 12));
+    JPanel topSection = new JPanel(new BorderLayout(0, 8));
     topSection.setOpaque(false);
     topSection.add(buildKpiSummaryRow(), BorderLayout.NORTH);
     topSection.add(buildFilterToolbar(), BorderLayout.SOUTH);
@@ -129,7 +129,7 @@ public final class UserActivityPanel extends JPanel {
   }
 
   private JPanel buildFilterToolbar() {
-    JPanel card = ChatTheme.createCardPanel(new BorderLayout(0, 10));
+    JPanel card = ChatTheme.createCardPanel(new BorderLayout(0, 6));
 
     // Top row: Date range filter + quick presets
     JPanel dateRow = new JPanel(new BorderLayout(10, 4));
@@ -288,7 +288,7 @@ public final class UserActivityPanel extends JPanel {
     bar.setBorder(
         BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(ChatTheme.BORDER, 1, true),
-            BorderFactory.createEmptyBorder(9, 16, 9, 16)));
+            BorderFactory.createEmptyBorder(6, 16, 6, 16)));
 
     footerSummaryLabel.setFont(ChatTheme.FONT_BODY_BOLD);
     footerSummaryLabel.setForeground(ChatTheme.TEXT_PRIMARY);
