@@ -1,5 +1,15 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-10 — Complete missing User Client V1 requirement states
+
+Tool: OpenAI Codex.
+
+Asked for: Complete the Version 1 UI representation of password recovery and encrypted group chat while preserving existing User behavior and deferring backend email, persistence, networking, and cryptography to Version 2.
+
+Changed: Corrected password-recovery prototype wording; added Standard/Encrypted selection during group creation; stored the choice as immutable in-memory group state; displayed truthful per-group prototype status and guidance in group chat; constrained member-row height. Profile gender input was left unchanged because its current non-null model and Registration flow require a coordinated follow-up rather than a local dropdown replacement.
+
+By hand: No build, automated test, or GUI verification was performed for this task. The developer must review and verify the source changes before any commit.
+
 ## 2026-11-10 — Correct confirmed Admin V1 layout defects
 
 Tool: OpenAI Codex.

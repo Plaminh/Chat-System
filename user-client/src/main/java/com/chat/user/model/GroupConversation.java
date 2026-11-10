@@ -8,6 +8,7 @@ import java.util.Set;
 
 public final class GroupConversation {
   private final String groupId;
+  private final boolean encrypted;
   private String name;
   private final List<GroupMember> members = new ArrayList<>();
   private final List<ChatMessage> messages = new ArrayList<>();
@@ -17,7 +18,17 @@ public final class GroupConversation {
       String name,
       List<GroupMember> members,
       List<ChatMessage> messages) {
+    this(groupId, name, members, messages, false);
+  }
+
+  public GroupConversation(
+      String groupId,
+      String name,
+      List<GroupMember> members,
+      List<ChatMessage> messages,
+      boolean encrypted) {
     this.groupId = Objects.requireNonNull(groupId, "groupId");
+    this.encrypted = encrypted;
     rename(name);
     this.members.addAll(Objects.requireNonNull(members, "members"));
     this.messages.addAll(Objects.requireNonNull(messages, "messages"));
@@ -38,6 +49,10 @@ public final class GroupConversation {
 
   public String name() {
     return name;
+  }
+
+  public boolean encrypted() {
+    return encrypted;
   }
 
   public List<GroupMember> members() {

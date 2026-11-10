@@ -32,7 +32,6 @@ public final class PasswordRecoveryDialog extends JPanel {
     dialog.setContentPane(this);
     dialog.pack();
     dialog.setMinimumSize(new Dimension(520, 300));
-    dialog.setSize(520, 320);
     dialog.setLocationRelativeTo(owner);
     return dialog;
   }
@@ -62,7 +61,10 @@ public final class PasswordRecoveryDialog extends JPanel {
 
     requestSubmitted = true;
     showFeedback(
-        "Sample request recorded; no email or password was sent.",
+        "<html><div style='text-align:center'>Password recovery request received.<br>"
+            + "In the completed system, a temporary password will be generated and sent<br>"
+            + "to the registered email address.<br>It can then be used to sign in and change the "
+            + "password.</div></html>",
         ChatTheme.SUCCESS);
   }
 
@@ -77,7 +79,8 @@ public final class PasswordRecoveryDialog extends JPanel {
     title.setForeground(ChatTheme.TEXT_PRIMARY);
     JLabel description =
         new JLabel(
-            "Enter the email linked to your account to view a sample response.",
+            "<html><div style='text-align:center'>Enter your registered email address to receive a<br>"
+                + "randomly generated temporary password.</div></html>",
             SwingConstants.CENTER);
     description.setFont(ChatTheme.FONT_BODY);
     description.setForeground(ChatTheme.TEXT_MUTED);
@@ -95,7 +98,7 @@ public final class PasswordRecoveryDialog extends JPanel {
 
     JButton cancelButton = ChatTheme.createSecondaryButton("Back to Sign In");
     cancelButton.addActionListener(event -> closeDialog());
-    JButton submitButton = ChatTheme.createPrimaryButton("Send Sample Request");
+    JButton submitButton = ChatTheme.createPrimaryButton("Request Temporary Password");
     submitButton.addActionListener(event -> submitRecoveryRequest());
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.CENTER, ChatTheme.SPACE_SM, 0));
     actions.setOpaque(false);
@@ -132,5 +135,10 @@ public final class PasswordRecoveryDialog extends JPanel {
   private void showFeedback(String message, Color color) {
     feedbackLabel.setText(message);
     feedbackLabel.setForeground(color);
+    feedbackLabel.revalidate();
+    if (dialog != null) {
+      dialog.pack();
+      dialog.setLocationRelativeTo(dialog.getOwner());
+    }
   }
 }

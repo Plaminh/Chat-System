@@ -25,8 +25,7 @@ public final class GroupChatPanel extends JPanel {
   private final JPanel memberList = new JPanel();
   private final JTextArea composer = new JTextArea(3, 32);
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.LEFT);
-  private final JLabel encryptionPlaceholder =
-      new JLabel("Encryption: sample label only; not enabled.");
+  private final JLabel encryptionPlaceholder = new JLabel();
   private Runnable backHandler =
       () -> {
         feedbackLabel.setText("Select Groups in the navigation to return.");
@@ -104,14 +103,34 @@ public final class GroupChatPanel extends JPanel {
     JLabel groupName = new JLabel(group.name());
     groupName.setFont(ChatTheme.FONT_SUBTITLE);
     groupName.setForeground(ChatTheme.TEXT_PRIMARY);
+    encryptionPlaceholder.setText(
+        group.encrypted() ? "Encrypted Group (Prototype)" : "Standard Group");
     encryptionPlaceholder.setFont(ChatTheme.FONT_SMALL);
-    encryptionPlaceholder.setForeground(ChatTheme.TEXT_MUTED);
-    header.add(groupName, BorderLayout.WEST);
+    encryptionPlaceholder.setForeground(
+        group.encrypted() ? ChatTheme.PRIMARY : ChatTheme.TEXT_MUTED);
+    JPanel groupInfo = new JPanel();
+    groupInfo.setLayout(new javax.swing.BoxLayout(groupInfo, javax.swing.BoxLayout.Y_AXIS));
+    groupInfo.setOpaque(false);
+    groupName.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+    encryptionPlaceholder.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+    groupInfo.add(groupName);
+    groupInfo.add(encryptionPlaceholder);
+    if (group.encrypted()) {
+      JLabel encryptionHint =
+          new JLabel(
+              "V1 display only; message encryption will be implemented in V2.");
+      encryptionHint.setFont(ChatTheme.FONT_SMALL);
+      encryptionHint.setForeground(ChatTheme.TEXT_MUTED);
+      encryptionHint.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+      encryptionHint.setToolTipText(
+          "Encryption is represented in this V1 prototype; message encryption will be implemented in V2.");
+      groupInfo.add(encryptionHint);
+    }
+    header.add(groupInfo, BorderLayout.CENTER);
     JButton back = ChatTheme.createSecondaryButton("Back to Groups");
     back.addActionListener(event -> backHandler.run());
     JPanel headerActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, ChatTheme.SPACE_XS, 0));
     headerActions.setOpaque(false);
-    headerActions.add(encryptionPlaceholder);
     headerActions.add(back);
     header.add(headerActions, BorderLayout.EAST);
 
@@ -204,8 +223,12 @@ public final class GroupChatPanel extends JPanel {
           ChatTheme.SPACE_SM, 0, ChatTheme.SPACE_SM, 0));
       memberRow.add(identity, BorderLayout.NORTH);
       memberRow.add(role, BorderLayout.SOUTH);
+      memberRow.setMaximumSize(
+          new java.awt.Dimension(Integer.MAX_VALUE, memberRow.getPreferredSize().height));
+      memberRow.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
       memberList.add(memberRow);
     }
+    memberList.add(javax.swing.Box.createVerticalGlue());
     memberList.revalidate();
     memberList.repaint();
   }

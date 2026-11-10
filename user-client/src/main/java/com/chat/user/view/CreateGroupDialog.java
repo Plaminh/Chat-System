@@ -8,6 +8,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Window;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.function.Consumer;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -33,6 +35,8 @@ public final class CreateGroupDialog extends JPanel {
   private final List<UserProfile> directory;
   private final Consumer<GroupConversation> createdHandler;
   private final JTextField groupNameField = ChatTheme.createTextField(28);
+  private final JComboBox<String> encryptionModeCombo =
+      ChatTheme.createComboBox(new String[] {"Standard Group", "Encrypted Group"});
   private final JList<UserProfile> participantList;
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.LEFT);
   private JDialog dialog;
@@ -91,6 +95,10 @@ public final class CreateGroupDialog extends JPanel {
     return participantList;
   }
 
+  JComboBox<String> getEncryptionModeCombo() {
+    return encryptionModeCombo;
+  }
+
   JLabel getFeedbackLabel() {
     return feedbackLabel;
   }
@@ -114,8 +122,10 @@ public final class CreateGroupDialog extends JPanel {
     List<GroupMember> members = new ArrayList<>();
     members.add(new GroupMember(creator, GroupMember.Role.ADMIN));
     selected.forEach(user -> members.add(new GroupMember(user, GroupMember.Role.MEMBER)));
+    boolean encrypted = encryptionModeCombo.getSelectedIndex() == 1;
     createdGroup =
-        new GroupConversation("group-" + UUID.randomUUID(), name, members, List.of());
+        new GroupConversation(
+            "group-" + UUID.randomUUID(), name, members, List.of(), encrypted);
     createdHandler.accept(createdGroup);
     showFeedback("Sample group created for this session.", ChatTheme.SUCCESS);
     if (dialog != null) {
@@ -149,6 +159,9 @@ public final class CreateGroupDialog extends JPanel {
     JLabel nameLabel = new JLabel("Group name");
     nameLabel.setFont(ChatTheme.FONT_BODY_BOLD);
     nameLabel.setForeground(ChatTheme.TEXT_SECONDARY);
+    JLabel encryptionModeLabel = new JLabel("Group type");
+    encryptionModeLabel.setFont(ChatTheme.FONT_BODY_BOLD);
+    encryptionModeLabel.setForeground(ChatTheme.TEXT_SECONDARY);
     JLabel participantLabel = new JLabel("Add at least one other user");
     participantLabel.setFont(ChatTheme.FONT_BODY_BOLD);
     participantLabel.setForeground(ChatTheme.TEXT_SECONDARY);
@@ -159,11 +172,20 @@ public final class CreateGroupDialog extends JPanel {
     nameGroup.setOpaque(false);
     nameGroup.add(nameLabel, BorderLayout.NORTH);
     nameGroup.add(groupNameField, BorderLayout.CENTER);
+    JPanel encryptionModeGroup =
+        new JPanel(new BorderLayout(ChatTheme.SPACE_XS, ChatTheme.SPACE_XS));
+    encryptionModeGroup.setOpaque(false);
+    encryptionModeGroup.add(encryptionModeLabel, BorderLayout.NORTH);
+    encryptionModeGroup.add(encryptionModeCombo, BorderLayout.CENTER);
+    JPanel groupSettings = new JPanel(new GridLayout(2, 1, 0, ChatTheme.SPACE_SM));
+    groupSettings.setOpaque(false);
+    groupSettings.add(nameGroup);
+    groupSettings.add(encryptionModeGroup);
     JPanel participantGroup = new JPanel(new BorderLayout(ChatTheme.SPACE_XS, ChatTheme.SPACE_XS));
     participantGroup.setOpaque(false);
     participantGroup.add(participantLabel, BorderLayout.NORTH);
     participantGroup.add(new JScrollPane(participantList), BorderLayout.CENTER);
-    form.add(nameGroup, BorderLayout.NORTH);
+    form.add(groupSettings, BorderLayout.NORTH);
     form.add(participantGroup, BorderLayout.CENTER);
 
     feedbackLabel.setFont(ChatTheme.FONT_SMALL);
