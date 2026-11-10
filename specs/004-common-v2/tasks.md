@@ -76,9 +76,9 @@
 
 **Goal**: Enforce predictable framing/envelope behavior while preserving PING.
 
-- [ ] T028 [P] [US5] Add contract validation utilities/exceptions in `common/src/main/java/com/chat/common/protocol/ProtocolValidator.java` and `common/src/main/java/com/chat/common/exception/ProtocolValidationException.java`
-- [ ] T029 [P] [US5] Harden envelope invariants in `common/src/main/java/com/chat/common/dto/RequestEnvelope.java`, `ResponseEnvelope.java`, and `EventEnvelope.java`
-- [ ] T030 [P] [US5] Add LF/CRLF/EOF/limit tests in `common/src/test/java/com/chat/common/protocol/JsonLineReaderTest.java`
+- [x] T028 [P] [US5] Add contract validation utilities/exceptions in `common/src/main/java/com/chat/common/protocol/ProtocolValidator.java` and `common/src/main/java/com/chat/common/exception/ProtocolValidationException.java`
+- [x] T029 [P] [US5] Harden envelope invariants in `common/src/main/java/com/chat/common/dto/RequestEnvelope.java`, `ResponseEnvelope.java`, and `EventEnvelope.java`
+- [x] T030 [P] [US5] Add LF/CRLF/EOF/limit tests in `common/src/test/java/com/chat/common/protocol/JsonLineReaderTest.java`
 
 **Checkpoint**: Common framing, envelope, and validation tests produce predictable results while preserving the PING contract.
 

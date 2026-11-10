@@ -1,6 +1,7 @@
 package com.chat.common.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.chat.common.dto.event.GroupMembershipEvent;
 import com.chat.common.dto.social.PresenceUpdate;
@@ -57,5 +58,18 @@ class EventEnvelopeJsonTest {
 
     assertEquals(20, json.get("groupId").asLong());
     assertEquals("ADDED", json.get("change").asText());
+  }
+
+  @Test
+  void rejectsMissingIdentityTypeAndObjectPayload() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new EventEnvelope(" ", MessageType.SERVER_EVENT, mapper.createObjectNode()));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new EventEnvelope("evt-1", null, mapper.createObjectNode()));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new EventEnvelope("evt-1", MessageType.SERVER_EVENT, mapper.createArrayNode()));
   }
 }
