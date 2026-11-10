@@ -38,28 +38,22 @@ services:
       - |
         table_count=$$(psql -X -A -t -v ON_ERROR_STOP=1 -c \
           "SELECT count(*) FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'")
-
         if [ "$$table_count" = "0" ]; then
           echo "Initializing Chat System schema and development seed data..."
-          psql -X -v ON_ERROR_STOP=1 --single-transaction \
-            -f /sql/schema.sql \
-            -f /sql/seed.sql
-        elif [ "$$table_count" = "12" ]; then
-          echo "Database already contains the 12 expected tables; initialization skipped."
+          if ! psql -X -v ON_ERROR_STOP=1 -f /sql/schema.sql; then
+            echo "Database schema creation failed; development seed was not attempted." >&2
+            exit 1
+          fi
+          if ! psql -X -v ON_ERROR_STOP=1 -f /sql/seed.sql; then
+            echo "Development seed loading failed. The schema remains initialized and the seed transaction left no partial fixture rows." >&2
+            echo "After correcting the cause, rerun script/seed.sql manually only if every application table is still empty." >&2
+            exit 1
+          fi
         else
-          echo "Unexpected table count: $$table_count. Refusing partial initialization." >&2
-          exit 1
+          echo "Database public schema already contains $$table_count table(s); automatic initialization was skipped without compatibility validation."
+          echo "Older or incomplete development schemas require separate manual review; no upgrade, repair, or seed was attempted."
         fi
-
-        final_count=$$(psql -X -A -t -v ON_ERROR_STOP=1 -c \
-          "SELECT count(*) FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'")
-
-        if [ "$$final_count" != "12" ]; then
-          echo "Expected 12 tables after initialization, found $$final_count." >&2
-          exit 1
-        fi
-
-        echo "Database initialization check passed: 12 tables are available."
+        echo "Database initialization step completed."
     restart: "no"
 
 volumes:

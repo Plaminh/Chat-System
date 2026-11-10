@@ -85,6 +85,23 @@
 **Purpose**: Resolve the targeted technical-review findings without reopening or resetting the completed sixteen-phase implementation.
 
 - [x] T017 Redact recalled message bodies, make initialization atomic, make restriction validation portable across supported PostgreSQL error conditions, correct block-aware search/setup guidance, document substring-search and group-rejoin limitations, run applicable validation, and synchronize review evidence
+- [x] T019 Reproduce and correct the nullable recalled-body check in the V1 baseline, add constraint-specific INSERT/UPDATE regression coverage, add explicit seed-recovery states to Compose/PowerShell, and validate the affected paths on isolated PostgreSQL 16
+
+## Phase 8: Database V1 Finalization Review
+
+- [x] T018 Add encrypted-group storage directly to the baseline, retain activity classifications after conversation deletion, remove the misleading token-search index, expand integrity/runtime tests, and synchronize the ERD/setup/lifecycle documentation
+
+## Phase 9: V1 Baseline Consolidation
+
+- [x] T020 Confirm all final definitions are present directly in the six schema modules, remove obsolete development migrations, and synchronize the database initialization documentation
+
+## Phase 10: Initialization Simplification
+
+- [x] T021 Remove the existing-schema validator and seed-retry state machine; keep atomic schema/seed execution, simple existing-schema skip/refusal behavior, focused static checks, runtime integrity tests, and synchronized active documentation
+
+## Phase 11: Client-Side E2EE Storage Direction
+
+- [x] T022 Replace server-controlled key wrapping with per-user public keys, client-generated group-key epochs, recipient HPKE envelopes, client-side search/lifecycle policies, synchronized artifacts, and focused PostgreSQL 16 tests
 
 ---
 
@@ -95,9 +112,11 @@
 - T003 → T004, T005, T006 establishes referenced users; T005 precedes the final relationship review in T006.
 - T003 → T007 establishes conversation ownership; T007 → T008 → T009 → T010 establishes conversation, membership, message, then deletion dependencies.
 - T009 → T011 permits optional report evidence; T008 → T012 permits conversation activity references.
-- T003–T012 → T013 validates the integrated twelve-table schema.
+- T003–T012 → T013 validates the original schema; T018/T019 record the earlier finalization and correction work; T020 consolidates those outcomes into the V1 baseline and removes their obsolete upgrade path; T021 reduces initialization to its current behavior; T022 corrects the encrypted-group key boundary.
 - T013 → T014 → T015 → T016 supplies seed data, safe setup, then final evidence.
 - T016 → T017 applies the bounded post-review remediation while preserving every prior completed task.
+- T018 → T019 applies the focused correction after the finalization review.
+- T019 → T020 removes the no-longer-required development upgrade layer after confirming the corrected DDL is already present in the schema; T020 → T021 removes unnecessary compatibility/retry machinery; T021 → T022 replaces the server-decryptable key model with client-recipient envelopes.
 
 ## Parallel Opportunities
 

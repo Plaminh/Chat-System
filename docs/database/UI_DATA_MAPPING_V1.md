@@ -2,7 +2,7 @@
 
 ## Source review
 
-The current database branch does not contain the completed Admin/User UI implementations. Their models and specifications were inspected read-only from `origin/feature/admin-ui-v1` and `origin/feature/user-ui-v1`; no branch was switched or modified.
+The current Admin/User Swing implementations, mock models, specifications, and server database configuration were inspected in this worktree. Database V1 does not change those interfaces or add live persistence access.
 
 ## Identifier and value normalization
 
@@ -27,37 +27,40 @@ The current database branch does not contain the completed Admin/User UI impleme
 | Password reset | Version 2 server updates `users.password_hash`, `password_changed_at`, and `updated_at`; the client never accesses the hash. |
 | `LoginRecord` chronology | `login_history` joined to `users`, ordered by `logged_in_at DESC`; full name is not duplicated in history. |
 | Direct friend count | Count `friendships` rows where the user is either `user_low_id` or `user_high_id`. |
-| Friends-of-friends count | Derive from two-hop friendship joins with duplicates and the subject user excluded; never stored on `users`. |
+| Friends-of-friends count | Build the subject's canonical direct-neighbor set, traverse one more friendship edge, then `COUNT(DISTINCT candidate_id)` after excluding the subject and existing direct neighbors; never stored on `users`. |
 | `FriendConnection.online` | Future presence/runtime policy; not a durable Database V1 boolean. `user_activity_logs` may support a last-activity hint but not live presence. |
 | Group list and created date | `conversations` filtered to `group`; use `name`, `created_at`, and membership count. |
 | Group member/admin roster | `conversation_members` joined to `users`; active rows have `left_at IS NULL`. |
-| Spam reports | `spam_reports` joined three times to `users` for reporter, reported account, and reviewer; optional `messages.body` is evidence. |
+| Spam reports | `spam_reports` joined three times to `users` for reporter, reported account, and reviewer. A referenced plaintext message may be readable; an encrypted message supplies metadata only because administrators have no decryption key. |
 | Lock from spam panel | A Version 2 transaction updates `users.account_status/locked_at`; it separately updates report workflow if the reviewer chooses. |
 | New registration list/chart | Filter/group `users.created_at` by requested date range/month. |
 | Monthly active users chart | `COUNT(DISTINCT user_id)` over `user_activity_logs` by month, normally using `app_open` events. |
 | App open count | Count `user_activity_logs` rows of type `app_open` in the selected period. |
-| Chatted users count | Count distinct other participants reached through direct-chat activity/conversation membership in the period; Version 2 query defines exact event grouping. |
-| Chatted groups count | Count distinct group `conversation_id` values from `group_chat` activity in the period. |
+| Chatted users count | Filter the subject's `direct_chat` events by half-open time range and `COUNT(DISTINCT counterpart_user_id_snapshot)`; the snapshot survives conversation deletion and differs from the actor. |
+| Chatted groups count | Count distinct `conversation_id_snapshot` values from `group_chat` activity in the period. |
+
+Account deletion is soft, so registration, login, friendship, and activity facts remain attributable to the stable `user_id`. Conversation deletion nulls only the live activity FK; immutable conversation/counterpart snapshots continue supporting historical app-open/direct/group totals, distinct groups, and distinct people chatted with.
 
 ## User UI mapping
 
 | User view/model/action | Source columns or transaction effect |
 |---|---|
 | `UserProfile` | `users.username`, `full_name`, `email`, `address`, `date_of_birth`, `gender`. Avatar resources remain presentation-only. |
-| Registration/sign-in/password change/recovery | `users` and `login_history` are the persistence targets, but all workflow, BCrypt handling, recovery tokens/email, and authorization are Version 2. |
+| Registration/sign-in/password change/recovery | `users` and `login_history` are the persistence targets, but all workflow, BCrypt handling, recovery tokens/email, and authorization are Version 2. Password changes do not rotate encryption keys; password reset cannot recover a lost client private key. |
 | Friend list | Resolve the other endpoint from canonical `friendships`; join to `users`. Online/offline remains runtime state. |
 | Incoming requests | `friend_requests.receiver_user_id` with `status = pending`; accept/decline records `responded_at`. |
 | User search | Case-insensitive username/full-name lookup. Exclude either direction of `user_blocks`: accounts blocked by the searching user and, critically, candidates whose `blocker_user_id` is their own ID and whose `blocked_user_id` is the searcher's ID. |
 | Unfriend/block | Delete canonical `friendships` row or insert directed `user_blocks`; Version 2 reconciles incompatible states transactionally. |
 | Personal conversation | `conversations(type=direct)` + `direct_conversations` + two `conversation_members`. UI `username/displayName` is derived from the other participant. |
-| Group conversation | `conversations(type=group)` + `conversation_members`; group owner/admin guarantees and membership reactivation are Version 2 transaction rules. |
-| Ordered/searchable message history | `messages` ordered by `(created_at, message_id)`; exclude rows hidden by a member's clear boundary or `message_deletions`. The GIN full-text index supports token/word search, not arbitrary substring matching; Version 2 uses an escaped case-insensitive `LIKE` query when the UI requires substrings. |
+| Group conversation | `conversations(type=group)` + `conversation_members`. Creation selects plaintext or encrypted mode once; the group cannot switch later, so another group is required for another mode and history is never converted. Group owner/admin guarantees, mode immutability, and membership reactivation are Version 2 transaction rules. |
+| Ordered/searchable message history | `messages` ordered by `(created_at, message_id)`; enforce membership interval/access, `history_cleared_at`, `message_deletions`, and unsend visibility. Plaintext rows use escaped case-insensitive `LIKE`; encrypted rows are decrypted and searched only on an authorized User Client. |
 | Delete for me | Insert unique `(message_id, user_id)` into `message_deletions`. |
 | Clear history | Set the current member's `conversation_members.history_cleared_at`; shared messages remain. |
-| Unsend | In one Version 2 backend transaction, atomically set `messages.body = '[Message unsent]'`, `unsent_at`, and optional `unsent_by`. The original content is not retained in `messages.body`; `message_deletions` remains independent. |
-| Spam report | Insert `spam_reports` with reporter, reported account, reason, and optional evidence message. Prior-interaction eligibility is checked in Version 2. |
-| Writing assistance | No Database V1 entity; draft/provider behavior is Version 2 and must not store provider secrets in clients. |
-| Encryption indicator | `conversations.encryption_enabled` is metadata only. No V1 keys, device records, ciphertext guarantees, or E2EE security claim exist. |
+| Unsend | In one Version 2 backend transaction, atomically set non-null `messages.body = '[Message unsent]'`, clear ciphertext/nonce/tag/key version, and set `unsent_at` plus optional `unsent_by`. This removes the server copy but cannot erase plaintext already received by another client; `message_deletions` remains independent. |
+| Spam report | Insert `spam_reports` with reporter, reported account, reason, and optional message reference. For encrypted content the reference is metadata only; V1 stores no hidden plaintext evidence. Prior-interaction eligibility is checked in Version 2. |
+| Writing assistance | No Database V1 entity. The server never automatically discloses encrypted-group plaintext to an LLM. A future client may send user-selected text only after an explicit action and documented provider disclosure/retention policy. |
+| Encryption indicator | Display `conversations.encryption_enabled` as read-only status after creation, never as an edit toggle. For encrypted groups, `user_public_keys` stores per-user public recipient keys, `conversation_key_versions` identifies group-key epochs, `conversation_key_envelopes` stores one HPKE envelope per recipient key, and `messages` stores AES-GCM ciphertext metadata. Private keys and plaintext group keys stay on clients. |
+| Public-key replacement | After V2 verifies and registers the higher key version, affected encrypted groups disable sending until an authorized member's User Client publishes a complete new epoch for the current recipient set. UI must not offer plaintext fallback. Old history remains available only where the matching old private key was preserved locally. |
 
 ## Cross-table queries to implement in Version 2
 
@@ -69,6 +72,7 @@ The current database branch does not contain the completed Admin/User UI impleme
 6. Account deletion workflow that first resolves restricted group ownership and direct-conversation pairs.
 7. Bidirectional block exclusion for user discovery.
 8. Group membership reactivation using the single existing membership row.
+9. Authenticated public-key replacement, coordinated membership/recipient snapshots, client-generated group-key rotation, complete per-recipient envelope distribution, send pausing until completion, and client-side message encryption/decryption.
 
 ## Blocking direction and search visibility
 
@@ -92,10 +96,41 @@ WHERE u.user_id <> :searcher_id
 
 ## Message search limitation
 
-`idx_messages_search` indexes `to_tsvector('simple', body)`. It supports lexeme/token search such as whole words, but it does not satisfy arbitrary substring behavior such as matching `lic` inside `Alice`. For a UI substring requirement, Version 2 should use `lower(body) LIKE '%' || <escaped lower term> || '%'` together with membership, clear-history, per-user deletion, and `unsent_at IS NULL` visibility filters. This may scan more rows; no `pg_trgm` extension is introduced in V1. Recalled bodies contain only the canonical placeholder, so original content cannot be found through normal message queries.
+The assignment requires literal substring search, so the former `to_tsvector` index was removed: it only supports token search. For plaintext rows, the server must escape the user's literal term in this order—backslash to `\\`, `%` to `\%`, and `_` to `\_`—then lowercase it, surround it with `%`, and bind it as `:pattern`:
+
+```sql
+SELECT m.message_id, m.conversation_id, m.sender_user_id, m.body, m.created_at
+FROM messages AS m
+JOIN conversation_members AS cm
+  ON cm.conversation_id = m.conversation_id
+ AND cm.user_id = :viewer_id
+WHERE m.body IS NOT NULL
+  AND m.unsent_at IS NULL
+  AND m.created_at >= cm.joined_at
+  AND (cm.left_at IS NULL OR m.created_at <= cm.left_at)
+  AND (cm.history_cleared_at IS NULL OR m.created_at > cm.history_cleared_at)
+  AND NOT EXISTS (
+      SELECT 1 FROM message_deletions AS md
+      WHERE md.message_id = m.message_id AND md.user_id = :viewer_id
+  )
+  AND lower(m.body) LIKE :pattern ESCAPE '\';
+```
+
+No extension is required at the expected project scale. An optional future `pg_trgm` index would need an explicit deployment dependency and is not part of V1. For encrypted groups, PostgreSQL has no plaintext to search and no plaintext search index. The server returns authorized ciphertext/envelope data, and the User Client decrypts and performs literal substring matching locally. Recalled content is absent from server storage in both modes.
 
 ## Group rejoining
 
-`UNIQUE(conversation_id, user_id)` intentionally permits only one membership row for a user in a conversation. Rejoining therefore reactivates that row in one Version 2 transaction instead of inserting another: set `joined_at` to the approved rejoin time, set `left_at = NULL`, reset `history_cleared_at` according to the rejoin visibility policy, and assign the authorized current role. This model does not preserve multiple join/leave intervals; the previous interval is overwritten. If complete membership episode history becomes a requirement, it needs a separately approved post-V1 design rather than a thirteenth V1 table.
+`UNIQUE(conversation_id, user_id)` intentionally permits only one membership row for a user in a conversation. Rejoining therefore reactivates that row in one Version 2 transaction instead of inserting another: set `joined_at` to the approved rejoin time, set `left_at = NULL`, clear `history_cleared_at`, and assign the authorized current role. The new `joined_at` is the visibility boundary, so the member does not regain earlier history. This model overwrites the prior interval; complete membership episode history needs a separately approved later design.
+
+## Encrypted-group lifecycle
+
+- V1 uses one active public encryption key per user, not per device. Independent multi-device history access is therefore not claimed.
+- Group creation chooses the immutable mode. An encrypted group persists epoch 1 and envelopes for every active member before accepting encrypted messages; changing mode requires creating another group.
+- Adding, removing, or rejoining a member rotates the key for future messages. New/rejoining members do not receive old envelopes by default; removed members cannot receive later epochs.
+- Replacing a public key requires V2 authenticity verification, retires the old row, and pauses each affected encrypted group until a complete rotated epoch targets every current authorized member. Existing envelopes are not rewritten and remain readable only if the client retains the matching old private key.
+- Logout/restart must preserve private keys in protected client-local storage. Password change is unrelated to these keys, and password reset or key loss does not restore encrypted history.
+- The server's key directory is not authenticity proof. V2 must authenticate key registration, resist substitution, coordinate membership with replacement, check completeness, and persist rotation/envelopes atomically without generating or decrypting group keys.
+
+The current UI exposes no conflicting mode toggle. `CreateGroupDialog.java` lines 35-36 and 131-167 currently collect only a name and participants; V2 must add the one-time mode choice there. `GroupChatPanel.java` lines 28-29 contain only the non-functional encryption placeholder; V2 must replace it with read-only mode/rotation status, not an editable toggle. No UI source is changed by Database V1.
 
 These mappings define persistence compatibility; they do not authorize UI source changes in Database V1.

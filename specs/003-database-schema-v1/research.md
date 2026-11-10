@@ -63,3 +63,19 @@
 **Rationale**: The repository may not have PostgreSQL installed or configured, and the workflow prohibits risking existing data.
 
 **Alternatives considered**: Auto-creating and dropping a guessed local database was rejected as unsafe; syntax-only confidence without executable fixtures was rejected as insufficient documentation.
+
+## Decision 9: Minimal encrypted-group storage
+
+**Decision**: Support client-side E2EE with one active versioned X25519 public key per user, client-generated AES-256-GCM group-key epochs, and one RFC 9180 HPKE base-mode envelope per recipient public key and epoch. Group mode is immutable after creation; User Clients generate fresh random nonces; verified public-key replacement requires complete rotation in every affected encrypted group before sending resumes. Store only public keys, opaque envelopes, message ciphertext, nonce, tag, and epoch references.
+
+**Rationale**: The model gives authorized User Clients the only private keys needed to open group-key envelopes. The server can authorize, persist, and forward records without possessing a plaintext private/group key or independent decryption key. The per-user recipient model is the smallest coherent choice for the existing single-user-session client requirements.
+
+**Alternatives considered**: The previous shared server-wrapped-key design was rejected because the server could decrypt. A flag-only design, plaintext/server-recoverable keys, searchable plaintext copies, and custom envelope protocols were rejected. Per-device key distribution was deferred because V1 has no device identity/session model and must not claim unsupported multi-device behavior.
+
+## Decision 10: Historical activity retention
+
+**Decision**: Conversation deletion sets `user_activity_logs.conversation_id` to null while retaining `activity_type`, user, and timestamp.
+
+**Rationale**: Registration/activity statistics remain reproducible after conversation cleanup, and the event type still classifies direct versus group activity.
+
+**Alternatives considered**: Cascading activity deletion loses historical statistics; aggregate tables are unnecessary for the expected scale.

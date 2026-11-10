@@ -2,6 +2,10 @@
 -- PostgreSQL 14+; apply with psql -X -v ON_ERROR_STOP=1.
 -- This script intentionally fails when applied over an existing V1 schema.
 
+\set ON_ERROR_STOP on
+
+BEGIN;
+
 SET client_encoding = 'UTF8';
 SET TIME ZONE 'UTC';
 
@@ -11,3 +15,7 @@ SET TIME ZONE 'UTC';
 \ir schema/04_messages.sql
 \ir schema/05_moderation.sql
 \ir schema/06_activity.sql
+
+COMMIT;
+
+\echo 'Database V1 schema created successfully.'

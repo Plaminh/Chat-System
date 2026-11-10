@@ -4,20 +4,42 @@ CREATE TABLE user_activity_logs (
     user_id BIGINT NOT NULL,
     activity_type VARCHAR(12) NOT NULL,
     conversation_id BIGINT,
+    conversation_id_snapshot BIGINT,
+    counterpart_user_id_snapshot BIGINT,
     occurred_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user_activity_logs_user
         FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
     CONSTRAINT fk_user_activity_logs_conversation
         FOREIGN KEY (conversation_id)
-        REFERENCES conversations (conversation_id) ON DELETE CASCADE,
+        REFERENCES conversations (conversation_id) ON DELETE SET NULL,
     CONSTRAINT chk_user_activity_logs_type
         CHECK (activity_type IN ('app_open', 'direct_chat', 'group_chat')),
     CONSTRAINT chk_user_activity_logs_context
         CHECK (
-            (activity_type = 'app_open' AND conversation_id IS NULL)
+            (
+                activity_type = 'app_open'
+                AND conversation_id IS NULL
+                AND conversation_id_snapshot IS NULL
+                AND counterpart_user_id_snapshot IS NULL
+            )
             OR (
-                activity_type IN ('direct_chat', 'group_chat')
-                AND conversation_id IS NOT NULL
+                activity_type = 'direct_chat'
+                AND conversation_id_snapshot IS NOT NULL
+                AND counterpart_user_id_snapshot IS NOT NULL
+                AND counterpart_user_id_snapshot <> user_id
+                AND (
+                    conversation_id IS NULL
+                    OR conversation_id = conversation_id_snapshot
+                )
+            )
+            OR (
+                activity_type = 'group_chat'
+                AND conversation_id_snapshot IS NOT NULL
+                AND counterpart_user_id_snapshot IS NULL
+                AND (
+                    conversation_id IS NULL
+                    OR conversation_id = conversation_id_snapshot
+                )
             )
         )
 );
@@ -27,5 +49,5 @@ CREATE INDEX idx_user_activity_logs_user_time
 CREATE INDEX idx_user_activity_logs_type_time
     ON user_activity_logs (activity_type, occurred_at DESC, user_id);
 CREATE INDEX idx_user_activity_logs_conversation_time
-    ON user_activity_logs (conversation_id, occurred_at DESC, user_id)
-    WHERE conversation_id IS NOT NULL;
+    ON user_activity_logs (conversation_id_snapshot, occurred_at DESC, user_id)
+    WHERE conversation_id_snapshot IS NOT NULL;

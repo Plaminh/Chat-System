@@ -753,3 +753,69 @@ Changed: Matched the sidebar width and navy styling; added the version badge, pr
 Rejected: Admin-module dependencies, shared-module changes, sign-out behavior, route changes, and deleting screenshots without replacements.
 
 By hand: Reviewed the User/Admin sidebar patterns and tested the User reactor. `mvn -pl user-client -am test` passed (45 User tests, 2 Common tests). A GUI launch was attempted, but the debugger reported no active session afterward and the desktop showed no User Client window. The developer then captured and replaced the 12 User screenshots manually.
+
+## 2026-11-05 — Finalize Database V1 design and validation
+
+Tool: OpenAI Codex.
+
+Asked for: Review and directly finalize the Version 1 PostgreSQL design against the assignment/UI requirements, add safe migrations and validation, complete encrypted-group storage, and document Version 2 responsibilities without implementing services.
+
+Kept: The four Maven modules, existing Admin/User interfaces and Java source, original twelve database entities/names, account soft deletion, canonical relationships, one-row membership model, and separate unsend/delete-for-me/clear-history semantics.
+
+Changed: Added one justified `conversation_key_versions` table and encrypted-message metadata for server-side AES-GCM envelope-encryption storage; retained activity logs when conversations are deleted; removed the misleading token-search index; added strict migration 002; updated seed, schema/DBML/ERD/setup/spec artifacts, Compose/initializer behavior, and focused static/runtime validation. Deleted accounts continue reserving username/email.
+
+Rejected: E2EE claims, plaintext/committed secret keys, triggers, extensions, aggregate tables, DAO/service/socket/UI work, schema resets, destructive data operations, and automatic Git actions.
+
+By hand: Codex used a disposable PostgreSQL 18.4 cluster on `127.0.0.1:55441`. Fresh schema, seed, runtime fixture, data-bearing predecessor migration, migration reruns, initializer, static validation, and Compose parsing passed. The server was stopped; environment policy blocked recursive removal of the ignored validation-cluster directory. `mvn clean verify` could not compile because only Java 21 was available for the Java 25 target. `mvn spotless:check` still reports the 10 pre-existing `common` violations. Developers must review the security/lifecycle policy and implement/verify cryptographic and authorization behavior in V2.
+
+## 2026-11-05 — Correct recalled-body constraint and seed recovery
+
+Tool: OpenAI Codex.
+
+Asked for: Reproduce and correct the nullable recalled-message body defect, provide an additive upgrade for databases that already ran migration 002, make development-seed recovery explicit and safe, and validate the focused correction on PostgreSQL 16 without changing Java/UI/protocol code.
+
+Kept: The thirteen-table design, encryption/activity model, separate schema and seed transactions, development-only fixture, four Maven modules, and all application source. Preserved populated databases and unrelated working-tree file `a.txt`.
+
+Changed: Added explicit `body IS NOT NULL` enforcement to the fresh schema and migration 002 plus additive migration `003_fix_unsent_body_constraint.sql`; made validation scans null-safe; added INSERT/UPDATE regressions that identify `chk_messages_content_state`; added exact seed-signature state detection and explicit `-RetrySeed`/`RETRY_DEVELOPMENT_SEED=true` recovery with populated-table refusal; synchronized setup, contract, model, quickstart, validation, completion, ERD/DBML/UI mapping, plan/spec/tasks, Compose, and static validation artifacts.
+
+Rejected: New tables, marker metadata, automatic seed merging/retry, destructive database/volume actions, Java/Maven/protocol changes, Git history operations, and treating PostgreSQL 18 as PostgreSQL 16 evidence.
+
+By hand: Codex reproduced the pre-fix `CHECK` unknown-value acceptance, then used an isolated `postgres:16-alpine` PostgreSQL 16.15 container on `127.0.0.1:55443` with no project volume. Fresh schema/seed/runtime, constraint-specific INSERT/UPDATE cases, predecessor migrations 001/002/003, upgrade from the pre-fix migration-002 shape, migration reruns, invalid-row refusal/repair, shared-schema tolerance, unsafe-encryption rollback, PowerShell initializer recovery/refusal, Compose recovery/refusal/forced seed-failure rollback, PowerShell parsing, static validation, and Compose config passed. The container was stopped and removed. The older stopped `.tools/db-v1-final-validation` cluster was inspected and left for manual deletion because equivalent recursive cleanup was previously blocked. Maven and Spotless were not rerun; the carried-forward Java 21/Java 25 blocker and 10 baseline formatting violations remain unchanged.
+
+## 2026-11-09 — Consolidate Database V1 as fresh-install-only
+
+Tool: OpenAI Codex.
+
+Asked for: Integrate every final database definition into the modular fresh schema, remove obsolete development migrations, replace their active dependencies with non-destructive validation, preserve safe seed recovery, and verify on isolated PostgreSQL 16 without modifying an existing database or application volume.
+
+Kept: The thirteen-table structure, all table/column names and semantics, six schema modules, atomic schema/seed transactions, fictional fixtures, runtime constraint tests, ERD/DBML, four Maven modules, and V2 server responsibility boundaries.
+
+Changed: Removed migrations 001/002/003 after confirming their final definitions already exist in the direct `CREATE TABLE` baseline; added read-only catalog validation for existing finalized schemas; routed Compose and PowerShell seed recovery through that validator; strengthened seed completeness to exact per-table fixture counts plus sentinels; removed migration-specific static assertions; and updated active setup, README, validation, completion, and Spec Kit documentation. Historical entries above were not rewritten.
+
+Rejected: Automatic upgrades, schema resets, destructive repairs, seed merging, new tables/frameworks, Java/UI/protocol changes, application-volume access, and Git history operations.
+
+By hand: Codex used disposable `postgres:16-alpine` 16.15 containers only. Fresh schema, 57-row seed, runtime integrity tests, PowerShell schema-only/retry/refusal, isolated Compose fresh/schema-only-retry/rerun, deliberate incompatible-schema refusal without repair, schema reapplication refusal, static validation, PowerShell parsing, Compose configuration, and active migration-path scans passed. The uniquely named verification containers/network/volumes were removed. No application database or application volume was attached or reset.
+
+## 2026-11-09 — Simplify Database V1 fresh installation
+
+Tool: OpenAI Codex.
+
+Asked for: Reduce the uncommitted database work to a clear fresh-install schema, optional development seed, and focused tests without compatibility, repair, migration, or seed-state machinery.
+
+Kept: The finalized thirteen-table design and names, six schema modules, atomic schema/seed transactions, soft deletion, encrypted-message storage, activity snapshots, corrected unsent constraints, fictional seed, runtime integrity fixture, and existing ERD/DBML.
+
+Changed: Removed the existing-schema catalog validator and its active dependencies, seed signatures/count gates, automatic retry branches, and duplicated static assertions. Compose now initializes schema plus seed only for an empty `public` schema and otherwise skips without claiming compatibility. PowerShell keeps schema-only, `-LoadSeed`, existing-target refusal, and `-UseExistingEmpty`.
+
+By hand: On disposable PostgreSQL 16.15 only, fresh schema, 57-row seed, runtime SQL tests, PowerShell schema-only initialization, Compose fresh/rerun behavior, and a late failing seed with zero partial rows passed. PowerShell parsing, focused static validation, Compose configuration, active-reference scans, and diff checks passed. All uniquely named verification resources were removed; Maven and Spotless were not run.
+
+## 2026-11-09 — Correct encrypted-group storage toward client-side E2EE
+
+Tool: OpenAI Codex.
+
+Asked for: Replace the server-decryptable group-key model with database storage supporting client-side E2EE, define lifecycle/search/moderation boundaries, remove unnecessary fresh-install terminology, and keep implementation limited to V1 database artifacts.
+
+Kept: The six schema modules, account/social/conversation/moderation/statistics model, soft deletion, activity snapshots, message ciphertext fields, explicit non-null unsent placeholder, atomic schema/seed workflow, and runtime integrity tests.
+
+Changed: Added versioned per-user X25519 public keys and recipient-specific RFC 9180 HPKE envelopes; reduced conversation key versions to epoch metadata; removed server-controlled wrapped-key fields; updated seed/runtime tests, ERD/DBML, setup/mapping/spec artifacts, E2EE lifecycle/search/LLM/spam limitations, and active terminology. The supported recipient model is per-user, not per-device.
+
+By hand: Disposable PostgreSQL 16.15 schema creation, 63-row seed, runtime integrity fixture, PowerShell schema-only initialization, isolated Compose initialization/rerun, static schema/DBML consistency, PowerShell parsing, Compose configuration, active-reference scans, and diff checks passed. All named verification resources were removed. SQL storage supports the intended E2EE boundary but does not implement or prove cryptography; Maven/Spotless were not run because no Java code changed.

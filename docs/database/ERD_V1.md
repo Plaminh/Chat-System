@@ -2,11 +2,12 @@
 
 ## Scope
 
-This diagram is the approved twelve-table Version 1 model. It describes persistence structure only; authorization, coordinated cross-table updates, realtime behavior, and encryption key management remain Version 2 backend work.
+This diagram is the finalized fifteen-table Version 1 model. It describes storage supporting client-side end-to-end encrypted groups. Key generation, private-key protection, encryption/decryption, public-key authenticity, membership authorization, and atomic envelope distribution remain Version 2 work; SQL storage alone does not implement or prove E2EE.
 
 ```mermaid
 erDiagram
     USERS ||--o{ LOGIN_HISTORY : records
+    USERS ||--o{ USER_PUBLIC_KEYS : publishes
     USERS ||--o{ FRIEND_REQUESTS : sends
     USERS ||--o{ FRIEND_REQUESTS : receives
     USERS ||--o{ FRIENDSHIPS : low_user
@@ -21,6 +22,10 @@ erDiagram
     USERS ||--o{ DIRECT_CONVERSATIONS : high_user
     CONVERSATIONS ||--o{ CONVERSATION_MEMBERS : has
     USERS ||--o{ CONVERSATION_MEMBERS : participates
+    CONVERSATIONS ||--o{ CONVERSATION_KEY_VERSIONS : owns_epochs
+    CONVERSATION_KEY_VERSIONS ||--o{ CONVERSATION_KEY_ENVELOPES : distributes
+    USER_PUBLIC_KEYS ||--o{ CONVERSATION_KEY_ENVELOPES : receives
+    CONVERSATION_KEY_VERSIONS ||--o{ MESSAGES : encrypts
     CONVERSATIONS ||--o{ MESSAGES : contains
     USERS o|--o{ MESSAGES : sends
     USERS o|--o{ MESSAGES : unsends
@@ -48,6 +53,16 @@ erDiagram
         timestamptz locked_at
         timestamptz created_at
         timestamptz updated_at
+    }
+    USER_PUBLIC_KEYS {
+        bigint user_public_key_id PK
+        bigint user_id FK
+        integer key_version UK
+        varchar key_algorithm
+        varchar public_key_format
+        bytea public_key
+        timestamptz created_at
+        timestamptz retired_at
     }
     LOGIN_HISTORY {
         bigint login_history_id PK
@@ -99,11 +114,33 @@ erDiagram
         timestamptz left_at
         timestamptz history_cleared_at
     }
+    CONVERSATION_KEY_VERSIONS {
+        bigint conversation_key_version_id PK
+        bigint conversation_id FK
+        integer key_version UK
+        varchar encryption_algorithm
+        timestamptz created_at
+        timestamptz retired_at
+    }
+    CONVERSATION_KEY_ENVELOPES {
+        bigint conversation_key_envelope_id PK
+        bigint conversation_key_version_id FK
+        bigint recipient_public_key_id FK
+        varchar envelope_algorithm
+        bytea encapsulated_key
+        bytea encrypted_group_key
+        timestamptz created_at
+    }
     MESSAGES {
         bigint message_id PK
         bigint conversation_id FK
         bigint sender_user_id FK
         text body
+        boolean content_encrypted FK
+        bytea ciphertext
+        integer encryption_key_version FK
+        bytea encryption_nonce
+        bytea authentication_tag
         timestamptz created_at
         timestamptz unsent_at
         bigint unsent_by FK
@@ -131,6 +168,8 @@ erDiagram
         bigint user_id FK
         varchar activity_type
         bigint conversation_id FK
+        bigint conversation_id_snapshot
+        bigint counterpart_user_id_snapshot
         timestamptz occurred_at
     }
 ```
@@ -141,6 +180,12 @@ erDiagram
 - Friendship and direct-conversation pairs are canonical unordered pairs (`low < high`).
 - Every direct conversation has exactly one direct specialization by contract; this cross-table requirement is created transactionally in Version 2.
 - A conversation has many membership rows and messages. A direct conversation must have two active members; a group must have an owner who is an active admin.
-- A recalled message retains its identity, conversation, sender, creation time, and recall metadata while `body` is replaced by the canonical `[Message unsent]` placeholder.
-- A message can have multiple deletion rows, at most one per user, and can be referenced as optional evidence by reports.
+- The recipient model is per-user, with one active X25519 public key per user and retained retired keys for historical references; independent per-device keys are not modeled.
+- A group's encryption mode is chosen at creation and is immutable by Version 2 server policy. The composite conversation/flag foreign key prevents message-state mismatches but does not prevent every update of `conversations.encryption_enabled`; no V1 trigger is added for that workflow rule.
+- An encrypted group has client-generated key epochs. Each authorized recipient public key receives one opaque HPKE envelope for an epoch. PostgreSQL stores no private key or plaintext group key.
+- Membership checks, complete envelope distribution, public-key authenticity, and atomic rotation after membership or public-key changes are Version 2 transaction responsibilities.
+- Partial unique index `uq_messages_conversation_key_nonce` covers `(conversation_id, encryption_key_version, encryption_nonce)` for encrypted rows with a key version and nonce. It rejects retained duplicates within an epoch but cannot detect a nonce removed by unsending.
+- A recalled message retains its identity, conversation, sender, creation time, and recall metadata while `body` is replaced by the non-null canonical `[Message unsent]` placeholder.
+- A message can have multiple deletion rows, at most one per user, and can be referenced by reports. For encrypted content that reference supplies metadata only; administrators cannot decrypt it from server storage.
 - Reports retain their own workflow independently from user account status.
+- Deleting a conversation clears the live activity FK but retains conversation and direct-counterpart snapshots, `activity_type`, user, and time for historical/distinct statistics.
