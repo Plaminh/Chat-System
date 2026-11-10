@@ -62,11 +62,11 @@
 
 **Goal**: Type unsolicited events and opaque client-side encrypted-group metadata.
 
-- [ ] T023 [P] [US4] Implement public-key and encrypted-content records in `common/src/main/java/com/chat/common/dto/encryption/`
-- [ ] T024 [P] [US4] Implement recipient-envelope and key-rotation records in `common/src/main/java/com/chat/common/dto/encryption/`
-- [ ] T025 [P] [US3] Implement typed event payload records in `common/src/main/java/com/chat/common/dto/event/`
-- [ ] T026 [US4] Add encryption invariant tests in `common/src/test/java/com/chat/common/dto/EncryptionDtoTest.java`
-- [ ] T027 [US3] Add event envelope/payload round-trip tests in `common/src/test/java/com/chat/common/dto/EventEnvelopeJsonTest.java`
+- [x] T023 [P] [US4] Implement public-key and encrypted-content records in `common/src/main/java/com/chat/common/dto/encryption/`
+- [x] T024 [P] [US4] Implement recipient-envelope and key-rotation records in `common/src/main/java/com/chat/common/dto/encryption/`
+- [x] T025 [P] [US3] Implement typed event payload records in `common/src/main/java/com/chat/common/dto/event/`
+- [x] T026 [US4] Add encryption invariant tests in `common/src/test/java/com/chat/common/dto/EncryptionDtoTest.java`
+- [x] T027 [US3] Add event envelope/payload round-trip tests in `common/src/test/java/com/chat/common/dto/EventEnvelopeJsonTest.java`
 
 **Checkpoint**: Realtime and encryption payloads serialize and secret key material has no representation.
 
