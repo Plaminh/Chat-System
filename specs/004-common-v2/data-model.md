@@ -34,7 +34,7 @@ This is the JSON wire model, not the Server domain model or PostgreSQL schema.
 - `LoginRequest`: username, password.
 - `PasswordChangeRequest`: currentPassword, newPassword.
 - `PasswordRecoveryRequest`: email.
-- `PasswordResetRequest`: resetCode, newPassword; the code is never echoed.
+- `PasswordResetRequest`: deprecated compatibility record containing resetCode/newPassword; not the assignment recovery flow and never echoed.
 - `AuthenticationResult`: safe user summary and authenticatedAt; connection/session implementation is deferred.
 - `UserSummary`: userId, username, fullName, accountStatus, presence.
 - `UserAccountDetail`: summary plus email, address, birth date, gender, role, createdAt, updatedAt.
@@ -47,7 +47,8 @@ This is the JSON wire model, not the Server domain model or PostgreSQL schema.
 - `FriendRequestInfo`: requestId, sender, receiver, status, createdAt, respondedAt.
 - `FriendRequestTarget`: targetUserId.
 - `FriendRequestDecisionRequest`: requestId and ACCEPT/DECLINE decision.
-- `FriendRequestListRequest`: optional status filter plus paging.
+- `FriendListRequest`: optional username/full-name query plus paging for friend and online-friend lists.
+- `FriendRequestListRequest`: optional username/full-name query, status, incoming/outgoing direction, and paging.
 - `UserTarget`: targetUserId for remove/block/unblock.
 - `PresenceUpdate`: userId, presence, changedAt.
 
@@ -78,15 +79,15 @@ Group IDs are conversation IDs whose type is GROUP. Minimum membership is a Serv
 
 ## Administration and moderation
 
-- `AdminUserFilter`: query/status, sort, page.
+- `AdminUserFilter`: optional username/full-name query, status, creation-date range, sort, and page. Its `PageResult<AdminUserInfo>` is the newly registered user list when a creation range is supplied.
 - `AdminCreateUserRequest`: registration fields plus role; passwords are request-only.
 - `AdminUpdateUserRequest`: positive user ID, editable profile, and role.
 - `AdminPasswordResetRequest`: positive user ID plus request-only new password.
 - `AdminUserInfo`: safe `UserAccountDetail` wrapper with no credential material.
 - `AdminGroupFilter`: optional query plus required sort and page.
 - `AccountStatusUpdate`: userId and ACTIVE/LOCKED.
-- `LoginHistoryEntry`: record ID, user ID, login/logout instants.
-- `LoginHistoryRequest`: positive user ID plus page.
+- `LoginHistoryEntry`: record ID, user ID, username, full name, login/logout instants.
+- `LoginHistoryRequest`: optional positive user ID, chronological sort (`loggedInAt`), and page. Omitted user ID requests global history.
 - `FriendNetworkInfo`: user ID, direct friends, direct count, second-degree count.
 - `GroupInspection`: group information and member count.
 - `SpamReportCreateRequest`: reported user, optional message ID, and non-blank reason.
@@ -98,11 +99,13 @@ Group IDs are conversation IDs whose type is GROUP. Minimum membership is a Serv
 
 - `RegistrationCount`: date range and count.
 - `MonthlyCount`: year, month 1–12, count.
-- `FriendStatistic`: user, direct count, second-degree count.
-- `UserActivityStatistic`: user, range, app opens, chatted contacts, chatted groups.
-- `FriendStatisticsRequest`: optional direct/second-degree numeric filters plus required sort and page.
-- `UserActivityStatisticsRequest`: required range, optional numeric filters, required sort, and page.
+- `FriendStatistic`: user, account creation instant, direct count, second-degree count.
+- `UserActivityStatistic`: user, account creation instant, range, app opens, distinct chatted users, distinct chatted groups.
+- `FriendStatisticsRequest`: optional name and direct/second-degree numeric filters plus required sort and page.
+- `UserActivityStatisticsRequest`: required range, optional name and numeric filters, required sort, and page.
 - `YearRequest`: shared positive-year input for monthly reports.
+
+`NumericFilter.value` is non-negative. Server allow-lists `name` and `createdAt` for both statistic sorts, plus action-specific numeric fields where the assignment requires them.
 
 ## Writing assistance
 
@@ -140,3 +143,5 @@ These are Common wire contracts only. Event publication, authorization, offline 
 - Server domain objects may contain authorization/session state that is never serialized.
 - Repositories translate wire values to V1 tables; wire names do not expose SQL names as compatibility guarantees.
 - Server transactions enforce existence, permissions, canonical pairs, membership, recall ownership, and atomic epoch distribution.
+- User password recovery returns no generated credential. Server V2 generates the random password, hashes and persists it, sends it by email, and handles failure/rollback without account enumeration.
+- Record diagnostics redact credential values, and `RequestEnvelope.toString()` omits raw `data`; consuming modules must not log raw JSON for sensitive actions.

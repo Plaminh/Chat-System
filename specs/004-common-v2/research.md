@@ -59,3 +59,10 @@
 - **Selected**: Stable protocol/domain categories only where clients need different behavior.
 - **Reason**: Prevent backend-detail leakage while supporting predictable UI decisions.
 - **Alternatives**: One generic code or HTTP status vocabulary.
+
+## R12 — Final assignment-to-contract correction
+- **Problem**: The first Common V2 pass modeled per-user-only login history, an aggregate where the assignment also requires a registration list, unfiltered friend lists, incomplete Admin statistic filters, and a reset-code recovery flow inconsistent with the assignment's Server-generated random password.
+- **Selected**: Make login-history identity/filter/sort explicit; reuse `ADMIN_LIST_USERS` for registration lists; add small name/direction query fields; reuse existing numeric/sort/page primitives; model user recovery as an email-only trigger; preserve the explicit Admin password update; deprecate rather than delete the legacy reset-code types.
+- **Security**: Override diagnostics only on credential-bearing records and the raw request envelope. Keep wire fields intact, reject negative count thresholds, and forbid raw sensitive request logging.
+- **Compatibility**: Affected record constructors and JSON shapes are intentionally corrected before Server/User/Admin V2 integration. `PING`, envelope field names, existing action names, aggregate registration actions, and the deprecated `RESET_PASSWORD` identifier remain available.
+- **Assignment artifact limitation**: The named `Final Project (1).pdf` was not present in the repository, Codex attachments, user folders, or available drives during this audit. Corrections were verified against the assignment requirements quoted in the correction request and the existing V1/spec artifacts; this limitation must remain visible for review.

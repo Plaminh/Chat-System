@@ -23,4 +23,9 @@ public record RegisterRequest(
       throw new IllegalArgumentException("dateOfBirth is required");
     }
   }
+
+  @Override
+  public String toString() {
+    return "RegisterRequest[username=" + username + ", password=<redacted>]";
+  }
 }

@@ -163,6 +163,41 @@ import com.chat.common.ui.ChatTheme;
 
 The immutable legacy theme and its immutable test are excluded from Spotless because Google Java Format would rewrite their approved V1 baseline content.
 
+## Corrected Admin and social queries
+
+The login-history request supports global or per-user history while preserving paging and explicit chronology:
+
+```java
+LoginHistoryRequest globalHistory =
+    new LoginHistoryRequest(null, new SortSpec("loggedInAt", SortDirection.ASC), firstPage);
+LoginHistoryRequest oneUserHistory =
+    new LoginHistoryRequest(7L, new SortSpec("loggedInAt", SortDirection.DESC), firstPage);
+```
+
+Use `ADMIN_LIST_USERS` for the required list of newly registered users. Its result remains `PageResult<AdminUserInfo>` and therefore includes username, full name, creation timestamp, and existing account fields. The two registration-statistic actions remain count/chart contracts.
+
+```java
+AdminUserFilter registrations =
+    new AdminUserFilter(
+        null,
+        null,
+        new DateRange(LocalDate.parse("2026-11-01"), LocalDate.parse("2026-11-30")),
+        new SortSpec("createdAt", SortDirection.DESC),
+        firstPage);
+```
+
+`LIST_FRIENDS` and `LIST_ONLINE_FRIENDS` accept `FriendListRequest(query, page)`. `LIST_FRIEND_REQUESTS` accepts optional query, status, and `INCOMING`/`OUTGOING` direction. Queries match username or full name; presence remains in `UserSummary`. Server V2 must enforce block visibility and access permissions.
+
+Friend/activity statistic requests accept optional `nameQuery`, non-negative EQ/LT/GT count filters, and sort specs. Server allow-lists `name` and `createdAt`; returned statistics include `accountCreatedAt`.
+
+## Password recovery and safe diagnostics
+
+`REQUEST_PASSWORD_RESET` is the assignment recovery operation. Send only `PasswordRecoveryRequest(email)`. On every suitable request, return the same empty success shape so the response does not enumerate accounts or expose the generated password. Server V2 owns random password generation, hashing, database update, email delivery, and failure/rollback behavior.
+
+`RESET_PASSWORD` and `PasswordResetRequest` remain deprecated compatibility identifiers; they are not the assignment recovery workflow. `ADMIN_RESET_PASSWORD` remains the separate explicit administrator password-update contract.
+
+Credential-bearing records redact secrets from `toString()`, and `RequestEnvelope.toString()` omits raw `data`. This is defense in depth: consuming code must not log raw NDJSON or `JsonNode` request payloads for login, registration, password change/recovery, Admin password update, or other sensitive actions.
+
 ## Verification commands
 
 On a machine whose default `JAVA_HOME` is not JDK 25, set it for the current PowerShell process first.
@@ -188,6 +223,8 @@ Common V2 does not implement business workflows. The following remain outside th
 - Server V2 former T032: add request-handler protocol regression tests.
 - Server authentication, authorization, persistence, socket/session lifecycle, event publication, offline delivery, email, and writing-provider integration.
 - User/Admin request routing, response/event consumption, UI behavior, and client-side encryption/key lifecycle.
+- Server query/filter enforcement, block visibility, statistics aggregation, and random-password email delivery/rollback.
+- User/Admin adoption of the corrected record constructors and request/result JSON shapes documented above.
 
 ## Theme-preservation verification
 

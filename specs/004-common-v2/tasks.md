@@ -108,6 +108,16 @@ These IDs are reserved for traceability and are excluded from Common V2 completi
 - [x] T039 Run `.tools/apache-maven-3.9.9/bin/mvn.cmd test` and `clean verify` and record actual results
 - [x] T040 Run `.tools/apache-maven-3.9.9/bin/mvn.cmd spotless:check`, `git diff --check`, dependency/boundary scans, and record actual results
 
+### Final Contract Corrections *(same phase; historical tasks above remain intact)*
+
+- [x] T041 [US1] Correct global/per-user login-history and registration-list contracts with focused regressions
+- [x] T042 [US1] Add friend, online-friend, friend-request, and Admin-statistic query fields with focused regressions
+- [x] T043 [US1] Align user recovery with Server-generated random-password email semantics while preserving the separate Admin password update and deprecated compatibility identifier
+- [x] T044 [US5] Redact credential-bearing diagnostic summaries and raw request-envelope payloads; add security regressions
+- [x] T045 Reconcile `spec.md`, `plan.md`, `research.md`, `data-model.md`, contracts, quickstart, checklists, and AI transparency documentation
+- [x] T046 Audit affected constructors/actions against all modules and document the intentional integration changes and deferred responsibilities
+- [x] T047 Run the full final correction verification matrix, scope/theme gates, and Spec Kit analysis; prepare the verified correction for the separately evidenced Git commit/push workflow
+
 **Checkpoint**: Artifacts, code, tests, and handover agree; all results are evidence-based.
 
 ## Dependencies & Execution Order
@@ -117,6 +127,7 @@ These IDs are reserved for traceability and are excluded from Common V2 completi
 - Phase 3 precedes Phase 4 because events reuse business DTOs.
 - Phase 4 precedes Phase 5 validation integration.
 - Phase 6 requires Phases 1–5.
+- Final correction tasks T041–T047 remain part of Phase 6 and do not create a seventh phase.
 - Former T031 and T032 are excluded from this dependency graph and deferred to `feature/server-v2`.
 - `[P]` tasks may be implemented concurrently only when they do not touch the same file.
 

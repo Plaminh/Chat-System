@@ -7,4 +7,9 @@ public record LoginRequest(String username, String password) {
     username = text(username, "username");
     password = text(password, "password");
   }
+
+  @Override
+  public String toString() {
+    return "LoginRequest[username=" + username + ", password=<redacted>]";
+  }
 }

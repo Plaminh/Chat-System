@@ -15,4 +15,9 @@ public record RequestEnvelope(String requestId, ActionType action, JsonNode data
       throw new IllegalArgumentException("data must be a JSON object");
     }
   }
+
+  @Override
+  public String toString() {
+    return "RequestEnvelope[requestId=" + requestId + ", action=" + action + ", data=<redacted>]";
+  }
 }

@@ -11,8 +11,8 @@
 | LOGIN | Public | LoginRequest | AuthenticationResult | INVALID_CREDENTIALS, ACCOUNT_LOCKED, ACCOUNT_DELETED | users/login_history/session registry |
 | LOGOUT | User/Admin | empty | empty | UNAUTHENTICATED | login_history/session registry |
 | CHANGE_PASSWORD | User/Admin | PasswordChangeRequest | empty | INVALID_CREDENTIALS | users; does not recover encryption keys |
-| REQUEST_PASSWORD_RESET | Public | PasswordRecoveryRequest | empty | none (non-enumerating) | email service deferred |
-| RESET_PASSWORD | Public | PasswordResetRequest | empty | INVALID_CREDENTIALS, CONFLICT | reset-token/email service deferred |
+| REQUEST_PASSWORD_RESET | Public | PasswordRecoveryRequest (email only) | empty, non-enumerating | none | Server generates/hashes/persists a random password and sends email; failure/rollback deferred |
+| RESET_PASSWORD | Public | deprecated PasswordResetRequest | empty | UNSUPPORTED_OPERATION or legacy-compatible outcome | compatibility identifier only; not the assignment recovery flow |
 
 ## Profile and social
 
@@ -21,10 +21,10 @@
 | GET_PROFILE | User | empty | UserAccountDetail | NOT_FOUND | users |
 | UPDATE_PROFILE | User | UpdateProfileRequest | UserAccountDetail | ALREADY_EXISTS | users |
 | SEARCH_USERS | User | UserSearchRequest | PageResult<UserSummary> | none | excludes blocks both directions |
-| LIST_FRIENDS | User | PageRequest | PageResult<FriendInfo> | none | friendships |
-| LIST_ONLINE_FRIENDS | User | PageRequest | PageResult<FriendInfo> | none | friendships/session presence |
+| LIST_FRIENDS | User | FriendListRequest | PageResult<FriendInfo> | none | optional username/full-name query; friendships; presence in UserSummary |
+| LIST_ONLINE_FRIENDS | User | FriendListRequest | PageResult<FriendInfo> | none | optional username/full-name query; friendships/session presence |
 | SEND_FRIEND_REQUEST | User | FriendRequestTarget | FriendRequestInfo | ALREADY_EXISTS, BLOCKED_RELATIONSHIP | FRIEND_REQUEST_CHANGED |
-| LIST_FRIEND_REQUESTS | User | FriendRequestListRequest | PageResult<FriendRequestInfo> | none | friend_requests |
+| LIST_FRIEND_REQUESTS | User | FriendRequestListRequest | PageResult<FriendRequestInfo> | none | optional username/full-name, status, and INCOMING/OUTGOING filters; friend_requests |
 | RESPOND_FRIEND_REQUEST | User | FriendRequestDecisionRequest | FriendRequestInfo | NOT_FOUND, CONFLICT | FRIEND_REQUEST_CHANGED |
 | CANCEL_FRIEND_REQUEST | User | record target | FriendRequestInfo | NOT_FOUND, CONFLICT | FRIEND_REQUEST_CHANGED |
 | REMOVE_FRIEND | User | UserTarget | empty | NOT_FOUND | friendships |
@@ -68,21 +68,21 @@
 
 | Action | Auth | Request | Success | Expected errors | Dependencies |
 |---|---|---|---|---|---|
-| ADMIN_LIST_USERS | Admin | AdminUserFilter | PageResult<AdminUserInfo> | none | users |
+| ADMIN_LIST_USERS | Admin | AdminUserFilter | PageResult<AdminUserInfo> | none | users; optional createdAtRange produces the newly registered user list |
 | ADMIN_GET_USER | Admin | user target | AdminUserInfo | NOT_FOUND | users |
 | ADMIN_CREATE_USER | Admin | AdminCreateUserRequest | AdminUserInfo | ALREADY_EXISTS | users |
 | ADMIN_UPDATE_USER | Admin | AdminUpdateUserRequest | AdminUserInfo | NOT_FOUND, ALREADY_EXISTS | users |
 | ADMIN_DELETE_USER | Admin | user target | empty | NOT_FOUND, CONFLICT | terminal soft deletion |
 | ADMIN_SET_ACCOUNT_STATUS | Admin | AccountStatusUpdate | AdminUserInfo | NOT_FOUND, CONFLICT | lock/unlock only |
-| ADMIN_RESET_PASSWORD | Admin | AdminPasswordResetRequest | empty | NOT_FOUND | credential delivery policy deferred |
-| ADMIN_LIST_LOGIN_HISTORY | Admin | LoginHistoryRequest | PageResult<LoginHistoryEntry> | NOT_FOUND | login_history |
+| ADMIN_RESET_PASSWORD | Admin | AdminPasswordResetRequest | empty | NOT_FOUND | separate explicit Admin update; Server hashes/persists request-only new password |
+| ADMIN_LIST_LOGIN_HISTORY | Admin | LoginHistoryRequest | PageResult<LoginHistoryEntry> | NOT_FOUND | global when userId omitted; otherwise one user; sort allow-list: loggedInAt; result includes username/full name |
 | ADMIN_GET_FRIEND_NETWORK | Admin | user target | FriendNetworkInfo | NOT_FOUND | friendships |
 | ADMIN_LIST_GROUPS | Admin | AdminGroupFilter | PageResult<GroupInspection> | none | group conversations |
 | ADMIN_GET_GROUP | Admin | group target | GroupInspection | NOT_FOUND | members/roles |
 | ADMIN_LIST_SPAM_REPORTS | Admin | SpamReportFilter | PageResult<SpamReportInfo> | none | spam_reports |
 | ADMIN_UPDATE_SPAM_REPORT | Admin | SpamReportUpdate | SpamReportInfo | NOT_FOUND, CONFLICT | review state only; sanctions explicit separately |
-| ADMIN_GET_REGISTRATIONS | Admin | DateRange | RegistrationCount | none | users.created_at |
+| ADMIN_GET_REGISTRATIONS | Admin | DateRange | RegistrationCount | none | aggregate range count only; use ADMIN_LIST_USERS.createdAtRange for the required user list |
 | ADMIN_GET_MONTHLY_REGISTRATIONS | Admin | year | 12 MonthlyCount values | none | users.created_at |
-| ADMIN_GET_FRIEND_STATISTICS | Admin | filter/page | PageResult<FriendStatistic> | none | friendships; distinct second degree |
-| ADMIN_GET_USER_ACTIVITY | Admin | range/filter/page | PageResult<UserActivityStatistic> | none | activity snapshots |
+| ADMIN_GET_FRIEND_STATISTICS | Admin | FriendStatisticsRequest | PageResult<FriendStatistic> | none | optional name/numeric filters; name/createdAt sort; friendships; distinct second degree |
+| ADMIN_GET_USER_ACTIVITY | Admin | UserActivityStatisticsRequest | PageResult<UserActivityStatistic> | none | range, name/numeric filters, name/createdAt sort; app opens and distinct chatted users/groups |
 | ADMIN_GET_MONTHLY_ACTIVE_USERS | Admin | year | 12 MonthlyCount values | none | distinct active users/month |

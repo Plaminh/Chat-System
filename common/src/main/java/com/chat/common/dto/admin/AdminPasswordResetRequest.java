@@ -8,4 +8,9 @@ public record AdminPasswordResetRequest(long userId, String newPassword) {
     userId = positive(userId, "userId");
     newPassword = text(newPassword, "newPassword");
   }
+
+  @Override
+  public String toString() {
+    return "AdminPasswordResetRequest[userId=" + userId + ", newPassword=<redacted>]";
+  }
 }

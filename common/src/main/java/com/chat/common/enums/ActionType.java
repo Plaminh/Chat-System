@@ -7,6 +7,7 @@ public enum ActionType {
   LOGOUT,
   CHANGE_PASSWORD,
   REQUEST_PASSWORD_RESET,
+  @Deprecated(forRemoval = false)
   RESET_PASSWORD,
   GET_PROFILE,
   UPDATE_PROFILE,

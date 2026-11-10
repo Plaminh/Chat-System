@@ -29,3 +29,4 @@
 ## Notes
 - Validation iteration 1 passed all 16 items on 2026-11-10.
 - Java 25 in the constitution supersedes Java 21 in the input prompt.
+- Final correction review on 2026-11-10 reconciled global login history, registration lists versus counts, social/statistics filters, random-password recovery, and sensitive diagnostics without changing the checklist's historical 16-item result.

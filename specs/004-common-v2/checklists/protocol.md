@@ -45,3 +45,4 @@
 
 - This checklist intentionally remains unchecked until human requirements review.
 - The user's autonomous-execution instruction permits implementation to proceed without treating unchecked items as approval.
+- Final correction evidence now includes global/per-user login history, registration-list versus aggregate-count semantics, social/statistics filters, random-password recovery boundaries, and diagnostic redaction. No reviewer-owned marker was changed.

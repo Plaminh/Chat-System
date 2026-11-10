@@ -13,6 +13,13 @@ public final class ContractChecks {
     return value;
   }
 
+  public static String optionalText(String value, String field) {
+    if (value != null && value.isBlank()) {
+      throw new IllegalArgumentException(field + " must not be blank when provided");
+    }
+    return value;
+  }
+
   public static long positive(long value, String field) {
     if (value <= 0) {
       throw new IllegalArgumentException(field + " must be positive");

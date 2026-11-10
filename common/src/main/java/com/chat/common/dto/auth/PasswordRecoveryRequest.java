@@ -6,4 +6,9 @@ public record PasswordRecoveryRequest(String email) {
   public PasswordRecoveryRequest {
     email = text(email, "email");
   }
+
+  @Override
+  public String toString() {
+    return "PasswordRecoveryRequest[email=<redacted>]";
+  }
 }

@@ -126,3 +126,16 @@ The existing `common/ui/ChatTheme.java` remains at its V1 path. Both clients ret
 ## Complexity Tracking
 
 The existing shared theme is a deliberately narrow compatibility exception. Its scope is limited to `common.ui.ChatTheme` and its existing test; DTO/protocol packages remain UI-independent, Server remains UI-independent, no fifth module is introduced, and the proposed constitution wording awaits human review.
+
+## Final Contract Corrections
+
+The assignment-to-contract audit found six narrow gaps and corrected them without adding an implementation phase or module:
+
+1. Global/per-user login history now carries required display identity and chronological sort metadata.
+2. Newly registered user lists reuse `ADMIN_LIST_USERS` through an optional creation range; existing count/chart contracts remain aggregates.
+3. Friend, online-friend, and friend-request list requests now carry optional name filtering and request direction where applicable.
+4. Friend/activity statistics now carry name filters and account creation timestamps while retaining `NumericFilter`, `SortSpec`, and paging.
+5. User recovery is the non-enumerating email trigger for a Server-generated random password; the legacy reset-code action is deprecated for compatibility, and Admin password updates remain separate.
+6. Sensitive request records and raw request envelopes redact diagnostic text without changing JSON.
+
+The added fields and the corrected `chattedUsers`/`chattedUserCount` terminology change affected request/result JSON shapes and Java record constructors. No current Admin/User/Server source consumes those constructors; integration work must adopt the corrected contracts on their own V2 branches. Sort-field allow-lists, block visibility, authorization, password generation/hashing/email/rollback, database queries, and UI behavior remain consumer responsibilities.

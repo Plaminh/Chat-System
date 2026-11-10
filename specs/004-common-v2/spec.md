@@ -2,7 +2,7 @@
 
 **Feature Branch**: `feature/common-v2`
 **Created**: 2026-11-10
-**Status**: Draft
+**Status**: Ready for Review
 **Input**: Shared Version 2 communication contracts for the User Client, Admin Client, and Server.
 
 ## User Scenarios & Testing *(mandatory)*
@@ -100,15 +100,15 @@ Module developers receive consistent validation for missing fields, unknown iden
 - **FR-006**: Use positive numeric values for domain identities; presentation IDs are out of scope.
 - **FR-007**: Use offset-aware instants and calendar dates where time-of-day is not meaningful.
 - **FR-008**: Define reusable paging, date-range, sorting, and numeric-comparison contracts.
-- **FR-009**: Define registration, login/logout, auth result, password change/recovery, public user, account detail, profile update, status, and user-search payloads.
-- **FR-010**: Password requests never contain hashes; responses never contain passwords, hashes, reset secrets, or auth secrets.
-- **FR-011**: Define friend, request, block, presence, and friend-search payloads with explicit state.
+- **FR-009**: Define registration, login/logout, auth result, password change, and non-enumerating password recovery that asks the Server to generate, hash, persist, and email a random password without accepting that password from the Client.
+- **FR-010**: Password requests never contain hashes; recovery responses never contain generated passwords; all responses exclude passwords, hashes, reset secrets, and auth secrets.
+- **FR-011**: Define friend, online-friend, request, block, presence, and user-search payloads with explicit state, optional name filtering, paging, and request direction where applicable; Server excludes blocked relationships from user search.
 - **FR-012**: Define conversation, message, send, history, delete-for-me, recall, clear-history, search, result, and navigation payloads.
 - **FR-013**: Delete-for-me, global recall, and history clearing remain distinct operations matching V1 persistence semantics.
 - **FR-014**: Define group creation/detail/member/role/rename/member-change/role-change/group-message payloads.
 - **FR-015**: Group creation selects encryption mode; direct chat cannot enable it and group encryption mode is immutable.
-- **FR-016**: Define Admin user list/detail/create/edit/soft-delete, lock/unlock, password reset, login history, friend network, group inspection, report review, filter, sort, and paging payloads.
-- **FR-017**: Define registrations-by-range, monthly registrations, direct/second-degree friend counts, user activity by range, and monthly active-user statistics.
+- **FR-016**: Define Admin user list/detail/create/edit/soft-delete, lock/unlock, explicit password update, global or per-user login history with username/full name and chronological sorting, friend network, group inspection, report review, filters, sorting, and paging payloads.
+- **FR-017**: Define newly registered user lists by date range through the Admin user list contract, retain separate aggregate/monthly registration counts, and define name/numeric/sort filters plus account-creation metadata for direct/second-degree friend and user-activity statistics.
 - **FR-018**: Define suggestion/revision writing-assistance payloads without provider integration.
 - **FR-019**: Define public-key, key-epoch, recipient-envelope, encrypted-content, and key-rotation payloads matching V1 encryption lifecycle.
 - **FR-020**: Encrypted content uses AES-256-GCM metadata with positive version, 12-byte nonce, 16-byte tag, non-empty ciphertext, and no body.
@@ -116,7 +116,7 @@ Module developers receive consistent validation for missing fields, unknown iden
 - **FR-022**: Document that key replacement and membership changes require a new epoch, new/rejoining members receive no old epochs by default, and sending may pause pending distribution.
 - **FR-023**: Validate envelope fields, blank IDs, enum values, payload presence/type, positive IDs, required text, paging, date ranges, and encryption invariants inside Common without database-dependent or Server-handler validation.
 - **FR-024**: Preserve UTF-8 NDJSON, LF/CRLF handling, the 65,536-character maximum, and EOF behavior.
-- **FR-025**: Errors are predictable and never disclose stack traces, credentials, secrets, keys, or database details.
+- **FR-025**: Errors and diagnostic summaries are predictable and never disclose stack traces, credentials, reset codes, raw sensitive request payloads, secrets, keys, or database details.
 - **FR-026**: Empty lists use empty collections and stable paging metadata.
 - **FR-027**: Contracts remain independent of UI, business services, socket lifecycle, persistence, email, external AI calls, and cryptographic operations.
 - **FR-028**: Preserve supported behavior and dependent-module compilation without modifying Admin, User, or Server source.
@@ -167,3 +167,12 @@ Module developers receive consistent validation for missing fields, unknown iden
 - Authentication/authorization implementation, password hashing, email delivery, and token storage.
 - Cryptographic operations, key generation, private-key storage, and key authenticity implementation.
 - External writing-assistance provider integration.
+
+## Final Contract Corrections
+
+- `ADMIN_LIST_LOGIN_HISTORY` accepts an omitted `userId` for a global query, accepts a required chronological `SortSpec`, and returns login records containing only the required user identity (`userId`, username, full name) plus login/logout times.
+- `ADMIN_LIST_USERS` owns the newly registered **user list** requirement through optional `createdAtRange`, name query, sorting, and paging. `ADMIN_GET_REGISTRATIONS` remains the range aggregate, while `ADMIN_GET_MONTHLY_REGISTRATIONS` remains the annual-chart series.
+- `LIST_FRIENDS` and `LIST_ONLINE_FRIENDS` use `FriendListRequest`; `LIST_FRIEND_REQUESTS` adds optional name and incoming/outgoing direction filters. Presence remains in `UserSummary`; block visibility remains mandatory Server authorization/filtering work.
+- Friend and activity statistic requests add optional `nameQuery`; both result records include `accountCreatedAt`; activity uses distinct `chattedUsers`/`chattedUserCount` rather than a friendship-only contact interpretation; Server allow-lists `name` and `createdAt` sort fields and applies the existing non-negative `NumericFilter` comparisons.
+- `REQUEST_PASSWORD_RESET` is the assignment recovery flow: the Client supplies only the registered email and receives an empty, non-enumerating response. Server V2 owns random generation, hashing, persistence, email delivery, and rollback. `RESET_PASSWORD`/`PasswordResetRequest` remain deprecated compatibility contracts and are not the assignment recovery flow. `ADMIN_RESET_PASSWORD` remains a separate explicit administrator update.
+- Credential-bearing records and `RequestEnvelope` provide redacted diagnostics while preserving JSON serialization. Raw request JSON must never be logged for sensitive actions.

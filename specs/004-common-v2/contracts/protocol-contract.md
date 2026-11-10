@@ -23,9 +23,9 @@
 |---|---|---|
 | U1 | Login/logout | LOGIN, LOGOUT |
 | U2 | Registration | REGISTER |
-| U3 | Password recovery/change | REQUEST_PASSWORD_RESET, RESET_PASSWORD, CHANGE_PASSWORD |
+| U3 | Password recovery/change | REQUEST_PASSWORD_RESET (email-only random-password trigger), CHANGE_PASSWORD; deprecated RESET_PASSWORD compatibility identifier |
 | U4 | Profile/account | GET_PROFILE, UPDATE_PROFILE |
-| U5 | Friend lists/presence | LIST_FRIENDS, LIST_ONLINE_FRIENDS, PRESENCE_CHANGED |
+| U5 | Friend lists/presence | LIST_FRIENDS, LIST_ONLINE_FRIENDS with optional name query; PRESENCE_CHANGED |
 | U6 | Friend requests/search | SEARCH_USERS, SEND/LIST/RESPOND/CANCEL_FRIEND_REQUEST |
 | U7 | Unfriend/block | REMOVE_FRIEND, BLOCK_USER, UNBLOCK_USER |
 | U8 | Direct chat/realtime/offline history | LIST_CONVERSATIONS, OPEN_DIRECT_CONVERSATION, SEND_MESSAGE, LIST_MESSAGES, DIRECT_MESSAGE_RECEIVED |
@@ -40,10 +40,10 @@
 |---|---|---|
 | A1 | Admin authentication/navigation | LOGIN, LOGOUT |
 | A2 | User directory and management | ADMIN_LIST/GET/CREATE/UPDATE/DELETE_USER, ADMIN_SET_ACCOUNT_STATUS, ADMIN_RESET_PASSWORD |
-| A3 | Login history and friend inspection | ADMIN_LIST_LOGIN_HISTORY, ADMIN_GET_FRIEND_NETWORK |
+| A3 | Global/per-user login history and friend inspection | ADMIN_LIST_LOGIN_HISTORY, ADMIN_GET_FRIEND_NETWORK |
 | A4 | Group inspection | ADMIN_LIST_GROUPS, ADMIN_GET_GROUP |
 | A5 | Spam triage and account lock | ADMIN_LIST_SPAM_REPORTS, ADMIN_UPDATE_SPAM_REPORT, ADMIN_SET_ACCOUNT_STATUS |
-| A6 | Registrations by date | ADMIN_GET_REGISTRATIONS |
+| A6 | Newly registered user list and range count | ADMIN_LIST_USERS with createdAtRange; ADMIN_GET_REGISTRATIONS aggregate |
 | A7 | Friend statistics | ADMIN_GET_FRIEND_STATISTICS |
 | A8 | User activity by date | ADMIN_GET_USER_ACTIVITY |
 | A9 | Monthly charts | ADMIN_GET_MONTHLY_REGISTRATIONS, ADMIN_GET_MONTHLY_ACTIVE_USERS |
@@ -69,6 +69,7 @@ Failures require `success=false`, an `errorCode`, null data unless documented, a
 - `ProtocolValidator.decodePayload` maps JSON type mismatches to `INVALID_PAYLOAD` and DTO constructor invariant failures to `VALIDATION_FAILED` without copying exception internals or sensitive values into its message.
 - Envelope constructors reject contradictory response states and invalid request/event correlation fields.
 - DTO constructors remain the single source for context-free positive-ID, required-text, paging, date-range, collection, message-state, and encryption-metadata rules.
+- Optional name queries reject blank text when present. Count-comparison thresholds are non-negative. Server allow-lists action-specific sort field names.
 - Existence, credentials, permissions, resource state, persistence, handler-to-response mapping, and socket lifecycle remain Server V2 responsibilities.
 
 ## Event identifiers
@@ -122,7 +123,16 @@ Failures require `success=false`, an `errorCode`, null data unless documented, a
 
 ## Access conventions
 
-- Public: REGISTER, LOGIN, REQUEST_PASSWORD_RESET, RESET_PASSWORD, PING.
+- Public: REGISTER, LOGIN, REQUEST_PASSWORD_RESET, PING. `RESET_PASSWORD` remains a deprecated compatibility identifier whose legacy handling is a Server integration decision.
 - Authenticated user: profile, password change, social, chat, groups, encryption directory/rotation, reports, writing assistance.
 - Administrator: all `ADMIN_*` operations; normal user sessions are rejected.
 - Resource authorization is Server V2 work; Common expresses identifiers and stable error outcomes only.
+
+## Corrected query and recovery semantics
+
+- `LoginHistoryRequest.userId` is optional: null means global system history; a positive value filters one user. `sort.field` must be `loggedInAt`, with ASC/DESC chronology enforced by Server. Each `LoginHistoryEntry` supplies username and full name without email/address or other unnecessary identity fields.
+- `AdminUserFilter.createdAtRange` is the newly registered user-list filter. `ADMIN_GET_REGISTRATIONS` remains a range count, and `ADMIN_GET_MONTHLY_REGISTRATIONS` remains a twelve-month chart series.
+- `FriendListRequest.query` and `FriendRequestListRequest.query` match username or full name; request direction is INCOMING or OUTGOING. `SEARCH_USERS` uses the same identity fields, and Server must exclude blocks in both directions and enforce access.
+- Friend/activity statistic `nameQuery` matches username/full name. Server allow-lists `name` and `createdAt` sorting; existing EQ/LT/GT numeric filters apply to non-negative counts. Results expose `accountCreatedAt` for deterministic display/sort verification.
+- `REQUEST_PASSWORD_RESET` carries only email and always receives an empty, non-enumerating response. The Client never supplies or receives the random password. Server owns generation, hashing, persistence, email delivery, and rollback. `ADMIN_RESET_PASSWORD` remains a separate explicit Admin operation.
+- Credential-bearing record diagnostics redact values, and `RequestEnvelope.toString()` never renders `data`. Raw sensitive NDJSON/request payload logging is forbidden.

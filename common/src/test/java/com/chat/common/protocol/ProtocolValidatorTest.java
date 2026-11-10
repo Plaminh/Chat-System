@@ -9,8 +9,8 @@ import com.chat.common.dto.RequestEnvelope;
 import com.chat.common.dto.auth.LoginRequest;
 import com.chat.common.dto.chat.SendMessageRequest;
 import com.chat.common.dto.common.DateRange;
-import com.chat.common.dto.common.PageRequest;
 import com.chat.common.dto.encryption.EncryptedMessageContent;
+import com.chat.common.dto.social.FriendListRequest;
 import com.chat.common.dto.social.UserTarget;
 import com.chat.common.enums.ActionType;
 import com.chat.common.enums.ErrorCode;
@@ -85,8 +85,8 @@ class ProtocolValidatorTest {
         UserTarget.class);
     assertPayloadCode(
         ErrorCode.VALIDATION_FAILED,
-        request(ActionType.LIST_FRIENDS, "{\"page\":-1,\"size\":20}"),
-        PageRequest.class);
+        request(ActionType.LIST_FRIENDS, "{\"query\":null,\"page\":{\"page\":-1,\"size\":20}}"),
+        FriendListRequest.class);
     assertPayloadCode(
         ErrorCode.VALIDATION_FAILED,
         request(

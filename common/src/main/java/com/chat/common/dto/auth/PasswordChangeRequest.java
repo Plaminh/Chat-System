@@ -7,4 +7,9 @@ public record PasswordChangeRequest(String currentPassword, String newPassword) 
     currentPassword = text(currentPassword, "currentPassword");
     newPassword = text(newPassword, "newPassword");
   }
+
+  @Override
+  public String toString() {
+    return "PasswordChangeRequest[currentPassword=<redacted>, newPassword=<redacted>]";
+  }
 }

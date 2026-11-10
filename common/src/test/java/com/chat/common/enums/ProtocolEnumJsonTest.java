@@ -25,6 +25,7 @@ class ProtocolEnumJsonTest {
         "\"GROUP_MEMBERSHIP_CHANGED\"",
         mapper.writeValueAsString(MessageType.GROUP_MEMBERSHIP_CHANGED));
     assertEquals("\"LOCKED\"", mapper.writeValueAsString(AccountStatus.LOCKED));
+    assertEquals("\"INCOMING\"", mapper.writeValueAsString(FriendRequestDirection.INCOMING));
   }
 
   @Test
