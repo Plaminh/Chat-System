@@ -1,0 +1,2 @@
+# Keep Spotless-managed Java sources stable across operating systems.
+*.java text eol=lf

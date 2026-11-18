@@ -117,6 +117,10 @@ These IDs are reserved for traceability and are excluded from Common V2 completi
 - [x] T045 Reconcile `spec.md`, `plan.md`, `research.md`, `data-model.md`, contracts, quickstart, checklists, and AI transparency documentation
 - [x] T046 Audit affected constructors/actions against all modules and document the intentional integration changes and deferred responsibilities
 - [x] T047 Run the full final correction verification matrix, scope/theme gates, and Spec Kit analysis; prepare the verified correction for the separately evidenced Git commit/push workflow
+- [x] T048 Define exact friend-request and reusable group target payloads; replace every vague action-matrix request/result description with its concrete wire type
+- [x] T049 Define and test the safe `ACCOUNT_STATUS_CHANGED` event payload and document deferred Server/client lifecycle responsibilities
+- [x] T050 Verify typed `PageResult<T>` deserialization for User, Friend, Admin, empty, nested, time, and invalid-metadata cases; document `TypeReference` usage
+- [x] T051 Audit CHK001–CHK020 for reviewer approval, run the Java 25 Common/reactor verification matrix, and record the current CRLF-only Spotless baseline without changing reviewer markers
 
 **Checkpoint**: Artifacts, code, tests, and handover agree; all results are evidence-based.
 

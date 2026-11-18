@@ -68,7 +68,7 @@ A successful response has a non-blank request ID, null `errorCode`, and null err
 
 ## Decode events
 
-Events are not responses: they carry their own `eventId` and `MessageType` and therefore never consume a pending request correlation.
+Events are not responses: they carry their own `eventId` and `MessageType` and therefore never consume a pending request correlation. Keep client-generated `requestId` values unique among requests currently in flight on the connection; route each response only to the matching pending request.
 
 ```java
 EventEnvelope event = ProtocolValidator.parseEvent(mapper, jsonLine);
@@ -80,6 +80,11 @@ switch (event.type()) {
   case GROUP_MEMBERSHIP_CHANGED -> {
     GroupMembershipEvent membership =
         mapper.treeToValue(event.data(), GroupMembershipEvent.class);
+  }
+  case ACCOUNT_STATUS_CHANGED -> {
+    AccountStatusEvent status =
+        mapper.treeToValue(event.data(), AccountStatusEvent.class);
+    // LOCKED/DELETED require the affected client to terminate its session.
   }
   default -> {
     // Route other documented MessageType values explicitly.
@@ -102,6 +107,18 @@ PageRequest firstPage = new PageRequest(0, 20);
 PageResult<UserSummary> empty = new PageResult<>(List.of(), 0, 20, 0, 0);
 DateRange range =
     new DateRange(LocalDate.parse("2026-11-01"), LocalDate.parse("2026-11-30"));
+```
+
+Retain the generic item type when decoding response data; deserializing to raw `PageResult.class` produces untyped map items.
+
+```java
+PageResult<UserSummary> users =
+    mapper.convertValue(
+        response.data(), new TypeReference<PageResult<UserSummary>>() {});
+if (!users.items().isEmpty()) {
+  UserSummary firstUser = users.items().getFirst();
+  // Render the first item.
+}
 ```
 
 ## Realtime message and recall examples
@@ -222,7 +239,7 @@ Common V2 does not implement business workflows. The following remain outside th
 - Server V2 former T031: map Common malformed, unknown, invalid, and unsupported outcomes in `RequestHandler`.
 - Server V2 former T032: add request-handler protocol regression tests.
 - Server authentication, authorization, persistence, socket/session lifecycle, event publication, offline delivery, email, and writing-provider integration.
-- User/Admin request routing, response/event consumption, UI behavior, and client-side encryption/key lifecycle.
+- User/Admin request routing, typed generic response/event consumption, account-status UI/session reactions, and client-side encryption/key lifecycle.
 - Server query/filter enforcement, block visibility, statistics aggregation, and random-password email delivery/rollback.
 - User/Admin adoption of the corrected record constructors and request/result JSON shapes documented above.
 

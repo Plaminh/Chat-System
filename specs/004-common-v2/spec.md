@@ -96,7 +96,7 @@ Module developers receive consistent validation for missing fields, unknown iden
 - **FR-002**: Preserve the existing `PING` action and response behavior.
 - **FR-003**: Define actions for authentication, profile/password, friends/requests/blocking/presence, direct chat/history/search, groups/members/roles/encryption, spam, writing assistance, and all required Admin operations/statistics.
 - **FR-004**: Define non-overlapping client errors for malformed input, validation, authentication, authorization, missing resources, conflicts, account/membership/role state, unsupported operations, size limits, and internal failures.
-- **FR-005**: Define events for direct/group messages, presence, friend requests, group membership, group roles, and encryption rotation.
+- **FR-005**: Define events for direct/group messages, presence, friend requests, group membership, group roles, encryption rotation, and account-status changes.
 - **FR-006**: Use positive numeric values for domain identities; presentation IDs are out of scope.
 - **FR-007**: Use offset-aware instants and calendar dates where time-of-day is not meaningful.
 - **FR-008**: Define reusable paging, date-range, sorting, and numeric-comparison contracts.

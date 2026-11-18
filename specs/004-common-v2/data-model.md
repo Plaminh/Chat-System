@@ -22,7 +22,7 @@ This is the JSON wire model, not the Server domain model or PostgreSQL schema.
 | Model | Fields | Rules |
 |---|---|---|
 | PageRequest | page, size | page >= 0; size 1–100 |
-| PageResult<T> | items, page, size, totalItems, totalPages | items non-null; totals non-negative |
+| PageResult<T> | items, page, size, totalItems, totalPages | items non-null; page >= 0; size 1–100; totals non-negative; consumers retain `T` with Jackson `TypeReference` or `JavaType` |
 | DateRange | from, to | both required; from <= to |
 | SortSpec | field, direction | field non-blank; Server allow-lists per action |
 | NumericFilter | operator, value | EQ, GT, or LT |
@@ -44,9 +44,10 @@ This is the JSON wire model, not the Server domain model or PostgreSQL schema.
 ## Social
 
 - `FriendInfo`: user summary and friendshipCreatedAt.
-- `FriendRequestInfo`: requestId, sender, receiver, status, createdAt, respondedAt.
+- `FriendRequestInfo`: friendRequestId, sender, receiver, status, createdAt, respondedAt.
 - `FriendRequestTarget`: targetUserId.
-- `FriendRequestDecisionRequest`: requestId and ACCEPT/DECLINE decision.
+- `FriendRequestIdTarget`: friendRequestId for cancellation; it is intentionally distinct from a target user ID.
+- `FriendRequestDecisionRequest`: friendRequestId and ACCEPT/DECLINE decision.
 - `FriendListRequest`: optional username/full-name query plus paging for friend and online-friend lists.
 - `FriendRequestListRequest`: optional username/full-name query, status, incoming/outgoing direction, and paging.
 - `UserTarget`: targetUserId for remove/block/unblock.
@@ -70,6 +71,7 @@ Normal messages have exactly one content form. Recalled messages have neither or
 - `CreateGroupRequest`: name, initial member IDs, and encryptionEnabled. Key rotation is a separate request.
 - `GroupInfo`: group/conversation ID, name, owner, encryption flag, members, timestamps.
 - `GroupMemberInfo`: user summary, ADMIN/MEMBER role, joinedAt.
+- `GroupTarget`: groupId for get, leave, and Admin inspection actions.
 - `RenameGroupRequest`: groupId, name.
 - `GroupMembersRequest`: groupId, unique non-empty user IDs.
 - `GroupMemberTarget`: groupId, userId.
@@ -135,8 +137,10 @@ Algorithms are `DHKEM-X25519-HKDF-SHA256`, `RFC9180-RAW`, `AES-256-GCM`, and `HP
 - `GroupMembershipEvent`: group, affected user, ADDED/REMOVED/LEFT change, and occurrence time.
 - `GroupRoleEvent`: group, affected user, new role, and occurrence time.
 - `GroupKeyRotationEvent`: group, required key version, and occurrence time.
+- `AccountStatusEvent`: affected user ID, ACTIVE/LOCKED/DELETED status, and change time; it contains no profile or credential data.
 
 These are Common wire contracts only. Event publication, authorization, offline delivery, and client routing remain Server/User/Admin integration work.
+For `LOCKED` and `DELETED`, Server owns revocation/publication and the affected client owns session termination and login/account-deleted presentation. Clients must also handle `ACCOUNT_LOCKED` and `ACCOUNT_DELETED` error responses when the event is not delivered.
 
 ## Model boundaries
 

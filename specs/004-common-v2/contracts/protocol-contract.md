@@ -5,6 +5,7 @@
 - UTF-8 NDJSON over the existing TCP connection; one JSON object per line.
 - Maximum line content is 65,536 Java characters, excluding CR/LF terminators.
 - Requests use `requestId`, `action`, and `data`; successful responses reuse that non-blank `requestId`; an error for input whose ID cannot be read may use a null response `requestId`; unsolicited events use `eventId`, `type`, and `data`.
+- A client keeps each `requestId` unique among requests currently in flight on one connection. Responses echo the ID unchanged; interleaved events never complete or consume a pending request. The Server generates a distinct `eventId` for each published event.
 - Payload-bearing actions/events require object `data`. Payload-free actions may use `{}`.
 - Successful empty results use `[]` inside a valid page/result object, never null collections.
 
@@ -14,6 +15,7 @@
 - Instants are ISO-8601 offset date-times; birth/range dates are ISO dates.
 - Paging is zero-based, sizes are 1–100, totals are non-negative, and ordering is explicit.
 - Unknown action/event/enum values are protocol errors, not forward-compatible no-ops.
+- Throughout V2, existing envelope field names, enum wire names, and PING/PONG behavior are stable and must not be renamed or removed. Additive optional payload fields require consumer compatibility tests; new required fields or enum values require a coordinated Common/Server/client release.
 
 ## Functional-group coverage
 
@@ -39,7 +41,7 @@
 | # | Functional group | Actions |
 |---|---|---|
 | A1 | Admin authentication/navigation | LOGIN, LOGOUT |
-| A2 | User directory and management | ADMIN_LIST/GET/CREATE/UPDATE/DELETE_USER, ADMIN_SET_ACCOUNT_STATUS, ADMIN_RESET_PASSWORD |
+| A2 | User directory and management | ADMIN_LIST/GET/CREATE/UPDATE/DELETE_USER, ADMIN_SET_ACCOUNT_STATUS, ADMIN_RESET_PASSWORD; ACCOUNT_STATUS_CHANGED |
 | A3 | Global/per-user login history and friend inspection | ADMIN_LIST_LOGIN_HISTORY, ADMIN_GET_FRIEND_NETWORK |
 | A4 | Group inspection | ADMIN_LIST_GROUPS, ADMIN_GET_GROUP |
 | A5 | Spam triage and account lock | ADMIN_LIST_SPAM_REPORTS, ADMIN_UPDATE_SPAM_REPORT, ADMIN_SET_ACCOUNT_STATUS |
@@ -84,7 +86,9 @@ Failures require `success=false`, an `errorCode`, null data unless documented, a
 | GROUP_MEMBERSHIP_CHANGED | `GroupMembershipEvent` |
 | GROUP_ROLE_CHANGED | `GroupRoleEvent` |
 | GROUP_KEY_ROTATION_REQUIRED | `GroupKeyRotationEvent` |
-| ACCOUNT_STATUS_CHANGED | Safe account-status notification; Server publication and client handling are deferred |
+| ACCOUNT_STATUS_CHANGED | `AccountStatusEvent` with userId, ACTIVE/LOCKED/DELETED status, and changedAt |
+
+`ACTIVE` means the account became active or was unlocked. For `LOCKED`, the affected client terminates its authenticated session and returns to Login. For `DELETED`, it terminates the session and presents an account-deleted outcome. Common defines only the safe event payload. Server owns authorization, publication, revocation, and connection lifecycle; clients own UI reactions and must also handle `ACCOUNT_LOCKED`/`ACCOUNT_DELETED` responses when the event cannot be delivered.
 
 ## Message lifecycle
 
@@ -130,6 +134,7 @@ Failures require `success=false`, an `errorCode`, null data unless documented, a
 
 ## Corrected query and recovery semantics
 
+- `CANCEL_FRIEND_REQUEST` uses `FriendRequestIdTarget(friendRequestId)`, not the target-user contract used to send a request. `GET_GROUP`, `LEAVE_GROUP`, and `ADMIN_GET_GROUP` reuse `GroupTarget(groupId)`.
 - `LoginHistoryRequest.userId` is optional: null means global system history; a positive value filters one user. `sort.field` must be `loggedInAt`, with ASC/DESC chronology enforced by Server. Each `LoginHistoryEntry` supplies username and full name without email/address or other unnecessary identity fields.
 - `AdminUserFilter.createdAtRange` is the newly registered user-list filter. `ADMIN_GET_REGISTRATIONS` remains a range count, and `ADMIN_GET_MONTHLY_REGISTRATIONS` remains a twelve-month chart series.
 - `FriendListRequest.query` and `FriendRequestListRequest.query` match username or full name; request direction is INCOMING or OUTGOING. `SEARCH_USERS` uses the same identity fields, and Server must exclude blocks in both directions and enforce access.
