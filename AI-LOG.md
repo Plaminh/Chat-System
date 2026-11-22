@@ -851,3 +851,81 @@ Kept: The six schema modules, account/social/conversation/moderation/statistics 
 Changed: Added versioned per-user X25519 public keys and recipient-specific RFC 9180 HPKE envelopes; reduced conversation key versions to epoch metadata; removed server-controlled wrapped-key fields; updated seed/runtime tests, ERD/DBML, setup/mapping/spec artifacts, E2EE lifecycle/search/LLM/spam limitations, and active terminology. The supported recipient model is per-user, not per-device.
 
 By hand: Disposable PostgreSQL 16.15 schema creation, 63-row seed, runtime integrity fixture, PowerShell schema-only initialization, isolated Compose initialization/rerun, static schema/DBML consistency, PowerShell parsing, Compose configuration, active-reference scans, and diff checks passed. All named verification resources were removed. SQL storage supports the intended E2EE boundary but does not implement or prove cryptography; Maven/Spotless were not run because no Java code changed.
+
+## 2026-11-10 - Approve shared ChatTheme exception
+
+Tool: OpenAI Codex.
+
+Asked for: Record the approved decision to preserve the existing shared `common.ui.ChatTheme`, keep both clients and Server source untouched, keep V2 contracts Swing-independent, and propose any required constitution clarification without changing governance text.
+
+Kept: The V1 `ChatTheme` source/test, Admin/User imports and initialization, FlatLaf and Look and Feel behavior, four-module structure, Server UI isolation, and all implementation source files.
+
+Changed: Updated only Common V2 specification, plan, research, task, quickstart, and AI transparency documentation. Replaced the relocation strategy with a baseline-verification task and documented a proposed narrow amendment to constitution line 39 for human review.
+
+Verification: Compared source against V1 baseline `67107ac`, checked theme blob identity and uniqueness, scanned Server and Common V2 packages for prohibited UI imports, and compiled both clients. No commit or push was performed; the documentation diff remains for developer review.
+
+## 2026-11-10 - Restrict Common V2 Phase 05 scope
+
+Tool: OpenAI Codex.
+
+Asked for: Remove Server implementation and test work from Common V2, preserve former T031/T032 traceability for `feature/server-v2`, and reconcile the Common V2 specification, plan, tasks, and quickstart without touching implementation files.
+
+Kept: The approved shared `ChatTheme` decision and evidence, pending constitution amendment, Common V2 feature requirements, existing source, Maven configuration, UI, and database artifacts.
+
+Changed: Phase 05 now contains only Common implementation/tests. Former T031 and T032 are recorded in a traceability-only Server V2 deferral table; Server response mapping and handler regressions are explicitly excluded from Common V2. Updated the plan, specification, and quickstart to require no Admin, User, or Server source changes.
+
+Verification: Spec Kit prerequisites passed; cross-artifact scope scans found no remaining Common V2 task requiring consumer/server source changes; source and configuration files remain untouched; `git diff --check` passed. No commit or push was performed.
+
+## 2026-11-10 - Complete Common V2 protocol and handover
+
+Tool: OpenAI Codex.
+
+Asked for: Implement, test, document, commit, and push the remaining Common V2 validation, envelope, framing, coverage, and handover work on `feature/common-v2` without changing Admin, User, Server, database, script, or configuration source.
+
+Changed: Added typed `ProtocolValidationException` and `ProtocolValidator` request/event parsing plus safe DTO payload decoding; hardened request, response, and event envelope invariants; added complete NDJSON boundary tests and focused envelope/payload coverage; expanded pagination, null/empty collection, date/time, recall, group, Admin/User, enum, and encryption-copy regressions; reconciled the wire model and protocol contract; finalized the integration quickstart; and marked only evidence-backed Spec Kit tasks complete. Kept DTO constructors as the single source of context-free domain invariants. Added a narrow Spotless exclusion for the immutable legacy `ChatTheme.java` and `ChatThemeTest.java`, which remain byte-identical to V1, and formatted only flagged Common V2/framing files.
+
+Verification: Temurin JDK 25.0.5 and bundled Maven 3.9.9 were used. `mvn -pl common -am test` passed 48 tests; `mvn test` and `mvn clean verify` passed 107 reactor tests (Common 48, Admin 2, User 52, Server 5), with zero failures/errors/skips. Common-only `mvn -pl common spotless:check` passed 110 files, and `git diff --check` plus module/dependency/theme boundary scans passed. Root `mvn spotless:check` reached a clean Common module but failed on 29 pre-existing Admin Client formatting violations; Admin source is forbidden scope and was not modified or reformatted.
+
+Kept: Exactly four Maven modules, Java 25, Jackson/NDJSON field names, the 65,536-character limit, PING compatibility, numeric IDs, offset-aware time, client-side encryption metadata only, and the shared ChatTheme/client behavior. No credentials, persistence, sockets, Swing/AWT dependencies in V2 contracts, cryptographic operations, or business workflows were introduced.
+
+Deferred: Server V2 former T031/T032 still own handler error mapping and regressions. Authentication, authorization, persistence, event delivery, email, external writing assistance, client routing/UI behavior, and actual key generation/encryption/decryption remain later Server/User/Admin work. Human requirements-checklist sign-off and the proposed constitution wording clarification remain pending.
+
+## 2026-11-10 - Correct final Common V2 assignment contracts
+
+Tool: OpenAI Codex.
+
+Asked for: Perform a final assignment-to-contract audit, surgically correct confirmed Common V2 gaps, reconcile the existing Spec Kit artifacts, run the full verification/scope/security gates, commit, and push `feature/common-v2` without changing ChatTheme or Admin/User/Server source.
+
+Changed: Login history now supports global or per-user queries, explicit chronology, and the required username/full-name result identity. `ADMIN_LIST_USERS` now supports an optional creation-date range for the newly registered user list while range/monthly registration counts remain separate aggregates. Added reusable friend/online-friend name queries plus friend-request name/direction filtering. Added statistic name filters, account creation timestamps, non-negative numeric thresholds, and corrected activity terminology to distinct chatted users. User recovery is now documented as the email-only trigger for a Server-generated random password; the legacy reset-code action/type is deprecated but retained for compatibility, and the explicit Admin password update remains separate. Credential-bearing records and raw request envelopes now redact diagnostic text without changing legitimate JSON serialization.
+
+Compatibility: The corrected fields intentionally change the Java constructors and JSON shapes for affected login-history, Admin-user-filter, social-list, and statistic contracts; `chattedContacts`/`chattedContactCount` are corrected to `chattedUsers`/`chattedUserCount`. No current Admin/User/Server source referenced these constructors. Existing action names, PING, envelope field names, registration aggregates, and the deprecated `RESET_PASSWORD` identifier remain available. Consumer V2 branches must adopt the corrected shapes.
+
+Tests: Added `FinalContractCorrectionTest` with 6 focused regressions covering global/per-user history, chronological sort metadata, identity fields, empty pages, registration ranges, friend/request filters, presence, statistics filters/results/wire names, invalid inputs, recovery non-disclosure, redacted diagnostics, and preserved password request serialization. Updated enum and protocol validation coverage for friend-request direction and the nested friend-list page contract.
+
+Verification: Temurin JDK 25.0.5 and bundled Maven 3.9.9 were used. Final `mvn -pl common -am test` passed 54 tests. Final `mvn test` and `mvn clean verify` each passed 113 reactor tests (Common 54, Admin 2, User 52, Server 5), with zero failures/errors/skips. Common-only `mvn -pl common spotless:check` passed all 113 checked files. Root `mvn spotless:check` passed Common and failed on the same 29 Admin Client files; `admin-client/src` is byte-identical to `origin/dev`, so this remains a verified baseline-only external PR check and was not modified. `git diff --check`, dependency/boundary/secret/crypto scans, and Spec Kit prerequisites passed.
+
+Scope and preservation: The correction changes only Common DTO/enum/validation/tests, `specs/004-common-v2/`, and this AI log. The complete feature branch has no Admin/User/Server source delta from merge-base `67107ac`. `ChatTheme.java` and `ChatThemeTest.java` match their approved V1 Git blobs (`2a500d02fcf294e34271786f37f37e4f87f6a78e` and `70380feee7a144276a31f021408a3f4dc31b5076`), exactly one production `ChatTheme.java` exists, clients retain their imports, Server/Common V2 packages have no UI imports, and Common contains no cryptographic implementation. Existing root-POM Java-time management and immutable-theme Spotless exclusions were inspected and not changed by this correction.
+
+Spec Kit: Reconciled the existing six-phase feature without creating a new spec or phase. Analysis found 33 functional requirements, 9 success criteria, 45 executable completed tasks, 100% semantic requirement coverage, no unmapped executable task, no unresolved ambiguity/duplication/constitution conflict, and T031/T032 still deferred to `feature/server-v2`. The 20-item reviewer protocol checklist remains intentionally unchecked. The unavailable named assignment PDF was searched for across the repository, Codex attachments, user folders, and all available drives; corrections therefore rely on the assignment requirements quoted in the request plus existing V1/spec artifacts, and that limitation is recorded in research.md.
+
+Deferred: Server enforces sort allow-lists, block visibility/access, queries, statistics aggregation, random generation/hashing/persistence/email/rollback, and legacy reset compatibility. User/Admin adopt request/result shapes and UI behavior. Human reviewers own the protocol checklist and pending constitution wording clarification.
+
+## 2026-11-18 - Stabilize final Common V2 action and event contracts
+
+Tool: OpenAI Codex.
+
+Asked for: Resolve remaining ambiguous Common V2 action payloads, define the account-status event contract, verify generic page deserialization, audit the reviewer-owned protocol checklist, synchronize only necessary documentation, and stop after implementation/verification/diff review without Git integration actions.
+
+Changed: Added `FriendRequestIdTarget`, reusable `GroupTarget`, and safe `AccountStatusEvent` records; added focused target, event, and typed `PageResult<T>` tests; mapped all 60 `ActionType` values to concrete request/success shapes in the action matrix; documented account lifecycle boundaries and `TypeReference` decoding; updated Common V2 traceability tasks. Existing action/event identifiers, envelopes, `PageResult<T>`, PING/PONG, dependencies, ChatTheme, consumer source, Server source, and database files were preserved. Reviewer checklist markers remain unchecked for human approval. The pre-existing untracked `common-v2-final-diff.txt` was not modified.
+
+Verification: Temurin JDK 25.0.5 and bundled Maven 3.9.9 were used. `mvn -pl common -am test` passed 66 Common tests. Root `mvn test` and `mvn clean verify` each passed 125 reactor tests (Common 66, Admin 2, User 52, Server 5), with zero failures/errors/skips. The action/matrix audit found 60 exact one-to-one action mappings and no vague request/result cells. Dependency/scope/theme/crypto scans found no new dependency, prohibited Common implementation import, Server UI import, crypto implementation, consumer/server/database source change, enum/envelope change, or ChatTheme baseline change. `mvn -pl common spotless:check` remains failed only because 113 pre-existing tracked Common Java files are checked out with CRLF while Spotless requires LF; all six new Java files pass Google Java Format 1.30.0. No unrelated line-ending rewrite or `spotless:apply` was performed.
+
+## 2026-11-18 - Final-audit Common V2 readiness
+
+Tool: OpenAI Codex.
+
+Asked for: Independently audit the actual Common V2 repository state, apply only confirmed minimal fixes, diagnose Spotless/CRLF, review all 20 protocol checklist criteria without changing reviewer markers, run the full Java 25 verification matrix, and stop before Git integration.
+
+Changed: Corrected the documented `friendRequestId` fields, made the typed-page quickstart safe for empty results, enforced the documented 1–100 `PageResult.size` bound with regression coverage, added an explicit test separating terminal account-status events from Admin lock/unlock updates, and added a repository Java LF rule in `.gitattributes`. No DTO redesign, dependency change, checklist marker change, consumer/server/database implementation change, or mass line-ending rewrite was made.
+
+Verification: Temurin JDK 25.0.5 and bundled Maven 3.9.9 were used. `mvn -pl common -am test` passed 67 Common tests; root `mvn test` and `mvn clean verify` each passed 126 reactor tests (Common 67, Admin 2, User 52, Server 5). The final action audit found 60 enum values and 60 unique exact matrix rows with no missing, extra, duplicate, vague, malformed, or unresolved type entries. `git diff --check` passed. Common and root Spotless still exit 1 on this checkout because 113 Common Java files have CRLF; raw-LF HEAD passes Common Spotless, proving that part is checkout/configuration rather than Java formatting. Raw-LF HEAD separately exposes pre-existing out-of-scope Google Java Format failures in 24 Admin, 29 User, and 7 Server files, so the root Spotless gate is not green and was not bypassed. All seven Common Java files added or touched by this work pass Google Java Format 1.30.0 dry-run.
