@@ -146,4 +146,4 @@ if ($LoadSeed) {
     }
 }
 
-Write-Host "Database V1 initialization completed for '$DatabaseName'."
+Write-Host "Database initialization completed for '$DatabaseName'."

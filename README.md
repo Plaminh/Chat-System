@@ -62,14 +62,28 @@ This produces `release/admin.jar`, `release/user.jar`, and `release/server.jar`.
 
 ## Configuration
 
-Run packaged applications with `release` as the working directory. The packaging script creates these files from safe examples on their first run:
+There are two configuration files in `release`, created by `./scripts/package.ps1` from the examples in `config/`:
 
-- `client.properties`: `chat.server.host` and `chat.server.port`
-- `server.properties`: `chat.server.port` and `spring.datasource.*`
+| File | Read by | Contains |
+|---|---|---|
+| `server.properties` | `server.jar` | PostgreSQL connection (`POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`) and `CHAT_SERVER_PORT` |
+| `client.properties` | `admin.jar`, `user.jar` | `chat.server.host`, `chat.server.port` only; clients never receive database settings |
 
-Edit `server.properties` with the PostgreSQL address, database, username, and password. Do not commit it. PING/PONG does not require tables or a live database connection. `script/schema.sql` and `script/seed.sql` are deliberately documented placeholders.
+To run the packaged jars, edit only `release/server.properties`. Existing files in `release` are preserved when packaging again.
 
-Override configuration locations without rebuilding:
+### Developer setup: edit only `.env`
+
+Developers keep one file, `.env` at the repository root, shared with Docker Compose:
+
+```powershell
+Copy-Item .env.example .env   # then set POSTGRES_PASSWORD
+```
+
+The server reads `./server.properties` first and then `../.env` and `./.env`; a later file overrides an earlier one. So whenever the repository `.env` exists (running from the repository root, `server/`, or `release/`), it overrides `release/server.properties`, and developers never edit `server.properties`. Do not create a `.env` inside `release`. `.env` is ignored by Git; never commit it.
+
+Packages created before this layout may contain an old `release/server.properties` with `spring.datasource.*` keys, which would override `.env`. Delete it and run `./scripts/package.ps1` again.
+
+Override configuration locations without rebuilding (the repository `.env` still wins when present):
 
 ```powershell
 java '-Dchat.server.config=C:/secure/chat-server.properties' -jar server.jar

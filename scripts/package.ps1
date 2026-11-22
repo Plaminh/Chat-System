@@ -25,6 +25,7 @@ try {
         }
     }
     Write-Host "Release created at $releaseDirectory"
+    Write-Host "Edit release/server.properties for the database. A repository-root .env, when present, overrides it."
 } finally {
     Pop-Location
 }
