@@ -1,5 +1,19 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-23 — Plan Admin Authentication A0 (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Create implementation plan, research decisions, data model, interface contracts, and quickstart validation guide for Issue #7 [A0] Admin Authentication at `specs/006-admin-client-v2/admin-auth` on branch `feature/admin-client-v2`.
+
+Kept: Four-module architecture (`common`, `admin-client`, `user-client`, `server`), immutable `common` DTOs, Spring Boot non-web mode, raw TCP sockets, Spring JDBC with PostgreSQL, and jBCrypt password verification.
+
+Changed: Created `plan.md`, `research.md`, `data-model.md`, `contracts/auth-contracts.md`, and `quickstart.md` in `specs/006-admin-client-v2/admin-auth/`. Designed the two-step admin role verification flow (`LOGIN` -> `ADMIN_GET_USER`), session model alignment (`Long userId` and `loginHistoryId`), and Swing UI thread safety.
+
+Rejected: Altering `common` DTOs, inventing custom JWT/tokens, adding REST/WebSocket endpoints, or altering database schemas.
+
+By hand: The developer requested the planning phase and directed the design flow.
+
 ## 2026-11-23 — Specify Admin Authentication A0 (Issue #7)
 
 Tool: Antigravity (Gemini 3.8 Flash).
