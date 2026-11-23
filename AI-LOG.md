@@ -1,5 +1,20 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-23 — Specify Server Core Platform (Issue #3)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Create the Spec Kit specification and quality checklist for the Server Core Platform (Issue #3) on branch `feature/server-core`.
+
+Kept: Four-module architecture, TCP socket server infrastructure, Jackson ISO-8601 time handling, modular action dispatching, session management, and online event notification patterns aligned with `specs/004-common-v2`.
+
+Changed: Created `specs/005-server-core/spec.md` with prioritized user stories (P1 Request Dispatching & Session Management, P2 Event Notification & Presence Tracking, P3 Client Socket Adapter) and `specs/005-server-core/checklists/requirements.md`. Updated `.specify/feature.json`.
+
+Rejected: Merging directly into `feature/admin-client-v2` without a dedicated feature branch, introducing WebSocket or HTTP/REST APIs, changing database schemas, or modifying application code before planning.
+
+By hand: The developer instructed the creation and checkout of `feature/server-core` from `dev` and requested a commit upon completing the specification.
+
+
 ## 2026-11-10 — Complete missing User Client V1 requirement states
 
 Tool: OpenAI Codex.
