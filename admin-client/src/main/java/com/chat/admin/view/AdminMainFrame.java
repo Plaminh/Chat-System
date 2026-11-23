@@ -1,5 +1,6 @@
 package com.chat.admin.view;
 
+import com.chat.admin.controller.AdminAuthController;
 import com.chat.common.ui.ChatTheme;
 import com.chat.admin.chart.ActivityChartPanel;
 import com.chat.admin.chart.RegistrationChartPanel;
@@ -17,6 +18,7 @@ import java.awt.GridLayout;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -493,6 +495,10 @@ public final class AdminMainFrame extends JFrame {
             JOptionPane.YES_NO_OPTION,
             JOptionPane.QUESTION_MESSAGE);
     if (choice == JOptionPane.YES_OPTION) {
+      try {
+        new AdminAuthController().logoutAsync().get(2, TimeUnit.SECONDS);
+      } catch (Exception ignored) {
+      }
       dispose();
       if (signOutHandler != null) {
         signOutHandler.run();

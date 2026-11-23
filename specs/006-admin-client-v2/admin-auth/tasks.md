@@ -76,11 +76,11 @@
 **Independent Test**: Click "Sign Out" in `AdminMainFrame`, verify `LOGOUT` is processed by server, frame disposes, and `AdminLoginDialog` reappears.
 
 ### Tests for User Story 3
-- [ ] T016 [P] [US3] Create unit test for `LogoutHandler` verifying session clear, registry unbind, and logout history timestamp in `server/src/test/java/com/chat/server/handler/LogoutHandlerTest.java`
+- [x] T016 [P] [US3] Create unit test for `LogoutHandler` verifying session clear, registry unbind, and logout history timestamp in `server/src/test/java/com/chat/server/handler/LogoutHandlerTest.java`
 
 ### Implementation for User Story 3
-- [ ] T017 [US3] Implement `LogoutHandler` for `ActionType.LOGOUT` in `server/src/main/java/com/chat/server/handler/impl/LogoutHandler.java`
-- [ ] T018 [US3] Wire `AdminMainFrame` sign out action to dispatch `LOGOUT` via `SocketClient` before closing window in `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java`
+- [x] T017 [US3] Implement `LogoutHandler` for `ActionType.LOGOUT` in `server/src/main/java/com/chat/server/handler/impl/LogoutHandler.java`
+- [x] T018 [US3] Wire `AdminMainFrame` sign out action to dispatch `LOGOUT` via `SocketClient` before closing window in `admin-client/src/main/java/com/chat/admin/view/AdminMainFrame.java`
 
 **Checkpoint**: All three user stories are complete and independently verifiable.
 

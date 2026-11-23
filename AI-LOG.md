@@ -1,5 +1,23 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-23 — Phase 5: Implement Administrator Sign Out (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Implement Phase 5 tasks (T016-T018) for User Story 3 (Administrator Sign Out): server-side `LogoutHandler`, session clearance, `login_history` timestamp update, and client sign-out wiring in `AdminMainFrame`.
+
+Kept: Four-module architecture, session lifecycle consistency, and non-blocking desktop client behavior.
+
+Changed:
+- Implemented `LogoutHandler.java` for `ActionType.LOGOUT` clearing `SessionContext` and recording `logged_out_at` in `login_history` via `loginHistoryRepository.recordLogout(...)`.
+- Created unit test `LogoutHandlerTest.java` verifying that `SessionContext` is cleared and the logout timestamp is recorded.
+- Wired `handleSignOut()` in `AdminMainFrame.java` to dispatch `LOGOUT` through `AdminAuthController.logoutAsync()` prior to disposing the workspace frame and reopening the login dialog.
+- Checked off T016 through T018 in `tasks.md`.
+
+Verification: Reactor tests (`mvn test -pl common,admin-client,server`) passed (67 server tests, 5 admin-client tests, 67 common tests).
+
+By hand: The developer instructed committing once per phase.
+
 ## 2026-11-23 — Phase 4: Implement Non-Admin Role Rejection & Auto-Logout (Issue #7)
 
 Tool: Antigravity (Gemini 3.8 Flash).
