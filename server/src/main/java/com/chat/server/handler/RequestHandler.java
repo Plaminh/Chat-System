@@ -2,42 +2,67 @@ package com.chat.server.handler;
 
 import com.chat.common.dto.RequestEnvelope;
 import com.chat.common.dto.ResponseEnvelope;
-import com.chat.common.enums.ActionType;
 import com.chat.common.enums.ErrorCode;
+import com.chat.common.exception.ProtocolValidationException;
+import com.chat.common.protocol.ProtocolValidator;
+import com.chat.server.session.SessionContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class RequestHandler {
     private final ObjectMapper mapper;
-    public RequestHandler(ObjectMapper mapper) { this.mapper = mapper; }
+    private final ActionDispatcher dispatcher;
+
+    public RequestHandler(ObjectMapper mapper) {
+        this(mapper, new ActionDispatcher(mapper, java.util.List.of(new com.chat.server.handler.impl.PingHandler(mapper))));
+    }
+
+    public RequestHandler(ObjectMapper mapper, ActionDispatcher dispatcher) {
+        this.mapper = mapper;
+        this.dispatcher = dispatcher;
+    }
 
     public String handle(String jsonLine) {
-        String requestId = null;
+        return handle(jsonLine, new SessionContext("anonymous-" + UUID.randomUUID()));
+    }
+
+    public String handle(String jsonLine, SessionContext session) {
         try {
-            JsonNode tree = mapper.readTree(jsonLine);
-            if (tree == null || !tree.isObject())
-                return write(error(null, ErrorCode.INVALID_REQUEST, "Request must be a JSON object"));
-            if (tree != null && tree.hasNonNull("requestId")) requestId = tree.get("requestId").asText();
-            RequestEnvelope request = mapper.treeToValue(tree, RequestEnvelope.class);
-            if (request.requestId() == null || request.requestId().isBlank() || request.action() == null)
-                return write(error(requestId, ErrorCode.INVALID_REQUEST, "requestId and action are required"));
-            if (request.action() == ActionType.PING) {
-                JsonNode data = mapper.createObjectNode().put("message", "PONG");
-                return write(new ResponseEnvelope(request.requestId(), true, data, null, null));
-            }
-            return write(error(request.requestId(), ErrorCode.INVALID_REQUEST, "Unsupported action"));
-        } catch (JsonProcessingException | IllegalArgumentException exception) {
-            return write(error(requestId, ErrorCode.INVALID_JSON, "Malformed JSON protocol message"));
+            RequestEnvelope request = ProtocolValidator.parseRequest(mapper, jsonLine);
+            ResponseEnvelope response = dispatcher.dispatch(request, session);
+            return write(response);
+        } catch (ProtocolValidationException exception) {
+            return write(new ResponseEnvelope(
+                    exception.requestId(),
+                    false,
+                    null,
+                    exception.errorCode(),
+                    exception.getMessage()
+            ));
+        } catch (Exception exception) {
+            return write(new ResponseEnvelope(
+                    null,
+                    false,
+                    null,
+                    ErrorCode.INVALID_JSON,
+                    "Malformed JSON protocol message"
+            ));
         }
     }
 
-    public String messageTooLarge() { return write(error(null, ErrorCode.MESSAGE_TOO_LARGE, "Protocol message is too large")); }
-    private ResponseEnvelope error(String id, ErrorCode code, String message) { return new ResponseEnvelope(id, false, null, code, message); }
+    public String messageTooLarge() {
+        return write(new ResponseEnvelope(null, false, null, ErrorCode.MESSAGE_TOO_LARGE, "Protocol message is too large"));
+    }
+
     private String write(ResponseEnvelope response) {
-        try { return mapper.writeValueAsString(response); }
-        catch (JsonProcessingException exception) { throw new IllegalStateException("Could not serialize protocol response", exception); }
+        try {
+            return mapper.writeValueAsString(response);
+        } catch (JsonProcessingException exception) {
+            throw new IllegalStateException("Could not serialize protocol response", exception);
+        }
     }
 }

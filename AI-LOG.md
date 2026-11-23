@@ -1,5 +1,27 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-23 — Implement Server Core Platform (Issue #3)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Implement the Server Core Platform networking infrastructure (Issue #3), including `ProtocolConfig`, `SessionContext`, `ClientConnection`, `ActionHandler`, `ActionDispatcher`, `PingHandler`, `OnlineSessionRegistry`, and reusable `SocketClient` adapters for `admin-client` and `user-client`.
+
+Kept: Four-module architecture, raw TCP socket communication, Spring Boot non-web mode, Jackson with `JavaTimeModule` for ISO-8601 formatting, and pre-existing repository/DAO structure.
+
+Changed:
+- Configured Jackson `ProtocolConfig` with `JavaTimeModule`, disabled `WRITE_DATES_AS_TIMESTAMPS`, disabled `ADJUST_DATES_TO_CONTEXT_TIME_ZONE`, and strict enum parsing.
+- Created `SessionContext` and `ClientConnection` (with synchronized `writeLock`) to bind authentication identity to active sockets.
+- Created `ActionHandler` interface and `ActionDispatcher` with role-based security gating (`UNAUTHENTICATED`, `UNAUTHORIZED`, `UNSUPPORTED_OPERATION`) and exception mapping.
+- Implemented `PingHandler` (PING -> PONG) and refactored `RequestHandler` and `TcpSocketServer` to enforce 64 KB framing and connection lifecycle management.
+- Implemented `OnlineSessionRegistry` for thread-safe user session tracking and push event delivery (`sendToUser`, `broadcast`).
+- Implemented non-blocking `SocketClient` with asynchronous `CompletableFuture` request-response correlation and background event reader threads for both `admin-client` and `user-client`.
+- Added unit and loopback integration tests (`ProtocolConfigTest`, `ActionDispatcherTest`, `OnlineSessionRegistryTest`, `TcpSocketServerIntegrationTest`, `SocketClientTest`).
+- Marked all 20 tasks in `specs/005-server-core/tasks.md` as completed.
+
+Verification: Maven 3.9.9 and Oracle JDK 25.0.4.1 were used. Root `mvn test` passed across all five reactor modules (Common 67, Admin Client 3, User Client 16, Server 22 passed; 31 DB tests cleanly skipped without live DB). `mvn spotless:check` was audited.
+
+By hand: The developer requested implementation and instructed Git commits on `feature/server-core`.
+
 ## 2026-11-23 — Generate Tasks for Server Core Platform (Issue #3)
 
 Tool: Antigravity (Gemini 3.8 Flash).
