@@ -1,5 +1,19 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-23 — Generate Tasks for Server Core Platform (Issue #3)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Generate dependency-ordered tasks (`tasks.md`) for the Server Core Platform (Issue #3) following Spec Kit conventions.
+
+Kept: Four-module architecture, raw TCP socket communication, phased execution ordering (Setup -> Foundational -> US1 -> US2/US3 -> Polish), and non-breaking incremental verification.
+
+Changed: Created `specs/005-server-core/tasks.md` with 20 actionable tasks (T001-T020) spanning Jackson ISO-8601 config, session management, action dispatching, online presence registry, socket client adapter, and loopback integration testing.
+
+Rejected: Combining multiple distinct concerns into ambiguous monolithic tasks or skipping test verification tasks.
+
+By hand: The developer requested the task breakdown and instructed per-phase Git commits.
+
 ## 2026-11-23 — Plan Server Core Platform Architecture (Issue #3)
 
 Tool: Antigravity (Gemini 3.8 Flash).
