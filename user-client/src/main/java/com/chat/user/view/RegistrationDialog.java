@@ -1,7 +1,11 @@
 package com.chat.user.view;
 
 import com.chat.common.ui.ChatTheme;
+import com.chat.common.dto.auth.RegisterRequest;
+import com.chat.common.enums.ActionType;
+import com.chat.common.enums.Gender;
 import com.chat.user.model.UserProfile;
+import com.chat.user.network.SocketClient;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -10,6 +14,8 @@ import java.awt.Window;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -20,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+import javax.swing.SwingUtilities;
 
 public final class RegistrationDialog extends JPanel {
   private final JTextField fullNameField = ChatTheme.createTextField(28);
@@ -33,9 +40,27 @@ public final class RegistrationDialog extends JPanel {
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.CENTER);
   private JDialog dialog;
   private UserProfile submittedProfile;
+  private final Function<RegisterRequest, CompletableFuture<com.chat.common.dto.ResponseEnvelope>> registrationSender;
+  private JButton submitButton;
 
   public RegistrationDialog() {
+    this(request -> CompletableFuture.failedFuture(new IllegalStateException("Socket client is not configured")));
+  }
+
+  public RegistrationDialog(SocketClient socketClient) {
+    this(
+        request ->
+            socketClient == null
+                ? CompletableFuture.failedFuture(
+                    new IllegalStateException("Socket client is not configured"))
+                : socketClient.sendAsync(ActionType.REGISTER, request));
+  }
+
+  RegistrationDialog(
+      Function<RegisterRequest, CompletableFuture<com.chat.common.dto.ResponseEnvelope>>
+          registrationSender) {
     super(new BorderLayout());
+    this.registrationSender = registrationSender;
     buildContent();
   }
 
@@ -95,6 +120,7 @@ public final class RegistrationDialog extends JPanel {
     char[] confirmation = confirmPasswordField.getPassword();
     boolean passwordsMatch = Arrays.equals(password, confirmation);
     boolean passwordBlank = isBlank(password);
+    char[] passwordCopy = Arrays.copyOf(password, password.length);
     Arrays.fill(password, '\0');
     Arrays.fill(confirmation, '\0');
     passwordField.setText("");
@@ -136,7 +162,62 @@ public final class RegistrationDialog extends JPanel {
 
     submittedProfile =
         new UserProfile(username, fullName, email, address, parsedDate, gender);
-    showFeedback("Sample registration complete; no account was created on the server.", ChatTheme.SUCCESS);
+
+    Gender parsedGender;
+    try {
+      parsedGender =
+          gender.equalsIgnoreCase("not specified")
+              ? Gender.OTHER
+              : Gender.valueOf(gender.toUpperCase());
+    } catch (IllegalArgumentException exception) {
+      submittedProfile = null;
+      showFeedback("Gender must be Male, Female, or Other.", ChatTheme.DANGER);
+      return;
+    }
+
+    RegisterRequest payload =
+        new RegisterRequest(
+            username,
+            new String(passwordCopy),
+            email,
+            fullName,
+            address,
+            parsedDate,
+            parsedGender);
+    Arrays.fill(passwordCopy, '\0');
+    submitButtonDisable(true);
+    registrationSender
+        .apply(payload)
+        .whenComplete(
+            (response, error) ->
+                SwingUtilities.invokeLater(
+                    () -> handleRegistrationResponse(response, error)));
+  }
+
+  private void submitButtonDisable(boolean disabled) {
+    if (submitButton != null) {
+      submitButton.setEnabled(!disabled);
+    }
+  }
+
+  private void handleRegistrationResponse(
+      com.chat.common.dto.ResponseEnvelope response, Throwable error) {
+    submitButtonDisable(false);
+    if (error != null) {
+      submittedProfile = null;
+      showFeedback("Could not connect to the server.", ChatTheme.DANGER);
+      return;
+    }
+    if (response != null && response.success()) {
+      showFeedback("Account created successfully.", ChatTheme.SUCCESS);
+      return;
+    }
+    submittedProfile = null;
+    if (response != null && response.errorCode() != null) {
+      showFeedback(response.message(), ChatTheme.DANGER);
+    } else {
+      showFeedback("Registration failed.", ChatTheme.DANGER);
+    }
   }
 
   private void buildContent() {
@@ -160,7 +241,7 @@ public final class RegistrationDialog extends JPanel {
     feedbackLabel.setForeground(ChatTheme.DANGER);
     form.add(feedbackLabel);
 
-    JButton submitButton = ChatTheme.createPrimaryButton("Create Sample Account");
+    submitButton = ChatTheme.createPrimaryButton("Create Account");
     submitButton.addActionListener(event -> submitRegistration());
     JButton cancelButton = ChatTheme.createSecondaryButton("Cancel");
     cancelButton.addActionListener(event -> cancelRegistration());

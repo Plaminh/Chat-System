@@ -99,7 +99,7 @@ class ActionDispatcherTest {
     }
 
     @Test
-    void translatesDuplicateKeyExceptionToConflict() {
+    void translatesRegistrationDuplicateKeyExceptionToAlreadyExists() {
         ActionHandler conflictHandler = new ActionHandler() {
             @Override
             public ActionType action() {
@@ -118,7 +118,7 @@ class ActionDispatcherTest {
 
         ResponseEnvelope response = customDispatcher.dispatch(request, session);
         assertFalse(response.success());
-        assertEquals(ErrorCode.CONFLICT, response.errorCode());
+        assertEquals(ErrorCode.ALREADY_EXISTS, response.errorCode());
     }
 
     @Test

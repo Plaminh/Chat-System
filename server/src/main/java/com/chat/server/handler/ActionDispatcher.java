@@ -78,6 +78,9 @@ public class ActionDispatcher {
         } catch (InvalidSortFieldException exception) {
             return error(requestId, ErrorCode.VALIDATION_FAILED, exception.getMessage());
         } catch (DuplicateKeyException exception) {
+            if (action == ActionType.REGISTER) {
+                return error(requestId, ErrorCode.ALREADY_EXISTS, "Username or email already exists");
+            }
             return error(requestId, ErrorCode.CONFLICT, "Resource already exists or constraint violated");
         } catch (IllegalArgumentException exception) {
             return error(requestId, ErrorCode.INVALID_REQUEST, exception.getMessage() != null ? exception.getMessage() : "Invalid request arguments");
