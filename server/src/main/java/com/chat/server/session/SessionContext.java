@@ -3,13 +3,13 @@ package com.chat.server.session;
 import com.chat.common.enums.UserRole;
 import java.time.Instant;
 import java.util.Objects;
-import java.util.UUID;
 
 public class SessionContext {
     private final String connectionId;
-    private volatile UUID userId;
+    private volatile Long userId;
     private volatile String username;
     private volatile UserRole role;
+    private volatile Long loginHistoryId;
     private volatile Instant authenticatedAt;
 
     public SessionContext(String connectionId) {
@@ -20,7 +20,7 @@ public class SessionContext {
         return connectionId;
     }
 
-    public UUID getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
@@ -30,6 +30,14 @@ public class SessionContext {
 
     public UserRole getRole() {
         return role;
+    }
+
+    public Long getLoginHistoryId() {
+        return loginHistoryId;
+    }
+
+    public void setLoginHistoryId(Long loginHistoryId) {
+        this.loginHistoryId = loginHistoryId;
     }
 
     public Instant getAuthenticatedAt() {
@@ -44,10 +52,15 @@ public class SessionContext {
         return isAuthenticated() && this.role == requiredRole;
     }
 
-    public synchronized void authenticate(UUID userId, String username, UserRole role) {
+    public synchronized void authenticate(Long userId, String username, UserRole role) {
+        authenticate(userId, username, role, null);
+    }
+
+    public synchronized void authenticate(Long userId, String username, UserRole role, Long loginHistoryId) {
         this.userId = Objects.requireNonNull(userId, "userId");
         this.username = Objects.requireNonNull(username, "username");
         this.role = Objects.requireNonNull(role, "role");
+        this.loginHistoryId = loginHistoryId;
         this.authenticatedAt = Instant.now();
     }
 
@@ -55,6 +68,7 @@ public class SessionContext {
         this.userId = null;
         this.username = null;
         this.role = null;
+        this.loginHistoryId = null;
         this.authenticatedAt = null;
     }
 }

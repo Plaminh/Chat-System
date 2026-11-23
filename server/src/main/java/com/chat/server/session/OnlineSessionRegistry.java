@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class OnlineSessionRegistry {
     private static final Logger log = LoggerFactory.getLogger(OnlineSessionRegistry.class);
 
-    private final Map<UUID, Set<ClientConnection>> activeUserSessions = new ConcurrentHashMap<>();
+    private final Map<Long, Set<ClientConnection>> activeUserSessions = new ConcurrentHashMap<>();
     private final Set<ClientConnection> allConnections = ConcurrentHashMap.newKeySet();
     private final ObjectMapper mapper;
 
@@ -33,27 +33,37 @@ public class OnlineSessionRegistry {
         activeUserSessions.entrySet().removeIf(entry -> entry.getValue().isEmpty());
     }
 
-    public void bindUser(UUID userId, ClientConnection connection) {
-        activeUserSessions.computeIfAbsent(userId, k -> ConcurrentHashMap.newKeySet()).add(connection);
+    public void bindUser(Long userId, ClientConnection connection) {
+        if (userId != null) {
+            activeUserSessions.computeIfAbsent(userId, k -> ConcurrentHashMap.newKeySet()).add(connection);
+        }
     }
 
-    public void unbindUser(UUID userId, ClientConnection connection) {
-        activeUserSessions.computeIfPresent(userId, (k, set) -> {
-            set.remove(connection);
-            return set.isEmpty() ? null : set;
-        });
+    public void unbindUser(Long userId, ClientConnection connection) {
+        if (userId != null) {
+            activeUserSessions.computeIfPresent(userId, (k, set) -> {
+                set.remove(connection);
+                return set.isEmpty() ? null : set;
+            });
+        }
     }
 
-    public boolean isUserOnline(UUID userId) {
+    public boolean isUserOnline(Long userId) {
+        if (userId == null) {
+            return false;
+        }
         Set<ClientConnection> connections = activeUserSessions.get(userId);
         return connections != null && !connections.isEmpty();
     }
 
-    public Set<UUID> getOnlineUserIds() {
+    public Set<Long> getOnlineUserIds() {
         return Collections.unmodifiableSet(activeUserSessions.keySet());
     }
 
-    public boolean sendToUser(UUID userId, EventEnvelope event) {
+    public boolean sendToUser(Long userId, EventEnvelope event) {
+        if (userId == null) {
+            return false;
+        }
         Set<ClientConnection> connections = activeUserSessions.get(userId);
         if (connections == null || connections.isEmpty()) {
             return false;
@@ -70,10 +80,10 @@ public class OnlineSessionRegistry {
         return sent;
     }
 
-    public int sendToUsers(Set<UUID> userIds, EventEnvelope event) {
+    public int sendToUsers(Set<Long> userIds, EventEnvelope event) {
         if (userIds == null || userIds.isEmpty()) return 0;
         int count = 0;
-        for (UUID userId : userIds) {
+        for (Long userId : userIds) {
             if (sendToUser(userId, event)) {
                 count++;
             }

@@ -14,9 +14,9 @@
 
 **Purpose**: Align session model and registry with 64-bit integer (`Long`) database user IDs and audit identifiers.
 
-- [ ] T001 Update `SessionContext` to use `Long userId` and track `Long loginHistoryId` in `server/src/main/java/com/chat/server/session/SessionContext.java`
-- [ ] T002 Update `OnlineSessionRegistry` to map sessions by `Long userId` instead of `UUID` in `server/src/main/java/com/chat/server/session/OnlineSessionRegistry.java`
-- [ ] T003 [P] Update unit tests to reflect `Long userId` in `server/src/test/java/com/chat/server/session/OnlineSessionRegistryTest.java`
+- [x] T001 Update `SessionContext` to use `Long userId` and track `Long loginHistoryId` in `server/src/main/java/com/chat/server/session/SessionContext.java`
+- [x] T002 Update `OnlineSessionRegistry` to map sessions by `Long userId` instead of `UUID` in `server/src/main/java/com/chat/server/session/OnlineSessionRegistry.java`
+- [x] T003 [P] Update unit tests to reflect `Long userId` in `server/src/test/java/com/chat/server/session/OnlineSessionRegistryTest.java`
 
 ---
 

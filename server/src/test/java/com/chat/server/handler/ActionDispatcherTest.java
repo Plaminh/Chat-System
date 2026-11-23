@@ -53,7 +53,7 @@ class ActionDispatcherTest {
     @Test
     void blocksAdminActionWhenUserRole() {
         SessionContext session = new SessionContext("conn-1");
-        session.authenticate(UUID.randomUUID(), "regular_user", UserRole.USER);
+        session.authenticate(1001L, "regular_user", UserRole.USER);
 
         RequestEnvelope request = new RequestEnvelope("req-3", ActionType.ADMIN_LIST_USERS, mapper.createObjectNode());
         ResponseEnvelope response = dispatcher.dispatch(request, session);
@@ -65,7 +65,7 @@ class ActionDispatcherTest {
     @Test
     void returnsUnsupportedOperationWhenActionHasNoHandler() {
         SessionContext session = new SessionContext("conn-1");
-        session.authenticate(UUID.randomUUID(), "admin_user", UserRole.ADMIN);
+        session.authenticate(1002L, "admin_user", UserRole.ADMIN);
 
         RequestEnvelope request = new RequestEnvelope("req-4", ActionType.ADMIN_LIST_USERS, mapper.createObjectNode());
         ResponseEnvelope response = dispatcher.dispatch(request, session);

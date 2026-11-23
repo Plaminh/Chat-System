@@ -1,5 +1,23 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-23 — Phase 1: Setup Infrastructure for Admin Auth (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Implement Phase 1 setup tasks (T001-T003) for Issue #7 [A0] Admin Authentication: align `SessionContext` and `OnlineSessionRegistry` with `Long userId` (`BIGSERIAL`) and track `Long loginHistoryId`.
+
+Kept: Four-module architecture, in-memory thread safety, and existing networking infrastructure.
+
+Changed:
+- Updated `SessionContext.java` to use `Long userId` and track `Long loginHistoryId`.
+- Updated `OnlineSessionRegistry.java` to index sessions with `Long userId`.
+- Updated `OnlineSessionRegistryTest.java` and `ActionDispatcherTest.java` to test with `Long` user IDs.
+- Checked off T001, T002, and T003 in `tasks.md`.
+
+Verification: Root reactor Maven build (`mvn test -pl common,server`) passed with 53 tests run, 0 failures, 0 errors.
+
+By hand: The developer instructed committing once per phase.
+
 ## 2026-11-23 — Generate Tasks for Admin Authentication A0 (Issue #7)
 
 Tool: Antigravity (Gemini 3.8 Flash).
