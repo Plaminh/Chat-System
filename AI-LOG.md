@@ -1,5 +1,19 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-23 — Plan Server Core Platform Architecture (Issue #3)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Execute the Spec Kit implementation planning workflow for the Server Core Platform (Issue #3), generating design artifacts (`plan.md`, `research.md`, `data-model.md`, `contracts/core-contracts.md`, and `quickstart.md`).
+
+Kept: Four-module architecture, raw TCP socket communication, Spring Boot non-web mode, Jackson with `JavaTimeModule` for ISO-8601 timestamps, thread-safe connection pooling, and in-memory session tracking.
+
+Changed: Created `specs/005-server-core/plan.md`, `research.md`, `data-model.md`, `contracts/core-contracts.md`, and `quickstart.md`. Designed modular `ActionHandler` / `ActionDispatcher` pattern, `SessionContext` security gating, `OnlineSessionRegistry` event push router, and reusable `SocketClient` networking adapter.
+
+Rejected: Introducing WebSocket, HTTP/REST endpoints, external message brokers (RabbitMQ/Kafka), or unnecessary ORM abstractions.
+
+By hand: The developer approved the planning phase and instructed per-phase Git commits.
+
 ## 2026-11-23 — Specify Server Core Platform (Issue #3)
 
 Tool: Antigravity (Gemini 3.8 Flash).
