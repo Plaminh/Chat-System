@@ -1,5 +1,19 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-23 — Specify Admin Authentication A0 (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Create the Spec Kit specification and quality checklist for Issue #7 [A0] Admin Authentication at `specs/006-admin-client-v2/admin-auth` on branch `feature/admin-client-v2`.
+
+Kept: Four-module architecture, Spring Boot non-web mode, raw TCP socket communication, and existing database repositories (`UserRepository`, `LoginHistoryRepository`).
+
+Changed: Created `specs/006-admin-client-v2/admin-auth/spec.md` with prioritized user stories (P1 Successful Admin Authentication, P2 Non-Admin Role Rejection & Auto-Logout, P3 Admin Sign Out) and `specs/006-admin-client-v2/admin-auth/checklists/requirements.md`. Updated `.specify/feature.json`.
+
+Rejected: Changing `common` DTOs, modifying database schemas, or bypassing two-step admin role verification.
+
+By hand: The developer requested the issue specification on `feature/admin-client-v2` and directed the subfolder structure under `specs/006-admin-client-v2/`.
+
 ## 2026-11-23 — Implement Server Core Platform (Issue #3)
 
 Tool: Antigravity (Gemini 3.8 Flash).
