@@ -90,9 +90,9 @@
 
 **Purpose**: Exception handling, styling conformity, and whole-project verification.
 
-- [ ] T019 [P] Handle socket connection drop/timeout gracefully with localized error alert in `admin-client/src/main/java/com/chat/admin/view/AdminLoginDialog.java`
-- [ ] T020 Run full multi-module build and automated test suite via Maven (`mvn test`)
-- [ ] T021 Run `mvn spotless:check` to verify code format compliance across all touched files
+- [x] T019 [P] Handle socket connection drop/timeout gracefully with localized error alert in `admin-client/src/main/java/com/chat/admin/view/AdminLoginDialog.java`
+- [x] T020 Run full multi-module build and automated test suite via Maven (`mvn test`)
+- [x] T021 Run `mvn spotless:check` to verify code format compliance across all touched files
 
 ---
 

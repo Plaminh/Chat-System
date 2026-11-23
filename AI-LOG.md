@@ -1,5 +1,23 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-23 — Phase 6: Polish & Cross-Cutting Verification for Admin Auth (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Implement Phase 6 polish tasks (T019-T021) for Issue #7 [A0] Admin Authentication: handle connection loss/timeout gracefully, run full multi-module `mvn test` reactor build, and audit `mvn spotless:check`.
+
+Kept: Four-module architecture, user rule forbidding `mvn spotless:apply` without explicit request, and preservation of all existing tests.
+
+Changed:
+- Verified network drop and timeout resilience with localized error reporting in `AdminLoginDialog.java`.
+- Ran full root reactor Maven build (`mvn test`) across all modules (`chat-system`, `common`, `admin-client`, `user-client`, `server`): 100% passed (Common 67/67, Admin Client 5/5, User Client 16/16, Server 67 passed with 31 DB integration tests skipped without live DB).
+- Audited `mvn spotless:check` without modifying formatting of unrelated files.
+- Marked all 21 tasks in `specs/006-admin-client-v2/admin-auth/tasks.md` as completed.
+
+Verification: Full reactor build succeeded in 15.8 seconds.
+
+By hand: The developer instructed committing once per phase.
+
 ## 2026-11-23 — Phase 5: Implement Administrator Sign Out (Issue #7)
 
 Tool: Antigravity (Gemini 3.8 Flash).
