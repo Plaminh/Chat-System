@@ -1,5 +1,25 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-23 — Phase 3: Implement User Story 1 Admin Authentication Flow (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Implement Phase 3 tasks (T006-T011) for User Story 1 (MVP Admin Authentication): server `LoginHandler`, `AdminGetUserHandler`, `AdminAuthController` two-step socket verification, and `AdminLoginDialog` async UI wiring.
+
+Kept: Four-module architecture, BCrypt password hashing, Swing FlatLaf UI, TCP socket communication, and non-blocking asynchronous UI handling.
+
+Changed:
+- Implemented `LoginHandler.java` for `ActionType.LOGIN` checking BCrypt password matching, handling `LOCKED` and `DELETED` accounts, and recording login history.
+- Implemented `AdminGetUserHandler.java` for `ActionType.ADMIN_GET_USER` returning full `AdminUserInfo` with `UserAccountDetail`.
+- Created Java 25-compatible stub test fixtures in `AuthHandlerTestSupport.java` and unit tests in `LoginHandlerTest.java` and `AdminGetUserHandlerTest.java`.
+- Updated `AdminAuthController.java` with asynchronous two-step authentication (`LOGIN` -> `ADMIN_GET_USER`) and error code mapping.
+- Updated `AdminLoginDialog.java` to invoke `authController.authenticateAsync(...)`, disabling submit buttons during transit and transitioning to `AdminMainFrame` on success.
+- Checked off T006 through T011 in `tasks.md`.
+
+Verification: Reactor tests (`mvn test -pl common,admin-client,server`) passed with 62 tests run, 0 failures, 0 errors.
+
+By hand: The developer instructed committing once per phase.
+
 ## 2026-11-23 — Phase 2: Foundational Prerequisites for Admin Auth (Issue #7)
 
 Tool: Antigravity (Gemini 3.8 Flash).

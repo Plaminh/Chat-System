@@ -9,12 +9,17 @@ import com.chat.server.repository.LoginHistoryRepository;
 import com.chat.server.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mindrot.jbcrypt.BCrypt;
-import org.mockito.Mockito;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
-/** Test fixture helper for authentication and administrative user handler tests. */
+/**
+ * Test fixture helper providing Java 25-compatible repository stubs.
+ */
 public final class AuthHandlerTestSupport {
     public static final ObjectMapper MAPPER = new ProtocolConfig().objectMapper();
     public static final String DEFAULT_RAW_PASSWORD = "Password123!";
@@ -42,11 +47,67 @@ public final class AuthHandlerTestSupport {
         );
     }
 
-    public static UserRepository mockUserRepository() {
-        return Mockito.mock(UserRepository.class);
+    public static StubUserRepository stubUserRepository() {
+        return new StubUserRepository();
     }
 
-    public static LoginHistoryRepository mockLoginHistoryRepository() {
-        return Mockito.mock(LoginHistoryRepository.class);
+    public static StubLoginHistoryRepository stubLoginHistoryRepository() {
+        return new StubLoginHistoryRepository();
+    }
+
+    public static class StubUserRepository extends UserRepository {
+        private final Map<Long, User> usersById = new ConcurrentHashMap<>();
+        private final Map<String, User> usersByUsername = new ConcurrentHashMap<>();
+
+        public StubUserRepository() {
+            super(new org.springframework.jdbc.core.JdbcTemplate());
+        }
+
+        public void addUser(User user) {
+            usersById.put(user.userId(), user);
+            usersByUsername.put(user.username().toLowerCase(), user);
+        }
+
+        @Override
+        public Optional<User> findById(long userId) {
+            return Optional.ofNullable(usersById.get(userId));
+        }
+
+        @Override
+        public Optional<User> findByUsername(String username) {
+            if (username == null) return Optional.empty();
+            return Optional.ofNullable(usersByUsername.get(username.toLowerCase()));
+        }
+    }
+
+    public static class StubLoginHistoryRepository extends LoginHistoryRepository {
+        private final AtomicLong counter = new AtomicLong(100);
+        private final Map<Long, Long> logins = new ConcurrentHashMap<>();
+        private final Map<Long, Boolean> logouts = new ConcurrentHashMap<>();
+
+        public StubLoginHistoryRepository() {
+            super(new org.springframework.jdbc.core.JdbcTemplate());
+        }
+
+        @Override
+        public long recordLogin(long userId) {
+            long id = counter.incrementAndGet();
+            logins.put(id, userId);
+            return id;
+        }
+
+        @Override
+        public boolean recordLogout(long loginHistoryId) {
+            logouts.put(loginHistoryId, true);
+            return true;
+        }
+
+        public boolean isLoggedOut(long loginHistoryId) {
+            return Boolean.TRUE.equals(logouts.get(loginHistoryId));
+        }
+
+        public Long getLoginUserId(long loginHistoryId) {
+            return logins.get(loginHistoryId);
+        }
     }
 }

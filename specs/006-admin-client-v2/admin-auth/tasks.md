@@ -38,14 +38,14 @@
 **Independent Test**: Enter `admin` credentials, verify socket `LOGIN` succeeds, `ADMIN_GET_USER` returns `AdminUserInfo`, dialog closes, and `AdminMainFrame` displays admin username.
 
 ### Tests for User Story 1
-- [ ] T006 [P] [US1] Create unit test for `LoginHandler` covering success, wrong password, locked account, and deleted account in `server/src/test/java/com/chat/server/handler/LoginHandlerTest.java`
-- [ ] T007 [P] [US1] Create unit test for `AdminGetUserHandler` covering valid admin retrieval and user-not-found in `server/src/test/java/com/chat/server/handler/AdminGetUserHandlerTest.java`
+- [x] T006 [P] [US1] Create unit test for `LoginHandler` covering success, wrong password, locked account, and deleted account in `server/src/test/java/com/chat/server/handler/LoginHandlerTest.java`
+- [x] T007 [P] [US1] Create unit test for `AdminGetUserHandler` covering valid admin retrieval and user-not-found in `server/src/test/java/com/chat/server/handler/AdminGetUserHandlerTest.java`
 
 ### Implementation for User Story 1
-- [ ] T008 [US1] Implement `LoginHandler` for `ActionType.LOGIN` checking `UserRepository.findByUsername`, verifying with `BCrypt.checkpw`, logging via `LoginHistoryRepository.recordLogin`, and promoting `SessionContext` in `server/src/main/java/com/chat/server/handler/impl/LoginHandler.java`
-- [ ] T009 [US1] Implement `AdminGetUserHandler` for `ActionType.ADMIN_GET_USER` querying user profile and returning `AdminUserInfo` in `server/src/main/java/com/chat/server/handler/impl/AdminGetUserHandler.java`
-- [ ] T010 [US1] Implement two-step authentication and role verification flow via `SocketClient` in `admin-client/src/main/java/com/chat/admin/controller/AdminAuthController.java`
-- [ ] T011 [US1] Wire `AdminLoginDialog` to call `AdminAuthController`, disable submit buttons during request transit, and transition to `AdminMainFrame` on success in `admin-client/src/main/java/com/chat/admin/view/AdminLoginDialog.java`
+- [x] T008 [US1] Implement `LoginHandler` for `ActionType.LOGIN` checking `UserRepository.findByUsername`, verifying with `BCrypt.checkpw`, logging via `LoginHistoryRepository.recordLogin`, and promoting `SessionContext` in `server/src/main/java/com/chat/server/handler/impl/LoginHandler.java`
+- [x] T009 [US1] Implement `AdminGetUserHandler` for `ActionType.ADMIN_GET_USER` querying user profile and returning `AdminUserInfo` in `server/src/main/java/com/chat/server/handler/impl/AdminGetUserHandler.java`
+- [x] T010 [US1] Implement two-step authentication and role verification flow via `SocketClient` in `admin-client/src/main/java/com/chat/admin/controller/AdminAuthController.java`
+- [x] T011 [US1] Wire `AdminLoginDialog` to call `AdminAuthController`, disable submit buttons during request transit, and transition to `AdminMainFrame` on success in `admin-client/src/main/java/com/chat/admin/view/AdminLoginDialog.java`
 
 **Checkpoint**: User Story 1 (MVP) is fully functional and testable independently.
 
