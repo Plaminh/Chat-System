@@ -58,12 +58,12 @@
 **Independent Test**: Submit valid credentials for an account with `role = USER`. Verify `LOGIN` succeeds, `ADMIN_GET_USER` returns `UNAUTHORIZED`, client dispatches `LOGOUT`, and dialog displays error message without opening `AdminMainFrame`.
 
 ### Tests for User Story 2
-- [ ] T012 [P] [US2] Create unit test verifying `ActionDispatcher` blocks `ADMIN_GET_USER` for non-admin sessions with `UNAUTHORIZED` in `server/src/test/java/com/chat/server/handler/ActionDispatcherAuthorizationTest.java`
-- [ ] T013 [P] [US2] Create unit test verifying `AdminAuthController` executes auto-logout and returns non-admin error in `admin-client/src/test/java/com/chat/admin/controller/AdminAuthControllerTest.java`
+- [x] T012 [P] [US2] Create unit test verifying `ActionDispatcher` blocks `ADMIN_GET_USER` for non-admin sessions with `UNAUTHORIZED` in `server/src/test/java/com/chat/server/handler/ActionDispatcherAuthorizationTest.java`
+- [x] T013 [P] [US2] Create unit test verifying `AdminAuthController` executes auto-logout and returns non-admin error in `admin-client/src/test/java/com/chat/admin/controller/AdminAuthControllerTest.java`
 
 ### Implementation for User Story 2
-- [ ] T014 [US2] Update `AdminAuthController` to dispatch `LOGOUT` and map `UNAUTHORIZED` error code to *"Tài khoản không có quyền quản trị"* in `admin-client/src/main/java/com/chat/admin/controller/AdminAuthController.java`
-- [ ] T015 [US2] Update `AdminLoginDialog` to handle non-admin error rejection, re-enable input fields, and focus username field in `admin-client/src/main/java/com/chat/admin/view/AdminLoginDialog.java`
+- [x] T014 [US2] Update `AdminAuthController` to dispatch `LOGOUT` and map `UNAUTHORIZED` error code to *"Tài khoản không có quyền quản trị"* in `admin-client/src/main/java/com/chat/admin/controller/AdminAuthController.java`
+- [x] T015 [US2] Update `AdminLoginDialog` to handle non-admin error rejection, re-enable input fields, and focus username field in `admin-client/src/main/java/com/chat/admin/view/AdminLoginDialog.java`
 
 **Checkpoint**: User Story 2 security boundary is fully enforced.
 

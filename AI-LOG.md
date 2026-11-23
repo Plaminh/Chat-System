@@ -1,5 +1,23 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-23 — Phase 4: Implement Non-Admin Role Rejection & Auto-Logout (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Implement Phase 4 tasks (T012-T015) for User Story 2 (Non-Admin Role Rejection & Auto-Logout): server-side action gating on `ADMIN_GET_USER`, auto-logout trigger on `UNAUTHORIZED`, error mapping to *"Tài khoản không có quyền quản trị"*, and UI handling.
+
+Kept: Four-module architecture, RBAC authorization boundaries, and atomic session teardown.
+
+Changed:
+- Created `ActionDispatcherAuthorizationTest.java` verifying that non-admin and anonymous callers are strictly blocked from `ADMIN_GET_USER` with `ErrorCode.UNAUTHORIZED` and `UNAUTHENTICATED`.
+- Implemented loopback mock integration test in `AdminAuthControllerTest.java` verifying that receiving `UNAUTHORIZED` or non-admin role triggers an automatic `LOGOUT` request to clean up server session state and propagates `"Tài khoản không có quyền quản trị."`
+- Updated `AdminLoginDialog.java` to display error dialog on unauthorized role attempt and re-enable inputs.
+- Checked off T012 through T015 in `tasks.md`.
+
+Verification: Reactor tests (`mvn test -pl common,admin-client,server`) passed with all unit and loopback tests passing (65 server tests, 5 admin-client tests, 67 common tests).
+
+By hand: The developer instructed committing once per phase.
+
 ## 2026-11-23 — Phase 3: Implement User Story 1 Admin Authentication Flow (Issue #7)
 
 Tool: Antigravity (Gemini 3.8 Flash).
