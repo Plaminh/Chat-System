@@ -1,5 +1,22 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-23 — Phase 2: Foundational Prerequisites for Admin Auth (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Implement Phase 2 foundational tasks (T004-T005) for Issue #7 [A0] Admin Authentication: verify `ActionDispatcher` authorization gating and add test fixture support.
+
+Kept: Four-module architecture, Spring Boot non-web mode, and RBAC role gating.
+
+Changed:
+- Verified `ActionDispatcher.java` contains `ActionType.LOGIN` in public whitelist and enforces `UserRole.ADMIN` on all `ADMIN_*` actions.
+- Created `AuthHandlerTestSupport.java` with test user generator and repository mock utilities.
+- Checked off T004 and T005 in `tasks.md`.
+
+Verification: Built and tested with Maven.
+
+By hand: The developer instructed committing once per phase.
+
 ## 2026-11-23 — Phase 1: Setup Infrastructure for Admin Auth (Issue #7)
 
 Tool: Antigravity (Gemini 3.8 Flash).

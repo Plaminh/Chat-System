@@ -24,8 +24,8 @@
 
 **Purpose**: Core infrastructure and dispatching rules required before implementing user stories.
 
-- [ ] T004 Verify and configure `ActionDispatcher` public action whitelist and admin action gating (`ADMIN_*` requires `UserRole.ADMIN`) in `server/src/main/java/com/chat/server/handler/ActionDispatcher.java`
-- [ ] T005 [P] Create test fixture skeleton and mock repository helper for authentication in `server/src/test/java/com/chat/server/handler/AuthHandlerTestSupport.java`
+- [x] T004 Verify and configure `ActionDispatcher` public action whitelist and admin action gating (`ADMIN_*` requires `UserRole.ADMIN`) in `server/src/main/java/com/chat/server/handler/ActionDispatcher.java`
+- [x] T005 [P] Create test fixture skeleton and mock repository helper for authentication in `server/src/test/java/com/chat/server/handler/AuthHandlerTestSupport.java`
 
 **Checkpoint**: Foundation ready — user story implementation can proceed.
 
