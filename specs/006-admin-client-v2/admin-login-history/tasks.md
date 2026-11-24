@@ -83,9 +83,9 @@
 
 **Purpose**: Verification, error handling, code formatting, and regression testing across modules.
 
-- [ ] T012 [P] Verify graceful error presentation for connection errors or empty results in `admin-client/src/main/java/com/chat/admin/view/UserDetailHistoryDialog.java`
-- [ ] T013 Run full multi-module build and automated test suite via Maven (`mvn test`)
-- [ ] T014 Run `mvn spotless:check` to verify code format compliance across all touched files
+- [x] T012 [P] Verify graceful error presentation for connection errors or empty results in `admin-client/src/main/java/com/chat/admin/view/UserDetailHistoryDialog.java`
+- [x] T013 Run full multi-module build and automated test suite via Maven (`mvn test`)
+- [x] T014 Run `mvn spotless:check` to verify code format compliance across all touched files
 
 ---
 
