@@ -1,7 +1,12 @@
 package com.chat.user.view;
 
 import com.chat.common.ui.ChatTheme;
+import com.chat.common.dto.auth.LoginRequest;
+import com.chat.common.dto.ResponseEnvelope;
+import com.chat.common.enums.ActionType;
 import com.chat.user.model.UserSessionState;
+import com.chat.user.network.SocketClient;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -12,6 +17,8 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -22,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 public final class LoginPanel extends JPanel {
   private static final int FORM_WIDTH = 360;
@@ -30,6 +38,7 @@ public final class LoginPanel extends JPanel {
   private final Runnable signInHandler;
   private final Runnable registrationHandler;
   private final Runnable recoveryHandler;
+  private final Function<LoginRequest, CompletableFuture<ResponseEnvelope>> loginSender;
   private final JTextField usernameField = ChatTheme.createTextField(32);
   private final JPasswordField passwordField = new JPasswordField(32);
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.CENTER);
@@ -39,11 +48,46 @@ public final class LoginPanel extends JPanel {
       Runnable signInHandler,
       Runnable registrationHandler,
       Runnable recoveryHandler) {
+    this(
+        sessionState,
+        signInHandler,
+        registrationHandler,
+        recoveryHandler,
+        request ->
+            CompletableFuture.failedFuture(
+                new IllegalStateException("Socket client is not configured")));
+  }
+
+  public LoginPanel(
+      UserSessionState sessionState,
+      Runnable signInHandler,
+      Runnable registrationHandler,
+      Runnable recoveryHandler,
+      SocketClient socketClient) {
+    this(
+        sessionState,
+        signInHandler,
+        registrationHandler,
+        recoveryHandler,
+        request ->
+            socketClient == null
+                ? CompletableFuture.failedFuture(
+                    new IllegalStateException("Socket client is not configured"))
+                : socketClient.sendAsync(ActionType.LOGIN, request));
+  }
+
+  LoginPanel(
+      UserSessionState sessionState,
+      Runnable signInHandler,
+      Runnable registrationHandler,
+      Runnable recoveryHandler,
+      Function<LoginRequest, CompletableFuture<ResponseEnvelope>> loginSender) {
     super(new BorderLayout());
     this.sessionState = Objects.requireNonNull(sessionState, "sessionState");
     this.signInHandler = Objects.requireNonNull(signInHandler, "signInHandler");
     this.registrationHandler = Objects.requireNonNull(registrationHandler, "registrationHandler");
     this.recoveryHandler = Objects.requireNonNull(recoveryHandler, "recoveryHandler");
+    this.loginSender = Objects.requireNonNull(loginSender, "loginSender");
     buildContent();
   }
 
@@ -63,6 +107,7 @@ public final class LoginPanel extends JPanel {
     String username = usernameField.getText().trim();
     char[] password = passwordField.getPassword();
     boolean passwordBlank = isBlank(password);
+    char[] passwordCopy = Arrays.copyOf(password, password.length);
     Arrays.fill(password, '\0');
     passwordField.setText("");
 
@@ -71,9 +116,41 @@ public final class LoginPanel extends JPanel {
       return;
     }
 
-    sessionState.signIn();
-    showFeedback("Sample sign-in succeeded; your account was not authenticated.", ChatTheme.SUCCESS);
-    signInHandler.run();
+    loginSender
+        .apply(new LoginRequest(username, new String(passwordCopy)))
+        .whenComplete(
+            (response, error) ->
+                SwingUtilities.invokeLater(
+                    () -> handleLoginResponse(response, error)));
+    Arrays.fill(passwordCopy, '\0');
+  }
+
+  private void handleLoginResponse(ResponseEnvelope response, Throwable error) {
+    if (error != null) {
+      showFeedback("Could not connect to the server.", ChatTheme.DANGER);
+      return;
+    }
+    if (response != null && response.success()) {
+      JsonNode user = response.data() == null ? null : response.data().get("user");
+      if (user != null) {
+        sessionState.signInAs(
+            user.path("username").asText(),
+            user.path("fullName").asText(),
+            usernameField.getText().trim().contains("@")
+                ? usernameField.getText().trim()
+                : sessionState.getProfile().email());
+      } else {
+        sessionState.signIn();
+      }
+      showFeedback("Login successful.", ChatTheme.SUCCESS);
+      signInHandler.run();
+      return;
+    }
+    showFeedback(
+        response != null && response.message() != null
+            ? response.message()
+            : "Login failed.",
+        ChatTheme.DANGER);
   }
 
   private void buildContent() {
@@ -162,9 +239,7 @@ public final class LoginPanel extends JPanel {
     JPanel footer = new JPanel(new GridLayout(1, 1));
     footer.setBackground(ChatTheme.PRIMARY_SOFT_BG);
     JLabel footerText =
-        new JLabel(
-            "Sample UI v1.0  •  Account services are not connected",
-            SwingConstants.CENTER);
+        new JLabel("ChatUser  •  Secure account login", SwingConstants.CENTER);
     footerText.setFont(ChatTheme.FONT_SMALL);
     footerText.setForeground(ChatTheme.TEXT_SECONDARY);
     footerText.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));

@@ -1,5 +1,51 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-23 — Implement real User login for Issue U1 handover
+
+Tool: AI assistant (Copilot SDK in VS Code).
+
+Asked for: Replace the remaining prototype-only User login behavior and explain PostgreSQL password visibility after account registration.
+
+Kept: The existing User Client, Server, BCrypt dependency, TCP socket protocol, four-module architecture, and database schema.
+
+Changed:
+- Added `LoginHandler` for public `LOGIN` requests.
+- Login now accepts username or email and verifies the BCrypt password against `UserRepository`.
+- Added `INVALID_CREDENTIALS`, `ACCOUNT_LOCKED`, and `ACCOUNT_DELETED` protocol responses.
+- Authenticated sessions now bind the matching role to `SessionContext`.
+- Updated `LoginPanel` to send `LoginRequest` through `SocketClient` instead of accepting arbitrary credentials and opening the prototype workspace.
+- Updated focused login tests to cover successful server login and rejected invalid credentials.
+- Registered the existing shared `SocketClient` instance for login through `UserApplication`.
+
+Verification: `mvn clean test -q` passed across the Maven reactor after stopping running server/client JAR processes that held Maven artifacts. Server and User sources compile successfully. No `admin-client` files or database schema changes were made.
+
+By hand: The developer must rebuild/restart `server.jar` and `user.jar`, because running applications retain the old compiled V1 behavior. PostgreSQL stores `password_hash` but it is intentionally not returned by the common login result. Inspect it explicitly with `SELECT username, password_hash, role, account_status FROM users;`; never log or expose a plaintext password.
+
+## 2026-11-23 — Implement User Registration issue U1
+
+Tool: AI assistant (Copilot SDK in VS Code).
+
+Asked for: Implement account registration for Issue U1 on `feature/admin-client-v2`, preserving the server and User Client responsibilities and avoiding changes to `admin-client`.
+
+Kept: The existing `common` DTO/action contracts, the four-module architecture, PostgreSQL schema, Spring JDBC repository APIs, BCrypt dependency, raw TCP socket protocol, and `feature/admin-client-v2`.
+
+Changed:
+- Added `RegisterHandler` for public `REGISTER` requests, BCrypt password hashing, `ROLE=USER`, active-account persistence through `UserRepository.insert`, validation, and `AuthenticationResult` responses.
+- Updated `ActionDispatcher` so duplicate keys raised during `REGISTER` translate to `ALREADY_EXISTS`; other duplicate-key actions retain `CONFLICT`.
+- Connected `RegistrationDialog` to `SocketClient.sendAsync(ActionType.REGISTER, ...)`, replaced sample-account feedback, cleared password buffers, and added username/email server-error feedback.
+- Shared the application `SocketClient` instance across registration entry points in `UserApplication`.
+- Updated focused User registration tests and the dispatcher duplicate-key test.
+
+Verification: `mvn clean test -q` passed across the Maven reactor. Targeted `server,user-client -am test` also passed. `mvn verify -q` passed. `mvn spotless:check -q` was not applied and reported existing formatting violations, including many files in `admin-client`; no `spotless:apply` was run. Docker Compose could not start because `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB` were not configured in the current environment.
+
+Not changed:
+- No files under `admin-client` were modified.
+- No `common` DTO/action contract was changed.
+- No database schema or credentials were changed.
+- No branch was created, commit, push, merge, or rebase was performed.
+
+By hand: The developer remains responsible for configuring PostgreSQL environment variables, running the live server/client registration and login checks, capturing screenshots, reviewing the changes, creating the personal issue branch, committing with their Git identity, pushing, and merging through the team's approved workflow.
+
 ## 2026-11-23 — Implement Server Core Platform (Issue #3)
 
 Tool: Antigravity (Gemini 3.8 Flash).

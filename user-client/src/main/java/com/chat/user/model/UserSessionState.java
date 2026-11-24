@@ -34,6 +34,18 @@ public final class UserSessionState {
     signedIn = true;
   }
 
+  public void signInAs(String username, String fullName, String email) {
+    profile =
+        new UserProfile(
+            username,
+            fullName,
+            email,
+            profile.address(),
+            profile.dateOfBirth(),
+            profile.gender());
+    signedIn = true;
+  }
+
   public void signOut() {
     signedIn = false;
   }
