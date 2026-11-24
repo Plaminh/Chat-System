@@ -9,81 +9,77 @@ import com.chat.common.enums.AccountStatus;
 import com.chat.common.enums.ActionType;
 import com.chat.common.enums.ErrorCode;
 import com.chat.common.enums.PresenceStatus;
+import com.chat.common.exception.ProtocolValidationException;
+import com.chat.common.protocol.ProtocolValidator;
 import com.chat.server.handler.ActionHandler;
 import com.chat.server.model.User;
-import com.chat.server.repository.LoginHistoryRepository;
 import com.chat.server.repository.UserRepository;
 import com.chat.server.session.SessionContext;
+import com.chat.server.service.SessionLifecycle;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.OffsetDateTime;
+import java.util.Optional;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
-import java.time.OffsetDateTime;
-import java.util.Optional;
-
 @Component
 public class LoginHandler implements ActionHandler {
-    private final ObjectMapper mapper;
-    private final UserRepository userRepository;
-    private final LoginHistoryRepository loginHistoryRepository;
+  private final ObjectMapper mapper;
+  private final UserRepository users;
+  private final SessionLifecycle sessionLifecycle;
 
-    public LoginHandler(ObjectMapper mapper, UserRepository userRepository, LoginHistoryRepository loginHistoryRepository) {
-        this.mapper = mapper;
-        this.userRepository = userRepository;
-        this.loginHistoryRepository = loginHistoryRepository;
+  public LoginHandler(
+      ObjectMapper mapper, UserRepository users, SessionLifecycle sessionLifecycle) {
+    this.mapper = mapper;
+    this.users = users;
+    this.sessionLifecycle = sessionLifecycle;
+  }
+
+  @Override
+  public ActionType action() {
+    return ActionType.LOGIN;
+  }
+
+  @Override
+  public ResponseEnvelope handle(RequestEnvelope request, SessionContext session)
+      throws ProtocolValidationException {
+    LoginRequest payload = ProtocolValidator.decodePayload(mapper, request, LoginRequest.class);
+
+    Optional<User> user =
+        users.findByUsername(payload.username());
+    if (user.isEmpty() && payload.username().contains("@")) {
+      user = users.findByEmail(payload.username());
+    }
+    if (user.isEmpty()) {
+      return error(request, ErrorCode.INVALID_CREDENTIALS, "Invalid username/email or password");
+    }
+    User account = user.orElseThrow();
+    if (account.accountStatus() == AccountStatus.LOCKED) {
+      return error(request, ErrorCode.ACCOUNT_LOCKED, "Account is locked");
+    }
+    if (account.accountStatus() == AccountStatus.DELETED) {
+      return error(request, ErrorCode.ACCOUNT_DELETED, "Account is deleted");
+    }
+    if (!BCrypt.checkpw(payload.password(), account.passwordHash())) {
+      return error(request, ErrorCode.INVALID_CREDENTIALS, "Invalid username/email or password");
     }
 
-    @Override
-    public ActionType action() {
-        return ActionType.LOGIN;
-    }
+    session.authenticate(account.userId(), account.username(), account.role());
+    sessionLifecycle.begin(session, account.userId());
 
-    @Override
-    public ResponseEnvelope handle(RequestEnvelope request, SessionContext session) throws Exception {
-        String requestId = request.requestId();
-        LoginRequest loginRequest = mapper.treeToValue(request.data(), LoginRequest.class);
-        if (loginRequest == null || loginRequest.username() == null || loginRequest.password() == null) {
-            return new ResponseEnvelope(requestId, false, null, ErrorCode.INVALID_REQUEST, "Invalid username or password request");
-        }
+    UserSummary summary =
+        new UserSummary(
+            account.userId(),
+            account.username(),
+            account.fullName(),
+            AccountStatus.ACTIVE,
+            PresenceStatus.ONLINE);
+    AuthenticationResult result =
+        new AuthenticationResult(summary, OffsetDateTime.now());
+    return new ResponseEnvelope(request.requestId(), true, mapper.valueToTree(result), null, null);
+  }
 
-        Optional<User> userOpt = userRepository.findByUsername(loginRequest.username());
-        if (userOpt.isEmpty()) {
-            return new ResponseEnvelope(requestId, false, null, ErrorCode.INVALID_CREDENTIALS, "Invalid username or password");
-        }
-
-        User user = userOpt.get();
-        if (user.accountStatus() == AccountStatus.LOCKED) {
-            return new ResponseEnvelope(requestId, false, null, ErrorCode.ACCOUNT_LOCKED, "Account is locked by an administrator");
-        }
-        if (user.accountStatus() == AccountStatus.DELETED) {
-            return new ResponseEnvelope(requestId, false, null, ErrorCode.ACCOUNT_DELETED, "Account has been deactivated");
-        }
-
-        boolean passwordMatch;
-        try {
-            passwordMatch = BCrypt.checkpw(loginRequest.password(), user.passwordHash());
-        } catch (Exception ex) {
-            passwordMatch = false;
-        }
-
-        if (!passwordMatch) {
-            return new ResponseEnvelope(requestId, false, null, ErrorCode.INVALID_CREDENTIALS, "Invalid username or password");
-        }
-
-        long historyId = loginHistoryRepository.recordLogin(user.userId());
-        if (session != null) {
-            session.authenticate(user.userId(), user.username(), user.role(), historyId);
-        }
-
-        UserSummary summary = new UserSummary(
-                user.userId(),
-                user.username(),
-                user.fullName(),
-                user.accountStatus(),
-                PresenceStatus.ONLINE
-        );
-        AuthenticationResult authResult = new AuthenticationResult(summary, OffsetDateTime.now());
-
-        return new ResponseEnvelope(requestId, true, mapper.valueToTree(authResult), null, null);
-    }
+  private ResponseEnvelope error(RequestEnvelope request, ErrorCode code, String message) {
+    return new ResponseEnvelope(request.requestId(), false, null, code, message);
+  }
 }

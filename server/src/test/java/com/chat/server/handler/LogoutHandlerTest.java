@@ -5,6 +5,7 @@ import com.chat.common.dto.ResponseEnvelope;
 import com.chat.common.enums.ActionType;
 import com.chat.common.enums.UserRole;
 import com.chat.server.handler.impl.LogoutHandler;
+import com.chat.server.service.SessionLifecycle;
 import com.chat.server.session.OnlineSessionRegistry;
 import com.chat.server.session.SessionContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,13 +18,15 @@ class LogoutHandlerTest {
     private final ObjectMapper mapper = AuthHandlerTestSupport.MAPPER;
     private AuthHandlerTestSupport.StubLoginHistoryRepository loginHistoryRepository;
     private OnlineSessionRegistry sessionRegistry;
+    private SessionLifecycle sessionLifecycle;
     private LogoutHandler handler;
 
     @BeforeEach
     void setUp() {
         loginHistoryRepository = AuthHandlerTestSupport.stubLoginHistoryRepository();
         sessionRegistry = new OnlineSessionRegistry(mapper);
-        handler = new LogoutHandler(loginHistoryRepository, sessionRegistry);
+        sessionLifecycle = AuthHandlerTestSupport.stubSessionLifecycle(loginHistoryRepository, sessionRegistry, mapper);
+        handler = new LogoutHandler(mapper, sessionLifecycle);
     }
 
     @Test
@@ -32,9 +35,10 @@ class LogoutHandlerTest {
     }
 
     @Test
-    void clearsSessionAndRecordsLogoutTimestamp() {
+    void clearsSessionAndRecordsLogoutTimestamp() throws Exception {
         SessionContext session = new SessionContext("conn-logout-1");
-        session.authenticate(1L, "admin", UserRole.ADMIN, 999L);
+        session.authenticate(1L, "admin", UserRole.ADMIN);
+        session.setDatabaseSession(1L, 999L);
         assertTrue(session.isAuthenticated());
 
         RequestEnvelope request = new RequestEnvelope("req-logout-1", ActionType.LOGOUT, mapper.createObjectNode());
@@ -42,7 +46,6 @@ class LogoutHandlerTest {
 
         assertTrue(response.success());
         assertEquals("req-logout-1", response.requestId());
-        assertNull(response.data());
 
         assertFalse(session.isAuthenticated());
         assertNull(session.getUserId());

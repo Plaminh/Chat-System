@@ -26,11 +26,9 @@ class OnlineSessionRegistryTest {
 
     @Test
     void registersAndBindsUserSuccessfully() throws Exception {
-        Long userId = 1001L;
+        long userId = 42L;
         SessionContext session = new SessionContext("conn-1");
-        session.authenticate(userId, "testuser", com.chat.common.enums.UserRole.USER, 501L);
-        assertEquals(501L, session.getLoginHistoryId());
-
+        session.authenticate(userId, "testuser", com.chat.common.enums.UserRole.USER);
         StringWriter sw = new StringWriter();
         ClientConnection connection = new ClientConnection(new Socket(), new BufferedWriter(sw), session);
 
@@ -66,5 +64,22 @@ class OnlineSessionRegistryTest {
 
         assertTrue(sw1.toString().contains("\"ev-b\""));
         assertTrue(sw2.toString().contains("\"ev-b\""));
+    }
+
+    @Test
+    void bindsAndUnbindsUsingSessionContext() throws Exception {
+        long userId = 43L;
+        SessionContext session = new SessionContext("conn-session");
+        session.authenticate(userId, "testuser", com.chat.common.enums.UserRole.USER);
+        StringWriter sw = new StringWriter();
+        ClientConnection connection =
+            new ClientConnection(new Socket(), new BufferedWriter(sw), session);
+
+        registry.registerConnection(connection);
+        registry.bindSession(session);
+        assertTrue(registry.isUserOnline(userId));
+
+        registry.unbindSession(session);
+        assertFalse(registry.isUserOnline(userId));
     }
 }

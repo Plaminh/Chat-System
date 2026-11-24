@@ -33,25 +33,53 @@ public class OnlineSessionRegistry {
         activeUserSessions.entrySet().removeIf(entry -> entry.getValue().isEmpty());
     }
 
-    public void bindUser(Long userId, ClientConnection connection) {
-        if (userId != null) {
-            activeUserSessions.computeIfAbsent(userId, k -> ConcurrentHashMap.newKeySet()).add(connection);
-        }
+    public void bindUser(long userId, ClientConnection connection) {
+        activeUserSessions.computeIfAbsent(userId, k -> ConcurrentHashMap.newKeySet()).add(connection);
     }
 
-    public void unbindUser(Long userId, ClientConnection connection) {
-        if (userId != null) {
-            activeUserSessions.computeIfPresent(userId, (k, set) -> {
-                set.remove(connection);
-                return set.isEmpty() ? null : set;
-            });
-        }
+    public void unbindUser(long userId, ClientConnection connection) {
+        activeUserSessions.computeIfPresent(userId, (k, set) -> {
+            set.remove(connection);
+            return set.isEmpty() ? null : set;
+        });
     }
 
-    public boolean isUserOnline(Long userId) {
-        if (userId == null) {
+    /**
+     * Marks the authenticated user of {@code session} as online on the socket that owns the
+     * session. Handlers only receive a {@link SessionContext}, so LOGIN calls this after
+     * {@link SessionContext#authenticate}.
+     *
+     * @return false when the session is not authenticated or its socket is no longer connected
+     */
+    public boolean bindSession(SessionContext session) {
+        Long userId = session.getUserId();
+        ClientConnection connection = findConnection(session);
+        if (userId == null || connection == null) {
             return false;
         }
+        bindUser(userId, connection);
+        return true;
+    }
+
+    /** Removes the session's socket from its user's online set; call it before session.clear(). */
+    public void unbindSession(SessionContext session) {
+        Long userId = session.getUserId();
+        ClientConnection connection = findConnection(session);
+        if (userId != null && connection != null) {
+            unbindUser(userId, connection);
+        }
+    }
+
+    private ClientConnection findConnection(SessionContext session) {
+        for (ClientConnection connection : allConnections) {
+            if (connection.getSessionContext() == session) {
+                return connection;
+            }
+        }
+        return null;
+    }
+
+    public boolean isUserOnline(long userId) {
         Set<ClientConnection> connections = activeUserSessions.get(userId);
         return connections != null && !connections.isEmpty();
     }
@@ -60,10 +88,7 @@ public class OnlineSessionRegistry {
         return Collections.unmodifiableSet(activeUserSessions.keySet());
     }
 
-    public boolean sendToUser(Long userId, EventEnvelope event) {
-        if (userId == null) {
-            return false;
-        }
+    public boolean sendToUser(long userId, EventEnvelope event) {
         Set<ClientConnection> connections = activeUserSessions.get(userId);
         if (connections == null || connections.isEmpty()) {
             return false;
@@ -80,11 +105,11 @@ public class OnlineSessionRegistry {
         return sent;
     }
 
-    public int sendToUsers(Set<Long> userIds, EventEnvelope event) {
+    public int sendToUsers(Collection<Long> userIds, EventEnvelope event) {
         if (userIds == null || userIds.isEmpty()) return 0;
         int count = 0;
         for (Long userId : userIds) {
-            if (sendToUser(userId, event)) {
+            if (userId != null && sendToUser(userId, event)) {
                 count++;
             }
         }

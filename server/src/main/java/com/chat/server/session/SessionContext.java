@@ -9,8 +9,9 @@ public class SessionContext {
     private volatile Long userId;
     private volatile String username;
     private volatile UserRole role;
-    private volatile Long loginHistoryId;
     private volatile Instant authenticatedAt;
+    private volatile Long databaseUserId;
+    private volatile Long loginHistoryId;
 
     public SessionContext(String connectionId) {
         this.connectionId = Objects.requireNonNull(connectionId, "connectionId");
@@ -32,14 +33,6 @@ public class SessionContext {
         return role;
     }
 
-    public Long getLoginHistoryId() {
-        return loginHistoryId;
-    }
-
-    public void setLoginHistoryId(Long loginHistoryId) {
-        this.loginHistoryId = loginHistoryId;
-    }
-
     public Instant getAuthenticatedAt() {
         return authenticatedAt;
     }
@@ -52,23 +45,38 @@ public class SessionContext {
         return isAuthenticated() && this.role == requiredRole;
     }
 
-    public synchronized void authenticate(Long userId, String username, UserRole role) {
-        authenticate(userId, username, role, null);
-    }
-
-    public synchronized void authenticate(Long userId, String username, UserRole role, Long loginHistoryId) {
-        this.userId = Objects.requireNonNull(userId, "userId");
+    public synchronized void authenticate(long userId, String username, UserRole role) {
+        if (userId <= 0) {
+            throw new IllegalArgumentException("userId must be positive");
+        }
+        this.userId = userId;
         this.username = Objects.requireNonNull(username, "username");
         this.role = Objects.requireNonNull(role, "role");
-        this.loginHistoryId = loginHistoryId;
         this.authenticatedAt = Instant.now();
+    }
+
+    public synchronized void setDatabaseSession(long databaseUserId, long loginHistoryId) {
+        this.databaseUserId = databaseUserId;
+        this.loginHistoryId = loginHistoryId;
+    }
+
+    public Long getDatabaseUserId() {
+        return databaseUserId;
+    }
+
+    public Long getLoginHistoryId() {
+        return loginHistoryId;
+    }
+
+    public void clearDatabaseSession() {
+        this.databaseUserId = null;
+        this.loginHistoryId = null;
     }
 
     public synchronized void clear() {
         this.userId = null;
         this.username = null;
         this.role = null;
-        this.loginHistoryId = null;
         this.authenticatedAt = null;
     }
 }

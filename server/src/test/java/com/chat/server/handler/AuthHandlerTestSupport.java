@@ -5,20 +5,26 @@ import com.chat.common.enums.Gender;
 import com.chat.common.enums.UserRole;
 import com.chat.server.config.ProtocolConfig;
 import com.chat.server.model.User;
+import com.chat.server.repository.FriendshipRepository;
 import com.chat.server.repository.LoginHistoryRepository;
+import com.chat.server.repository.UserActivityLogRepository;
 import com.chat.server.repository.UserRepository;
+import com.chat.server.service.SessionLifecycle;
+import com.chat.server.session.OnlineSessionRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Test fixture helper providing Java 25-compatible repository stubs.
+ * Test fixture helper providing Java 25-compatible repository and service stubs.
  */
 public final class AuthHandlerTestSupport {
     public static final ObjectMapper MAPPER = new ProtocolConfig().objectMapper();
@@ -55,12 +61,31 @@ public final class AuthHandlerTestSupport {
         return new StubLoginHistoryRepository();
     }
 
+    public static SessionLifecycle stubSessionLifecycle(
+            LoginHistoryRepository loginHistory,
+            OnlineSessionRegistry registry,
+            ObjectMapper mapper) {
+        UserActivityLogRepository activityLogs = new UserActivityLogRepository(new JdbcTemplate()) {
+            @Override
+            public void recordAppOpen(long userId) {
+                // stub: no-op for tests
+            }
+        };
+        FriendshipRepository friendships = new FriendshipRepository(new JdbcTemplate()) {
+            @Override
+            public List<Long> findFriendIds(long userId) {
+                return List.of();
+            }
+        };
+        return new SessionLifecycle(loginHistory, activityLogs, friendships, registry, mapper);
+    }
+
     public static class StubUserRepository extends UserRepository {
         private final Map<Long, User> usersById = new ConcurrentHashMap<>();
         private final Map<String, User> usersByUsername = new ConcurrentHashMap<>();
 
         public StubUserRepository() {
-            super(new org.springframework.jdbc.core.JdbcTemplate());
+            super(new JdbcTemplate());
         }
 
         public void addUser(User user) {
@@ -78,6 +103,14 @@ public final class AuthHandlerTestSupport {
             if (username == null) return Optional.empty();
             return Optional.ofNullable(usersByUsername.get(username.toLowerCase()));
         }
+
+        @Override
+        public Optional<User> findByEmail(String email) {
+            if (email == null) return Optional.empty();
+            return usersById.values().stream()
+                    .filter(u -> email.equalsIgnoreCase(u.email()))
+                    .findFirst();
+        }
     }
 
     public static class StubLoginHistoryRepository extends LoginHistoryRepository {
@@ -86,7 +119,7 @@ public final class AuthHandlerTestSupport {
         private final Map<Long, Boolean> logouts = new ConcurrentHashMap<>();
 
         public StubLoginHistoryRepository() {
-            super(new org.springframework.jdbc.core.JdbcTemplate());
+            super(new JdbcTemplate());
         }
 
         @Override

@@ -10,6 +10,8 @@ import com.chat.common.enums.ErrorCode;
 import com.chat.common.enums.UserRole;
 import com.chat.server.handler.impl.LoginHandler;
 import com.chat.server.model.User;
+import com.chat.server.service.SessionLifecycle;
+import com.chat.server.session.OnlineSessionRegistry;
 import com.chat.server.session.SessionContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,13 +23,17 @@ class LoginHandlerTest {
     private final ObjectMapper mapper = AuthHandlerTestSupport.MAPPER;
     private AuthHandlerTestSupport.StubUserRepository userRepository;
     private AuthHandlerTestSupport.StubLoginHistoryRepository loginHistoryRepository;
+    private OnlineSessionRegistry sessionRegistry;
+    private SessionLifecycle sessionLifecycle;
     private LoginHandler handler;
 
     @BeforeEach
     void setUp() {
         userRepository = AuthHandlerTestSupport.stubUserRepository();
         loginHistoryRepository = AuthHandlerTestSupport.stubLoginHistoryRepository();
-        handler = new LoginHandler(mapper, userRepository, loginHistoryRepository);
+        sessionRegistry = new OnlineSessionRegistry(mapper);
+        sessionLifecycle = AuthHandlerTestSupport.stubSessionLifecycle(loginHistoryRepository, sessionRegistry, mapper);
+        handler = new LoginHandler(mapper, userRepository, sessionLifecycle);
     }
 
     @Test

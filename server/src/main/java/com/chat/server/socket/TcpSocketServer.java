@@ -6,6 +6,7 @@ import com.chat.common.protocol.ProtocolConstants;
 import com.chat.server.handler.RequestHandler;
 import com.chat.server.session.OnlineSessionRegistry;
 import com.chat.server.session.SessionContext;
+import com.chat.server.service.SessionLifecycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,22 +28,37 @@ public class TcpSocketServer implements SmartLifecycle {
     private final int configuredPort;
     private final RequestHandler handler;
     private final OnlineSessionRegistry sessionRegistry;
+    private final SessionLifecycle sessionLifecycle;
     private final Set<ClientConnection> connections = ConcurrentHashMap.newKeySet();
     private final ExecutorService acceptor = Executors.newSingleThreadExecutor(r -> new Thread(r, "chat-acceptor"));
-    private final ThreadPoolExecutor workers = new ThreadPoolExecutor(4, 32, 60, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<>(256), r -> new Thread(r, "chat-client"), new ThreadPoolExecutor.AbortPolicy());
+    // Each client holds one worker for its whole connection, so a connection must get its own
+    // thread immediately. A queued connection would never be served while earlier clients stay
+    // connected. SynchronousQueue starts a new thread per connection up to MAX_CLIENTS and rejects
+    // (closes) the connection beyond that.
+    private static final int MAX_CLIENTS = 256;
+    private final ThreadPoolExecutor workers = new ThreadPoolExecutor(0, MAX_CLIENTS, 60, TimeUnit.SECONDS,
+            new SynchronousQueue<>(), r -> new Thread(r, "chat-client"), new ThreadPoolExecutor.AbortPolicy());
     private volatile boolean running;
     private ServerSocket serverSocket;
 
     @Autowired
-    public TcpSocketServer(@Value("${chat.server.port:5050}") int port, RequestHandler handler, OnlineSessionRegistry sessionRegistry) {
+    public TcpSocketServer(
+            @Value("${chat.server.port:5050}") int port,
+            RequestHandler handler,
+            OnlineSessionRegistry sessionRegistry,
+            SessionLifecycle sessionLifecycle) {
         this.configuredPort = port;
         this.handler = handler;
         this.sessionRegistry = sessionRegistry;
+        this.sessionLifecycle = sessionLifecycle;
     }
 
     public TcpSocketServer(int port, RequestHandler handler) {
-        this(port, handler, null);
+        this(port, handler, null, null);
+    }
+
+    public TcpSocketServer(int port, RequestHandler handler, OnlineSessionRegistry sessionRegistry) {
+        this(port, handler, sessionRegistry, null);
     }
 
     @Override
@@ -102,6 +118,9 @@ public class TcpSocketServer implements SmartLifecycle {
                 if (sessionRegistry != null) {
                     sessionRegistry.unregisterConnection(connection);
                 }
+            }
+            if (sessionLifecycle != null && session.isAuthenticated()) {
+                sessionLifecycle.end(session);
             }
         }
     }

@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.dao.DuplicateKeyException;
 
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,7 +52,7 @@ class ActionDispatcherTest {
     @Test
     void blocksAdminActionWhenUserRole() {
         SessionContext session = new SessionContext("conn-1");
-        session.authenticate(1001L, "regular_user", UserRole.USER);
+        session.authenticate(1L, "regular_user", UserRole.USER);
 
         RequestEnvelope request = new RequestEnvelope("req-3", ActionType.ADMIN_LIST_USERS, mapper.createObjectNode());
         ResponseEnvelope response = dispatcher.dispatch(request, session);
@@ -65,7 +64,7 @@ class ActionDispatcherTest {
     @Test
     void returnsUnsupportedOperationWhenActionHasNoHandler() {
         SessionContext session = new SessionContext("conn-1");
-        session.authenticate(1002L, "admin_user", UserRole.ADMIN);
+        session.authenticate(2L, "admin_user", UserRole.ADMIN);
 
         RequestEnvelope request = new RequestEnvelope("req-4", ActionType.ADMIN_LIST_USERS, mapper.createObjectNode());
         ResponseEnvelope response = dispatcher.dispatch(request, session);
@@ -99,26 +98,60 @@ class ActionDispatcherTest {
     }
 
     @Test
-    void translatesDuplicateKeyExceptionToConflict() {
-        ActionHandler conflictHandler = new ActionHandler() {
+    void translatesDuplicateKeyExceptionToAlreadyExistsForCreateActions() {
+        ResponseEnvelope response = dispatchDuplicateKey(ActionType.REGISTER, new SessionContext("conn-1"));
+        assertFalse(response.success());
+        assertEquals(ErrorCode.ALREADY_EXISTS, response.errorCode());
+    }
+
+    @Test
+    void translatesDuplicateKeyExceptionToConflictForOtherActions() {
+        SessionContext session = new SessionContext("conn-1");
+        session.authenticate(1L, "regular_user", UserRole.USER);
+        ResponseEnvelope response = dispatchDuplicateKey(ActionType.OPEN_DIRECT_CONVERSATION, session);
+        assertFalse(response.success());
+        assertEquals(ErrorCode.CONFLICT, response.errorCode());
+    }
+
+    @Test
+    void translatesIllegalArgumentExceptionToValidationFailed() {
+        ActionHandler invalidHandler = new ActionHandler() {
             @Override
             public ActionType action() {
-                return ActionType.REGISTER;
+                return ActionType.PING;
             }
 
             @Override
             public ResponseEnvelope handle(RequestEnvelope request, SessionContext session) {
-                throw new DuplicateKeyException("duplicate username");
+                throw new IllegalArgumentException("pageSize must be positive");
             }
         };
 
-        ActionDispatcher customDispatcher = new ActionDispatcher(mapper, List.of(conflictHandler));
-        SessionContext session = new SessionContext("conn-1");
-        RequestEnvelope request = new RequestEnvelope("req-6", ActionType.REGISTER, mapper.createObjectNode());
+        ActionDispatcher customDispatcher = new ActionDispatcher(mapper, List.of(invalidHandler));
+        RequestEnvelope request = new RequestEnvelope("req-8", ActionType.PING, mapper.createObjectNode());
 
-        ResponseEnvelope response = customDispatcher.dispatch(request, session);
+        ResponseEnvelope response = customDispatcher.dispatch(request, new SessionContext("conn-1"));
         assertFalse(response.success());
-        assertEquals(ErrorCode.CONFLICT, response.errorCode());
+        assertEquals(ErrorCode.VALIDATION_FAILED, response.errorCode());
+        assertEquals("pageSize must be positive", response.message());
+    }
+
+    private ResponseEnvelope dispatchDuplicateKey(ActionType action, SessionContext session) {
+        ActionHandler duplicateHandler = new ActionHandler() {
+            @Override
+            public ActionType action() {
+                return action;
+            }
+
+            @Override
+            public ResponseEnvelope handle(RequestEnvelope request, SessionContext session) {
+                throw new DuplicateKeyException("duplicate key");
+            }
+        };
+
+        ActionDispatcher customDispatcher = new ActionDispatcher(mapper, List.of(duplicateHandler));
+        RequestEnvelope request = new RequestEnvelope("req-6", action, mapper.createObjectNode());
+        return customDispatcher.dispatch(request, session);
     }
 
     @Test

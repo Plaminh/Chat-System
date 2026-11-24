@@ -1,155 +1,84 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
-## 2026-11-23 — Phase 6: Polish & Cross-Cutting Verification for Admin Auth (Issue #7)
+## 2026-11-24 — Complete User login and logout lifecycle for Issue U5
 
-Tool: Antigravity (Gemini 3.8 Flash).
+Tool: AI assistant (Copilot SDK in VS Code).
 
-Asked for: Implement Phase 6 polish tasks (T019-T021) for Issue #7 [A0] Admin Authentication: handle connection loss/timeout gracefully, run full multi-module `mvn test` reactor build, and audit `mvn spotless:check`.
-
-Kept: Four-module architecture, user rule forbidding `mvn spotless:apply` without explicit request, and preservation of all existing tests.
+Asked for: Audit and finish Issue U5 login/logout, including PostgreSQL history and activity records, presence events, disconnect handling, and client close/sign-out behavior.
 
 Changed:
-- Verified network drop and timeout resilience with localized error reporting in `AdminLoginDialog.java`.
-- Ran full root reactor Maven build (`mvn test`) across all modules (`chat-system`, `common`, `admin-client`, `user-client`, `server`): 100% passed (Common 67/67, Admin Client 5/5, User Client 16/16, Server 67 passed with 31 DB integration tests skipped without live DB).
-- Audited `mvn spotless:check` without modifying formatting of unrelated files.
-- Marked all 21 tasks in `specs/006-admin-client-v2/admin-auth/tasks.md` as completed.
+- Extended successful login handling to record `login_history`, `user_activity_logs.app_open`, keep database/login-history IDs in `SessionContext`, and broadcast `PRESENCE_CHANGED=ONLINE` to direct friends.
+- Added `LOGOUT` handler and disconnect cleanup to close the login-history row and broadcast `PRESENCE_CHANGED=OFFLINE` when no active session remains.
+- Updated the User Client to send `LOGOUT` on Sign Out and app close.
+- Added registry coverage for session binding and unbinding.
+- Did not change shared `common` contracts or database schema.
 
-Verification: Full reactor build succeeded in 15.8 seconds.
+Verification: `mvn -q clean test-compile` passed across the Maven reactor.
 
-By hand: The developer instructed committing once per phase.
+By hand: Rebuild/restart the server and User Client JARs, verify successful login/locked/deleted/invalid credentials through PostgreSQL-backed live testing, verify Sign Out and app-close rows, and capture screenshots. The developer must review and commit under their own Git account.
 
-## 2026-11-23 — Phase 5: Implement Administrator Sign Out (Issue #7)
+## 2026-11-23 — Fix User sidebar profile card layout
 
-Tool: Antigravity (Gemini 3.8 Flash).
+Tool: AI assistant (Copilot SDK in VS Code).
 
-Asked for: Implement Phase 5 tasks (T016-T018) for User Story 3 (Administrator Sign Out): server-side `LogoutHandler`, session clearance, `login_history` timestamp update, and client sign-out wiring in `AdminMainFrame`.
-
-Kept: Four-module architecture, session lifecycle consistency, and non-blocking desktop client behavior.
-
-Changed:
-- Implemented `LogoutHandler.java` for `ActionType.LOGOUT` clearing `SessionContext` and recording `logged_out_at` in `login_history` via `loginHistoryRepository.recordLogout(...)`.
-- Created unit test `LogoutHandlerTest.java` verifying that `SessionContext` is cleared and the logout timestamp is recorded.
-- Wired `handleSignOut()` in `AdminMainFrame.java` to dispatch `LOGOUT` through `AdminAuthController.logoutAsync()` prior to disposing the workspace frame and reopening the login dialog.
-- Checked off T016 through T018 in `tasks.md`.
-
-Verification: Reactor tests (`mvn test -pl common,admin-client,server`) passed (67 server tests, 5 admin-client tests, 67 common tests).
-
-By hand: The developer instructed committing once per phase.
-
-## 2026-11-23 — Phase 4: Implement Non-Admin Role Rejection & Auto-Logout (Issue #7)
-
-Tool: Antigravity (Gemini 3.8 Flash).
-
-Asked for: Implement Phase 4 tasks (T012-T015) for User Story 2 (Non-Admin Role Rejection & Auto-Logout): server-side action gating on `ADMIN_GET_USER`, auto-logout trigger on `UNAUTHORIZED`, error mapping to *"Tài khoản không có quyền quản trị"*, and UI handling.
-
-Kept: Four-module architecture, RBAC authorization boundaries, and atomic session teardown.
+Asked for: Align the User sidebar profile card with the navigation menu and Sign Out button, preserve dynamic name/status text, ellipsis, and tooltip behavior.
 
 Changed:
-- Created `ActionDispatcherAuthorizationTest.java` verifying that non-admin and anonymous callers are strictly blocked from `ADMIN_GET_USER` with `ErrorCode.UNAUTHORIZED` and `UNAUTHENTICATED`.
-- Implemented loopback mock integration test in `AdminAuthControllerTest.java` verifying that receiving `UNAUTHORIZED` or non-admin role triggers an automatic `LOGOUT` request to clean up server session state and propagates `"Tài khoản không có quyền quản trị."`
-- Updated `AdminLoginDialog.java` to display error dialog on unauthorized role attempt and re-enable inputs.
-- Checked off T012 through T015 in `tasks.md`.
+- Updated [UserNavigationSidebar.java](user-client/src/main/java/com/chat/user/component/UserNavigationSidebar.java) to use the same 12px horizontal inset as the navigation list and footer.
+- Changed the profile card to the fixed 220px sidebar content width, with matching minimum/preferred/maximum dimensions and a 54px height.
+- Replaced the fixed 142px text width with a text column that calculates available width after the 32px avatar and card gaps.
+- Added dynamic ellipsis recalculation for the profile name and online-status text, while preserving full-value tooltips.
+- Added focused sidebar layout tests in [UserNavigationSidebarTest.java](user-client/src/test/java/com/chat/user/component/UserNavigationSidebarTest.java).
 
-Verification: Reactor tests (`mvn test -pl common,admin-client,server`) passed with all unit and loopback tests passing (65 server tests, 5 admin-client tests, 67 common tests).
+Root cause: The profile card sat inside 16px top-section insets and used a 220px maximum width with a separate hard-coded 142px text area, so it did not share the actual menu/footer content box and could show unnecessary truncation.
 
-By hand: The developer instructed committing once per phase.
+Verification: `mvn -q -pl user-client -am test` passed 59 tests. `mvn clean test -q` passed the full reactor. No Admin files or business logic were changed.
 
-## 2026-11-23 — Phase 3: Implement User Story 1 Admin Authentication Flow (Issue #7)
+## 2026-11-23 — Implement real User login for Issue U1 handover
 
-Tool: Antigravity (Gemini 3.8 Flash).
+Tool: AI assistant (Copilot SDK in VS Code).
 
-Asked for: Implement Phase 3 tasks (T006-T011) for User Story 1 (MVP Admin Authentication): server `LoginHandler`, `AdminGetUserHandler`, `AdminAuthController` two-step socket verification, and `AdminLoginDialog` async UI wiring.
+Asked for: Replace the remaining prototype-only User login behavior and explain PostgreSQL password visibility after account registration.
 
-Kept: Four-module architecture, BCrypt password hashing, Swing FlatLaf UI, TCP socket communication, and non-blocking asynchronous UI handling.
-
-Changed:
-- Implemented `LoginHandler.java` for `ActionType.LOGIN` checking BCrypt password matching, handling `LOCKED` and `DELETED` accounts, and recording login history.
-- Implemented `AdminGetUserHandler.java` for `ActionType.ADMIN_GET_USER` returning full `AdminUserInfo` with `UserAccountDetail`.
-- Created Java 25-compatible stub test fixtures in `AuthHandlerTestSupport.java` and unit tests in `LoginHandlerTest.java` and `AdminGetUserHandlerTest.java`.
-- Updated `AdminAuthController.java` with asynchronous two-step authentication (`LOGIN` -> `ADMIN_GET_USER`) and error code mapping.
-- Updated `AdminLoginDialog.java` to invoke `authController.authenticateAsync(...)`, disabling submit buttons during transit and transitioning to `AdminMainFrame` on success.
-- Checked off T006 through T011 in `tasks.md`.
-
-Verification: Reactor tests (`mvn test -pl common,admin-client,server`) passed with 62 tests run, 0 failures, 0 errors.
-
-By hand: The developer instructed committing once per phase.
-
-## 2026-11-23 — Phase 2: Foundational Prerequisites for Admin Auth (Issue #7)
-
-Tool: Antigravity (Gemini 3.8 Flash).
-
-Asked for: Implement Phase 2 foundational tasks (T004-T005) for Issue #7 [A0] Admin Authentication: verify `ActionDispatcher` authorization gating and add test fixture support.
-
-Kept: Four-module architecture, Spring Boot non-web mode, and RBAC role gating.
+Kept: The existing User Client, Server, BCrypt dependency, TCP socket protocol, four-module architecture, and database schema.
 
 Changed:
-- Verified `ActionDispatcher.java` contains `ActionType.LOGIN` in public whitelist and enforces `UserRole.ADMIN` on all `ADMIN_*` actions.
-- Created `AuthHandlerTestSupport.java` with test user generator and repository mock utilities.
-- Checked off T004 and T005 in `tasks.md`.
+- Added `LoginHandler` for public `LOGIN` requests.
+- Login now accepts username or email and verifies the BCrypt password against `UserRepository`.
+- Added `INVALID_CREDENTIALS`, `ACCOUNT_LOCKED`, and `ACCOUNT_DELETED` protocol responses.
+- Authenticated sessions now bind the matching role to `SessionContext`.
+- Updated `LoginPanel` to send `LoginRequest` through `SocketClient` instead of accepting arbitrary credentials and opening the prototype workspace.
+- Updated focused login tests to cover successful server login and rejected invalid credentials.
+- Registered the existing shared `SocketClient` instance for login through `UserApplication`.
 
-Verification: Built and tested with Maven.
+Verification: `mvn clean test -q` passed across the Maven reactor after stopping running server/client JAR processes that held Maven artifacts. Server and User sources compile successfully. No `admin-client` files or database schema changes were made.
 
-By hand: The developer instructed committing once per phase.
+By hand: The developer must rebuild/restart `server.jar` and `user.jar`, because running applications retain the old compiled V1 behavior. PostgreSQL stores `password_hash` but it is intentionally not returned by the common login result. Inspect it explicitly with `SELECT username, password_hash, role, account_status FROM users;`; never log or expose a plaintext password.
 
-## 2026-11-23 — Phase 1: Setup Infrastructure for Admin Auth (Issue #7)
+## 2026-11-23 — Implement User Registration issue U1
 
-Tool: Antigravity (Gemini 3.8 Flash).
+Tool: AI assistant (Copilot SDK in VS Code).
 
-Asked for: Implement Phase 1 setup tasks (T001-T003) for Issue #7 [A0] Admin Authentication: align `SessionContext` and `OnlineSessionRegistry` with `Long userId` (`BIGSERIAL`) and track `Long loginHistoryId`.
+Asked for: Implement account registration for Issue U1 on `feature/admin-client-v2`, preserving the server and User Client responsibilities and avoiding changes to `admin-client`.
 
-Kept: Four-module architecture, in-memory thread safety, and existing networking infrastructure.
+Kept: The existing `common` DTO/action contracts, the four-module architecture, PostgreSQL schema, Spring JDBC repository APIs, BCrypt dependency, raw TCP socket protocol, and `feature/admin-client-v2`.
 
 Changed:
-- Updated `SessionContext.java` to use `Long userId` and track `Long loginHistoryId`.
-- Updated `OnlineSessionRegistry.java` to index sessions with `Long userId`.
-- Updated `OnlineSessionRegistryTest.java` and `ActionDispatcherTest.java` to test with `Long` user IDs.
-- Checked off T001, T002, and T003 in `tasks.md`.
+- Added `RegisterHandler` for public `REGISTER` requests, BCrypt password hashing, `ROLE=USER`, active-account persistence through `UserRepository.insert`, validation, and `AuthenticationResult` responses.
+- Updated `ActionDispatcher` so duplicate keys raised during `REGISTER` translate to `ALREADY_EXISTS`; other duplicate-key actions retain `CONFLICT`.
+- Connected `RegistrationDialog` to `SocketClient.sendAsync(ActionType.REGISTER, ...)`, replaced sample-account feedback, cleared password buffers, and added username/email server-error feedback.
+- Shared the application `SocketClient` instance across registration entry points in `UserApplication`.
+- Updated focused User registration tests and the dispatcher duplicate-key test.
 
-Verification: Root reactor Maven build (`mvn test -pl common,server`) passed with 53 tests run, 0 failures, 0 errors.
+Verification: `mvn clean test -q` passed across the Maven reactor. Targeted `server,user-client -am test` also passed. `mvn verify -q` passed. `mvn spotless:check -q` was not applied and reported existing formatting violations, including many files in `admin-client`; no `spotless:apply` was run. Docker Compose could not start because `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB` were not configured in the current environment.
 
-By hand: The developer instructed committing once per phase.
+Not changed:
+- No files under `admin-client` were modified.
+- No `common` DTO/action contract was changed.
+- No database schema or credentials were changed.
+- No branch was created, commit, push, merge, or rebase was performed.
 
-## 2026-11-23 — Generate Tasks for Admin Authentication A0 (Issue #7)
-
-Tool: Antigravity (Gemini 3.8 Flash).
-
-Asked for: Generate dependency-ordered implementation tasks (`tasks.md`) for Issue #7 [A0] Admin Authentication at `specs/006-admin-client-v2/admin-auth` on branch `feature/admin-client-v2`.
-
-Kept: Four-module architecture, strictly organized by user story (US1: Admin Login MVP, US2: Non-Admin Rejection & Auto-Logout, US3: Admin Sign Out), and phased execution structure.
-
-Changed: Created `specs/006-admin-client-v2/admin-auth/tasks.md` with 21 actionable tasks (T001-T021) specifying exact file paths, test cases, implementation steps, and verification procedures.
-
-Rejected: Combining multiple stories into single ambiguous tasks, or skipping independent testing criteria.
-
-By hand: The developer requested the task generation phase.
-
-## 2026-11-23 — Plan Admin Authentication A0 (Issue #7)
-
-Tool: Antigravity (Gemini 3.8 Flash).
-
-Asked for: Create implementation plan, research decisions, data model, interface contracts, and quickstart validation guide for Issue #7 [A0] Admin Authentication at `specs/006-admin-client-v2/admin-auth` on branch `feature/admin-client-v2`.
-
-Kept: Four-module architecture (`common`, `admin-client`, `user-client`, `server`), immutable `common` DTOs, Spring Boot non-web mode, raw TCP sockets, Spring JDBC with PostgreSQL, and jBCrypt password verification.
-
-Changed: Created `plan.md`, `research.md`, `data-model.md`, `contracts/auth-contracts.md`, and `quickstart.md` in `specs/006-admin-client-v2/admin-auth/`. Designed the two-step admin role verification flow (`LOGIN` -> `ADMIN_GET_USER`), session model alignment (`Long userId` and `loginHistoryId`), and Swing UI thread safety.
-
-Rejected: Altering `common` DTOs, inventing custom JWT/tokens, adding REST/WebSocket endpoints, or altering database schemas.
-
-By hand: The developer requested the planning phase and directed the design flow.
-
-## 2026-11-23 — Specify Admin Authentication A0 (Issue #7)
-
-Tool: Antigravity (Gemini 3.8 Flash).
-
-Asked for: Create the Spec Kit specification and quality checklist for Issue #7 [A0] Admin Authentication at `specs/006-admin-client-v2/admin-auth` on branch `feature/admin-client-v2`.
-
-Kept: Four-module architecture, Spring Boot non-web mode, raw TCP socket communication, and existing database repositories (`UserRepository`, `LoginHistoryRepository`).
-
-Changed: Created `specs/006-admin-client-v2/admin-auth/spec.md` with prioritized user stories (P1 Successful Admin Authentication, P2 Non-Admin Role Rejection & Auto-Logout, P3 Admin Sign Out) and `specs/006-admin-client-v2/admin-auth/checklists/requirements.md`. Updated `.specify/feature.json`.
-
-Rejected: Changing `common` DTOs, modifying database schemas, or bypassing two-step admin role verification.
-
-By hand: The developer requested the issue specification on `feature/admin-client-v2` and directed the subfolder structure under `specs/006-admin-client-v2/`.
+By hand: The developer remains responsible for configuring PostgreSQL environment variables, running the live server/client registration and login checks, capturing screenshots, reviewing the changes, creating the personal issue branch, committing with their Git identity, pushing, and merging through the team's approved workflow.
 
 ## 2026-11-23 — Implement Server Core Platform (Issue #3)
 
@@ -1235,3 +1164,15 @@ Changed: Added 21 server-only records in `server/.../model` and 12 repositories 
 Rejected: Services, request handlers, BCrypt hashing, session/presence handling, and error-code mapping (later CORE/feature work); schema changes; Testcontainers or other new dependencies; push (the developer asked for commits only).
 
 By hand: `mvn clean verify` with JDK 25.0.5 passed 160 tests (Common 67, Admin 2, User 52, Server 39), including the 31 repository tests against the Docker database with none skipped. With an unreachable database port the 31 repository tests were skipped, not failed. Seed row counts were unchanged after the test runs. All new Java files pass Google Java Format 1.30.0 dry-run. The developer chose Vietnam time for date filters, keeping soft-deleted accounts in statistics, and the assignment-only sort fields, and must review the queries before committing.
+
+## 2026-11-24 - Fix server CORE defects after merging issue #3
+
+Tool: Claude Code (Claude Opus 5.5).
+
+Asked for: Review the merged `feature/server-core` work against issue #3 and fix the defects found.
+
+Changed: `RequestHandler` now marks its two-argument constructor `@Autowired`, because Spring could not choose between the two constructors and `server.jar` stopped at startup with "No default constructor found". `ActionDispatcher` maps `DuplicateKeyException` to `ALREADY_EXISTS` for REGISTER, UPDATE_PROFILE, SEND_FRIEND_REQUEST, BLOCK_USER, ADMIN_CREATE_USER and ADMIN_UPDATE_USER, and to `CONFLICT` otherwise. It also maps `IllegalArgumentException` to `VALIDATION_FAILED`. `SessionContext` and `OnlineSessionRegistry` use the database `long` user id instead of `UUID`. The registry gains `bindSession`/`unbindSession`, so a handler that only receives a `SessionContext` can mark its socket online. `TcpSocketServer` gives each connection its own worker thread (up to 256), because the previous pool served only 4 connections at once. Tests: updated user ids, added dispatcher tests for both duplicate-key mappings and for the illegal-argument mapping, plus socket integration tests for a targeted event with two clients and for six simultaneous clients.
+
+Kept: `common`, repositories, schema, client `SocketClient` classes, and the existing 4-space style of the touched files (no Spotless apply).
+
+By hand: `mvn clean verify` passed with the Docker database running: 182 tests, none skipped, including all 31 repository tests. The six-client test was confirmed to time out with the old pool. `server.jar` started and answered PING with PONG, malformed JSON with INVALID_JSON, an unknown action with UNKNOWN_ACTION, ADMIN_LIST_USERS before login with UNAUTHENTICATED, and REGISTER with UNSUPPORTED_OPERATION. Not committed; the issue owner must review and commit with their own Git account.
