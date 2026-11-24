@@ -1,5 +1,21 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-24 — Plan Phase for Issue #8: [A2] Admin Login History
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Create architecture and implementation plan for Issue #8 [A2] Admin Login History (Requirement 1.2.2 and 1.2.1) under `specs/006-admin-client-v2/admin-login-history/`.
+
+Changed:
+- Created `research.md`: Detailed query strategy using `LoginHistoryRepository.find(...)`, target user existence checks, sort field whitelisting (`loggedInAt`), and `ActionDispatcher` centralized admin role enforcement.
+- Created `data-model.md`: Detailed protocol wire entities (`LoginHistoryRequest`, `LoginHistoryEntry`, `PageResult`, `SortSpec`, `PageRequest`) and database schema for `login_history`.
+- Created `contracts/login-history-contracts.md`: Protocol specifications and payload envelopes for `ADMIN_LIST_LOGIN_HISTORY`.
+- Created `quickstart.md`: Automated and manual testing guide.
+- Created `plan.md`: Technical context, constitution checks, and source layout.
+
+Verification: Plan fully conforms to Constitution principles, module boundaries, and existing repository contracts.
+
+
 ## 2026-11-24 — Specify Phase for Issue #8: [A2] Admin Login History
 
 Tool: Antigravity AI Assistant.
