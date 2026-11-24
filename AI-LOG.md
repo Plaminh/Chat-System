@@ -1,5 +1,39 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-24 — Complete User login and logout lifecycle for Issue U5
+
+Tool: AI assistant (Copilot SDK in VS Code).
+
+Asked for: Audit and finish Issue U5 login/logout, including PostgreSQL history and activity records, presence events, disconnect handling, and client close/sign-out behavior.
+
+Changed:
+- Extended successful login handling to record `login_history`, `user_activity_logs.app_open`, keep database/login-history IDs in `SessionContext`, and broadcast `PRESENCE_CHANGED=ONLINE` to direct friends.
+- Added `LOGOUT` handler and disconnect cleanup to close the login-history row and broadcast `PRESENCE_CHANGED=OFFLINE` when no active session remains.
+- Updated the User Client to send `LOGOUT` on Sign Out and app close.
+- Added registry coverage for session binding and unbinding.
+- Did not change shared `common` contracts or database schema.
+
+Verification: `mvn -q clean test-compile` passed across the Maven reactor.
+
+By hand: Rebuild/restart the server and User Client JARs, verify successful login/locked/deleted/invalid credentials through PostgreSQL-backed live testing, verify Sign Out and app-close rows, and capture screenshots. The developer must review and commit under their own Git account.
+
+## 2026-11-23 — Fix User sidebar profile card layout
+
+Tool: AI assistant (Copilot SDK in VS Code).
+
+Asked for: Align the User sidebar profile card with the navigation menu and Sign Out button, preserve dynamic name/status text, ellipsis, and tooltip behavior.
+
+Changed:
+- Updated [UserNavigationSidebar.java](user-client/src/main/java/com/chat/user/component/UserNavigationSidebar.java) to use the same 12px horizontal inset as the navigation list and footer.
+- Changed the profile card to the fixed 220px sidebar content width, with matching minimum/preferred/maximum dimensions and a 54px height.
+- Replaced the fixed 142px text width with a text column that calculates available width after the 32px avatar and card gaps.
+- Added dynamic ellipsis recalculation for the profile name and online-status text, while preserving full-value tooltips.
+- Added focused sidebar layout tests in [UserNavigationSidebarTest.java](user-client/src/test/java/com/chat/user/component/UserNavigationSidebarTest.java).
+
+Root cause: The profile card sat inside 16px top-section insets and used a 220px maximum width with a separate hard-coded 142px text area, so it did not share the actual menu/footer content box and could show unnecessary truncation.
+
+Verification: `mvn -q -pl user-client -am test` passed 59 tests. `mvn clean test -q` passed the full reactor. No Admin files or business logic were changed.
+
 ## 2026-11-23 — Implement real User login for Issue U1 handover
 
 Tool: AI assistant (Copilot SDK in VS Code).

@@ -11,6 +11,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.EnumMap;
@@ -34,6 +36,9 @@ public final class UserNavigationSidebar extends JPanel {
   private final Map<Destination, JButton> buttons = new EnumMap<>(Destination.class);
   private Destination activeDestination;
   private final JButton signOutButton = new JButton("Sign Out");
+  private JPanel profileCard;
+  private JLabel profileName;
+  private JLabel profileStatus;
 
   public UserNavigationSidebar(
       String displayName, String username, Consumer<Destination> navigationListener) {
@@ -61,11 +66,23 @@ public final class UserNavigationSidebar extends JPanel {
     return signOutButton;
   }
 
+  public JLabel getProfileNameLabel() {
+    return profileName;
+  }
+
+  public JLabel getProfileStatusLabel() {
+    return profileStatus;
+  }
+
+  public JPanel getProfileCard() {
+    return profileCard;
+  }
+
   private JPanel buildBrandAndProfile(String displayName, String username) {
     JPanel top = new JPanel();
     top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
     top.setBackground(ChatTheme.SIDEBAR_BG);
-    top.setBorder(BorderFactory.createEmptyBorder(18, 16, 12, 16));
+    top.setBorder(BorderFactory.createEmptyBorder(18, 12, 12, 12));
 
     JPanel brandRow = new JPanel(new BorderLayout());
     brandRow.setBackground(ChatTheme.SIDEBAR_BG);
@@ -89,7 +106,7 @@ public final class UserNavigationSidebar extends JPanel {
     top.add(brandRow);
     top.add(Box.createVerticalStrut(14));
 
-    JPanel profileCard =
+    profileCard =
         new JPanel(new BorderLayout(10, 0)) {
           @Override
           protected void paintComponent(java.awt.Graphics graphics) {
@@ -104,7 +121,9 @@ public final class UserNavigationSidebar extends JPanel {
     profileCard.setOpaque(false);
     profileCard.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
     profileCard.setAlignmentX(LEFT_ALIGNMENT);
-    profileCard.setMaximumSize(new Dimension(220, 54));
+    profileCard.setPreferredSize(new Dimension(NAV_ITEM_WIDTH, 54));
+    profileCard.setMaximumSize(new Dimension(NAV_ITEM_WIDTH, 54));
+    profileCard.setMinimumSize(new Dimension(NAV_ITEM_WIDTH, 54));
 
     JLabel avatar =
         new JLabel(initials(displayName), SwingConstants.CENTER) {
@@ -126,19 +145,35 @@ public final class UserNavigationSidebar extends JPanel {
     JPanel profileText = new JPanel();
     profileText.setLayout(new BoxLayout(profileText, BoxLayout.Y_AXIS));
     profileText.setOpaque(false);
-    JLabel name = new JLabel(displayName);
-    name.setFont(ChatTheme.FONT_SMALL);
-    name.setForeground(Color.WHITE);
-    name.setToolTipText(displayName + " (@" + username + ")");
-    name.setText(fitText(displayName, name.getFont(), 142));
-    name.setMaximumSize(new Dimension(142, 18));
-    JLabel status = new JLabel("● Online Session");
-    status.setFont(new Font("SansSerif", Font.BOLD, 11));
-    status.setForeground(ChatTheme.SUCCESS);
-    status.setToolTipText("Online Session");
-    status.setMaximumSize(new Dimension(142, 18));
-    profileText.add(name);
-    profileText.add(status);
+    profileName = new JLabel(displayName);
+    profileName.setFont(ChatTheme.FONT_SMALL);
+    profileName.setForeground(Color.WHITE);
+    profileName.setToolTipText(displayName + " (@" + username + ")");
+    profileName.setMinimumSize(new Dimension(0, 18));
+    profileName.setMaximumSize(new Dimension(Integer.MAX_VALUE, 18));
+    profileName.setAlignmentX(LEFT_ALIGNMENT);
+    profileStatus = new JLabel("● Online Session");
+    profileStatus.setFont(new Font("SansSerif", Font.BOLD, 11));
+    profileStatus.setForeground(ChatTheme.SUCCESS);
+    profileStatus.setToolTipText("Online Session");
+    profileStatus.setMinimumSize(new Dimension(0, 18));
+    profileStatus.setMaximumSize(new Dimension(Integer.MAX_VALUE, 18));
+    profileStatus.setAlignmentX(LEFT_ALIGNMENT);
+    profileText.add(profileName);
+    profileText.add(profileStatus);
+
+    String profileDisplayName = displayName;
+    profileText.addComponentListener(
+        new ComponentAdapter() {
+          @Override
+          public void componentResized(ComponentEvent event) {
+            int availableWidth = profileText.getWidth();
+            profileName.setText(
+                fitText(profileDisplayName, profileName.getFont(), availableWidth));
+            profileStatus.setText(
+                fitText("● Online Session", profileStatus.getFont(), availableWidth));
+          }
+        });
 
     profileCard.add(avatar, BorderLayout.WEST);
     profileCard.add(profileText, BorderLayout.CENTER);
