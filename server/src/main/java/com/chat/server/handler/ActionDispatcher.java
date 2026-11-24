@@ -32,6 +32,19 @@ public class ActionDispatcher {
             ActionType.RESET_PASSWORD
     );
 
+    /**
+     * Actions whose unique-constraint violation means "this resource already exists" per
+     * action-matrix.md. Any other action reports a DuplicateKeyException as CONFLICT.
+     */
+    private static final Set<ActionType> ALREADY_EXISTS_ACTIONS = EnumSet.of(
+            ActionType.REGISTER,
+            ActionType.UPDATE_PROFILE,
+            ActionType.SEND_FRIEND_REQUEST,
+            ActionType.BLOCK_USER,
+            ActionType.ADMIN_CREATE_USER,
+            ActionType.ADMIN_UPDATE_USER
+    );
+
     private final Map<ActionType, ActionHandler> handlers = new EnumMap<>(ActionType.class);
     private final ObjectMapper mapper;
 
@@ -78,9 +91,12 @@ public class ActionDispatcher {
         } catch (InvalidSortFieldException exception) {
             return error(requestId, ErrorCode.VALIDATION_FAILED, exception.getMessage());
         } catch (DuplicateKeyException exception) {
-            return error(requestId, ErrorCode.CONFLICT, "Resource already exists or constraint violated");
+            if (ALREADY_EXISTS_ACTIONS.contains(action)) {
+                return error(requestId, ErrorCode.ALREADY_EXISTS, "Resource already exists");
+            }
+            return error(requestId, ErrorCode.CONFLICT, "Request conflicts with the current state");
         } catch (IllegalArgumentException exception) {
-            return error(requestId, ErrorCode.INVALID_REQUEST, exception.getMessage() != null ? exception.getMessage() : "Invalid request arguments");
+            return error(requestId, ErrorCode.VALIDATION_FAILED, exception.getMessage() != null ? exception.getMessage() : "Invalid request arguments");
         } catch (Exception exception) {
             log.error("Unhandled exception processing action {} for requestId {}", action, requestId, exception);
             return error(requestId, ErrorCode.INTERNAL_ERROR, "An internal server error occurred");

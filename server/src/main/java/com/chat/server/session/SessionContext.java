@@ -3,11 +3,10 @@ package com.chat.server.session;
 import com.chat.common.enums.UserRole;
 import java.time.Instant;
 import java.util.Objects;
-import java.util.UUID;
 
 public class SessionContext {
     private final String connectionId;
-    private volatile UUID userId;
+    private volatile Long userId;
     private volatile String username;
     private volatile UserRole role;
     private volatile Instant authenticatedAt;
@@ -20,7 +19,7 @@ public class SessionContext {
         return connectionId;
     }
 
-    public UUID getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
@@ -44,8 +43,11 @@ public class SessionContext {
         return isAuthenticated() && this.role == requiredRole;
     }
 
-    public synchronized void authenticate(UUID userId, String username, UserRole role) {
-        this.userId = Objects.requireNonNull(userId, "userId");
+    public synchronized void authenticate(long userId, String username, UserRole role) {
+        if (userId <= 0) {
+            throw new IllegalArgumentException("userId must be positive");
+        }
+        this.userId = userId;
         this.username = Objects.requireNonNull(username, "username");
         this.role = Objects.requireNonNull(role, "role");
         this.authenticatedAt = Instant.now();

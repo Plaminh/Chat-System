@@ -12,7 +12,6 @@ import java.io.BufferedWriter;
 import java.io.StringWriter;
 import java.net.Socket;
 import java.util.Set;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,7 +26,7 @@ class OnlineSessionRegistryTest {
 
     @Test
     void registersAndBindsUserSuccessfully() throws Exception {
-        UUID userId = UUID.randomUUID();
+        long userId = 42L;
         SessionContext session = new SessionContext("conn-1");
         session.authenticate(userId, "testuser", com.chat.common.enums.UserRole.USER);
         StringWriter sw = new StringWriter();

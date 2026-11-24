@@ -29,8 +29,13 @@ public class TcpSocketServer implements SmartLifecycle {
     private final OnlineSessionRegistry sessionRegistry;
     private final Set<ClientConnection> connections = ConcurrentHashMap.newKeySet();
     private final ExecutorService acceptor = Executors.newSingleThreadExecutor(r -> new Thread(r, "chat-acceptor"));
-    private final ThreadPoolExecutor workers = new ThreadPoolExecutor(4, 32, 60, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<>(256), r -> new Thread(r, "chat-client"), new ThreadPoolExecutor.AbortPolicy());
+    // Each client holds one worker for its whole connection, so a connection must get its own
+    // thread immediately. A queued connection would never be served while earlier clients stay
+    // connected. SynchronousQueue starts a new thread per connection up to MAX_CLIENTS and rejects
+    // (closes) the connection beyond that.
+    private static final int MAX_CLIENTS = 256;
+    private final ThreadPoolExecutor workers = new ThreadPoolExecutor(0, MAX_CLIENTS, 60, TimeUnit.SECONDS,
+            new SynchronousQueue<>(), r -> new Thread(r, "chat-client"), new ThreadPoolExecutor.AbortPolicy());
     private volatile boolean running;
     private ServerSocket serverSocket;
 
