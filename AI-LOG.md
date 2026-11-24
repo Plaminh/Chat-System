@@ -1,5 +1,19 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-24 — Specify Phase for Issue #8: [A2] Admin Login History
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Create feature specification for Issue #8 [A2] Admin Login History (Requirement 1.2.2 and 1.2.1) under `specs/006-admin-client-v2/admin-login-history/`.
+
+Changed:
+- Updated `.specify/feature.json` to point to `specs/006-admin-client-v2/admin-login-history`.
+- Created `specs/006-admin-client-v2/admin-login-history/spec.md` detailing user stories, edge cases, functional requirements (`FR-001` to `FR-008`), and measurable success criteria (`SC-001` to `SC-005`).
+- Created `specs/006-admin-client-v2/admin-login-history/checklists/requirements.md` with complete validation.
+
+Verification: Requirements validated against constitution, protocol definitions, and data models.
+
+
 ## 2026-11-24 — Complete User login and logout lifecycle for Issue U5
 
 Tool: AI assistant (Copilot SDK in VS Code).
