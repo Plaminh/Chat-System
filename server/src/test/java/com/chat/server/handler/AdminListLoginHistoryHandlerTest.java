@@ -90,6 +90,30 @@ class AdminListLoginHistoryHandlerTest {
     }
 
     @Test
+    void returnsLoginHistoryAscendingOrder() throws Exception {
+        LoginHistoryRequest req = new LoginHistoryRequest(
+                null,
+                new SortSpec("loggedInAt", SortDirection.ASC),
+                new PageRequest(0, 10));
+
+        RequestEnvelope request = new RequestEnvelope(
+                "req-hist-6",
+                ActionType.ADMIN_LIST_LOGIN_HISTORY,
+                mapper.valueToTree(req));
+
+        ResponseEnvelope response = dispatcher.dispatch(request, adminSession);
+
+        assertTrue(response.success());
+        PageResult<LoginHistoryEntry> result = mapper.readValue(
+                mapper.treeAsTokens(response.data()),
+                new TypeReference<>() {});
+
+        assertEquals(2, result.items().size());
+        assertEquals("admin", result.items().get(0).username());
+        assertEquals("user2", result.items().get(1).username());
+    }
+
+    @Test
     void returnsFilteredLoginHistoryForSpecificUser() throws Exception {
         LoginHistoryRequest req = new LoginHistoryRequest(
                 2L,

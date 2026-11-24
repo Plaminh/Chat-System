@@ -1,5 +1,19 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-25 — Phase 5: User Story 3 (Pagination & Sort Order) for Issue #8: [A2]
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Implement Phase 5 US3 pagination and sorting direction for Issue #8 [A2] Admin Login History.
+
+Changed:
+- Added `returnsLoginHistoryAscendingOrder` unit test in `AdminListLoginHistoryHandlerTest.java` verifying `SortDirection.ASC`.
+- Updated `UserDetailHistoryDialog.java` adding a sort direction dropdown ("Newest First" / "Oldest First"), page navigation buttons (Prev / Next), and dynamic pagination status label.
+- Marked Phase 5 tasks (T010, T011) completed in `tasks.md`.
+
+Verification: `AdminListLoginHistoryHandlerTest` passed 7 tests; `admin-client` test suite passed cleanly.
+
+
 ## 2026-11-25 — Phase 4: User Story 2 (User-Specific Filtered History) for Issue #8: [A2]
 
 Tool: Antigravity AI Assistant.

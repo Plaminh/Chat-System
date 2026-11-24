@@ -67,6 +67,13 @@ public final class UserDetailHistoryDialog extends JDialog {
   private final SocketClient socketClient;
 
   private final JComboBox<String> loginScopeCombo;
+  private final JComboBox<String> sortDirectionCombo;
+  private int currentPage = 0;
+  private int totalPages = 1;
+  private final JLabel pageInfoLabel = new JLabel("Page 1 of 1");
+  private final JButton prevPageBtn = ChatTheme.createSecondaryButton("◀ Prev");
+  private final JButton nextPageBtn = ChatTheme.createSecondaryButton("Next ▶");
+
   private final DefaultTableModel loginTableModel =
       new DefaultTableModel(LOGIN_COLUMNS, 0) {
         @Override
@@ -93,6 +100,34 @@ public final class UserDetailHistoryDialog extends JDialog {
               "Scope: Selected User (@" + user.getUsername() + ")",
               "Scope: All System Users (Chronological)"
             });
+    this.sortDirectionCombo =
+        ChatTheme.createComboBox(new String[] {"Newest First", "Oldest First"});
+
+    this.loginScopeCombo.addActionListener(
+        e -> {
+          currentPage = 0;
+          populateLoginTable();
+        });
+    this.sortDirectionCombo.addActionListener(
+        e -> {
+          currentPage = 0;
+          populateLoginTable();
+        });
+
+    prevPageBtn.addActionListener(
+        e -> {
+          if (currentPage > 0) {
+            currentPage--;
+            populateLoginTable();
+          }
+        });
+    nextPageBtn.addActionListener(
+        e -> {
+          if (currentPage < totalPages - 1) {
+            currentPage++;
+            populateLoginTable();
+          }
+        });
 
     initDialogLayout();
     populateLoginTable();
@@ -223,7 +258,7 @@ public final class UserDetailHistoryDialog extends JDialog {
 
     JPanel scopeControl = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
     scopeControl.setOpaque(false);
-    loginScopeCombo.addActionListener(e -> populateLoginTable());
+    scopeControl.add(sortDirectionCombo);
     scopeControl.add(loginScopeCombo);
 
     topBar.add(kpiRow, BorderLayout.CENTER);
@@ -241,8 +276,17 @@ public final class UserDetailHistoryDialog extends JDialog {
         .getColumn(3)
         .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
+    JPanel paginationBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
+    paginationBar.setOpaque(false);
+    pageInfoLabel.setFont(ChatTheme.FONT_SMALL);
+    pageInfoLabel.setForeground(ChatTheme.TEXT_SECONDARY);
+    paginationBar.add(pageInfoLabel);
+    paginationBar.add(prevPageBtn);
+    paginationBar.add(nextPageBtn);
+
     tab.add(topBar, BorderLayout.NORTH);
     tab.add(AdminUIComponents.wrapTableInScrollPane(loginTable), BorderLayout.CENTER);
+    tab.add(paginationBar, BorderLayout.SOUTH);
     return tab;
   }
 
@@ -326,13 +370,15 @@ public final class UserDetailHistoryDialog extends JDialog {
   private void populateLoginTable() {
     boolean allUsers = loginScopeCombo.getSelectedIndex() == 1;
     Long targetUserId = allUsers ? null : parseUserId(user.getId());
+    SortDirection direction =
+        sortDirectionCombo.getSelectedIndex() == 1 ? SortDirection.ASC : SortDirection.DESC;
 
     if (socketClient != null && socketClient.isConnected()) {
       LoginHistoryRequest req =
           new LoginHistoryRequest(
               targetUserId,
-              new SortSpec("loggedInAt", SortDirection.DESC),
-              new PageRequest(0, 50));
+              new SortSpec("loggedInAt", direction),
+              new PageRequest(currentPage, 50));
       socketClient
           .sendAsync(ActionType.ADMIN_LIST_LOGIN_HISTORY, req)
           .thenAccept(
@@ -357,6 +403,14 @@ public final class UserDetailHistoryDialog extends JDialog {
                                 });
                           }
                           totalLoginsValueLabel.setText(pageResult.totalItems() + " sessions");
+                          currentPage = pageResult.page();
+                          totalPages = Math.max(1, pageResult.totalPages());
+                          pageInfoLabel.setText(
+                              String.format(
+                                  "Page %d of %d (%d items)",
+                                  currentPage + 1, totalPages, pageResult.totalItems()));
+                          prevPageBtn.setEnabled(currentPage > 0);
+                          nextPageBtn.setEnabled(currentPage < totalPages - 1);
                         } catch (Exception ex) {
                           populateFromMockStore(allUsers);
                         }
@@ -392,6 +446,11 @@ public final class UserDetailHistoryDialog extends JDialog {
           });
     }
     totalLoginsValueLabel.setText(records.size() + " sessions");
+    currentPage = 0;
+    totalPages = 1;
+    pageInfoLabel.setText(String.format("Page 1 of 1 (%d items)", records.size()));
+    prevPageBtn.setEnabled(false);
+    nextPageBtn.setEnabled(false);
   }
 
   private static Long parseUserId(String rawId) {

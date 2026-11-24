@@ -70,10 +70,10 @@
 **Independent Test**: Request sort with `ASC` vs `DESC`. Verify records order. Request invalid sort field, verify `ErrorCode.VALIDATION_FAILED`.
 
 ### Tests for User Story 3
-- [ ] T010 [P] [US3] Add unit test in `server/src/test/java/com/chat/server/handler/AdminListLoginHistoryHandlerTest.java` verifying sort directions and rejection of invalid sort fields with `ErrorCode.VALIDATION_FAILED`
+- [x] T010 [P] [US3] Add unit test in `server/src/test/java/com/chat/server/handler/AdminListLoginHistoryHandlerTest.java` verifying sort directions and rejection of invalid sort fields with `ErrorCode.VALIDATION_FAILED`
 
 ### Implementation for User Story 3
-- [ ] T011 [US3] Update `UserDetailHistoryDialog` in `admin-client/src/main/java/com/chat/admin/view/UserDetailHistoryDialog.java` to support pagination navigation and display total session counts
+- [x] T011 [US3] Update `UserDetailHistoryDialog` in `admin-client/src/main/java/com/chat/admin/view/UserDetailHistoryDialog.java` to support pagination navigation and display total session counts
 
 **Checkpoint**: All user stories are complete and functional.
 
