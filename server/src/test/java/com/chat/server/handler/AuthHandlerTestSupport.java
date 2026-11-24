@@ -1,9 +1,15 @@
 package com.chat.server.handler;
 
+import com.chat.common.dto.common.PageRequest;
+import com.chat.common.dto.common.PageResult;
+import com.chat.common.dto.common.SortSpec;
 import com.chat.common.enums.AccountStatus;
 import com.chat.common.enums.Gender;
+import com.chat.common.enums.SortDirection;
 import com.chat.common.enums.UserRole;
 import com.chat.server.config.ProtocolConfig;
+import com.chat.server.exception.InvalidSortFieldException;
+import com.chat.server.model.LoginHistoryRecord;
 import com.chat.server.model.User;
 import com.chat.server.repository.FriendshipRepository;
 import com.chat.server.repository.LoginHistoryRepository;
@@ -21,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -117,9 +124,33 @@ public final class AuthHandlerTestSupport {
         private final AtomicLong counter = new AtomicLong(100);
         private final Map<Long, Long> logins = new ConcurrentHashMap<>();
         private final Map<Long, Boolean> logouts = new ConcurrentHashMap<>();
+        private final List<LoginHistoryRecord> historyRecords = new CopyOnWriteArrayList<>();
 
         public StubLoginHistoryRepository() {
             super(new JdbcTemplate());
+        }
+
+        public void addRecord(LoginHistoryRecord record) {
+            historyRecords.add(record);
+        }
+
+        @Override
+        public PageResult<LoginHistoryRecord> find(Long userId, SortSpec sort, PageRequest page) {
+            if (!"loggedInAt".equals(sort.field())) {
+                throw new InvalidSortFieldException(sort.field(), List.of("loggedInAt"));
+            }
+            List<LoginHistoryRecord> filtered = historyRecords.stream()
+                    .filter(r -> userId == null || r.userId() == userId)
+                    .sorted((a, b) -> {
+                        int cmp = a.loggedInAt().compareTo(b.loggedInAt());
+                        return sort.direction() == SortDirection.DESC ? -cmp : cmp;
+                    })
+                    .toList();
+            int fromIndex = Math.min(page.page() * page.size(), filtered.size());
+            int toIndex = Math.min(fromIndex + page.size(), filtered.size());
+            List<LoginHistoryRecord> paged = filtered.subList(fromIndex, toIndex);
+            int totalPages = (int) ((filtered.size() + page.size() - 1) / page.size());
+            return new PageResult<>(paged, page.page(), page.size(), filtered.size(), totalPages);
         }
 
         @Override

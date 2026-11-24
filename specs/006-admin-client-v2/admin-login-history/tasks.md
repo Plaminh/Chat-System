@@ -14,8 +14,8 @@
 
 **Purpose**: Test stubs and fixture setup for login history repository testing on Java 25.
 
-- [ ] T001 Verify `LoginHistoryRepository.find(Long userId, SortSpec sort, PageRequest page)` and repository mapping with `LoginHistoryRecord` in `server/src/main/java/com/chat/server/repository/LoginHistoryRepository.java`
-- [ ] T002 [P] Extend test fixture in `server/src/test/java/com/chat/server/handler/AuthHandlerTestSupport.java` with test helper for `LoginHistoryRepository.find(...)` returning stubbed `PageResult<LoginHistoryRecord>`
+- [x] T001 Verify `LoginHistoryRepository.find(Long userId, SortSpec sort, PageRequest page)` and repository mapping with `LoginHistoryRecord` in `server/src/main/java/com/chat/server/repository/LoginHistoryRepository.java`
+- [x] T002 [P] Extend test fixture in `server/src/test/java/com/chat/server/handler/AuthHandlerTestSupport.java` with test helper for `LoginHistoryRepository.find(...)` returning stubbed `PageResult<LoginHistoryRecord>`
 
 ---
 

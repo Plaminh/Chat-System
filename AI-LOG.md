@@ -1,5 +1,19 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-24 — Phase 1: Setup for Issue #8: [A2] Admin Login History
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Implement Phase 1 setup tasks for Issue #8 [A2] Admin Login History.
+
+Changed:
+- Verified `LoginHistoryRepository.find(Long userId, SortSpec sort, PageRequest page)` SQL mapping and types.
+- Extended `StubLoginHistoryRepository` in `server/src/test/java/com/chat/server/handler/AuthHandlerTestSupport.java` with Java 25-compatible `find(...)` implementation filtering by `userId`, sorting by `loggedInAt`, and paginating results.
+- Updated `tasks.md` marked Phase 1 tasks (T001, T002) completed.
+
+Verification: `mvn test-compile -pl server -am` passed cleanly on Java 25.
+
+
 ## 2026-11-24 — Tasks Phase for Issue #8: [A2] Admin Login History
 
 Tool: Antigravity AI Assistant.
