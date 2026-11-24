@@ -66,4 +66,21 @@ class OnlineSessionRegistryTest {
         assertTrue(sw1.toString().contains("\"ev-b\""));
         assertTrue(sw2.toString().contains("\"ev-b\""));
     }
+
+    @Test
+    void bindsAndUnbindsUsingSessionContext() throws Exception {
+        UUID userId = UUID.randomUUID();
+        SessionContext session = new SessionContext("conn-session");
+        session.authenticate(userId, "testuser", com.chat.common.enums.UserRole.USER);
+        StringWriter sw = new StringWriter();
+        ClientConnection connection =
+            new ClientConnection(new Socket(), new BufferedWriter(sw), session);
+
+        registry.registerConnection(connection);
+        registry.bindSession(session);
+        assertTrue(registry.isUserOnline(userId));
+
+        registry.unbindSession(session);
+        assertFalse(registry.isUserOnline(userId));
+    }
 }

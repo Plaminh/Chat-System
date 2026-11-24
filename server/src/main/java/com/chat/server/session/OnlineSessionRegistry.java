@@ -44,6 +44,26 @@ public class OnlineSessionRegistry {
         });
     }
 
+    public void bindSession(SessionContext session) {
+        for (ClientConnection connection : allConnections) {
+            if (connection.getSessionContext() == session) {
+                bindUser(session.getUserId(), connection);
+                return;
+            }
+        }
+    }
+
+    public void unbindSession(SessionContext session) {
+        for (ClientConnection connection : allConnections) {
+            if (connection.getSessionContext() == session) {
+                if (session.getUserId() != null) {
+                    unbindUser(session.getUserId(), connection);
+                }
+                return;
+            }
+        }
+    }
+
     public boolean isUserOnline(UUID userId) {
         Set<ClientConnection> connections = activeUserSessions.get(userId);
         return connections != null && !connections.isEmpty();

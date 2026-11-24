@@ -12,6 +12,8 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public final class UserApplication {
   private UserApplication() {}
@@ -35,6 +37,28 @@ public final class UserApplication {
     frame.setMinimumSize(new Dimension(1120, 720));
     frame.setSize(1280, 800);
     frame.setLocationRelativeTo(null);
+    frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+    frame.addWindowListener(
+        new WindowAdapter() {
+          @Override
+          public void windowClosing(WindowEvent event) {
+            if (socketClient.isConnected()) {
+              socketClient
+                  .sendAsync(com.chat.common.enums.ActionType.LOGOUT, null)
+                  .whenComplete(
+                      (response, error) -> {
+                        socketClient.close();
+                        SwingUtilities.invokeLater(() -> {
+                          frame.dispose();
+                          System.exit(0);
+                        });
+                      });
+            } else {
+              frame.dispose();
+              System.exit(0);
+            }
+          }
+        });
 
     LoginPanel loginPanel =
         new LoginPanel(
@@ -58,6 +82,9 @@ public final class UserApplication {
 
   private static void showLogin(
       JFrame frame, UserSessionState sessionState, SocketClient socketClient) {
+    if (socketClient.isConnected()) {
+      socketClient.sendAsync(com.chat.common.enums.ActionType.LOGOUT, null);
+    }
     sessionState.signOut();
     LoginPanel loginPanel =
         new LoginPanel(

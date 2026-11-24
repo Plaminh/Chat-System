@@ -15,8 +15,8 @@ import com.chat.server.handler.ActionHandler;
 import com.chat.server.model.User;
 import com.chat.server.repository.UserRepository;
 import com.chat.server.session.SessionContext;
+import com.chat.server.service.SessionLifecycle;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,10 +27,13 @@ import org.springframework.stereotype.Component;
 public class LoginHandler implements ActionHandler {
   private final ObjectMapper mapper;
   private final UserRepository users;
+  private final SessionLifecycle sessionLifecycle;
 
-  public LoginHandler(ObjectMapper mapper, UserRepository users) {
+  public LoginHandler(
+      ObjectMapper mapper, UserRepository users, SessionLifecycle sessionLifecycle) {
     this.mapper = mapper;
     this.users = users;
+    this.sessionLifecycle = sessionLifecycle;
   }
 
   @Override
@@ -48,11 +51,9 @@ public class LoginHandler implements ActionHandler {
     if (user.isEmpty() && payload.username().contains("@")) {
       user = users.findByEmail(payload.username());
     }
-    if (user.isEmpty()
-        || !BCrypt.checkpw(payload.password(), user.orElseThrow().passwordHash())) {
+    if (user.isEmpty()) {
       return error(request, ErrorCode.INVALID_CREDENTIALS, "Invalid username/email or password");
     }
-
     User account = user.orElseThrow();
     if (account.accountStatus() == AccountStatus.LOCKED) {
       return error(request, ErrorCode.ACCOUNT_LOCKED, "Account is locked");
@@ -60,11 +61,13 @@ public class LoginHandler implements ActionHandler {
     if (account.accountStatus() == AccountStatus.DELETED) {
       return error(request, ErrorCode.ACCOUNT_DELETED, "Account is deleted");
     }
+    if (!BCrypt.checkpw(payload.password(), account.passwordHash())) {
+      return error(request, ErrorCode.INVALID_CREDENTIALS, "Invalid username/email or password");
+    }
 
-    UUID sessionUserId =
-        UUID.nameUUIDFromBytes(
-            ("chat-user-" + account.userId()).getBytes(StandardCharsets.UTF_8));
+    UUID sessionUserId = SessionLifecycle.userUuid(account.userId());
     session.authenticate(sessionUserId, account.username(), account.role());
+    sessionLifecycle.begin(session, account.userId());
 
     UserSummary summary =
         new UserSummary(
