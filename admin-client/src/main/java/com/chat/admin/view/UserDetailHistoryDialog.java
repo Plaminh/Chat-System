@@ -1,10 +1,25 @@
 package com.chat.admin.view;
 
-import com.chat.common.ui.ChatTheme;
+import com.chat.admin.controller.AdminAuthController;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.model.AdminUser;
 import com.chat.admin.model.FriendConnection;
 import com.chat.admin.model.LoginRecord;
+import com.chat.admin.network.SocketClient;
+import com.chat.common.dto.admin.LoginHistoryEntry;
+import com.chat.common.dto.admin.LoginHistoryRequest;
+import com.chat.common.dto.common.PageRequest;
+import com.chat.common.dto.common.PageResult;
+import com.chat.common.dto.common.SortSpec;
+import com.chat.common.enums.ActionType;
+import com.chat.common.enums.SortDirection;
+import com.chat.common.ui.ChatTheme;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,6 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
@@ -39,8 +55,16 @@ public final class UserDetailHistoryDialog extends JDialog {
     "FRIEND USERNAME", "FULL NAME", "MUTUAL FRIENDS", "PRESENCE STATUS"
   };
 
+  private final ObjectMapper mapper =
+      JsonMapper.builder()
+          .addModule(new JavaTimeModule())
+          .disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
+          .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+          .build();
+
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final AdminUser user;
+  private final SocketClient socketClient;
 
   private final JComboBox<String> loginScopeCombo;
   private final DefaultTableModel loginTableModel =
@@ -53,11 +77,16 @@ public final class UserDetailHistoryDialog extends JDialog {
   private final JLabel totalLoginsValueLabel = new JLabel("0");
 
   public UserDetailHistoryDialog(Frame owner, AdminUser user) {
+    this(owner, user, AdminAuthController.getSharedSocketClient());
+  }
+
+  public UserDetailHistoryDialog(Frame owner, AdminUser user, SocketClient socketClient) {
     super(
         owner,
         "User Inspection & Audit — @" + user.getUsername() + " (" + user.getFullName() + ")",
         true);
     this.user = user;
+    this.socketClient = socketClient;
     this.loginScopeCombo =
         ChatTheme.createComboBox(
             new String[] {
@@ -296,6 +325,57 @@ public final class UserDetailHistoryDialog extends JDialog {
 
   private void populateLoginTable() {
     boolean allUsers = loginScopeCombo.getSelectedIndex() == 1;
+    Long targetUserId = allUsers ? null : parseUserId(user.getId());
+
+    if (socketClient != null && socketClient.isConnected()) {
+      LoginHistoryRequest req =
+          new LoginHistoryRequest(
+              targetUserId,
+              new SortSpec("loggedInAt", SortDirection.DESC),
+              new PageRequest(0, 50));
+      socketClient
+          .sendAsync(ActionType.ADMIN_LIST_LOGIN_HISTORY, req)
+          .thenAccept(
+              response -> {
+                SwingUtilities.invokeLater(
+                    () -> {
+                      if (response != null && response.success() && response.data() != null) {
+                        try {
+                          PageResult<LoginHistoryEntry> pageResult =
+                              mapper.readValue(
+                                  mapper.treeAsTokens(response.data()),
+                                  new TypeReference<>() {});
+                          loginTableModel.setRowCount(0);
+                          for (LoginHistoryEntry entry : pageResult.items()) {
+                            String status = entry.loggedOutAt() != null ? "Closed" : "Active";
+                            loginTableModel.addRow(
+                                new Object[] {
+                                  entry.loggedInAt().format(ChatTheme.FULL_DATETIME_FMT),
+                                  "@" + entry.username(),
+                                  entry.fullName(),
+                                  status
+                                });
+                          }
+                          totalLoginsValueLabel.setText(pageResult.totalItems() + " sessions");
+                        } catch (Exception ex) {
+                          populateFromMockStore(allUsers);
+                        }
+                      } else {
+                        populateFromMockStore(allUsers);
+                      }
+                    });
+              })
+          .exceptionally(
+              ex -> {
+                SwingUtilities.invokeLater(() -> populateFromMockStore(allUsers));
+                return null;
+              });
+    } else {
+      populateFromMockStore(allUsers);
+    }
+  }
+
+  private void populateFromMockStore(boolean allUsers) {
     List<LoginRecord> records =
         allUsers
             ? dataStore.getAllLoginRecordsChronological()
@@ -312,6 +392,18 @@ public final class UserDetailHistoryDialog extends JDialog {
           });
     }
     totalLoginsValueLabel.setText(records.size() + " sessions");
+  }
+
+  private static Long parseUserId(String rawId) {
+    if (rawId == null || rawId.isBlank()) {
+      return null;
+    }
+    try {
+      return Long.parseLong(rawId);
+    } catch (NumberFormatException e) {
+      String digits = rawId.replaceAll("\\D+", "");
+      return digits.isEmpty() ? null : Long.parseLong(digits);
+    }
   }
 
   private static String extractInitials(String fullName) {

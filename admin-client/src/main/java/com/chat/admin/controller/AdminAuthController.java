@@ -43,6 +43,10 @@ public final class AdminAuthController {
                 .build();
     }
 
+    public static SocketClient getSharedSocketClient() {
+        return SHARED_SOCKET_CLIENT;
+    }
+
     public SocketClient getSocketClient() {
         return socketClient;
     }

@@ -1,5 +1,21 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-24 — Phase 3: User Story 1 (Global Login History MVP) for Issue #8: [A2]
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Implement Phase 3 US1 global chronological login history for Issue #8 [A2] Admin Login History.
+
+Changed:
+- Implemented `AdminListLoginHistoryHandler` for `ActionType.ADMIN_LIST_LOGIN_HISTORY` mapping `LoginHistoryRecord` to `LoginHistoryEntry` and returning `PageResult<LoginHistoryEntry>`.
+- Added unit tests in `AdminListLoginHistoryHandlerTest.java` verifying global query (`userId = null`) returns entries sorted chronologically.
+- Updated `AdminAuthController.java` with `getSharedSocketClient()` helper.
+- Updated `UserDetailHistoryDialog.java` to asynchronously retrieve live login history via `SocketClient` and populate table model on EDT with fallback to mock store.
+- Marked Phase 3 tasks (T004, T005, T006) completed in `tasks.md`.
+
+Verification: `AdminListLoginHistoryHandlerTest` passed all 6 tests; `mvn test-compile -pl admin-client -am` compiled cleanly.
+
+
 ## 2026-11-24 — Phase 2: Foundational for Issue #8: [A2] Admin Login History
 
 Tool: Antigravity AI Assistant.

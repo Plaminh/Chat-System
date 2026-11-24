@@ -36,11 +36,11 @@
 **Independent Test**: Request `ADMIN_LIST_LOGIN_HISTORY` with `userId = null`. Verify server returns `PageResult<LoginHistoryEntry>` sorted by `loggedInAt DESC`. Verify `UserDetailHistoryDialog` renders login timestamps, usernames, and full names.
 
 ### Tests for User Story 1
-- [ ] T004 [P] [US1] Create unit tests in `server/src/test/java/com/chat/server/handler/AdminListLoginHistoryHandlerTest.java` verifying `ADMIN_LIST_LOGIN_HISTORY` handles global query (`userId = null`) returning `PageResult<LoginHistoryEntry>` sorted chronologically
+- [x] T004 [P] [US1] Create unit tests in `server/src/test/java/com/chat/server/handler/AdminListLoginHistoryHandlerTest.java` verifying `ADMIN_LIST_LOGIN_HISTORY` handles global query (`userId = null`) returning `PageResult<LoginHistoryEntry>` sorted chronologically
 
 ### Implementation for User Story 1
-- [ ] T005 [US1] Implement `AdminListLoginHistoryHandler` for `ActionType.ADMIN_LIST_LOGIN_HISTORY` in `server/src/main/java/com/chat/server/handler/impl/AdminListLoginHistoryHandler.java` mapping `LoginHistoryRecord` to `LoginHistoryEntry`
-- [ ] T006 [US1] Integrate `UserDetailHistoryDialog` in `admin-client/src/main/java/com/chat/admin/view/UserDetailHistoryDialog.java` to fetch real login history via `SocketClient` for global audit scope and render on EDT
+- [x] T005 [US1] Implement `AdminListLoginHistoryHandler` for `ActionType.ADMIN_LIST_LOGIN_HISTORY` in `server/src/main/java/com/chat/server/handler/impl/AdminListLoginHistoryHandler.java` mapping `LoginHistoryRecord` to `LoginHistoryEntry`
+- [x] T006 [US1] Integrate `UserDetailHistoryDialog` in `admin-client/src/main/java/com/chat/admin/view/UserDetailHistoryDialog.java` to fetch real login history via `SocketClient` for global audit scope and render on EDT
 
 **Checkpoint**: User Story 1 (MVP) is fully functional and testable independently.
 
