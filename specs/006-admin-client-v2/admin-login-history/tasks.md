@@ -53,11 +53,11 @@
 **Independent Test**: Request `ADMIN_LIST_LOGIN_HISTORY` with a valid `userId`. Verify only entries for that user are returned. Request with a non-existent `userId`, verify server returns `ErrorCode.NOT_FOUND`.
 
 ### Tests for User Story 2
-- [ ] T007 [P] [US2] Add unit test in `server/src/test/java/com/chat/server/handler/AdminListLoginHistoryHandlerTest.java` verifying user-specific query returns filtered entries and non-existent `userId` returns `ErrorCode.NOT_FOUND`
+- [x] T007 [P] [US2] Add unit test in `server/src/test/java/com/chat/server/handler/AdminListLoginHistoryHandlerTest.java` verifying user-specific query returns filtered entries and non-existent `userId` returns `ErrorCode.NOT_FOUND`
 
 ### Implementation for User Story 2
-- [ ] T008 [US2] Update `AdminListLoginHistoryHandler` in `server/src/main/java/com/chat/server/handler/impl/AdminListLoginHistoryHandler.java` to check `userRepository.findById(userId)` when `userId != null` and return `ErrorCode.NOT_FOUND` if empty
-- [ ] T009 [US2] Update `UserDetailHistoryDialog` in `admin-client/src/main/java/com/chat/admin/view/UserDetailHistoryDialog.java` to dynamically query with `userId` when scope is set to "Selected User"
+- [x] T008 [US2] Update `AdminListLoginHistoryHandler` in `server/src/main/java/com/chat/server/handler/impl/AdminListLoginHistoryHandler.java` to check `userRepository.findById(userId)` when `userId != null` and return `ErrorCode.NOT_FOUND` if empty
+- [x] T009 [US2] Update `UserDetailHistoryDialog` in `admin-client/src/main/java/com/chat/admin/view/UserDetailHistoryDialog.java` to dynamically query with `userId` when scope is set to "Selected User"
 
 **Checkpoint**: User Story 2 is fully implemented and verified.
 

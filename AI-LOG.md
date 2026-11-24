@@ -1,5 +1,20 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-25 — Phase 4: User Story 2 (User-Specific Filtered History) for Issue #8: [A2]
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Implement Phase 4 US2 user-specific login history inspection for Issue #8 [A2] Admin Login History.
+
+Changed:
+- Verified target user existence check in `AdminListLoginHistoryHandler.java` returning `ErrorCode.NOT_FOUND` if target user does not exist in `users` table.
+- Verified unit tests in `AdminListLoginHistoryHandlerTest.java` for user filtering (`returnsFilteredLoginHistoryForSpecificUser`) and missing user (`returnsNotFoundWhenTargetUserDoesNotExist`).
+- Added `UserDetailHistoryDialogTest.java` in `admin-client` verifying dialog and history model initialization.
+- Marked Phase 4 tasks (T007, T008, T009) completed in `tasks.md`.
+
+Verification: `mvn test -pl admin-client -am` executed 74 tests across `common` and `admin-client` with zero failures.
+
+
 ## 2026-11-24 — Phase 3: User Story 1 (Global Login History MVP) for Issue #8: [A2]
 
 Tool: Antigravity AI Assistant.
