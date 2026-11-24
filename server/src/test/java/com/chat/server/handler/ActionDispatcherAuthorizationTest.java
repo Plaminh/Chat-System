@@ -72,4 +72,29 @@ class ActionDispatcherAuthorizationTest {
         assertTrue(response.success());
         assertNotNull(response.data());
     }
+
+    @Test
+    void rejectsAdminListLoginHistoryWhenUserRoleIsNotAdmin() {
+        SessionContext session = new SessionContext("conn-user-2");
+        session.authenticate(2L, "user2", UserRole.USER);
+
+        RequestEnvelope request = new RequestEnvelope("req-sec-4", ActionType.ADMIN_LIST_LOGIN_HISTORY, mapper.createObjectNode());
+        ResponseEnvelope response = dispatcher.dispatch(request, session);
+
+        assertFalse(response.success());
+        assertEquals(ErrorCode.UNAUTHORIZED, response.errorCode());
+        assertEquals("Admin privileges required", response.message());
+    }
+
+    @Test
+    void rejectsAdminListLoginHistoryWhenUnauthenticated() {
+        SessionContext session = new SessionContext("conn-anon-2");
+
+        RequestEnvelope request = new RequestEnvelope("req-sec-5", ActionType.ADMIN_LIST_LOGIN_HISTORY, mapper.createObjectNode());
+        ResponseEnvelope response = dispatcher.dispatch(request, session);
+
+        assertFalse(response.success());
+        assertEquals(ErrorCode.UNAUTHENTICATED, response.errorCode());
+        assertEquals("Authentication required", response.message());
+    }
 }

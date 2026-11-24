@@ -1,5 +1,19 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-24 — Phase 2: Foundational for Issue #8: [A2] Admin Login History
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Implement Phase 2 foundational authorization verification for Issue #8 [A2] Admin Login History.
+
+Changed:
+- Verified `ActionDispatcher` enforcement of `UserRole.ADMIN` on `ADMIN_LIST_LOGIN_HISTORY`.
+- Added test cases in `server/src/test/java/com/chat/server/handler/ActionDispatcherAuthorizationTest.java` verifying that non-admin and unauthenticated requests to `ADMIN_LIST_LOGIN_HISTORY` are rejected with `ErrorCode.UNAUTHORIZED` and `ErrorCode.UNAUTHENTICATED`.
+- Updated `tasks.md` marking T003 completed.
+
+Verification: Executed `ActionDispatcherAuthorizationTest` via Maven — 5 tests passed with zero failures.
+
+
 ## 2026-11-24 — Phase 1: Setup for Issue #8: [A2] Admin Login History
 
 Tool: Antigravity AI Assistant.

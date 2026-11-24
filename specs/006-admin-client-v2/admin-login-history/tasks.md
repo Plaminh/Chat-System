@@ -23,7 +23,7 @@
 
 **Purpose**: Core dispatching and authorization verification for `ADMIN_LIST_LOGIN_HISTORY`.
 
-- [ ] T003 Verify `ActionDispatcher` correctly maps `ADMIN_LIST_LOGIN_HISTORY` to admin authorization gating in `server/src/main/java/com/chat/server/handler/ActionDispatcher.java` and rejects non-admin requests with `ErrorCode.UNAUTHORIZED`
+- [x] T003 Verify `ActionDispatcher` correctly maps `ADMIN_LIST_LOGIN_HISTORY` to admin authorization gating in `server/src/main/java/com/chat/server/handler/ActionDispatcher.java` and rejects non-admin requests with `ErrorCode.UNAUTHORIZED`
 
 **Checkpoint**: Foundation ready — user story implementation can proceed.
 
