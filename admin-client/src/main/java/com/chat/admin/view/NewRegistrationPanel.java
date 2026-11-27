@@ -1,9 +1,8 @@
 package com.chat.admin.view;
 
 import com.chat.admin.controller.AdminAuthController;
-import com.chat.admin.model.AdminMockDataStore;
-import com.chat.admin.model.AdminUser;
 import com.chat.admin.network.SocketClient;
+import com.chat.common.dto.ResponseEnvelope;
 import com.chat.common.dto.admin.AdminUserFilter;
 import com.chat.common.dto.admin.AdminUserInfo;
 import com.chat.common.dto.common.DateRange;
@@ -28,11 +27,11 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -66,17 +65,28 @@ public final class NewRegistrationPanel extends JPanel {
     "STATUS"
   };
 
+  /** Registration times are shown in Vietnam time, the zone the server uses for date filters. */
+  static final ZoneId DISPLAY_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
+
+  static final int PAGE_SIZE = 50;
+  private static final long RESPONSE_TIMEOUT_SECONDS = 5;
+
   private final SocketClient socketClient;
   private final ObjectMapper mapper;
-  private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
+  private int currentPage = 0;
+  private int totalPages = 1;
+  private int requestSeq = 0;
+  private final JLabel pageInfoLabel = new JLabel("Page 1 of 1");
+  private final JButton prevPageBtn = ChatTheme.createSecondaryButton("◀ Prev");
+  private final JButton nextPageBtn = ChatTheme.createSecondaryButton("Next ▶");
+  private final JButton refreshBtn = ChatTheme.createSecondaryButton("Refresh");
+  private final JLabel statusLabel = new JLabel(" ");
 
   private final JTextField nameSearchField =
       ChatTheme.createSearchField("Filter by full name or username...", 18);
   private final DateRangePickerBar dateRangePickerBar =
       new DateRangePickerBar(
-          LocalDate.of(2025, 1, 1),
-          LocalDate.now(),
-          (s, e) -> applyFiltersAndRefresh(false));
+          LocalDate.of(2025, 1, 1), LocalDate.now(), (s, e) -> reloadFromFirstPage());
 
   private final JComboBox<String> sortCombo =
       ChatTheme.createComboBox(
@@ -127,7 +137,6 @@ public final class NewRegistrationPanel extends JPanel {
     add(buildFooterSummaryBar(), BorderLayout.SOUTH);
 
     wireEvents();
-    dataStore.addChangeListener(() -> applyFiltersAndRefresh(false));
     applyFiltersAndRefresh(false);
   }
 
@@ -186,7 +195,7 @@ public final class NewRegistrationPanel extends JPanel {
           nameSearchField.setText("");
           dateRangePickerBar.setDateRange(LocalDate.of(2025, 1, 1), LocalDate.now(), false);
           sortCombo.setSelectedIndex(0);
-          applyFiltersAndRefresh(false);
+          reloadFromFirstPage();
         });
 
     rightSort.add(sortCombo);
@@ -234,8 +243,27 @@ public final class NewRegistrationPanel extends JPanel {
 
     footerSummaryLabel.setFont(ChatTheme.FONT_BODY_BOLD);
     footerSummaryLabel.setForeground(ChatTheme.TEXT_PRIMARY);
+    statusLabel.setFont(ChatTheme.FONT_SMALL);
+    statusLabel.setForeground(ChatTheme.DANGER_TEXT);
 
-    bar.add(footerSummaryLabel, BorderLayout.CENTER);
+    JPanel summary = new JPanel(new BorderLayout(0, 2));
+    summary.setOpaque(false);
+    summary.add(footerSummaryLabel, BorderLayout.NORTH);
+    summary.add(statusLabel, BorderLayout.SOUTH);
+
+    pageInfoLabel.setFont(ChatTheme.FONT_SMALL);
+    pageInfoLabel.setForeground(ChatTheme.TEXT_SECONDARY);
+    prevPageBtn.setEnabled(false);
+    nextPageBtn.setEnabled(false);
+    JPanel pageControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+    pageControls.setOpaque(false);
+    pageControls.add(refreshBtn);
+    pageControls.add(pageInfoLabel);
+    pageControls.add(prevPageBtn);
+    pageControls.add(nextPageBtn);
+
+    bar.add(summary, BorderLayout.CENTER);
+    bar.add(pageControls, BorderLayout.EAST);
     return bar;
   }
 
@@ -252,110 +280,143 @@ public final class NewRegistrationPanel extends JPanel {
             new DocumentListener() {
               @Override
               public void insertUpdate(DocumentEvent e) {
-                applyFiltersAndRefresh(false);
+                reloadFromFirstPage();
               }
 
               @Override
               public void removeUpdate(DocumentEvent e) {
-                applyFiltersAndRefresh(false);
+                reloadFromFirstPage();
               }
 
               @Override
               public void changedUpdate(DocumentEvent e) {
-                applyFiltersAndRefresh(false);
+                reloadFromFirstPage();
               }
             });
-    sortCombo.addActionListener(e -> applyFiltersAndRefresh(false));
+    sortCombo.addActionListener(e -> reloadFromFirstPage());
+    refreshBtn.addActionListener(e -> applyFiltersAndRefresh(false));
+    prevPageBtn.addActionListener(
+        e -> {
+          if (currentPage > 0) {
+            currentPage--;
+            applyFiltersAndRefresh(false);
+          }
+        });
+    nextPageBtn.addActionListener(
+        e -> {
+          if (currentPage < totalPages - 1) {
+            currentPage++;
+            applyFiltersAndRefresh(false);
+          }
+        });
+  }
+
+  /** A filter, sort or date change starts again from the first page. */
+  private void reloadFromFirstPage() {
+    currentPage = 0;
+    applyFiltersAndRefresh(false);
   }
 
   public void applyFiltersAndRefresh(boolean showValidationAlert) {
-    LocalDate rawStart = dateRangePickerBar.getStartDate();
-    LocalDate rawEnd = dateRangePickerBar.getEndDate();
-    final LocalDate startDate =
-        (rawStart != null && rawEnd != null && rawStart.isAfter(rawEnd)) ? rawEnd : rawStart;
-    final LocalDate endDate =
-        (rawStart != null && rawEnd != null && rawStart.isAfter(rawEnd)) ? rawStart : rawEnd;
-    String startText = startDate == null ? "" : startDate.format(ChatTheme.DATE_FMT);
-    String endText = endDate == null ? "" : endDate.format(ChatTheme.DATE_FMT);
+    final LocalDate startDate = dateRangePickerBar.getStartDate();
+    final LocalDate endDate = dateRangePickerBar.getEndDate();
+    int seq = ++requestSeq; // a late response to an older request is ignored
+    if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+      showError("The start date must not be after the end date.");
+      return;
+    }
+    if (socketClient == null || !socketClient.isConnected()) {
+      showError("Not connected to the server.");
+      return;
+    }
 
-    String query =
-        nameSearchField.getText() == null ? "" : nameSearchField.getText().trim();
-    int sortIdx = sortCombo.getSelectedIndex();
+    String query = nameSearchField.getText() == null ? "" : nameSearchField.getText().trim();
+    SortSpec sortSpec =
+        switch (sortCombo.getSelectedIndex()) {
+          case 1 -> new SortSpec("createdAt", SortDirection.ASC);
+          case 2 -> new SortSpec("name", SortDirection.ASC);
+          case 3 -> new SortSpec("name", SortDirection.DESC);
+          default -> new SortSpec("createdAt", SortDirection.DESC);
+        };
+    DateRange range =
+        (startDate != null && endDate != null) ? new DateRange(startDate, endDate) : null;
+    String nameQuery = query.isEmpty() ? null : query;
+    AdminUserFilter filter =
+        new AdminUserFilter(
+            nameQuery, null, range, sortSpec, new PageRequest(currentPage, PAGE_SIZE));
+    // The active count covers the whole period, not only the page shown.
+    AdminUserFilter activeFilter =
+        new AdminUserFilter(
+            nameQuery, AccountStatus.ACTIVE, range, sortSpec, new PageRequest(0, 1));
 
-    if (socketClient != null && socketClient.isConnected()) {
-      SortSpec sortSpec =
-          switch (sortIdx) {
-            case 1 -> new SortSpec("createdAt", SortDirection.ASC);
-            case 2 -> new SortSpec("name", SortDirection.ASC);
-            case 3 -> new SortSpec("name", SortDirection.DESC);
-            default -> new SortSpec("createdAt", SortDirection.DESC);
-          };
-      DateRange range =
-          (startDate != null && endDate != null) ? new DateRange(startDate, endDate) : null;
-      AdminUserFilter filter =
-          new AdminUserFilter(
-              query.isEmpty() ? null : query,
-              null,
-              range,
-              sortSpec,
-              new PageRequest(0, 100));
-
-      socketClient
-          .sendAsync(ActionType.ADMIN_LIST_USERS, filter)
-          .thenAccept(
-              response -> {
+    socketClient
+        .sendAsync(ActionType.ADMIN_LIST_USERS, filter)
+        .orTimeout(RESPONSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        .whenComplete(
+            (response, ex) ->
                 SwingUtilities.invokeLater(
                     () -> {
-                      if (response != null && response.success() && response.data() != null) {
-                        try {
-                          PageResult<AdminUserInfo> pageResult =
-                              mapper.readValue(
-                                  mapper.treeAsTokens(response.data()),
-                                  new TypeReference<>() {});
-                          populateFromPageResult(pageResult, startDate, endDate, startText, endText);
-                        } catch (Exception ex) {
-                          populateFromMockStore(
-                              query, startDate, endDate, sortIdx, startText, endText);
-                        }
-                      } else {
-                        populateFromMockStore(
-                            query, startDate, endDate, sortIdx, startText, endText);
+                      if (seq != requestSeq) {
+                        return;
                       }
-                    });
-              })
-          .exceptionally(
-              ex -> {
+                      if (ex != null) {
+                        showError("The server did not respond. Please try again.");
+                        return;
+                      }
+                      PageResult<AdminUserInfo> pageResult = readPage(response);
+                      if (pageResult == null) {
+                        showError("Could not load new registrations: " + failureReason(response));
+                        return;
+                      }
+                      populateFromPageResult(pageResult, startDate, endDate);
+                    }));
+
+    socketClient
+        .sendAsync(ActionType.ADMIN_LIST_USERS, activeFilter)
+        .orTimeout(RESPONSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        .whenComplete(
+            (response, ex) ->
                 SwingUtilities.invokeLater(
-                    () ->
-                        populateFromMockStore(
-                            query, startDate, endDate, sortIdx, startText, endText));
-                return null;
-              });
-    } else {
-      populateFromMockStore(query, startDate, endDate, sortIdx, startText, endText);
+                    () -> {
+                      if (seq != requestSeq) {
+                        return;
+                      }
+                      PageResult<AdminUserInfo> activePage = ex == null ? readPage(response) : null;
+                      activeSignupsValueLabel.setText(
+                          activePage == null ? "—" : activePage.totalItems() + " active");
+                    }));
+  }
+
+  private PageResult<AdminUserInfo> readPage(ResponseEnvelope response) {
+    if (response == null || !response.success() || response.data() == null) {
+      return null;
+    }
+    try {
+      return mapper.readValue(mapper.treeAsTokens(response.data()), new TypeReference<>() {});
+    } catch (Exception ex) {
+      return null;
     }
   }
 
+  private static String failureReason(ResponseEnvelope response) {
+    if (response == null) {
+      return "no response";
+    }
+    if (response.success()) {
+      return "the server returned data that could not be read";
+    }
+    return response.message() != null ? response.message() : String.valueOf(response.errorCode());
+  }
+
   private void populateFromPageResult(
-      PageResult<AdminUserInfo> pageResult,
-      LocalDate startDate,
-      LocalDate endDate,
-      String startText,
-      String endText) {
+      PageResult<AdminUserInfo> pageResult, LocalDate startDate, LocalDate endDate) {
     tableModel.setRowCount(0);
-    long activeCount = 0;
     for (AdminUserInfo info : pageResult.items()) {
       var acc = info.account();
       var summary = acc.summary();
-      boolean isActive = summary.accountStatus() == AccountStatus.ACTIVE;
-      if (isActive) {
-        activeCount++;
-      }
       String genderText = acc.gender() != null ? acc.gender().name() : "N/A";
       String dobText =
           acc.dateOfBirth() != null ? acc.dateOfBirth().format(ChatTheme.DATE_FMT) : "N/A";
-      String createdText =
-          acc.createdAt() != null ? acc.createdAt().format(ChatTheme.DATETIME_FMT) : "N/A";
       tableModel.addRow(
           new Object[] {
             "@" + summary.username(),
@@ -364,123 +425,76 @@ public final class NewRegistrationPanel extends JPanel {
             genderText,
             dobText,
             acc.address(),
-            createdText,
-            isActive ? "Active" : "Locked"
+            formatRegisteredAt(acc.createdAt()),
+            statusText(summary.accountStatus())
           });
     }
 
     matchingRegistrationsValueLabel.setText(pageResult.totalItems() + " accounts");
-    activeSignupsValueLabel.setText(activeCount + " active");
-
-    String durationText = "";
-    if (startDate != null && endDate != null && !startDate.isAfter(endDate)) {
-      long days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
-      durationText = " (" + days + " ngày)";
-    }
-
-    String windowDisplay =
-        (startText.isEmpty() ? "Any" : startText)
-            + " → "
-            + (endText.isEmpty() ? "Any" : endText)
-            + durationText;
-    activeDateWindowValueLabel.setText(windowDisplay);
+    activeDateWindowValueLabel.setText(windowText(startDate, endDate));
     activeDateWindowValueLabel.setForeground(new Color(0x6366F1));
 
+    totalPages = Math.max(1, pageResult.totalPages());
     footerSummaryLabel.setText(
         "Showing "
             + pageResult.items().size()
-            + " newly registered account(s) (total "
+            + " of "
             + pageResult.totalItems()
-            + " in period)");
+            + " newly registered account(s) in the period");
+    pageInfoLabel.setText(String.format("Page %d of %d", currentPage + 1, totalPages));
+    prevPageBtn.setEnabled(currentPage > 0);
+    nextPageBtn.setEnabled(currentPage < totalPages - 1);
+    statusLabel.setText(" ");
 
     if (tableModel.getRowCount() > 0) {
       registrationTable.setRowSelectionInterval(0, 0);
     }
   }
 
-  private void populateFromMockStore(
-      String query,
-      LocalDate startDate,
-      LocalDate endDate,
-      int sortIdx,
-      String startText,
-      String endText) {
-    List<AdminUser> allUsers = dataStore.getUsers();
-    List<AdminUser> filtered = new ArrayList<>();
-    String lowerQuery = query == null ? "" : query.toLowerCase();
-
-    for (AdminUser user : allUsers) {
-      LocalDate createdDate = user.getCreatedAt().toLocalDate();
-      if (startDate != null && createdDate.isBefore(startDate)) {
-        continue;
-      }
-      if (endDate != null && createdDate.isAfter(endDate)) {
-        continue;
-      }
-      if (!lowerQuery.isEmpty()
-          && !user.getFullName().toLowerCase().contains(lowerQuery)
-          && !user.getUsername().toLowerCase().contains(lowerQuery)) {
-        continue;
-      }
-      filtered.add(user);
-    }
-
-    Comparator<AdminUser> comparator =
-        switch (sortIdx) {
-          case 1 -> Comparator.comparing(AdminUser::getCreatedAt);
-          case 2 -> Comparator.comparing(u -> u.getFullName().toLowerCase());
-          case 3 ->
-              Comparator.comparing((AdminUser u) -> u.getFullName().toLowerCase()).reversed();
-          default -> Comparator.comparing(AdminUser::getCreatedAt).reversed();
-        };
-    filtered.sort(comparator);
-
+  /** Shows an error instead of data; no sample accounts are shown in place of real ones. */
+  private void showError(String message) {
     tableModel.setRowCount(0);
-    long activeCount = 0;
-    for (AdminUser user : filtered) {
-      if (!user.isLocked()) {
-        activeCount++;
-      }
-      tableModel.addRow(
-          new Object[] {
-            "@" + user.getUsername(),
-            user.getFullName(),
-            user.getEmail(),
-            user.getGender(),
-            user.getDateOfBirth().format(ChatTheme.DATE_FMT),
-            user.getAddress(),
-            user.getCreatedAt().format(ChatTheme.DATETIME_FMT),
-            user.isLocked() ? "Locked" : "Active"
-          });
-    }
+    matchingRegistrationsValueLabel.setText("0 accounts");
+    activeSignupsValueLabel.setText("0 active");
+    activeDateWindowValueLabel.setText(
+        windowText(dateRangePickerBar.getStartDate(), dateRangePickerBar.getEndDate()));
+    footerSummaryLabel.setText("Showing 0 newly registered accounts");
+    currentPage = 0;
+    totalPages = 1;
+    pageInfoLabel.setText("Page 1 of 1");
+    prevPageBtn.setEnabled(false);
+    nextPageBtn.setEnabled(false);
+    statusLabel.setText(message);
+  }
 
-    matchingRegistrationsValueLabel.setText(filtered.size() + " accounts");
-    activeSignupsValueLabel.setText(activeCount + " active");
-
+  private static String windowText(LocalDate startDate, LocalDate endDate) {
     String durationText = "";
     if (startDate != null && endDate != null && !startDate.isAfter(endDate)) {
       long days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
       durationText = " (" + days + " ngày)";
     }
+    return (startDate == null ? "Any" : startDate.format(ChatTheme.DATE_FMT))
+        + " → "
+        + (endDate == null ? "Any" : endDate.format(ChatTheme.DATE_FMT))
+        + durationText;
+  }
 
-    String windowDisplay =
-        (startText.isEmpty() ? "Any" : startText)
-            + " → "
-            + (endText.isEmpty() ? "Any" : endText)
-            + durationText;
-    activeDateWindowValueLabel.setText(windowDisplay);
-    activeDateWindowValueLabel.setForeground(new Color(0x6366F1));
+  /** Formats a registration time in {@link #DISPLAY_ZONE}, whatever offset the server sent. */
+  static String formatRegisteredAt(OffsetDateTime time) {
+    return time == null
+        ? "N/A"
+        : time.atZoneSameInstant(DISPLAY_ZONE).format(ChatTheme.DATETIME_FMT);
+  }
 
-    footerSummaryLabel.setText(
-        "Showing "
-            + filtered.size()
-            + " newly registered account(s) out of "
-            + allUsers.size()
-            + " total users");
-
-    if (tableModel.getRowCount() > 0) {
-      registrationTable.setRowSelectionInterval(0, 0);
+  static String statusText(AccountStatus status) {
+    if (status == null) {
+      return "N/A";
     }
+    return switch (status) {
+      case ACTIVE -> "Active";
+      case LOCKED -> "Locked";
+      case DELETED -> "Deleted";
+    };
   }
 
   private static LocalDate parseDateOrNull(String text) {
@@ -508,5 +522,13 @@ public final class NewRegistrationPanel extends JPanel {
 
   public String getActiveSignupsLabelText() {
     return activeSignupsValueLabel.getText();
+  }
+
+  String getStatusText() {
+    return statusLabel.getText();
+  }
+
+  String getPageInfoText() {
+    return pageInfoLabel.getText();
   }
 }
