@@ -4,7 +4,6 @@ import com.chat.admin.controller.AdminAuthController;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.model.AdminUser;
 import com.chat.admin.model.FriendConnection;
-import com.chat.admin.model.LoginRecord;
 import com.chat.admin.network.SocketClient;
 import com.chat.common.dto.admin.LoginHistoryEntry;
 import com.chat.common.dto.admin.LoginHistoryRequest;
@@ -27,7 +26,11 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -51,6 +54,12 @@ public final class UserDetailHistoryDialog extends JDialog {
   private static final String[] LOGIN_COLUMNS = {
     "LOGIN TIMESTAMP", "USERNAME", "FULL NAME", "SESSION STATUS"
   };
+  /** Login times are shown in Vietnam time, the zone the server uses for date filters. */
+  static final ZoneId DISPLAY_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
+
+  private static final DateTimeFormatter LOGIN_TIME_FMT =
+      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+  private static final long RESPONSE_TIMEOUT_SECONDS = 5;
   private static final String[] FRIEND_COLUMNS = {
     "FRIEND USERNAME", "FULL NAME", "MUTUAL FRIENDS", "PRESENCE STATUS"
   };
@@ -70,9 +79,12 @@ public final class UserDetailHistoryDialog extends JDialog {
   private final JComboBox<String> sortDirectionCombo;
   private int currentPage = 0;
   private int totalPages = 1;
+  private int loginRequestSeq = 0;
   private final JLabel pageInfoLabel = new JLabel("Page 1 of 1");
   private final JButton prevPageBtn = ChatTheme.createSecondaryButton("◀ Prev");
   private final JButton nextPageBtn = ChatTheme.createSecondaryButton("Next ▶");
+  private final JButton refreshBtn = ChatTheme.createSecondaryButton("Refresh");
+  private final JLabel loginStatusLabel = new JLabel(" ");
 
   private final DefaultTableModel loginTableModel =
       new DefaultTableModel(LOGIN_COLUMNS, 0) {
@@ -114,6 +126,7 @@ public final class UserDetailHistoryDialog extends JDialog {
           populateLoginTable();
         });
 
+    refreshBtn.addActionListener(e -> populateLoginTable());
     prevPageBtn.addActionListener(
         e -> {
           if (currentPage > 0) {
@@ -276,13 +289,21 @@ public final class UserDetailHistoryDialog extends JDialog {
         .getColumn(3)
         .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
-    JPanel paginationBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
-    paginationBar.setOpaque(false);
+    JPanel pageControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
+    pageControls.setOpaque(false);
     pageInfoLabel.setFont(ChatTheme.FONT_SMALL);
     pageInfoLabel.setForeground(ChatTheme.TEXT_SECONDARY);
-    paginationBar.add(pageInfoLabel);
-    paginationBar.add(prevPageBtn);
-    paginationBar.add(nextPageBtn);
+    pageControls.add(refreshBtn);
+    pageControls.add(pageInfoLabel);
+    pageControls.add(prevPageBtn);
+    pageControls.add(nextPageBtn);
+
+    loginStatusLabel.setFont(ChatTheme.FONT_SMALL);
+    loginStatusLabel.setForeground(ChatTheme.DANGER_TEXT);
+    JPanel paginationBar = new JPanel(new BorderLayout(8, 0));
+    paginationBar.setOpaque(false);
+    paginationBar.add(loginStatusLabel, BorderLayout.CENTER);
+    paginationBar.add(pageControls, BorderLayout.EAST);
 
     tab.add(topBar, BorderLayout.NORTH);
     tab.add(AdminUIComponents.wrapTableInScrollPane(loginTable), BorderLayout.CENTER);
@@ -372,6 +393,7 @@ public final class UserDetailHistoryDialog extends JDialog {
     Long targetUserId = allUsers ? null : parseUserId(user.getId());
     SortDirection direction =
         sortDirectionCombo.getSelectedIndex() == 1 ? SortDirection.ASC : SortDirection.DESC;
+    int seq = ++loginRequestSeq; // a late response to an older request is ignored
 
     if (socketClient != null && socketClient.isConnected()) {
       LoginHistoryRequest req =
@@ -381,10 +403,14 @@ public final class UserDetailHistoryDialog extends JDialog {
               new PageRequest(currentPage, 50));
       socketClient
           .sendAsync(ActionType.ADMIN_LIST_LOGIN_HISTORY, req)
+          .orTimeout(RESPONSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
           .thenAccept(
               response -> {
                 SwingUtilities.invokeLater(
                     () -> {
+                      if (seq != loginRequestSeq) {
+                        return;
+                      }
                       if (response != null && response.success() && response.data() != null) {
                         try {
                           PageResult<LoginHistoryEntry> pageResult =
@@ -396,7 +422,7 @@ public final class UserDetailHistoryDialog extends JDialog {
                             String status = entry.loggedOutAt() != null ? "Closed" : "Active";
                             loginTableModel.addRow(
                                 new Object[] {
-                                  entry.loggedInAt().format(ChatTheme.FULL_DATETIME_FMT),
+                                  formatLoginTime(entry.loggedInAt()),
                                   "@" + entry.username(),
                                   entry.fullName(),
                                   status
@@ -411,46 +437,51 @@ public final class UserDetailHistoryDialog extends JDialog {
                                   currentPage + 1, totalPages, pageResult.totalItems()));
                           prevPageBtn.setEnabled(currentPage > 0);
                           nextPageBtn.setEnabled(currentPage < totalPages - 1);
+                          loginStatusLabel.setText(" ");
                         } catch (Exception ex) {
-                          populateFromMockStore(allUsers);
+                          showLoginError("Could not read the login history returned by the server.");
                         }
                       } else {
-                        populateFromMockStore(allUsers);
+                        String reason =
+                            response == null
+                                ? "no response"
+                                : response.message() != null
+                                    ? response.message()
+                                    : String.valueOf(response.errorCode());
+                        showLoginError("Could not load login history: " + reason);
                       }
                     });
               })
           .exceptionally(
               ex -> {
-                SwingUtilities.invokeLater(() -> populateFromMockStore(allUsers));
+                SwingUtilities.invokeLater(
+                    () -> {
+                      if (seq == loginRequestSeq) {
+                        showLoginError("The server did not respond. Please try again.");
+                      }
+                    });
                 return null;
               });
     } else {
-      populateFromMockStore(allUsers);
+      showLoginError("Not connected to the server.");
     }
   }
 
-  private void populateFromMockStore(boolean allUsers) {
-    List<LoginRecord> records =
-        allUsers
-            ? dataStore.getAllLoginRecordsChronological()
-            : dataStore.getLoginRecordsForUser(user.getUsername());
-
+  /** Shows an error instead of data; no sample records are shown in place of real history. */
+  private void showLoginError(String message) {
     loginTableModel.setRowCount(0);
-    for (LoginRecord r : records) {
-      loginTableModel.addRow(
-          new Object[] {
-            r.timestamp().format(ChatTheme.FULL_DATETIME_FMT),
-            "@" + r.username(),
-            r.fullName(),
-            "Success"
-          });
-    }
-    totalLoginsValueLabel.setText(records.size() + " sessions");
+    totalLoginsValueLabel.setText("0 sessions");
     currentPage = 0;
     totalPages = 1;
-    pageInfoLabel.setText(String.format("Page 1 of 1 (%d items)", records.size()));
+    pageInfoLabel.setText("Page 1 of 1 (0 items)");
     prevPageBtn.setEnabled(false);
     nextPageBtn.setEnabled(false);
+    loginStatusLabel.setText(message);
+  }
+
+  /** Formats a login time in {@link #DISPLAY_ZONE}, whatever offset the server sent. */
+  static String formatLoginTime(OffsetDateTime time) {
+    return time == null ? "" : time.atZoneSameInstant(DISPLAY_ZONE).format(LOGIN_TIME_FMT);
   }
 
   private static Long parseUserId(String rawId) {

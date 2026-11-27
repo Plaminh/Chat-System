@@ -1400,3 +1400,21 @@ Kept: The `common` protocol contracts, the database schema, `ActionDispatcher` a
 Rejected: Running Spotless on the whole repository (many pre-existing violations in unrelated files); editing `script/seed.sql`, which the team must decide on because it publishes the demo password; commit and push.
 
 By hand: With PostgreSQL running, root `mvn -o clean package` — BUILD SUCCESS (common 67, admin-client 11 with 1 skipped, user-client 64, server 87 with none skipped). Against a live `server.jar` on port 5050 with the seed data, a throwaway scripted client using the real `AdminAuthController` passed 22/22 checks (admin_dev accepted; alice_sample rejected and logged out; ADMIN_* without login → UNAUTHENTICATED, as a normal user → UNAUTHORIZED; invalid targetUserId → VALIDATION_FAILED / INVALID_PAYLOAD; wrong password, locked, deleted messages), and `login_history` showed every session closed. The real `AdminLoginDialog` was driven programmatically: empty fields on open, alice_sample shows the "Truy cập bị từ chối" popup, admin_dev authenticates and closes the dialog. Final review remains with the developers.
+
+## 2026-11-27 — Admin login history review fixes (issue #8)
+
+Tool: Claude Code (Claude Opus 5.5).
+
+Asked for: Check issue #8 [A2] (system-wide login history: login time, username, full name, chronological order, newest login shown at once) and apply only minimal fixes.
+
+Changed:
+- `UserDetailHistoryDialog`: show login times in Vietnam time (`Asia/Ho_Chi_Minh`) with seconds instead of the raw UTC value the server sends, which displayed 7 hours early.
+- `UserDetailHistoryDialog`: when the server is unreachable, rejects the request, times out (new 5 s timeout) or returns unreadable data, show an error message with an empty table instead of falling back to `AdminMockDataStore` sample records.
+- `UserDetailHistoryDialog`: add a Refresh button next to the pagination controls so a new login appears without reopening the dialog; ignore late responses to older requests so the table cannot show a stale order.
+- `UserDetailHistoryDialogTest`: rename the GUI test to match the new behavior and add a non-GUI test for the Vietnam-time formatting.
+
+Kept: The server handler, repository and `common` contracts, which already met the issue (verified live); the dialog's location under User Directory and its "All System Users" scope selector.
+
+Rejected: A separate "Login History" screen in the main menu with its own controller and tests; it was written and verified, then removed at the developer's request in favor of minimal fixes. Spotless was not run on the changed files; commit and push.
+
+By hand: `mvn -o clean package -pl admin-client -am` passed (common 67, admin-client 12 with the existing headless GUI test skipped). Against a live `server.jar` with seed data, `ADMIN_LIST_LOGIN_HISTORY` with `userId = null` returned correct DESC/ASC order, paging metadata, and `VALIDATION_FAILED` for `sort.field = username`. The real dialog was driven programmatically: 8/8 checks passed (newest login on top in Vietnam time, Refresh shows a new alice_sample login at the top, Oldest First ascending, no sample data and an error message after disconnecting). Root `mvn -o clean package` with PostgreSQL running passed (common 67, admin-client 12 with 1 skipped, user-client 64, server 87 with none skipped). The full user path was then driven on the live server: `AdminLoginDialog` sign-in as admin_dev, `AdminMainFrame` User Directory, "View History & Network", "All System Users" scope; 8/8 checks passed, and the newest rows and total count matched `login_history` queried in Vietnam time. Final review remains with the developers.
