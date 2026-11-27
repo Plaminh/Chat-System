@@ -118,6 +118,56 @@ public final class AuthHandlerTestSupport {
                     .filter(u -> email.equalsIgnoreCase(u.email()))
                     .findFirst();
         }
+
+        @Override
+        public PageResult<User> findForAdmin(
+                String query,
+                AccountStatus status,
+                com.chat.common.dto.common.DateRange createdAtRange,
+                SortSpec sort,
+                PageRequest page) {
+            if (sort != null && !"name".equals(sort.field()) && !"createdAt".equals(sort.field())) {
+                throw new InvalidSortFieldException(sort.field(), List.of("name", "createdAt"));
+            }
+            List<User> filtered = usersById.values().stream()
+                    .filter(u -> {
+                        if (query != null && !query.isBlank()) {
+                            String q = query.trim().toLowerCase();
+                            boolean matchName = u.fullName() != null && u.fullName().toLowerCase().contains(q);
+                            boolean matchUser = u.username() != null && u.username().toLowerCase().contains(q);
+                            if (!matchName && !matchUser) return false;
+                        }
+                        if (status != null && u.accountStatus() != status) {
+                            return false;
+                        }
+                        if (createdAtRange != null) {
+                            if (createdAtRange.from() != null && u.createdAt().toLocalDate().isBefore(createdAtRange.from())) {
+                                return false;
+                            }
+                            if (createdAtRange.to() != null && u.createdAt().toLocalDate().isAfter(createdAtRange.to())) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    })
+                    .sorted((a, b) -> {
+                        if (sort == null) return 0;
+                        int cmp;
+                        if ("name".equals(sort.field())) {
+                            cmp = a.fullName().compareToIgnoreCase(b.fullName());
+                        } else {
+                            cmp = a.createdAt().compareTo(b.createdAt());
+                        }
+                        return sort.direction() == SortDirection.DESC ? -cmp : cmp;
+                    })
+                    .toList();
+
+            int fromIndex = Math.min(page.page() * page.size(), filtered.size());
+            int toIndex = Math.min(fromIndex + page.size(), filtered.size());
+            List<User> paged = filtered.subList(fromIndex, toIndex);
+            int totalPages = (int) ((filtered.size() + page.size() - 1) / page.size());
+            return new PageResult<>(paged, page.page(), page.size(), filtered.size(), totalPages);
+        }
     }
 
     public static class StubLoginHistoryRepository extends LoginHistoryRepository {

@@ -1,5 +1,22 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-27 — Implement Newly Registered User Timeline for Issue #14: [A5]
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Implement Issue #14 [A5] Danh sách người dùng đăng ký mới (Requirement 1.2.5) following the Spec-Kit workflow on branch `feature/admin-client-v2-a5`.
+
+Changed:
+- Created Spec-Kit documentation under `specs/006-admin-client-v2/admin-new-registrations/` including `spec.md`, `checklists/requirements.md`, `contracts/new-registrations-contracts.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, and `tasks.md`.
+- Implemented `AdminListUsersHandler` in `server` handling `ActionType.ADMIN_LIST_USERS` with `AdminUserFilter(query, accountStatus, createdAtRange, sort, page)`, enforcing sort allow-list (`name`, `createdAt`), date range validation, and mapping to `PageResult<AdminUserInfo>` with live presence.
+- Added comprehensive unit tests in `AdminListUsersHandlerTest.java` verifying valid date range query, name search query, non-admin role rejection (`ErrorCode.UNAUTHORIZED`), invalid sort field rejection (`ErrorCode.VALIDATION_FAILED`), and empty query results.
+- Enhanced `AuthHandlerTestSupport.StubUserRepository` with `findForAdmin` in-memory filtering and sorting.
+- Updated `NewRegistrationPanel.java` in `admin-client` to support asynchronous TCP queries via `SocketClient.sendAsync(ActionType.ADMIN_LIST_USERS, ...)` with automatic fallback to mock store when disconnected.
+- Added `NewRegistrationPanelTest.java` in `admin-client` validating GUI initialization and connected socket query handling.
+- Ran full Maven multi-module reactor test build (`mvn test`) across all 5 modules — all tests passed with zero failures and zero errors.
+
+Verification: Full root reactor test suite passed cleanly (`BUILD SUCCESS` across `chat-system`, `common`, `admin-client`, `user-client`, and `server`).
+
 ## 2026-11-25 — Phase 6: Polish & Cross-Cutting for Issue #8: [A2]
 
 Tool: Antigravity AI Assistant.
