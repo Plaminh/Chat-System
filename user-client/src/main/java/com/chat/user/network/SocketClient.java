@@ -96,6 +96,23 @@ public final class SocketClient implements AutoCloseable {
         return future;
     }
 
+    /**
+     * Sends a request like {@link #sendAsync}, but first reconnects when the server was down at
+     * startup or the connection was lost. Connecting runs off the calling (Swing) thread.
+     */
+    public CompletableFuture<ResponseEnvelope> sendAsyncConnecting(ActionType action, Object payload) {
+        return CompletableFuture.runAsync(() -> {
+                    if (!isConnected()) {
+                        try {
+                            connect();
+                        } catch (IOException exception) {
+                            throw new UncheckedIOException(exception);
+                        }
+                    }
+                })
+                .thenCompose(ignored -> sendAsync(action, payload));
+    }
+
     private void listenLoop() {
         try (Reader reader = new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8)) {
             String line;

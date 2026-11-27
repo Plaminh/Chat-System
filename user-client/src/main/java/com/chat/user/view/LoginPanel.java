@@ -15,8 +15,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -76,20 +74,7 @@ public final class LoginPanel extends JPanel {
             socketClient == null
                 ? CompletableFuture.failedFuture(
                     new IllegalStateException("Socket client is not configured"))
-                : CompletableFuture.runAsync(() -> connectIfNeeded(socketClient))
-                    .thenCompose(ignored -> socketClient.sendAsync(ActionType.LOGIN, request)));
-  }
-
-  /** Reconnects when the server was down at startup or the connection was lost. */
-  private static void connectIfNeeded(SocketClient socketClient) {
-    if (socketClient.isConnected()) {
-      return;
-    }
-    try {
-      socketClient.connect();
-    } catch (IOException exception) {
-      throw new UncheckedIOException(exception);
-    }
+                : socketClient.sendAsyncConnecting(ActionType.LOGIN, request));
   }
 
   LoginPanel(
@@ -117,6 +102,14 @@ public final class LoginPanel extends JPanel {
 
   JLabel getFeedbackLabel() {
     return feedbackLabel;
+  }
+
+  /** After a successful registration: fill in the new username and ask for the password. */
+  public void showRegisteredAccount(String username) {
+    usernameField.setText(username);
+    passwordField.setText("");
+    showFeedback("Account created. Sign in with your new password.", ChatTheme.SUCCESS);
+    passwordField.requestFocusInWindow();
   }
 
   void submitSignIn() {

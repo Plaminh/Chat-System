@@ -91,6 +91,19 @@ class LoginPanelTest {
   }
 
   @Test
+  void registeredAccountIsFilledInForSignIn() {
+    LoginPanel panel =
+        new LoginPanel(UserSessionState.createSample(), () -> {}, () -> {}, () -> {});
+    panel.getPasswordField().setText("left-over");
+
+    panel.showRegisteredAccount("new_user");
+
+    assertEquals("new_user", panel.getUsernameField().getText());
+    assertEquals(0, panel.getPasswordField().getPassword().length);
+    assertTrue(panel.getFeedbackLabel().getText().contains("Account created"));
+  }
+
+  @Test
   void invalidServerCredentialsKeepUserOutOfWorkspace() throws Exception {
     UserSessionState session = UserSessionState.createSample();
     int[] signInCalls = {0};

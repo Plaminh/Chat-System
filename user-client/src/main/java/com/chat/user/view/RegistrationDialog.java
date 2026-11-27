@@ -11,18 +11,26 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Window;
+import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
+import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerDateModel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
@@ -33,8 +41,10 @@ public final class RegistrationDialog extends JPanel {
   private final JTextField usernameField = ChatTheme.createTextField(28);
   private final JTextField emailField = ChatTheme.createTextField(28);
   private final JTextField addressField = ChatTheme.createTextField(28);
-  private final JTextField dateOfBirthField = ChatTheme.createTextField(28);
-  private final JTextField genderField = ChatTheme.createTextField(28);
+  private static final String[] GENDER_OPTIONS = {"Male", "Female", "Other"};
+
+  private final JSpinner dateOfBirthField = createDateOfBirthSpinner();
+  private final JComboBox<String> genderField = ChatTheme.createComboBox(GENDER_OPTIONS);
   private final JPasswordField passwordField = new JPasswordField(28);
   private final JPasswordField confirmPasswordField = new JPasswordField(28);
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.CENTER);
@@ -42,6 +52,7 @@ public final class RegistrationDialog extends JPanel {
   private UserProfile submittedProfile;
   private final Function<RegisterRequest, CompletableFuture<com.chat.common.dto.ResponseEnvelope>> registrationSender;
   private JButton submitButton;
+  private Consumer<String> registeredHandler = username -> {};
 
   public RegistrationDialog() {
     this(request -> CompletableFuture.failedFuture(new IllegalStateException("Socket client is not configured")));
@@ -53,7 +64,7 @@ public final class RegistrationDialog extends JPanel {
             socketClient == null
                 ? CompletableFuture.failedFuture(
                     new IllegalStateException("Socket client is not configured"))
-                : socketClient.sendAsync(ActionType.REGISTER, request));
+                : socketClient.sendAsyncConnecting(ActionType.REGISTER, request));
   }
 
   RegistrationDialog(
@@ -61,7 +72,17 @@ public final class RegistrationDialog extends JPanel {
           registrationSender) {
     super(new BorderLayout());
     this.registrationSender = registrationSender;
+    genderField.setSelectedIndex(-1);
     buildContent();
+  }
+
+  /**
+   * Called with the new username after the server accepts the registration; the dialog then
+   * closes so the user can sign in.
+   */
+  public RegistrationDialog onRegistered(Consumer<String> handler) {
+    this.registeredHandler = handler == null ? username -> {} : handler;
+    return this;
   }
 
   public JDialog createDialog(Window owner) {
@@ -69,8 +90,9 @@ public final class RegistrationDialog extends JPanel {
     dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     dialog.setContentPane(this);
     dialog.pack();
-    dialog.setMinimumSize(new Dimension(560, 700));
-    dialog.setSize(560, 720);
+    // Tall enough for every field and the feedback line without scrolling.
+    dialog.setMinimumSize(new Dimension(560, 740));
+    dialog.setSize(560, 760);
     dialog.setLocationRelativeTo(owner);
     return dialog;
   }
@@ -91,11 +113,11 @@ public final class RegistrationDialog extends JPanel {
     return addressField;
   }
 
-  JTextField getDateOfBirthField() {
+  JSpinner getDateOfBirthField() {
     return dateOfBirthField;
   }
 
-  JTextField getGenderField() {
+  JComboBox<String> getGenderField() {
     return genderField;
   }
 
@@ -130,15 +152,13 @@ public final class RegistrationDialog extends JPanel {
     String username = usernameField.getText().trim();
     String email = emailField.getText().trim();
     String address = addressField.getText().trim();
-    String dateOfBirth = dateOfBirthField.getText().trim();
-    String gender = genderField.getText().trim();
+    String gender = (String) genderField.getSelectedItem();
 
     if (fullName.isEmpty()
         || username.isEmpty()
         || email.isEmpty()
         || address.isEmpty()
-        || dateOfBirth.isEmpty()
-        || gender.isEmpty()
+        || gender == null
         || passwordBlank) {
       showFeedback("Complete all required fields.", ChatTheme.DANGER);
       return;
@@ -154,26 +174,21 @@ public final class RegistrationDialog extends JPanel {
 
     LocalDate parsedDate;
     try {
-      parsedDate = LocalDate.parse(dateOfBirth);
-    } catch (DateTimeParseException exception) {
+      // Apply a date the user typed but did not confirm with Enter.
+      dateOfBirthField.commitEdit();
+      parsedDate =
+          ((Date) dateOfBirthField.getValue())
+              .toInstant()
+              .atZone(ZoneId.systemDefault())
+              .toLocalDate();
+    } catch (ParseException exception) {
       showFeedback("Date of birth must use the YYYY-MM-DD format.", ChatTheme.DANGER);
       return;
     }
 
     submittedProfile =
         new UserProfile(username, fullName, email, address, parsedDate, gender);
-
-    Gender parsedGender;
-    try {
-      parsedGender =
-          gender.equalsIgnoreCase("not specified")
-              ? Gender.OTHER
-              : Gender.valueOf(gender.toUpperCase());
-    } catch (IllegalArgumentException exception) {
-      submittedProfile = null;
-      showFeedback("Gender must be Male, Female, or Other.", ChatTheme.DANGER);
-      return;
-    }
+    Gender parsedGender = Gender.valueOf(gender.toUpperCase());
 
     RegisterRequest payload =
         new RegisterRequest(
@@ -210,6 +225,10 @@ public final class RegistrationDialog extends JPanel {
     }
     if (response != null && response.success()) {
       showFeedback("Account created successfully.", ChatTheme.SUCCESS);
+      registeredHandler.accept(submittedProfile.username());
+      if (dialog != null) {
+        dialog.dispose();
+      }
       return;
     }
     submittedProfile = null;
@@ -228,6 +247,9 @@ public final class RegistrationDialog extends JPanel {
     JPanel form = new JPanel();
     form.setLayout(new javax.swing.BoxLayout(form, javax.swing.BoxLayout.Y_AXIS));
     form.setBackground(ChatTheme.SURFACE_WHITE);
+    form.setBorder(
+        BorderFactory.createEmptyBorder(
+            ChatTheme.SPACE_SM, ChatTheme.SPACE_MD, ChatTheme.SPACE_SM, ChatTheme.SPACE_MD));
     addField(form, "Full name", fullNameField);
     addField(form, "Username", usernameField);
     addField(form, "Email address", emailField);
@@ -239,6 +261,10 @@ public final class RegistrationDialog extends JPanel {
 
     feedbackLabel.setFont(ChatTheme.FONT_SMALL);
     feedbackLabel.setForeground(ChatTheme.DANGER);
+    // Full width, so the centered message stays centered under the left-aligned fields.
+    feedbackLabel.setAlignmentX(LEFT_ALIGNMENT);
+    feedbackLabel.setMaximumSize(
+        new Dimension(Integer.MAX_VALUE, feedbackLabel.getPreferredSize().height));
     form.add(feedbackLabel);
 
     submitButton = ChatTheme.createPrimaryButton("Create Account");
@@ -271,13 +297,39 @@ public final class RegistrationDialog extends JPanel {
     add(content, BorderLayout.CENTER);
   }
 
-  private void addField(JPanel form, String labelText, JTextField field) {
+  private void addField(JPanel form, String labelText, JComponent field) {
     JLabel label = new JLabel(labelText);
     label.setFont(ChatTheme.FONT_BODY_BOLD);
     label.setForeground(ChatTheme.TEXT_SECONDARY);
+    // BoxLayout lines components up by alignmentX; labels default to left and fields to center,
+    // which shifted every label. Align both left, and give every field the same height.
+    label.setAlignmentX(LEFT_ALIGNMENT);
+    field.setAlignmentX(LEFT_ALIGNMENT);
+    field.setPreferredSize(
+        new Dimension(field.getPreferredSize().width, ChatTheme.BUTTON_HEIGHT));
+    field.setMaximumSize(new Dimension(Integer.MAX_VALUE, ChatTheme.BUTTON_HEIGHT));
     form.add(label);
     form.add(field);
     form.add(javax.swing.Box.createVerticalStrut(ChatTheme.SPACE_SM));
+  }
+
+  /** A date field limited to 1900-01-01 .. today, starting at 2000-01-01, shown as YYYY-MM-DD. */
+  private static JSpinner createDateOfBirthSpinner() {
+    Calendar earliest = Calendar.getInstance();
+    earliest.set(1900, Calendar.JANUARY, 1, 0, 0, 0);
+    Calendar initial = Calendar.getInstance();
+    initial.set(2000, Calendar.JANUARY, 1, 0, 0, 0);
+    SpinnerDateModel model =
+        new SpinnerDateModel(
+            initial.getTime(), earliest.getTime(), new Date(), Calendar.DAY_OF_MONTH);
+    JSpinner spinner = new JSpinner(model);
+    JSpinner.DateEditor editor = new JSpinner.DateEditor(spinner, "yyyy-MM-dd");
+    spinner.setEditor(editor);
+    // Same font and height as the text fields created by ChatTheme.createTextField.
+    editor.getTextField().setFont(ChatTheme.FONT_BODY);
+    spinner.setPreferredSize(
+        new Dimension(spinner.getPreferredSize().width, ChatTheme.BUTTON_HEIGHT));
+    return spinner;
   }
 
   private void cancelRegistration() {

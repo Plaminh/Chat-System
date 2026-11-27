@@ -64,15 +64,22 @@ public final class UserApplication {
           }
         });
 
-    LoginPanel loginPanel =
+    frame.setContentPane(createLoginPanel(frame, sessionState, socketClient));
+    frame.setVisible(true);
+  }
+
+  private static LoginPanel createLoginPanel(
+      JFrame frame, UserSessionState sessionState, SocketClient socketClient) {
+    // The registration handler needs the panel it belongs to, to fill in the new username.
+    LoginPanel[] loginPanel = new LoginPanel[1];
+    loginPanel[0] =
         new LoginPanel(
             sessionState,
             () -> showWorkspace(frame, sessionState, socketClient),
-            () -> showRegistrationDialog(frame, socketClient),
+            () -> showRegistrationDialog(frame, socketClient, loginPanel[0]),
             () -> showRecoveryDialog(frame),
             socketClient);
-    frame.setContentPane(loginPanel);
-    frame.setVisible(true);
+    return loginPanel[0];
   }
 
   private static void showWorkspace(
@@ -90,21 +97,18 @@ public final class UserApplication {
       socketClient.sendAsync(com.chat.common.enums.ActionType.LOGOUT, null);
     }
     sessionState.signOut();
-    LoginPanel loginPanel =
-        new LoginPanel(
-            sessionState,
-            () -> showWorkspace(frame, sessionState, socketClient),
-            () -> showRegistrationDialog(frame, socketClient),
-            () -> showRecoveryDialog(frame),
-            socketClient);
-    frame.setContentPane(loginPanel);
+    frame.setContentPane(createLoginPanel(frame, sessionState, socketClient));
     frame.setTitle("Chat System - User Client");
     frame.revalidate();
     frame.repaint();
   }
 
-  private static void showRegistrationDialog(JFrame frame, SocketClient socketClient) {
-    new RegistrationDialog(socketClient).createDialog(frame).setVisible(true);
+  private static void showRegistrationDialog(
+      JFrame frame, SocketClient socketClient, LoginPanel loginPanel) {
+    new RegistrationDialog(socketClient)
+        .onRegistered(loginPanel::showRegisteredAccount)
+        .createDialog(frame)
+        .setVisible(true);
   }
 
   private static void showRecoveryDialog(JFrame frame) {
