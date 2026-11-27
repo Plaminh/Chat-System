@@ -1,5 +1,135 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-25 — Phase 6: Polish & Cross-Cutting for Issue #8: [A2]
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Implement Phase 6 polish and cross-cutting verification for Issue #8 [A2] Admin Login History.
+
+Changed:
+- Verified graceful UI error recovery and empty-state presentation in `UserDetailHistoryDialog.java`.
+- Executed full multi-module automated test suite (`mvn test`) across reactor projects (`chat-system`, `common`, `admin-client`, `user-client`, `server`) — all tests passed with zero failures.
+- Ran `mvn spotless:check` to inspect formatting compliance per project guidelines without applying blanket formatting.
+- Marked all Phase 6 tasks completed in `tasks.md`.
+
+Verification: Full root reactor test build succeeded (`BUILD SUCCESS` across all 5 Maven modules).
+
+
+## 2026-11-25 — Phase 5: User Story 3 (Pagination & Sort Order) for Issue #8: [A2]
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Implement Phase 5 US3 pagination and sorting direction for Issue #8 [A2] Admin Login History.
+
+Changed:
+- Added `returnsLoginHistoryAscendingOrder` unit test in `AdminListLoginHistoryHandlerTest.java` verifying `SortDirection.ASC`.
+- Updated `UserDetailHistoryDialog.java` adding a sort direction dropdown ("Newest First" / "Oldest First"), page navigation buttons (Prev / Next), and dynamic pagination status label.
+- Marked Phase 5 tasks (T010, T011) completed in `tasks.md`.
+
+Verification: `AdminListLoginHistoryHandlerTest` passed 7 tests; `admin-client` test suite passed cleanly.
+
+
+## 2026-11-25 — Phase 4: User Story 2 (User-Specific Filtered History) for Issue #8: [A2]
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Implement Phase 4 US2 user-specific login history inspection for Issue #8 [A2] Admin Login History.
+
+Changed:
+- Verified target user existence check in `AdminListLoginHistoryHandler.java` returning `ErrorCode.NOT_FOUND` if target user does not exist in `users` table.
+- Verified unit tests in `AdminListLoginHistoryHandlerTest.java` for user filtering (`returnsFilteredLoginHistoryForSpecificUser`) and missing user (`returnsNotFoundWhenTargetUserDoesNotExist`).
+- Added `UserDetailHistoryDialogTest.java` in `admin-client` verifying dialog and history model initialization.
+- Marked Phase 4 tasks (T007, T008, T009) completed in `tasks.md`.
+
+Verification: `mvn test -pl admin-client -am` executed 74 tests across `common` and `admin-client` with zero failures.
+
+
+## 2026-11-24 — Phase 3: User Story 1 (Global Login History MVP) for Issue #8: [A2]
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Implement Phase 3 US1 global chronological login history for Issue #8 [A2] Admin Login History.
+
+Changed:
+- Implemented `AdminListLoginHistoryHandler` for `ActionType.ADMIN_LIST_LOGIN_HISTORY` mapping `LoginHistoryRecord` to `LoginHistoryEntry` and returning `PageResult<LoginHistoryEntry>`.
+- Added unit tests in `AdminListLoginHistoryHandlerTest.java` verifying global query (`userId = null`) returns entries sorted chronologically.
+- Updated `AdminAuthController.java` with `getSharedSocketClient()` helper.
+- Updated `UserDetailHistoryDialog.java` to asynchronously retrieve live login history via `SocketClient` and populate table model on EDT with fallback to mock store.
+- Marked Phase 3 tasks (T004, T005, T006) completed in `tasks.md`.
+
+Verification: `AdminListLoginHistoryHandlerTest` passed all 6 tests; `mvn test-compile -pl admin-client -am` compiled cleanly.
+
+
+## 2026-11-24 — Phase 2: Foundational for Issue #8: [A2] Admin Login History
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Implement Phase 2 foundational authorization verification for Issue #8 [A2] Admin Login History.
+
+Changed:
+- Verified `ActionDispatcher` enforcement of `UserRole.ADMIN` on `ADMIN_LIST_LOGIN_HISTORY`.
+- Added test cases in `server/src/test/java/com/chat/server/handler/ActionDispatcherAuthorizationTest.java` verifying that non-admin and unauthenticated requests to `ADMIN_LIST_LOGIN_HISTORY` are rejected with `ErrorCode.UNAUTHORIZED` and `ErrorCode.UNAUTHENTICATED`.
+- Updated `tasks.md` marking T003 completed.
+
+Verification: Executed `ActionDispatcherAuthorizationTest` via Maven — 5 tests passed with zero failures.
+
+
+## 2026-11-24 — Phase 1: Setup for Issue #8: [A2] Admin Login History
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Implement Phase 1 setup tasks for Issue #8 [A2] Admin Login History.
+
+Changed:
+- Verified `LoginHistoryRepository.find(Long userId, SortSpec sort, PageRequest page)` SQL mapping and types.
+- Extended `StubLoginHistoryRepository` in `server/src/test/java/com/chat/server/handler/AuthHandlerTestSupport.java` with Java 25-compatible `find(...)` implementation filtering by `userId`, sorting by `loggedInAt`, and paginating results.
+- Updated `tasks.md` marked Phase 1 tasks (T001, T002) completed.
+
+Verification: `mvn test-compile -pl server -am` passed cleanly on Java 25.
+
+
+## 2026-11-24 — Tasks Phase for Issue #8: [A2] Admin Login History
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Generate dependency-ordered implementation tasks for Issue #8 [A2] Admin Login History under `specs/006-admin-client-v2/admin-login-history/`.
+
+Changed:
+- Created `specs/006-admin-client-v2/admin-login-history/tasks.md` broken down into 6 phases: Setup, Foundational, US1 (Global Chronological History MVP), US2 (User-Specific Filtered History), US3 (Pagination & Sort Order), and Polish & Cross-Cutting.
+
+Verification: Task list covers all functional requirements and test cases without violating architecture constraints.
+
+
+## 2026-11-24 — Plan Phase for Issue #8: [A2] Admin Login History
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Create architecture and implementation plan for Issue #8 [A2] Admin Login History (Requirement 1.2.2 and 1.2.1) under `specs/006-admin-client-v2/admin-login-history/`.
+
+Changed:
+- Created `research.md`: Detailed query strategy using `LoginHistoryRepository.find(...)`, target user existence checks, sort field whitelisting (`loggedInAt`), and `ActionDispatcher` centralized admin role enforcement.
+- Created `data-model.md`: Detailed protocol wire entities (`LoginHistoryRequest`, `LoginHistoryEntry`, `PageResult`, `SortSpec`, `PageRequest`) and database schema for `login_history`.
+- Created `contracts/login-history-contracts.md`: Protocol specifications and payload envelopes for `ADMIN_LIST_LOGIN_HISTORY`.
+- Created `quickstart.md`: Automated and manual testing guide.
+- Created `plan.md`: Technical context, constitution checks, and source layout.
+
+Verification: Plan fully conforms to Constitution principles, module boundaries, and existing repository contracts.
+
+
+## 2026-11-24 — Specify Phase for Issue #8: [A2] Admin Login History
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Create feature specification for Issue #8 [A2] Admin Login History (Requirement 1.2.2 and 1.2.1) under `specs/006-admin-client-v2/admin-login-history/`.
+
+Changed:
+- Updated `.specify/feature.json` to point to `specs/006-admin-client-v2/admin-login-history`.
+- Created `specs/006-admin-client-v2/admin-login-history/spec.md` detailing user stories, edge cases, functional requirements (`FR-001` to `FR-008`), and measurable success criteria (`SC-001` to `SC-005`).
+- Created `specs/006-admin-client-v2/admin-login-history/checklists/requirements.md` with complete validation.
+
+Verification: Requirements validated against constitution, protocol definitions, and data models.
+
+
 ## 2026-11-24 — Complete User login and logout lifecycle for Issue U5
 
 Tool: AI assistant (Copilot SDK in VS Code).

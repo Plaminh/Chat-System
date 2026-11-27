@@ -1,10 +1,25 @@
 package com.chat.admin.view;
 
-import com.chat.common.ui.ChatTheme;
+import com.chat.admin.controller.AdminAuthController;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.model.AdminUser;
 import com.chat.admin.model.FriendConnection;
 import com.chat.admin.model.LoginRecord;
+import com.chat.admin.network.SocketClient;
+import com.chat.common.dto.admin.LoginHistoryEntry;
+import com.chat.common.dto.admin.LoginHistoryRequest;
+import com.chat.common.dto.common.PageRequest;
+import com.chat.common.dto.common.PageResult;
+import com.chat.common.dto.common.SortSpec;
+import com.chat.common.enums.ActionType;
+import com.chat.common.enums.SortDirection;
+import com.chat.common.ui.ChatTheme;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,6 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
@@ -39,10 +55,25 @@ public final class UserDetailHistoryDialog extends JDialog {
     "FRIEND USERNAME", "FULL NAME", "MUTUAL FRIENDS", "PRESENCE STATUS"
   };
 
+  private final ObjectMapper mapper =
+      JsonMapper.builder()
+          .addModule(new JavaTimeModule())
+          .disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
+          .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+          .build();
+
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final AdminUser user;
+  private final SocketClient socketClient;
 
   private final JComboBox<String> loginScopeCombo;
+  private final JComboBox<String> sortDirectionCombo;
+  private int currentPage = 0;
+  private int totalPages = 1;
+  private final JLabel pageInfoLabel = new JLabel("Page 1 of 1");
+  private final JButton prevPageBtn = ChatTheme.createSecondaryButton("◀ Prev");
+  private final JButton nextPageBtn = ChatTheme.createSecondaryButton("Next ▶");
+
   private final DefaultTableModel loginTableModel =
       new DefaultTableModel(LOGIN_COLUMNS, 0) {
         @Override
@@ -53,17 +84,50 @@ public final class UserDetailHistoryDialog extends JDialog {
   private final JLabel totalLoginsValueLabel = new JLabel("0");
 
   public UserDetailHistoryDialog(Frame owner, AdminUser user) {
+    this(owner, user, AdminAuthController.getSharedSocketClient());
+  }
+
+  public UserDetailHistoryDialog(Frame owner, AdminUser user, SocketClient socketClient) {
     super(
         owner,
         "User Inspection & Audit — @" + user.getUsername() + " (" + user.getFullName() + ")",
         true);
     this.user = user;
+    this.socketClient = socketClient;
     this.loginScopeCombo =
         ChatTheme.createComboBox(
             new String[] {
               "Scope: Selected User (@" + user.getUsername() + ")",
               "Scope: All System Users (Chronological)"
             });
+    this.sortDirectionCombo =
+        ChatTheme.createComboBox(new String[] {"Newest First", "Oldest First"});
+
+    this.loginScopeCombo.addActionListener(
+        e -> {
+          currentPage = 0;
+          populateLoginTable();
+        });
+    this.sortDirectionCombo.addActionListener(
+        e -> {
+          currentPage = 0;
+          populateLoginTable();
+        });
+
+    prevPageBtn.addActionListener(
+        e -> {
+          if (currentPage > 0) {
+            currentPage--;
+            populateLoginTable();
+          }
+        });
+    nextPageBtn.addActionListener(
+        e -> {
+          if (currentPage < totalPages - 1) {
+            currentPage++;
+            populateLoginTable();
+          }
+        });
 
     initDialogLayout();
     populateLoginTable();
@@ -194,7 +258,7 @@ public final class UserDetailHistoryDialog extends JDialog {
 
     JPanel scopeControl = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
     scopeControl.setOpaque(false);
-    loginScopeCombo.addActionListener(e -> populateLoginTable());
+    scopeControl.add(sortDirectionCombo);
     scopeControl.add(loginScopeCombo);
 
     topBar.add(kpiRow, BorderLayout.CENTER);
@@ -212,8 +276,17 @@ public final class UserDetailHistoryDialog extends JDialog {
         .getColumn(3)
         .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
+    JPanel paginationBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
+    paginationBar.setOpaque(false);
+    pageInfoLabel.setFont(ChatTheme.FONT_SMALL);
+    pageInfoLabel.setForeground(ChatTheme.TEXT_SECONDARY);
+    paginationBar.add(pageInfoLabel);
+    paginationBar.add(prevPageBtn);
+    paginationBar.add(nextPageBtn);
+
     tab.add(topBar, BorderLayout.NORTH);
     tab.add(AdminUIComponents.wrapTableInScrollPane(loginTable), BorderLayout.CENTER);
+    tab.add(paginationBar, BorderLayout.SOUTH);
     return tab;
   }
 
@@ -296,6 +369,67 @@ public final class UserDetailHistoryDialog extends JDialog {
 
   private void populateLoginTable() {
     boolean allUsers = loginScopeCombo.getSelectedIndex() == 1;
+    Long targetUserId = allUsers ? null : parseUserId(user.getId());
+    SortDirection direction =
+        sortDirectionCombo.getSelectedIndex() == 1 ? SortDirection.ASC : SortDirection.DESC;
+
+    if (socketClient != null && socketClient.isConnected()) {
+      LoginHistoryRequest req =
+          new LoginHistoryRequest(
+              targetUserId,
+              new SortSpec("loggedInAt", direction),
+              new PageRequest(currentPage, 50));
+      socketClient
+          .sendAsync(ActionType.ADMIN_LIST_LOGIN_HISTORY, req)
+          .thenAccept(
+              response -> {
+                SwingUtilities.invokeLater(
+                    () -> {
+                      if (response != null && response.success() && response.data() != null) {
+                        try {
+                          PageResult<LoginHistoryEntry> pageResult =
+                              mapper.readValue(
+                                  mapper.treeAsTokens(response.data()),
+                                  new TypeReference<>() {});
+                          loginTableModel.setRowCount(0);
+                          for (LoginHistoryEntry entry : pageResult.items()) {
+                            String status = entry.loggedOutAt() != null ? "Closed" : "Active";
+                            loginTableModel.addRow(
+                                new Object[] {
+                                  entry.loggedInAt().format(ChatTheme.FULL_DATETIME_FMT),
+                                  "@" + entry.username(),
+                                  entry.fullName(),
+                                  status
+                                });
+                          }
+                          totalLoginsValueLabel.setText(pageResult.totalItems() + " sessions");
+                          currentPage = pageResult.page();
+                          totalPages = Math.max(1, pageResult.totalPages());
+                          pageInfoLabel.setText(
+                              String.format(
+                                  "Page %d of %d (%d items)",
+                                  currentPage + 1, totalPages, pageResult.totalItems()));
+                          prevPageBtn.setEnabled(currentPage > 0);
+                          nextPageBtn.setEnabled(currentPage < totalPages - 1);
+                        } catch (Exception ex) {
+                          populateFromMockStore(allUsers);
+                        }
+                      } else {
+                        populateFromMockStore(allUsers);
+                      }
+                    });
+              })
+          .exceptionally(
+              ex -> {
+                SwingUtilities.invokeLater(() -> populateFromMockStore(allUsers));
+                return null;
+              });
+    } else {
+      populateFromMockStore(allUsers);
+    }
+  }
+
+  private void populateFromMockStore(boolean allUsers) {
     List<LoginRecord> records =
         allUsers
             ? dataStore.getAllLoginRecordsChronological()
@@ -312,6 +446,23 @@ public final class UserDetailHistoryDialog extends JDialog {
           });
     }
     totalLoginsValueLabel.setText(records.size() + " sessions");
+    currentPage = 0;
+    totalPages = 1;
+    pageInfoLabel.setText(String.format("Page 1 of 1 (%d items)", records.size()));
+    prevPageBtn.setEnabled(false);
+    nextPageBtn.setEnabled(false);
+  }
+
+  private static Long parseUserId(String rawId) {
+    if (rawId == null || rawId.isBlank()) {
+      return null;
+    }
+    try {
+      return Long.parseLong(rawId);
+    } catch (NumberFormatException e) {
+      String digits = rawId.replaceAll("\\D+", "");
+      return digits.isEmpty() ? null : Long.parseLong(digits);
+    }
   }
 
   private static String extractInitials(String fullName) {

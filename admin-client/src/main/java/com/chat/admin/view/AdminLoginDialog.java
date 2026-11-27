@@ -1,8 +1,9 @@
 package com.chat.admin.view;
 
-import com.chat.common.ui.ChatTheme;
 import com.chat.admin.controller.AdminAuthController;
 import com.chat.admin.view.AdminUIComponents.NavIconType;
+import com.chat.common.dto.admin.AdminUserInfo;
+import com.chat.common.ui.ChatTheme;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -25,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 /**
@@ -33,17 +35,24 @@ import javax.swing.WindowConstants;
  * <p>Validates administrator credentials before granting access to {@link AdminMainFrame}.
  */
 public final class AdminLoginDialog extends JDialog {
-  private final AdminAuthController authController = new AdminAuthController();
+  private final AdminAuthController authController;
   private final JTextField usernameField = new JTextField("admin");
   private final JPasswordField passwordField = new JPasswordField("admin123");
   private final JCheckBox rememberCheckBox = new JCheckBox("Remember session on this workstation", true);
   private final JLabel errorLabel = new JLabel(" ");
+  private JButton signInBtn;
   private boolean authenticated = false;
   private String authenticatedUsername = "admin";
+  private AdminUserInfo authenticatedAdmin = null;
   private char defaultEchoChar;
 
   public AdminLoginDialog(Frame owner) {
+    this(owner, new AdminAuthController());
+  }
+
+  public AdminLoginDialog(Frame owner, AdminAuthController authController) {
     super(owner, "Chat Admin Console — Authentication", true);
+    this.authController = authController != null ? authController : new AdminAuthController();
     ChatTheme.applyGlobalDefaults();
     initDialogLayout();
   }
@@ -54,6 +63,10 @@ public final class AdminLoginDialog extends JDialog {
 
   public String getAuthenticatedUsername() {
     return authenticatedUsername;
+  }
+
+  public AdminUserInfo getAuthenticatedAdmin() {
+    return authenticatedAdmin;
   }
 
   private void initDialogLayout() {
@@ -218,7 +231,7 @@ public final class AdminLoginDialog extends JDialog {
           usernameField.setText("admin");
           passwordField.setText("admin123");
           errorLabel.setForeground(ChatTheme.SUCCESS_TEXT);
-          errorLabel.setText("✓ Filled default mock admin credentials (admin / admin123)");
+          errorLabel.setText("✓ Filled default credentials (admin / admin123)");
         });
 
     optionsRow.add(rememberCheckBox, BorderLayout.WEST);
@@ -235,7 +248,7 @@ public final class AdminLoginDialog extends JDialog {
     // Primary Sign In Button
     gbc.gridy = 6;
     gbc.insets = new Insets(2, 0, 0, 0);
-    JButton signInBtn = ChatTheme.createPrimaryButton("Sign In to Admin Console  →");
+    signInBtn = ChatTheme.createPrimaryButton("Sign In to Admin Console  →");
     signInBtn.setName("signInButton");
     signInBtn.setPreferredSize(new Dimension(360, 40));
     signInBtn.addActionListener(e -> attemptLogin());
@@ -255,7 +268,7 @@ public final class AdminLoginDialog extends JDialog {
 
     JLabel lockNote =
         new JLabel(
-            "Restricted Access  •  Chat Admin Console v1.0 (Mock: admin / admin123)",
+            "Restricted Access  •  Chat Admin Console (Default: admin / admin123)",
             SwingConstants.CENTER);
     lockNote.setFont(ChatTheme.FONT_SMALL);
     lockNote.setForeground(ChatTheme.TEXT_SECONDARY);
@@ -264,6 +277,9 @@ public final class AdminLoginDialog extends JDialog {
   }
 
   private JButton findSignInButton(JPanel root) {
+    if (signInBtn != null) {
+      return signInBtn;
+    }
     for (Component c : root.getComponents()) {
       if (c instanceof JPanel panel) {
         for (Component sub : panel.getComponents()) {
@@ -284,27 +300,61 @@ public final class AdminLoginDialog extends JDialog {
     String username = usernameField.getText() == null ? "" : usernameField.getText().trim();
     String password = new String(passwordField.getPassword()).trim();
 
-    AdminAuthController.AuthResult result = authController.authenticate(username, password);
-    if (!result.success()) {
+    if (username.isEmpty()) {
       errorLabel.setForeground(ChatTheme.DANGER_TEXT);
-      errorLabel.setText(result.errorMessage().contains("Authentication failed") ? "Invalid administrator username or password." : result.errorMessage());
-      if (result.errorMessage().contains("username")) {
-        usernameField.requestFocusInWindow();
-      } else if (result.errorMessage().contains("password")) {
-        passwordField.requestFocusInWindow();
-      }
-      if (result.errorMessage().contains("Authentication failed")) {
-        JOptionPane.showMessageDialog(
-            this,
-            result.errorMessage(),
-            "Authentication Failed",
-            JOptionPane.ERROR_MESSAGE);
-      }
+      errorLabel.setText("Vui lòng nhập tên đăng nhập quản trị viên.");
+      usernameField.requestFocusInWindow();
+      return;
+    }
+    if (password.isEmpty()) {
+      errorLabel.setForeground(ChatTheme.DANGER_TEXT);
+      errorLabel.setText("Vui lòng nhập mật khẩu.");
+      passwordField.requestFocusInWindow();
       return;
     }
 
-    this.authenticated = true;
-    this.authenticatedUsername = result.username();
-    dispose();
+    setFormEnabled(false);
+    errorLabel.setForeground(ChatTheme.PRIMARY);
+    errorLabel.setText("Đang kết nối đến máy chủ...");
+
+    authController.authenticateAsync(username, password)
+        .whenComplete((result, ex) -> SwingUtilities.invokeLater(() -> {
+          setFormEnabled(true);
+          if (ex != null) {
+            errorLabel.setForeground(ChatTheme.DANGER_TEXT);
+            errorLabel.setText("Không thể kết nối đến máy chủ: " + ex.getMessage());
+            return;
+          }
+
+          if (!result.success()) {
+            errorLabel.setForeground(ChatTheme.DANGER_TEXT);
+            errorLabel.setText(result.errorMessage());
+            if (result.errorMessage().contains("Tài khoản không có quyền quản trị")) {
+              JOptionPane.showMessageDialog(
+                  this,
+                  result.errorMessage(),
+                  "Truy cập bị từ chối",
+                  JOptionPane.ERROR_MESSAGE);
+            }
+            return;
+          }
+
+          this.authenticated = true;
+          this.authenticatedAdmin = result.adminUser();
+          this.authenticatedUsername = result.adminUser() != null
+              ? result.adminUser().account().summary().username()
+              : username;
+          dispose();
+        }));
+  }
+
+  private void setFormEnabled(boolean enabled) {
+    usernameField.setEnabled(enabled);
+    passwordField.setEnabled(enabled);
+    rememberCheckBox.setEnabled(enabled);
+    if (signInBtn != null) {
+      signInBtn.setEnabled(enabled);
+      signInBtn.setText(enabled ? "Sign In to Admin Console  →" : "Signing In...");
+    }
   }
 }
