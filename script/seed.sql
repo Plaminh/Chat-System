@@ -1,6 +1,7 @@
 -- Java Chat System - fictional development data for Database V1
 -- Development only. All people/addresses are fictional and all emails use example.test.
--- BCrypt hashes are fixtures only; no plaintext password is published or reusable.
+-- All six seed accounts share the demo password Demo@12345 (stored as a BCrypt hash).
+-- It is a published demo credential for development and grading only; never reuse it.
 -- Apply with psql -X -v ON_ERROR_STOP=1. This file owns its transaction.
 
 \set ON_ERROR_STOP on
@@ -12,27 +13,27 @@ INSERT INTO users (
     date_of_birth, gender, role, account_status, locked_at, deleted_at,
     password_changed_at, created_at, updated_at
 ) VALUES
-    (1, 'admin_dev', '$2a$10$Ke96E.TGgMFMnqmMF093B.5GzwaVDziSsy6ndIy5YuoeJZA2.pVyO',
+    (1, 'admin_dev', '$2a$10$xU6PEafP6SdhY39S3kOJlODLTTvF01.RF69wTMkXdbPOhAXKrhc0O',
      'admin.dev@example.test', 'Development Admin', 'Fictional District 1',
      DATE '1988-01-15', 'other', 'admin', 'active', NULL, NULL,
      TIMESTAMPTZ '2026-01-01 01:00:00+00', TIMESTAMPTZ '2026-01-01 01:00:00+00', TIMESTAMPTZ '2026-01-01 01:00:00+00'),
-    (2, 'alice_sample', '$2a$10$Ke96E.TGgMFMnqmMF093B.5GzwaVDziSsy6ndIy5YuoeJZA2.pVyO',
+    (2, 'alice_sample', '$2a$10$xU6PEafP6SdhY39S3kOJlODLTTvF01.RF69wTMkXdbPOhAXKrhc0O',
      'alice.sample@example.test', 'Alice Sample', 'Fictional District 2',
      DATE '1995-02-20', 'female', 'user', 'active', NULL, NULL,
      TIMESTAMPTZ '2026-01-05 02:00:00+00', TIMESTAMPTZ '2026-01-05 02:00:00+00', TIMESTAMPTZ '2026-01-05 02:00:00+00'),
-    (3, 'bob_sample', '$2a$10$Ke96E.TGgMFMnqmMF093B.5GzwaVDziSsy6ndIy5YuoeJZA2.pVyO',
+    (3, 'bob_sample', '$2a$10$xU6PEafP6SdhY39S3kOJlODLTTvF01.RF69wTMkXdbPOhAXKrhc0O',
      'bob.sample@example.test', 'Bob Sample', 'Fictional District 3',
      DATE '1993-03-21', 'male', 'user', 'locked', TIMESTAMPTZ '2026-03-10 04:00:00+00', NULL,
      TIMESTAMPTZ '2026-01-08 03:00:00+00', TIMESTAMPTZ '2026-01-08 03:00:00+00', TIMESTAMPTZ '2026-03-10 04:00:00+00'),
-    (4, 'carol_sample', '$2a$10$Ke96E.TGgMFMnqmMF093B.5GzwaVDziSsy6ndIy5YuoeJZA2.pVyO',
+    (4, 'carol_sample', '$2a$10$xU6PEafP6SdhY39S3kOJlODLTTvF01.RF69wTMkXdbPOhAXKrhc0O',
      'carol.sample@example.test', 'Carol Sample', 'Fictional District 4',
      DATE '1997-04-22', 'female', 'user', 'active', NULL, NULL,
      TIMESTAMPTZ '2026-02-01 04:00:00+00', TIMESTAMPTZ '2026-02-01 04:00:00+00', TIMESTAMPTZ '2026-02-01 04:00:00+00'),
-    (5, 'dave_sample', '$2a$10$Ke96E.TGgMFMnqmMF093B.5GzwaVDziSsy6ndIy5YuoeJZA2.pVyO',
+    (5, 'dave_sample', '$2a$10$xU6PEafP6SdhY39S3kOJlODLTTvF01.RF69wTMkXdbPOhAXKrhc0O',
      'dave.sample@example.test', 'Dave Sample', 'Fictional District 5',
      DATE '1991-05-23', NULL, 'user', 'active', NULL, NULL,
      TIMESTAMPTZ '2026-02-14 05:00:00+00', TIMESTAMPTZ '2026-02-14 05:00:00+00', TIMESTAMPTZ '2026-02-14 05:00:00+00'),
-    (6, 'erin_sample', '$2a$10$Ke96E.TGgMFMnqmMF093B.5GzwaVDziSsy6ndIy5YuoeJZA2.pVyO',
+    (6, 'erin_sample', '$2a$10$xU6PEafP6SdhY39S3kOJlODLTTvF01.RF69wTMkXdbPOhAXKrhc0O',
      'erin.sample@example.test', 'Erin Sample', 'Fictional District 6',
      DATE '1998-06-24', 'other', 'user', 'deleted', NULL, TIMESTAMPTZ '2026-03-15 06:00:00+00',
      TIMESTAMPTZ '2026-03-01 06:00:00+00', TIMESTAMPTZ '2026-03-01 06:00:00+00', TIMESTAMPTZ '2026-03-15 06:00:00+00');

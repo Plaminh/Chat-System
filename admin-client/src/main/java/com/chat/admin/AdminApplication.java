@@ -1,8 +1,8 @@
 package com.chat.admin;
 
-import com.chat.common.ui.ChatTheme;
 import com.chat.admin.view.AdminLoginDialog;
 import com.chat.admin.view.AdminMainFrame;
+import com.chat.common.ui.ChatTheme;
 import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.SwingUtilities;
 
