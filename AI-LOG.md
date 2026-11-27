@@ -700,6 +700,20 @@ Rejected: Business-logic, text, dependency, and shared-theme changes.
 
 By hand: Review the resized login UI visually after relaunching the User client.
 
+## 2026-11-03 — Reorder AI log chronologically
+
+Tool: OpenAI Codex (VS Code).
+
+Asked for: Finalize the existing `AI-LOG.md` merge resolution by preserving all 46 historical entries and ordering them chronologically.
+
+Changed: Reordered complete historical entry blocks and normalized excessive blank lines between entries; no historical entry content or date was changed.
+
+Kept: None recorded.
+
+Rejected: None recorded.
+
+By hand: The developer requested the reordering and remains responsible for final review.
+
 ## 2026-11-03 — Align User Client UI with Admin
 
 Tool: AI assistant (Copilot SDK in VS Code).
@@ -1100,6 +1114,157 @@ Rejected: None recorded.
 
 By hand: Maven 3.9.9 and Oracle JDK 25.0.4.1 were used. Root `mvn test` passed across all five reactor modules (Common 67, Admin Client 3, User Client 16, Server 22 passed; 31 DB tests cleanly skipped without live DB). `mvn spotless:check` was audited. The developer requested implementation and instructed Git commits on `feature/server-core`.
 
+## 2026-11-23 — Specify Admin Authentication A0 (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Create the Spec Kit specification and quality checklist for Issue #7 [A0] Admin Authentication at `specs/006-admin-client-v2/admin-auth` on branch `feature/admin-client-v2`.
+
+Changed: Created `specs/006-admin-client-v2/admin-auth/spec.md` with prioritized user stories (P1 Successful Admin Authentication, P2 Non-Admin Role Rejection & Auto-Logout, P3 Admin Sign Out) and `specs/006-admin-client-v2/admin-auth/checklists/requirements.md`. Updated `.specify/feature.json`.
+
+Kept: Four-module architecture, Spring Boot non-web mode, raw TCP socket communication, and existing database repositories (`UserRepository`, `LoginHistoryRepository`).
+
+Rejected: Changing `common` DTOs, modifying database schemas, or bypassing two-step admin role verification.
+
+By hand: The developer requested the issue specification on `feature/admin-client-v2` and directed the subfolder structure under `specs/006-admin-client-v2/`.
+
+## 2026-11-23 — Plan Admin Authentication A0 (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Create implementation plan, research decisions, data model, interface contracts, and quickstart validation guide for Issue #7 [A0] Admin Authentication at `specs/006-admin-client-v2/admin-auth` on branch `feature/admin-client-v2`.
+
+Changed: Created `plan.md`, `research.md`, `data-model.md`, `contracts/auth-contracts.md`, and `quickstart.md` in `specs/006-admin-client-v2/admin-auth/`. Designed the two-step admin role verification flow (`LOGIN` -> `ADMIN_GET_USER`), session model alignment (`Long userId` and `loginHistoryId`), and Swing UI thread safety.
+
+Kept: Four-module architecture (`common`, `admin-client`, `user-client`, `server`), immutable `common` DTOs, Spring Boot non-web mode, raw TCP sockets, Spring JDBC with PostgreSQL, and jBCrypt password verification.
+
+Rejected: Altering `common` DTOs, inventing custom JWT/tokens, adding REST/WebSocket endpoints, or altering database schemas.
+
+By hand: The developer requested the planning phase and directed the design flow.
+
+## 2026-11-23 — Generate Tasks for Admin Authentication A0 (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Generate dependency-ordered implementation tasks (`tasks.md`) for Issue #7 [A0] Admin Authentication at `specs/006-admin-client-v2/admin-auth` on branch `feature/admin-client-v2`.
+
+Changed: Created `specs/006-admin-client-v2/admin-auth/tasks.md` with 21 actionable tasks (T001-T021) specifying exact file paths, test cases, implementation steps, and verification procedures.
+
+Kept: Four-module architecture, strictly organized by user story (US1: Admin Login MVP, US2: Non-Admin Rejection & Auto-Logout, US3: Admin Sign Out), and phased execution structure.
+
+Rejected: Combining multiple stories into single ambiguous tasks, or skipping independent testing criteria.
+
+By hand: The developer requested the task generation phase.
+
+## 2026-11-23 — Phase 1: Setup Infrastructure for Admin Auth (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Implement Phase 1 setup tasks (T001-T003) for Issue #7 [A0] Admin Authentication: align `SessionContext` and `OnlineSessionRegistry` with `Long userId` (`BIGSERIAL`) and track `Long loginHistoryId`.
+
+Changed:
+- Updated `SessionContext.java` to use `Long userId` and track `Long loginHistoryId`.
+- Updated `OnlineSessionRegistry.java` to index sessions with `Long userId`.
+- Updated `OnlineSessionRegistryTest.java` and `ActionDispatcherTest.java` to test with `Long` user IDs.
+- Checked off T001, T002, and T003 in `tasks.md`.
+
+Kept: Four-module architecture, in-memory thread safety, and existing networking infrastructure.
+
+Rejected: None recorded.
+
+By hand: Root reactor Maven build (`mvn test -pl common,server`) passed with 53 tests run, 0 failures, 0 errors. The developer instructed committing once per phase.
+
+## 2026-11-23 — Phase 2: Foundational Prerequisites for Admin Auth (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Implement Phase 2 foundational tasks (T004-T005) for Issue #7 [A0] Admin Authentication: verify `ActionDispatcher` authorization gating and add test fixture support.
+
+Changed:
+- Verified `ActionDispatcher.java` contains `ActionType.LOGIN` in public whitelist and enforces `UserRole.ADMIN` on all `ADMIN_*` actions.
+- Created `AuthHandlerTestSupport.java` with test user generator and repository mock utilities.
+- Checked off T004 and T005 in `tasks.md`.
+
+Kept: Four-module architecture, Spring Boot non-web mode, and RBAC role gating.
+
+Rejected: None recorded.
+
+By hand: Built and tested with Maven. The developer instructed committing once per phase.
+
+## 2026-11-23 — Phase 3: Implement User Story 1 Admin Authentication Flow (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Implement Phase 3 tasks (T006-T011) for User Story 1 (MVP Admin Authentication): server `LoginHandler`, `AdminGetUserHandler`, `AdminAuthController` two-step socket verification, and `AdminLoginDialog` async UI wiring.
+
+Changed:
+- Implemented `LoginHandler.java` for `ActionType.LOGIN` checking BCrypt password matching, handling `LOCKED` and `DELETED` accounts, and recording login history.
+- Implemented `AdminGetUserHandler.java` for `ActionType.ADMIN_GET_USER` returning full `AdminUserInfo` with `UserAccountDetail`.
+- Created Java 25-compatible stub test fixtures in `AuthHandlerTestSupport.java` and unit tests in `LoginHandlerTest.java` and `AdminGetUserHandlerTest.java`.
+- Updated `AdminAuthController.java` with asynchronous two-step authentication (`LOGIN` -> `ADMIN_GET_USER`) and error code mapping.
+- Updated `AdminLoginDialog.java` to invoke `authController.authenticateAsync(...)`, disabling submit buttons during transit and transitioning to `AdminMainFrame` on success.
+- Checked off T006 through T011 in `tasks.md`.
+
+Kept: Four-module architecture, BCrypt password hashing, Swing FlatLaf UI, TCP socket communication, and non-blocking asynchronous UI handling.
+
+Rejected: None recorded.
+
+By hand: Reactor tests (`mvn test -pl common,admin-client,server`) passed with 62 tests run, 0 failures, 0 errors. The developer instructed committing once per phase.
+
+## 2026-11-23 — Phase 4: Implement Non-Admin Role Rejection & Auto-Logout (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Implement Phase 4 tasks (T012-T015) for User Story 2 (Non-Admin Role Rejection & Auto-Logout): server-side action gating on `ADMIN_GET_USER`, auto-logout trigger on `UNAUTHORIZED`, error mapping to *"Tài khoản không có quyền quản trị"*, and UI handling.
+
+Changed:
+- Created `ActionDispatcherAuthorizationTest.java` verifying that non-admin and anonymous callers are strictly blocked from `ADMIN_GET_USER` with `ErrorCode.UNAUTHORIZED` and `UNAUTHENTICATED`.
+- Implemented loopback mock integration test in `AdminAuthControllerTest.java` verifying that receiving `UNAUTHORIZED` or non-admin role triggers an automatic `LOGOUT` request to clean up server session state and propagates `"Tài khoản không có quyền quản trị."`
+- Updated `AdminLoginDialog.java` to display error dialog on unauthorized role attempt and re-enable inputs.
+- Checked off T012 through T015 in `tasks.md`.
+
+Kept: Four-module architecture, RBAC authorization boundaries, and atomic session teardown.
+
+Rejected: None recorded.
+
+By hand: Reactor tests (`mvn test -pl common,admin-client,server`) passed with all unit and loopback tests passing (65 server tests, 5 admin-client tests, 67 common tests). The developer instructed committing once per phase.
+
+## 2026-11-23 — Phase 5: Implement Administrator Sign Out (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Implement Phase 5 tasks (T016-T018) for User Story 3 (Administrator Sign Out): server-side `LogoutHandler`, session clearance, `login_history` timestamp update, and client sign-out wiring in `AdminMainFrame`.
+
+Changed:
+- Implemented `LogoutHandler.java` for `ActionType.LOGOUT` clearing `SessionContext` and recording `logged_out_at` in `login_history` via `loginHistoryRepository.recordLogout(...)`.
+- Created unit test `LogoutHandlerTest.java` verifying that `SessionContext` is cleared and the logout timestamp is recorded.
+- Wired `handleSignOut()` in `AdminMainFrame.java` to dispatch `LOGOUT` through `AdminAuthController.logoutAsync()` prior to disposing the workspace frame and reopening the login dialog.
+- Checked off T016 through T018 in `tasks.md`.
+
+Kept: Four-module architecture, session lifecycle consistency, and non-blocking desktop client behavior.
+
+Rejected: None recorded.
+
+By hand: Reactor tests (`mvn test -pl common,admin-client,server`) passed (67 server tests, 5 admin-client tests, 67 common tests). The developer instructed committing once per phase.
+
+## 2026-11-23 — Phase 6: Polish & Cross-Cutting Verification for Admin Auth (Issue #7)
+
+Tool: Antigravity (Gemini 3.8 Flash).
+
+Asked for: Implement Phase 6 polish tasks (T019-T021) for Issue #7 [A0] Admin Authentication: handle connection loss/timeout gracefully, run full multi-module `mvn test` reactor build, and audit `mvn spotless:check`.
+
+Changed:
+- Verified network drop and timeout resilience with localized error reporting in `AdminLoginDialog.java`.
+- Ran full root reactor Maven build (`mvn test`) across all modules (`chat-system`, `common`, `admin-client`, `user-client`, `server`): 100% passed (Common 67/67, Admin Client 5/5, User Client 16/16, Server 67 passed with 31 DB integration tests skipped without live DB).
+- Audited `mvn spotless:check` without modifying formatting of unrelated files.
+- Marked all 21 tasks in `specs/006-admin-client-v2/admin-auth/tasks.md` as completed.
+
+Kept: Four-module architecture, user rule forbidding `mvn spotless:apply` without explicit request, and preservation of all existing tests.
+
+Rejected: None recorded.
+
+By hand: Full reactor build succeeded in 15.8 seconds. The developer instructed committing once per phase.
+
 ## 2026-11-23 — Implement User Registration issue U1
 
 Tool: AI assistant (Copilot SDK in VS Code).
@@ -1164,20 +1329,6 @@ Rejected: None recorded.
 
 By hand: `mvn -q -pl user-client -am test` passed 59 tests. `mvn clean test -q` passed the full reactor. No Admin files or business logic were changed.
 
-## 2026-11-24 - Fix server CORE defects after merging issue #3
-
-Tool: Claude Code (Claude Opus 5.5).
-
-Asked for: Review the merged `feature/server-core` work against issue #3 and fix the defects found.
-
-Changed: `RequestHandler` now marks its two-argument constructor `@Autowired`, because Spring could not choose between the two constructors and `server.jar` stopped at startup with "No default constructor found". `ActionDispatcher` maps `DuplicateKeyException` to `ALREADY_EXISTS` for REGISTER, UPDATE_PROFILE, SEND_FRIEND_REQUEST, BLOCK_USER, ADMIN_CREATE_USER and ADMIN_UPDATE_USER, and to `CONFLICT` otherwise. It also maps `IllegalArgumentException` to `VALIDATION_FAILED`. `SessionContext` and `OnlineSessionRegistry` use the database `long` user id instead of `UUID`. The registry gains `bindSession`/`unbindSession`, so a handler that only receives a `SessionContext` can mark its socket online. `TcpSocketServer` gives each connection its own worker thread (up to 256), because the previous pool served only 4 connections at once. Tests: updated user ids, added dispatcher tests for both duplicate-key mappings and for the illegal-argument mapping, plus socket integration tests for a targeted event with two clients and for six simultaneous clients.
-
-Kept: `common`, repositories, schema, client `SocketClient` classes, and the existing 4-space style of the touched files (no Spotless apply).
-
-Rejected: Commit and push; the issue owner must review and commit with their own Git account.
-
-By hand: `mvn clean verify` passed with the Docker database running: 182 tests, none skipped, including all 31 repository tests. The six-client test was confirmed to time out with the old pool. `server.jar` started and answered PING with PONG, malformed JSON with INVALID_JSON, an unknown action with UNKNOWN_ACTION, ADMIN_LIST_USERS before login with UNAUTHENTICATED, and REGISTER with UNSUPPORTED_OPERATION.
-
 ## 2026-11-24 — Complete User login and logout lifecycle for Issue U5
 
 Tool: AI assistant (Copilot SDK in VS Code).
@@ -1196,6 +1347,20 @@ Kept: None recorded.
 Rejected: None recorded.
 
 By hand: `mvn -q clean test-compile` passed across the Maven reactor. Rebuild/restart the server and User Client JARs, verify successful login/locked/deleted/invalid credentials through PostgreSQL-backed live testing, verify Sign Out and app-close rows, and capture screenshots. The developer must review and commit under their own Git account.
+
+## 2026-11-24 - Fix server CORE defects after merging issue #3
+
+Tool: Claude Code (Claude Opus 5.5).
+
+Asked for: Review the merged `feature/server-core` work against issue #3 and fix the defects found.
+
+Changed: `RequestHandler` now marks its two-argument constructor `@Autowired`, because Spring could not choose between the two constructors and `server.jar` stopped at startup with "No default constructor found". `ActionDispatcher` maps `DuplicateKeyException` to `ALREADY_EXISTS` for REGISTER, UPDATE_PROFILE, SEND_FRIEND_REQUEST, BLOCK_USER, ADMIN_CREATE_USER and ADMIN_UPDATE_USER, and to `CONFLICT` otherwise. It also maps `IllegalArgumentException` to `VALIDATION_FAILED`. `SessionContext` and `OnlineSessionRegistry` use the database `long` user id instead of `UUID`. The registry gains `bindSession`/`unbindSession`, so a handler that only receives a `SessionContext` can mark its socket online. `TcpSocketServer` gives each connection its own worker thread (up to 256), because the previous pool served only 4 connections at once. Tests: updated user ids, added dispatcher tests for both duplicate-key mappings and for the illegal-argument mapping, plus socket integration tests for a targeted event with two clients and for six simultaneous clients.
+
+Kept: `common`, repositories, schema, client `SocketClient` classes, and the existing 4-space style of the touched files (no Spotless apply).
+
+Rejected: Commit and push; the issue owner must review and commit with their own Git account.
+
+By hand: `mvn clean verify` passed with the Docker database running: 182 tests, none skipped, including all 31 repository tests. The six-client test was confirmed to time out with the old pool. `server.jar` started and answered PING with PONG, malformed JSON with INVALID_JSON, an unknown action with UNKNOWN_ACTION, ADMIN_LIST_USERS before login with UNAUTHENTICATED, and REGISTER with UNSUPPORTED_OPERATION.
 
 ## 2026-11-24 — Specify Phase for Issue #8: [A2] Admin Login History
 
@@ -1382,43 +1547,6 @@ Rejected: Client-side checks for the username pattern and password length, which
 
 By hand: The original code was checked first against `server.jar` and the Docker database over TCP: 19 of 19 REGISTER checks passed, including six clients registering the same username at once (one success, five `ALREADY_EXISTS`), and the real `RegistrationDialog` reproduced the reconnect defect. After the changes, `mvn clean verify` built `common`, `admin-client` and `user-client` (64 user-client tests passed) but could not delete `server/target/server.jar`, which the developer's own running server held open; `mvn test -pl server -am` then passed 62 server tests with none skipped, including the 4 new `RegisterHandlerTest` tests. The rebuilt `RegistrationDialog` with a never-connected `SocketClient` now created the account, and a duplicate username still showed "Username already exists". Temporary accounts were deleted. The layout fix was checked by painting the real form off screen at the dialog's content size, with and without an error message; `mvn test -pl user-client -am` then passed 64 tests. A full `mvn clean verify` could not run because the developer's open server and user client held `server.jar` and `user.jar`, and the fixed dialog was not yet opened by hand.
 
-## 2026-11-27 — Admin login review fixes (LOGIN / LOGOUT / ADMIN_GET_USER)
-
-Tool: Claude Code (Claude Opus 5.5).
-
-Asked for: Review the admin login task (admin-client 2-step LOGIN + ADMIN_GET_USER role check, server ADMIN_* gating) and fix the issues found.
-
-Changed:
-- `AdminGetUserHandler`: decode `UserTarget` through `ProtocolValidator.decodePayload`, so invalid/malformed `targetUserId` returns `VALIDATION_FAILED` / `INVALID_PAYLOAD` instead of `INTERNAL_ERROR`.
-- `AdminAuthController`: only `UNAUTHORIZED` maps to "Tài khoản không có quyền quản trị."; other ADMIN_GET_USER failures show the real error. Every failure after a successful LOGIN (error, parse failure, timeout) now sends LOGOUT. Added 5 s response timeouts. Password is no longer trimmed.
-- `AdminLoginDialog`: removed hardcoded `admin` / `admin123` prefill, the "Demo Credentials?" button, the credential hint in the footer, and the non-functional "Remember session" checkbox; password is no longer trimmed.
-- Tests: added invalid-payload cases to `AdminGetUserHandlerTest`; rewrote `AdminAuthControllerTest` around a scripted fake server (admin accepted, UNAUTHORIZED rejected + LOGOUT, other error + LOGOUT, parse failure + LOGOUT, password sent untrimmed).
-- Ran Spotless `apply` only on the six files above (plus `AdminApplication.java` import order); the rest of the repository was not reformatted.
-
-Kept: The `common` protocol contracts, the database schema, `ActionDispatcher` admin gating, and the uncommitted `script/seed.sql` change made by another developer.
-
-Rejected: Running Spotless on the whole repository (many pre-existing violations in unrelated files); editing `script/seed.sql`, which the team must decide on because it publishes the demo password; commit and push.
-
-By hand: With PostgreSQL running, root `mvn -o clean package` — BUILD SUCCESS (common 67, admin-client 11 with 1 skipped, user-client 64, server 87 with none skipped). Against a live `server.jar` on port 5050 with the seed data, a throwaway scripted client using the real `AdminAuthController` passed 22/22 checks (admin_dev accepted; alice_sample rejected and logged out; ADMIN_* without login → UNAUTHENTICATED, as a normal user → UNAUTHORIZED; invalid targetUserId → VALIDATION_FAILED / INVALID_PAYLOAD; wrong password, locked, deleted messages), and `login_history` showed every session closed. The real `AdminLoginDialog` was driven programmatically: empty fields on open, alice_sample shows the "Truy cập bị từ chối" popup, admin_dev authenticates and closes the dialog. Final review remains with the developers.
-
-## 2026-11-27 — Admin login history review fixes (issue #8)
-
-Tool: Claude Code (Claude Opus 5.5).
-
-Asked for: Check issue #8 [A2] (system-wide login history: login time, username, full name, chronological order, newest login shown at once) and apply only minimal fixes.
-
-Changed:
-- `UserDetailHistoryDialog`: show login times in Vietnam time (`Asia/Ho_Chi_Minh`) with seconds instead of the raw UTC value the server sends, which displayed 7 hours early.
-- `UserDetailHistoryDialog`: when the server is unreachable, rejects the request, times out (new 5 s timeout) or returns unreadable data, show an error message with an empty table instead of falling back to `AdminMockDataStore` sample records.
-- `UserDetailHistoryDialog`: add a Refresh button next to the pagination controls so a new login appears without reopening the dialog; ignore late responses to older requests so the table cannot show a stale order.
-- `UserDetailHistoryDialogTest`: rename the GUI test to match the new behavior and add a non-GUI test for the Vietnam-time formatting.
-
-Kept: The server handler, repository and `common` contracts, which already met the issue (verified live); the dialog's location under User Directory and its "All System Users" scope selector.
-
-Rejected: A separate "Login History" screen in the main menu with its own controller and tests; it was written and verified, then removed at the developer's request in favor of minimal fixes. Spotless was not run on the changed files; commit and push.
-
-By hand: `mvn -o clean package -pl admin-client -am` passed (common 67, admin-client 12 with the existing headless GUI test skipped). Against a live `server.jar` with seed data, `ADMIN_LIST_LOGIN_HISTORY` with `userId = null` returned correct DESC/ASC order, paging metadata, and `VALIDATION_FAILED` for `sort.field = username`. The real dialog was driven programmatically: 8/8 checks passed (newest login on top in Vietnam time, Refresh shows a new alice_sample login at the top, Oldest First ascending, no sample data and an error message after disconnecting). Root `mvn -o clean package` with PostgreSQL running passed (common 67, admin-client 12 with 1 skipped, user-client 64, server 87 with none skipped). The full user path was then driven on the live server: `AdminLoginDialog` sign-in as admin_dev, `AdminMainFrame` User Directory, "View History & Network", "All System Users" scope; 8/8 checks passed, and the newest rows and total count matched `login_history` queried in Vietnam time. Final review remains with the developers.
-
 ## 2026-11-27 — Implement Newly Registered User Timeline for Issue #14: [A5]
 
 Tool: Antigravity AI Assistant.
@@ -1566,6 +1694,25 @@ Rejected: None recorded.
 
 By hand: `mvn test -pl server,admin-client -am` passed cleanly (67 common tests, 16 admin-client tests, 19 server tests).
 
+## 2026-11-27 — Admin login review fixes (LOGIN / LOGOUT / ADMIN_GET_USER)
+
+Tool: Claude Code (Claude Opus 5.5).
+
+Asked for: Review the admin login task (admin-client 2-step LOGIN + ADMIN_GET_USER role check, server ADMIN_* gating) and fix the issues found.
+
+Changed:
+- `AdminGetUserHandler`: decode `UserTarget` through `ProtocolValidator.decodePayload`, so invalid/malformed `targetUserId` returns `VALIDATION_FAILED` / `INVALID_PAYLOAD` instead of `INTERNAL_ERROR`.
+- `AdminAuthController`: only `UNAUTHORIZED` maps to "Tài khoản không có quyền quản trị."; other ADMIN_GET_USER failures show the real error. Every failure after a successful LOGIN (error, parse failure, timeout) now sends LOGOUT. Added 5 s response timeouts. Password is no longer trimmed.
+- `AdminLoginDialog`: removed hardcoded `admin` / `admin123` prefill, the "Demo Credentials?" button, the credential hint in the footer, and the non-functional "Remember session" checkbox; password is no longer trimmed.
+- Tests: added invalid-payload cases to `AdminGetUserHandlerTest`; rewrote `AdminAuthControllerTest` around a scripted fake server (admin accepted, UNAUTHORIZED rejected + LOGOUT, other error + LOGOUT, parse failure + LOGOUT, password sent untrimmed).
+- Ran Spotless `apply` only on the six files above (plus `AdminApplication.java` import order); the rest of the repository was not reformatted.
+
+Kept: The `common` protocol contracts, the database schema, `ActionDispatcher` admin gating, and the uncommitted `script/seed.sql` change made by another developer.
+
+Rejected: Running Spotless on the whole repository (many pre-existing violations in unrelated files); editing `script/seed.sql`, which the team must decide on because it publishes the demo password; commit and push.
+
+By hand: With PostgreSQL running, root `mvn -o clean package` — BUILD SUCCESS (common 67, admin-client 11 with 1 skipped, user-client 64, server 87 with none skipped). Against a live `server.jar` on port 5050 with the seed data, a throwaway scripted client using the real `AdminAuthController` passed 22/22 checks (admin_dev accepted; alice_sample rejected and logged out; ADMIN_* without login → UNAUTHENTICATED, as a normal user → UNAUTHORIZED; invalid targetUserId → VALIDATION_FAILED / INVALID_PAYLOAD; wrong password, locked, deleted messages), and `login_history` showed every session closed. The real `AdminLoginDialog` was driven programmatically: empty fields on open, alice_sample shows the "Truy cập bị từ chối" popup, admin_dev authenticates and closes the dialog. Final review remains with the developers.
+
 ## 2026-11-27 — Implement Issue #20: [A9] Annual Distinct Active Users Chart (Requirement 1.2.9)
 
 Tool: Antigravity AI Assistant.
@@ -1597,6 +1744,24 @@ Rejected: None recorded.
 
 By hand: `mvn test -pl server,admin-client -am` passed cleanly (67 common tests, 16 admin-client tests, 22 server tests).
 
+## 2026-11-27 — Admin login history review fixes (issue #8)
+
+Tool: Claude Code (Claude Opus 5.5).
+
+Asked for: Check issue #8 [A2] (system-wide login history: login time, username, full name, chronological order, newest login shown at once) and apply only minimal fixes.
+
+Changed:
+- `UserDetailHistoryDialog`: show login times in Vietnam time (`Asia/Ho_Chi_Minh`) with seconds instead of the raw UTC value the server sends, which displayed 7 hours early.
+- `UserDetailHistoryDialog`: when the server is unreachable, rejects the request, times out (new 5 s timeout) or returns unreadable data, show an error message with an empty table instead of falling back to `AdminMockDataStore` sample records.
+- `UserDetailHistoryDialog`: add a Refresh button next to the pagination controls so a new login appears without reopening the dialog; ignore late responses to older requests so the table cannot show a stale order.
+- `UserDetailHistoryDialogTest`: rename the GUI test to match the new behavior and add a non-GUI test for the Vietnam-time formatting.
+
+Kept: The server handler, repository and `common` contracts, which already met the issue (verified live); the dialog's location under User Directory and its "All System Users" scope selector.
+
+Rejected: A separate "Login History" screen in the main menu with its own controller and tests; it was written and verified, then removed at the developer's request in favor of minimal fixes. Spotless was not run on the changed files; commit and push.
+
+By hand: `mvn -o clean package -pl admin-client -am` passed (common 67, admin-client 12 with the existing headless GUI test skipped). Against a live `server.jar` with seed data, `ADMIN_LIST_LOGIN_HISTORY` with `userId = null` returned correct DESC/ASC order, paging metadata, and `VALIDATION_FAILED` for `sort.field = username`. The real dialog was driven programmatically: 8/8 checks passed (newest login on top in Vietnam time, Refresh shows a new alice_sample login at the top, Oldest First ascending, no sample data and an error message after disconnecting). Root `mvn -o clean package` with PostgreSQL running passed (common 67, admin-client 12 with 1 skipped, user-client 64, server 87 with none skipped). The full user path was then driven on the live server: `AdminLoginDialog` sign-in as admin_dev, `AdminMainFrame` User Directory, "View History & Network", "All System Users" scope; 8/8 checks passed, and the newest rows and total count matched `login_history` queried in Vietnam time. Final review remains with the developers.
+
 ## 2026-11-27 — Merge A5, A6 and A9 into dev (issues #14, #19, #20)
 
 Tool: Claude Code (Claude Opus 5.5).
@@ -1614,3 +1779,21 @@ Kept: All other A5, A6 and A9 changes, including the server handlers `AdminListU
 Rejected: Rewriting or amending the branch commits; the offline login fallback; commit and push before the developer reviews the merge.
 
 By hand: Root `mvn -o clean package` passed with PostgreSQL running (common 67, admin-client 21 with 3 headless GUI tests skipped, user-client 64, server 99). On a live `server.jar` with seed data, 8/8 protocol checks passed: `ADMIN_GET_MONTHLY_REGISTRATIONS` and `ADMIN_GET_MONTHLY_ACTIVE_USERS` for 2026 return 12 months that match the database in Vietnam time; `ADMIN_LIST_USERS` with a 2026-01-01 to 2026-02-28 range returns the same five users as the database; a reversed range and `sort.field = email` return `VALIDATION_FAILED`; a normal user gets `UNAUTHORIZED`. With the server stopped, `admin` / `admin123` is rejected. The A5, A6 and A9 screens were not driven by hand; like issue #8 before its fix, they still fall back to `AdminMockDataStore` sample data when a request fails. Final review remains with the developers.
+
+## 2026-11-27 — Restore lost AI-LOG entries (A0 issue #7 and AI-log reorder)
+
+Tool: Claude Code (Claude Opus 5.5).
+
+Asked for: Find out why the AI-LOG entries for A0 Admin Authentication (issue #7) were missing on `dev` and restore them, then check the AI-LOG history of every branch for other lost entries, restore "Reorder AI log chronologically", and put the whole log in oldest-first order.
+
+Changed:
+- Restored the nine A0 entries (Specify, Plan, Tasks and Phase 1–6, 2026-11-23) from commit `e149c2f`, placed after "Implement Server Core Platform (Issue #3)" in oldest-first order.
+- Restored "Reorder AI log chronologically" (2026-11-03) from commit `bcb47f9`, placed before "Align User Client UI with Admin" because it was committed earlier that day (18:03 versus 21:43). It was lost in merge commit `1fadd9a` (2026-11-04, `origin/feature/user-ui-v1` into `dev`), which also kept only one side of the `AI-LOG.md` conflict.
+- Reordered same-day entries by the time of the commit that holds their work: "Complete User login and logout lifecycle for Issue U5" (09:56) now precedes "Fix server CORE defects after merging issue #3" (11:17) on 2026-11-24; on 2026-11-27, "Admin login review fixes" (16:36) now sits between A6 (15:07) and A9 (16:39), and "Admin login history review fixes (issue #8)" (17:11) between A9 and the merge entry (17:29). No entry text was changed by the reordering.
+- Moved each entry's `Verification:` text to the start of `By hand:` and added `Rejected: None recorded.` where the field was missing, as in the shared format. The wording is otherwise unchanged.
+
+Kept: All other entries.
+
+Rejected: Rewriting the merge commits; restoring "Common V2 Foundation" (2026-11-10, commit `c7630ca`), which was removed together with its code by revert commit `fe06525`; commit and push.
+
+By hand: The entries were lost in merge commit `eaeb514` (2026-11-24, "synchronize origin/dev into feature/admin-client-v2"), which resolved the `AI-LOG.md` conflict by keeping only the `origin/dev` side. No later commit restored them. The developer must review and commit.
