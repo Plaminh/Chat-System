@@ -4,6 +4,7 @@ import com.chat.common.dto.EventEnvelope;
 import com.chat.common.dto.social.PresenceUpdate;
 import com.chat.common.enums.MessageType;
 import com.chat.common.enums.PresenceStatus;
+import com.chat.common.enums.UserRole;
 import com.chat.server.repository.FriendshipRepository;
 import com.chat.server.repository.LoginHistoryRepository;
 import com.chat.server.repository.UserActivityLogRepository;
@@ -40,7 +41,10 @@ public class SessionLifecycle {
     long loginHistoryId = loginHistory.recordLogin(databaseUserId);
     // Keep the id before any later step can fail, so end() can always close this row.
     session.setDatabaseSession(databaseUserId, loginHistoryId);
-    activityLogs.recordAppOpen(databaseUserId);
+    // Only opening the chat app counts as app_open; signing in to the Admin Console does not.
+    if (session.getRole() == UserRole.USER) {
+      activityLogs.recordAppOpen(databaseUserId);
+    }
     registry.bindSession(session);
     broadcastPresence(databaseUserId, PresenceStatus.ONLINE);
   }

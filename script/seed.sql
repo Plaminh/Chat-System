@@ -168,7 +168,6 @@ INSERT INTO user_activity_logs (
     user_activity_log_id, user_id, activity_type, conversation_id,
     conversation_id_snapshot, counterpart_user_id_snapshot, occurred_at
 ) VALUES
-    (1001, 1, 'app_open', NULL, NULL, NULL, TIMESTAMPTZ '2026-03-15 01:00:00+00'),
     (1002, 2, 'app_open', NULL, NULL, NULL, TIMESTAMPTZ '2026-03-15 02:00:00+00'),
     (1003, 2, 'direct_chat', 501, 501, 3, TIMESTAMPTZ '2026-03-15 02:15:00+00'),
     (1004, 3, 'direct_chat', 501, 501, 2, TIMESTAMPTZ '2026-03-15 02:16:00+00'),
