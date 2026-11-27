@@ -194,8 +194,8 @@ public class UserRepository {
   }
 
   /**
-   * Admin user list: optional username/full-name query, status and creation-date range. Sort
-   * fields: {@code name}, {@code createdAt}.
+   * Admin user list of USER accounts only: optional username/full-name query, status and
+   * creation-date range. Sort fields: {@code name}, {@code createdAt}.
    */
   public PageResult<User> findForAdmin(
       String query,
@@ -205,6 +205,8 @@ public class UserRepository {
       PageRequest page) {
     MapSqlParameterSource params = new MapSqlParameterSource();
     List<String> conditions = new ArrayList<>();
+    // The admin screens manage and count people who use the chat app, not administrators.
+    conditions.add("u.role = 'user'");
     if (query != null) {
       conditions.add(
           "(lower(u.username) LIKE :pattern ESCAPE '\\' OR lower(u.full_name) LIKE :pattern"
@@ -220,7 +222,7 @@ public class UserRepository {
       params.addValue("from", rangeStart(createdAtRange));
       params.addValue("to", rangeEndExclusive(createdAtRange));
     }
-    String where = conditions.isEmpty() ? "" : " WHERE " + String.join(" AND ", conditions);
+    String where = " WHERE " + String.join(" AND ", conditions);
     long total = jdbc.queryForObject("SELECT count(*) FROM users u" + where, params, Long.class);
     List<User> items =
         jdbc.query(
@@ -275,20 +277,25 @@ public class UserRepository {
         BRIEF);
   }
 
-  /** Number of accounts created in the date range. */
+  /** Number of USER accounts created in the date range; administrators are not counted. */
   public long countRegistrations(DateRange range) {
     return jdbc.queryForObject(
-        "SELECT count(*) FROM users WHERE created_at >= :from AND created_at < :to",
+        "SELECT count(*) FROM users"
+            + " WHERE role = 'user' AND created_at >= :from AND created_at < :to",
         Map.of("from", rangeStart(range), "to", rangeEndExclusive(range)),
         Long.class);
   }
 
-  /** New accounts per month of {@code year}; index 0 is January. Months without data are 0. */
+  /**
+   * New USER accounts per month of {@code year}; index 0 is January. Months without data are 0.
+   * Administrators are not counted.
+   */
   public long[] countMonthlyRegistrations(int year) {
     long[] counts = new long[12];
     jdbc.query(
         "SELECT extract(MONTH FROM created_at AT TIME ZONE :zone)::int AS month, count(*) AS total"
-            + " FROM users WHERE created_at >= :from AND created_at < :to GROUP BY 1",
+            + " FROM users WHERE role = 'user' AND created_at >= :from AND created_at < :to"
+            + " GROUP BY 1",
         SqlSupport.yearParams(year),
         rs -> {
           counts[rs.getInt("month") - 1] = rs.getLong("total");

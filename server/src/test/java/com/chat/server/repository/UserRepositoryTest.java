@@ -269,6 +269,32 @@ class UserRepositoryTest extends RepositoryTestSupport {
   }
 
   @Test
+  void leavesAdministratorsOutOfTheAdminListAndRegistrationCounts() {
+    inRollback(
+        () -> {
+          LocalDate today = today();
+          int month = today.getMonthValue() - 1;
+          long monthlyBefore = users.countMonthlyRegistrations(today.getYear())[month];
+          long rangeBefore = users.countRegistrations(new DateRange(today, today));
+
+          long user = newUser("uRepoRole");
+          newUser("uRepoRole", UserRole.ADMIN);
+
+          PageResult<User> listed =
+              users.findForAdmin(
+                  "urepoRole",
+                  null,
+                  new DateRange(today, today),
+                  new SortSpec("name", SortDirection.ASC),
+                  FIRST_PAGE);
+          assertEquals(List.of(user), listed.items().stream().map(User::userId).toList());
+          assertEquals(1, listed.totalItems());
+          assertEquals(monthlyBefore + 1, users.countMonthlyRegistrations(today.getYear())[month]);
+          assertEquals(rangeBefore + 1, users.countRegistrations(new DateRange(today, today)));
+        });
+  }
+
+  @Test
   void storesOneActivePublicKeyPerUser() {
     inRollback(
         () -> {
