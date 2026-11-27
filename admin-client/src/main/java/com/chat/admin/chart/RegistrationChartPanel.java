@@ -1,8 +1,8 @@
 package com.chat.admin.chart;
 
 import com.chat.admin.controller.AdminAuthController;
-import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.network.SocketClient;
+import com.chat.common.dto.ResponseEnvelope;
 import com.chat.common.dto.common.YearRequest;
 import com.chat.common.dto.statistics.MonthlyCount;
 import com.chat.common.enums.ActionType;
@@ -17,6 +17,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -48,13 +49,14 @@ public final class RegistrationChartPanel extends JPanel {
 
   private final ObjectMapper mapper = new ObjectMapper();
   private final SocketClient socketClient;
-  private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-  private final JComboBox<Integer> yearCombo =
-      new JComboBox<>(new Integer[] {2024, 2025, 2026});
+  private final JComboBox<Integer> yearCombo = new JComboBox<>(ChartYears.selectableYears());
   private final JLabel annualTotalLabel = new JLabel("0 signups");
   private final JLabel peakMonthLabel = new JLabel("Aug (0)");
   private final JLabel monthlyAvgLabel = new JLabel("0.0 / month");
+  private final JLabel statusLabel = new JLabel(" ");
+  private static final long RESPONSE_TIMEOUT_SECONDS = 5;
+  private int requestSeq = 0;
   private JFreeChart barChart;
 
   public RegistrationChartPanel() {
@@ -72,7 +74,7 @@ public final class RegistrationChartPanel extends JPanel {
             BorderFactory.createEmptyBorder(14, 16, 14, 16)));
 
     yearCombo.setFont(ChatTheme.FONT_BODY_BOLD);
-    yearCombo.setSelectedItem(2025);
+    yearCombo.setSelectedItem(ChartYears.currentYear());
 
     add(buildHeaderRow(), BorderLayout.NORTH);
     add(buildChartCanvas(), BorderLayout.CENTER);
@@ -86,28 +88,25 @@ public final class RegistrationChartPanel extends JPanel {
           }
         });
 
-    dataStore.addChangeListener(
-        () -> {
-          if (this.socketClient == null || !this.socketClient.isConnected()) {
-            Integer selected = (Integer) yearCombo.getSelectedItem();
-            if (selected != null) {
-              updateChartForYear(selected);
-            }
-          }
-        });
-
-    updateChartForYear(2025);
+    updateChartForYear(ChartYears.currentYear());
   }
 
   /** Updates the selected year and refreshes the 12-month registration dataset. */
   public void setSelectedYear(int year) {
+    boolean listed = false;
+    for (int i = 0; i < yearCombo.getItemCount(); i++) {
+      listed |= yearCombo.getItemAt(i) == year;
+    }
+    if (!listed) {
+      yearCombo.addItem(year);
+    }
+    // Selecting an item always fires the combo listener, which reloads the chart once.
     yearCombo.setSelectedItem(year);
-    updateChartForYear(year);
   }
 
   public int getSelectedYear() {
     Integer y = (Integer) yearCombo.getSelectedItem();
-    return y != null ? y : 2025;
+    return y != null ? y : ChartYears.currentYear();
   }
 
   public void refreshChart() {
@@ -222,7 +221,13 @@ public final class RegistrationChartPanel extends JPanel {
     row.add(createStatPill("Annual Total:", annualTotalLabel, ChatTheme.PRIMARY));
     row.add(createStatPill("Peak Month:", peakMonthLabel, new Color(0x4F46E5)));
     row.add(createStatPill("Monthly Avg:", monthlyAvgLabel, ChatTheme.TEXT_PRIMARY));
-    return row;
+    statusLabel.setFont(ChatTheme.FONT_SMALL);
+    statusLabel.setForeground(ChatTheme.DANGER_TEXT);
+    JPanel footer = new JPanel(new BorderLayout(0, 6));
+    footer.setOpaque(false);
+    footer.add(row, BorderLayout.CENTER);
+    footer.add(statusLabel, BorderLayout.SOUTH);
+    return footer;
   }
 
   private JPanel createStatPill(String labelText, JLabel valueLabel, Color valueColor) {
@@ -239,36 +244,62 @@ public final class RegistrationChartPanel extends JPanel {
   }
 
   public void updateChartForYear(int year) {
-    if (socketClient != null && socketClient.isConnected()) {
-      YearRequest req = new YearRequest(year);
-      socketClient
-          .sendAsync(ActionType.ADMIN_GET_MONTHLY_REGISTRATIONS, req)
-          .thenAccept(
-              response -> {
+    int seq = ++requestSeq; // a late response to an older year is ignored
+    if (socketClient == null || !socketClient.isConnected()) {
+      showError("Not connected to the server.");
+      return;
+    }
+    socketClient
+        .sendAsync(ActionType.ADMIN_GET_MONTHLY_REGISTRATIONS, new YearRequest(year))
+        .orTimeout(RESPONSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        .whenComplete(
+            (response, ex) ->
                 SwingUtilities.invokeLater(
                     () -> {
-                      if (response != null && response.success() && response.data() != null) {
-                        try {
-                          List<MonthlyCount> list =
-                              mapper.readValue(
-                                  mapper.treeAsTokens(response.data()),
-                                  new TypeReference<>() {});
-                          populateFromMonthlyCounts(year, list);
-                          return;
-                        } catch (Exception ignored) {
-                        }
+                      if (seq != requestSeq) {
+                        return;
                       }
-                      populateFromMockStore(year);
-                    });
-              })
-          .exceptionally(
-              ex -> {
-                SwingUtilities.invokeLater(() -> populateFromMockStore(year));
-                return null;
-              });
-    } else {
-      populateFromMockStore(year);
+                      if (ex != null) {
+                        showError("The server did not respond. Please try again.");
+                        return;
+                      }
+                      List<MonthlyCount> list = readCounts(response);
+                      if (list == null) {
+                        showError("Could not load registrations: " + failureReason(response));
+                        return;
+                      }
+                      populateFromMonthlyCounts(year, list);
+                    }));
+  }
+
+  private List<MonthlyCount> readCounts(ResponseEnvelope response) {
+    if (response == null || !response.success() || response.data() == null) {
+      return null;
     }
+    try {
+      return mapper.readValue(mapper.treeAsTokens(response.data()), new TypeReference<>() {});
+    } catch (Exception ex) {
+      return null;
+    }
+  }
+
+  private static String failureReason(ResponseEnvelope response) {
+    if (response == null) {
+      return "no response";
+    }
+    if (response.success()) {
+      return "the server returned data that could not be read";
+    }
+    return response.message() != null ? response.message() : String.valueOf(response.errorCode());
+  }
+
+  /** Shows an error and an empty chart; no sample figures are shown in place of real ones. */
+  private void showError(String message) {
+    dataset.clear();
+    annualTotalLabel.setText("—");
+    peakMonthLabel.setText("—");
+    monthlyAvgLabel.setText("—");
+    statusLabel.setText(message);
   }
 
   public void populateFromMonthlyCounts(int year, List<MonthlyCount> list) {
@@ -282,11 +313,7 @@ public final class RegistrationChartPanel extends JPanel {
       }
     }
     renderDataset(year, values);
-  }
-
-  private void populateFromMockStore(int year) {
-    int[] values = dataStore.getMonthlyRegistrations(year);
-    renderDataset(year, values);
+    statusLabel.setText(" ");
   }
 
   private void renderDataset(int year, int[] values) {
@@ -306,7 +333,7 @@ public final class RegistrationChartPanel extends JPanel {
 
     double avg = values.length == 0 ? 0.0 : (double) total / values.length;
     annualTotalLabel.setText(NumberFormat.getIntegerInstance().format(total));
-    peakMonthLabel.setText(MONTHS[maxMonthIdx] + " (" + Math.max(0, maxVal) + ")");
+    peakMonthLabel.setText(total == 0 ? "—" : MONTHS[maxMonthIdx] + " (" + maxVal + ")");
     monthlyAvgLabel.setText(String.format("%.1f users", avg));
   }
 
@@ -324,5 +351,9 @@ public final class RegistrationChartPanel extends JPanel {
 
   public JLabel getMonthlyAvgLabel() {
     return monthlyAvgLabel;
+  }
+
+  String getStatusText() {
+    return statusLabel.getText();
   }
 }

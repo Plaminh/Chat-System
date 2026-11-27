@@ -41,4 +41,33 @@ class RegistrationChartPanelTest {
     assertEquals(2024, panel.getSelectedYear());
     assertNotNull(panel.getDataset());
   }
+
+  @Test
+  void showsAnErrorAndNoSampleFiguresWhenDisconnected() {
+    RegistrationChartPanel panel = new RegistrationChartPanel(null);
+
+    assertEquals(0, panel.getDataset().getColumnCount());
+    assertEquals("Not connected to the server.", panel.getStatusText());
+    assertEquals("—", panel.getPeakMonthLabel().getText());
+  }
+
+  @Test
+  void opensOnTheCurrentYear() {
+    assertEquals(ChartYears.currentYear(), new RegistrationChartPanel(null).getSelectedYear());
+  }
+
+  @Test
+  void showsNoPeakMonthForAYearWithoutData() {
+    RegistrationChartPanel panel = new RegistrationChartPanel(null);
+    List<MonthlyCount> counts = new ArrayList<>();
+    for (int month = 1; month <= 12; month++) {
+      counts.add(new MonthlyCount(2026, month, 0L));
+    }
+
+    panel.populateFromMonthlyCounts(2026, counts);
+
+    assertEquals(12, panel.getDataset().getColumnCount());
+    assertEquals("—", panel.getPeakMonthLabel().getText());
+    assertEquals(" ", panel.getStatusText());
+  }
 }

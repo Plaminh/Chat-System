@@ -3,6 +3,7 @@ package com.chat.admin.view;
 import com.chat.admin.controller.AdminAuthController;
 import com.chat.common.ui.ChatTheme;
 import com.chat.admin.chart.ActivityChartPanel;
+import com.chat.admin.chart.ChartYears;
 import com.chat.admin.chart.RegistrationChartPanel;
 import com.chat.admin.model.AdminMockDataStore;
 import com.chat.admin.view.AdminUIComponents.NavIconType;
@@ -449,9 +450,9 @@ public final class AdminMainFrame extends JFrame {
     syncYearLbl.setFont(ChatTheme.FONT_BODY_BOLD);
     syncYearLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
-    JComboBox<Integer> globalYearCombo = new JComboBox<>(new Integer[] {2024, 2025, 2026});
+    JComboBox<Integer> globalYearCombo = new JComboBox<>(ChartYears.selectableYears());
     globalYearCombo.setFont(ChatTheme.FONT_BODY_BOLD);
-    globalYearCombo.setSelectedItem(2025);
+    globalYearCombo.setSelectedItem(ChartYears.currentYear());
     globalYearCombo.addActionListener(
         e -> {
           Integer year = (Integer) globalYearCombo.getSelectedItem();
