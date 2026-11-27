@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-27
 
-**Status**: In Progress
+**Status**: Completed
 
 **Input**: User description: "Issue #15: [A6] Biểu đồ số lượng người dùng đăng ký mới theo từng tháng trong năm (Requirement 1.2.6). Action: ADMIN_GET_MONTHLY_REGISTRATIONS với YearRequest(int year). Trả về danh sách 12 tháng List<MonthlyCount>. Hiển thị biểu đồ cột JFreeChart và các thẻ thống kê tổng quan (tổng đăng ký, tháng cao điểm, trung bình tháng). Hỗ trợ chọn năm, refresh, và fallback ngoại tuyến mượt mà."
 

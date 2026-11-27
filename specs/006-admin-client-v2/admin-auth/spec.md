@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-23
 
-**Status**: Draft
+**Status**: Completed
 
 **Input**: User description: "Issue #7 [A0] Đăng nhập quản trị tại specs/006-admin-client-v2/admin-auth. Action: LOGIN, LOGOUT, ADMIN_GET_USER. Sau khi LOGIN thành công, admin-client gọi ADMIN_GET_USER với userId của chính mình. Nếu nhận AdminUserInfo (role ADMIN) thì vào AdminMainFrame. Nếu nhận UNAUTHORIZED thì gọi LOGOUT và báo 'Tài khoản không có quyền quản trị'. Nối AdminLoginDialog, bật bước kiểm tra quyền admin cho mọi action ADMIN_*, làm luôn handler ADMIN_GET_USER."
 

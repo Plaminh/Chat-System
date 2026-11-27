@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-27
 
-**Status**: Draft
+**Status**: Completed
 
 **Input**: User description: "Issue #14: [A5] Danh sách người dùng đăng ký mới tại specs/006-admin-client-v2/admin-new-registrations. Action: ADMIN_LIST_USERS với createdAtRange. Xem danh sách người dùng đăng ký mới theo khoảng thời gian (Requirement 1.2.5). Hỗ trợ lọc theo tên, sắp xếp theo tên hoặc thời gian tạo, phân trang và tính cả hai đầu mút theo giờ Việt Nam."
 

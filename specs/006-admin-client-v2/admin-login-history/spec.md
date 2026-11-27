@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-24
 
-**Status**: Draft
+**Status**: Completed
 
 **Input**: User description: "Issue #8: [A2] Danh sách đăng nhập theo thứ tự thời gian tại specs/006-admin-client-v2/admin-login-history. Action: ADMIN_LIST_LOGIN_HISTORY. Xem danh sách đăng nhập theo thứ tự thời gian (Requirement 1.2.2) và theo từng người dùng (Requirement 1.2.1). Hỗ trợ phân trang và sắp xếp theo loggedInAt."
 

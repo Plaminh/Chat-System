@@ -1,8 +1,14 @@
 package com.chat.admin.chart;
 
-import com.chat.common.ui.ChatTheme;
+import com.chat.admin.controller.AdminAuthController;
 import com.chat.admin.model.AdminMockDataStore;
-import com.chat.admin.view.AdminUIComponents;
+import com.chat.admin.network.SocketClient;
+import com.chat.common.dto.common.YearRequest;
+import com.chat.common.dto.statistics.MonthlyCount;
+import com.chat.common.enums.ActionType;
+import com.chat.common.ui.ChatTheme;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -11,10 +17,13 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.geom.Ellipse2D;
 import java.text.NumberFormat;
+import java.util.List;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -28,17 +37,19 @@ import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 /**
- * Annual Monthly Distinct Active Users Line Chart Panel (Task 10 / T017).
+ * Annual Monthly Distinct Active Users Line Chart Panel (Requirement 1.2.9 / Issue #16 / [A9]).
  *
- * <p>Covers Requirement 1.2.9: Allow selecting a year and render a 12-month JFreeChart line chart
- * showing the number of distinct users who opened the application at least once in each month of
- * the selected year.
+ * <p>Renders a 12-month JFreeChart line chart showing the number of distinct users who opened the
+ * application at least once in each month of the selected year using
+ * {@link ActionType#ADMIN_GET_MONTHLY_ACTIVE_USERS}.
  */
 public final class ActivityChartPanel extends JPanel {
   private static final String[] MONTHS = {
     "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   };
 
+  private final ObjectMapper mapper = new ObjectMapper();
+  private final SocketClient socketClient;
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
   private final JComboBox<Integer> yearCombo =
@@ -49,6 +60,12 @@ public final class ActivityChartPanel extends JPanel {
   private JFreeChart lineChart;
 
   public ActivityChartPanel() {
+    this(AdminAuthController.getSharedSocketClient());
+  }
+
+  public ActivityChartPanel(SocketClient socketClient) {
+    this.socketClient = socketClient;
+
     setLayout(new BorderLayout(0, 10));
     setBackground(ChatTheme.SURFACE_WHITE);
     setBorder(
@@ -70,11 +87,14 @@ public final class ActivityChartPanel extends JPanel {
             updateChartForYear(selected);
           }
         });
+
     dataStore.addChangeListener(
         () -> {
-          Integer selected = (Integer) yearCombo.getSelectedItem();
-          if (selected != null) {
-            updateChartForYear(selected);
+          if (this.socketClient == null || !this.socketClient.isConnected()) {
+            Integer selected = (Integer) yearCombo.getSelectedItem();
+            if (selected != null) {
+              updateChartForYear(selected);
+            }
           }
         });
 
@@ -85,6 +105,18 @@ public final class ActivityChartPanel extends JPanel {
   public void setSelectedYear(int year) {
     yearCombo.setSelectedItem(year);
     updateChartForYear(year);
+  }
+
+  public int getSelectedYear() {
+    Integer y = (Integer) yearCombo.getSelectedItem();
+    return y != null ? y : 2025;
+  }
+
+  public void refreshChart() {
+    Integer selected = (Integer) yearCombo.getSelectedItem();
+    if (selected != null) {
+      updateChartForYear(selected);
+    }
   }
 
   private JPanel buildHeaderRow() {
@@ -108,8 +140,14 @@ public final class ActivityChartPanel extends JPanel {
     yearLbl.setFont(ChatTheme.FONT_BODY_BOLD);
     yearLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
+    JButton refreshBtn = ChatTheme.createSecondaryButton("Làm mới");
+    refreshBtn.setFont(ChatTheme.FONT_SMALL);
+    refreshBtn.setToolTipText("Cập nhật lại dữ liệu hoạt động từ máy chủ");
+    refreshBtn.addActionListener(e -> refreshChart());
+
     controls.add(yearLbl);
     controls.add(yearCombo);
+    controls.add(refreshBtn);
 
     header.add(titleBox, BorderLayout.CENTER);
     header.add(controls, BorderLayout.EAST);
@@ -208,10 +246,59 @@ public final class ActivityChartPanel extends JPanel {
     return pill;
   }
 
-  private void updateChartForYear(int year) {
-    int[] values = dataStore.getMonthlyActiveUsers(year);
-    dataset.clear();
+  public void updateChartForYear(int year) {
+    if (socketClient != null && socketClient.isConnected()) {
+      YearRequest req = new YearRequest(year);
+      socketClient
+          .sendAsync(ActionType.ADMIN_GET_MONTHLY_ACTIVE_USERS, req)
+          .thenAccept(
+              response -> {
+                SwingUtilities.invokeLater(
+                    () -> {
+                      if (response != null && response.success() && response.data() != null) {
+                        try {
+                          List<MonthlyCount> list =
+                              mapper.readValue(
+                                  mapper.treeAsTokens(response.data()),
+                                  new TypeReference<>() {});
+                          populateFromMonthlyCounts(year, list);
+                          return;
+                        } catch (Exception ignored) {
+                        }
+                      }
+                      populateFromMockStore(year);
+                    });
+              })
+          .exceptionally(
+              ex -> {
+                SwingUtilities.invokeLater(() -> populateFromMockStore(year));
+                return null;
+              });
+    } else {
+      populateFromMockStore(year);
+    }
+  }
 
+  public void populateFromMonthlyCounts(int year, List<MonthlyCount> list) {
+    int[] values = new int[12];
+    if (list != null) {
+      for (MonthlyCount mc : list) {
+        int m = mc.month();
+        if (m >= 1 && m <= 12) {
+          values[m - 1] = (int) mc.count();
+        }
+      }
+    }
+    renderDataset(year, values);
+  }
+
+  private void populateFromMockStore(int year) {
+    int[] values = dataStore.getMonthlyActiveUsers(year);
+    renderDataset(year, values);
+  }
+
+  private void renderDataset(int year, int[] values) {
+    dataset.clear();
     int total = 0;
     int maxVal = -1;
     int maxMonthIdx = 0;
@@ -227,7 +314,23 @@ public final class ActivityChartPanel extends JPanel {
 
     double avg = values.length == 0 ? 0.0 : (double) total / values.length;
     annualActiveTotalLabel.setText(NumberFormat.getIntegerInstance().format(total));
-    peakActivityMonthLabel.setText(MONTHS[maxMonthIdx] + " (" + maxVal + ")");
+    peakActivityMonthLabel.setText(MONTHS[maxMonthIdx] + " (" + Math.max(0, maxVal) + ")");
     monthlyAvgActiveLabel.setText(String.format("%.1f users", avg));
+  }
+
+  public DefaultCategoryDataset getDataset() {
+    return dataset;
+  }
+
+  public JLabel getAnnualActiveTotalLabel() {
+    return annualActiveTotalLabel;
+  }
+
+  public JLabel getPeakActivityMonthLabel() {
+    return peakActivityMonthLabel;
+  }
+
+  public JLabel getMonthlyAvgActiveLabel() {
+    return monthlyAvgActiveLabel;
   }
 }

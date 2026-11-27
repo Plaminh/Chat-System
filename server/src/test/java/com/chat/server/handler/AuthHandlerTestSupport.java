@@ -68,6 +68,10 @@ public final class AuthHandlerTestSupport {
         return new StubLoginHistoryRepository();
     }
 
+    public static StubUserActivityLogRepository stubUserActivityLogRepository() {
+        return new StubUserActivityLogRepository();
+    }
+
     public static SessionLifecycle stubSessionLifecycle(
             LoginHistoryRepository loginHistory,
             OnlineSessionRegistry registry,
@@ -235,5 +239,36 @@ public final class AuthHandlerTestSupport {
         public Long getLoginUserId(long loginHistoryId) {
             return logins.get(loginHistoryId);
         }
+    }
+
+    public static class StubUserActivityLogRepository extends UserActivityLogRepository {
+        private final List<ActivityLogEntry> entries = new CopyOnWriteArrayList<>();
+
+        public StubUserActivityLogRepository() {
+            super(new JdbcTemplate());
+        }
+
+        public void logAppOpen(long userId, OffsetDateTime time) {
+            entries.add(new ActivityLogEntry(userId, "app_open", time));
+        }
+
+        @Override
+        public long[] countMonthlyActiveUsers(int year) {
+            long[] counts = new long[12];
+            for (int month = 1; month <= 12; month++) {
+                final int m = month;
+                long distinct = entries.stream()
+                        .filter(e -> "app_open".equals(e.type)
+                                && e.time.getYear() == year
+                                && e.time.getMonthValue() == m)
+                        .map(e -> e.userId)
+                        .distinct()
+                        .count();
+                counts[month - 1] = distinct;
+            }
+            return counts;
+        }
+
+        private record ActivityLogEntry(long userId, String type, OffsetDateTime time) {}
     }
 }
