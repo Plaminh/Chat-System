@@ -161,6 +161,7 @@ public final class GroupManagementPanel extends JPanel {
 
     panel.add(header, BorderLayout.NORTH);
     panel.add(AdminUIComponents.wrapTableInScrollPane(groupTable), BorderLayout.CENTER);
+    groupTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     return panel;
   }
 
@@ -200,6 +201,7 @@ public final class GroupManagementPanel extends JPanel {
 
     panel.add(topSection, BorderLayout.NORTH);
     panel.add(AdminUIComponents.wrapTableInScrollPane(memberTable), BorderLayout.CENTER);
+    memberTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     return panel;
   }
 

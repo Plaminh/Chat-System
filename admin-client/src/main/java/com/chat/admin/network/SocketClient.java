@@ -26,6 +26,7 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public final class SocketClient implements AutoCloseable {
@@ -78,6 +79,7 @@ public final class SocketClient implements AutoCloseable {
         String requestId = UUID.randomUUID().toString();
         CompletableFuture<ResponseEnvelope> future = new CompletableFuture<>();
         pendingRequests.put(requestId, future);
+        future.orTimeout(5, TimeUnit.SECONDS).whenComplete((res, err) -> pendingRequests.remove(requestId));
 
         try {
             JsonNode dataNode = payload != null ? mapper.valueToTree(payload) : mapper.createObjectNode();

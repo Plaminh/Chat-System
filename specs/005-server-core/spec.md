@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-23
 
-**Status**: Draft
+**Status**: Completed
 
 **Input**: User description: "áp dụng speckit, specify ra trước phần CORE nha! Nền tảng server á! Và bạn xem thử có cấu hình socket hay gì chưa? Bên cạnh đó tôi cần phải tải docker và làm như nào với docker? Lời nhắn từ Plaminh: t làm xog phần DAO rồi nha, file env thì m tạo từ file .env.example đổi mật khẩu lại để chạy docker container trên máy m nha, m dùng dbeaver mở container đó ra và xem bảng khi thực hiện các tính năng nha. Hiện phần server core vẫn chưa xong hết, t có note lại trong issue thì phần đó m làm tiếp nha. Cho tôi hướng đi tiếp"
 

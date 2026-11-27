@@ -49,8 +49,11 @@ public final class UserActivityPanel extends JPanel {
   };
 
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
-  private final JTextField fromDateField = AdminUIComponents.createDateField("2025-01-01");
-  private final JTextField toDateField = AdminUIComponents.createDateField("2025-12-31");
+  private final DateRangePickerBar dateRangePickerBar =
+      new DateRangePickerBar(
+          LocalDate.of(2025, 1, 1),
+          LocalDate.now(),
+          (s, e) -> applyFiltersAndRefresh(false));
   private final JTextField nameSearchField =
       ChatTheme.createSearchField("Filter by full name or username...", 16);
   private final JComboBox<String> operatorCombo =
@@ -129,52 +132,12 @@ public final class UserActivityPanel extends JPanel {
   }
 
   private JPanel buildFilterToolbar() {
-    JPanel card = ChatTheme.createCardPanel(new BorderLayout(0, 6));
+    JPanel card = ChatTheme.createCardPanel(new BorderLayout(0, 10));
 
-    // Top row: Date range filter + quick presets
+    // Top row: Unified Date Range Picker Bar (Bar + Presets)
     JPanel dateRow = new JPanel(new BorderLayout(10, 4));
     dateRow.setOpaque(false);
-
-    JPanel leftDateControls = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
-    leftDateControls.setOpaque(false);
-
-    JLabel fromLbl = new JLabel("From Date:");
-    fromLbl.setFont(ChatTheme.FONT_BODY_BOLD);
-    fromLbl.setForeground(ChatTheme.TEXT_SECONDARY);
-
-    JLabel toLbl = new JLabel("To Date:");
-    toLbl.setFont(ChatTheme.FONT_BODY_BOLD);
-    toLbl.setForeground(ChatTheme.TEXT_SECONDARY);
-
-    leftDateControls.add(fromLbl);
-    leftDateControls.add(fromDateField);
-    leftDateControls.add(toLbl);
-    leftDateControls.add(toDateField);
-
-    JPanel rightPresets = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.RIGHT, 6, 2));
-    rightPresets.setOpaque(false);
-
-    JLabel presetLbl = new JLabel("Presets:");
-    presetLbl.setFont(ChatTheme.FONT_SMALL);
-    presetLbl.setForeground(ChatTheme.TEXT_MUTED);
-
-    JButton mayPresetBtn = ChatTheme.createSecondaryButton("May 2025");
-    mayPresetBtn.addActionListener(e -> setDateRange("2025-05-01", "2025-05-31"));
-
-    JButton q1Q2PresetBtn = ChatTheme.createSecondaryButton("H1 2025");
-    q1Q2PresetBtn.addActionListener(e -> setDateRange("2025-01-01", "2025-06-30"));
-
-    JButton fullPeriodBtn = ChatTheme.createSecondaryButton("All 2025–2026");
-    fullPeriodBtn.addActionListener(
-        e -> setDateRange("2025-01-01", LocalDate.now().format(ChatTheme.DATE_FMT)));
-
-    rightPresets.add(presetLbl);
-    rightPresets.add(mayPresetBtn);
-    rightPresets.add(q1Q2PresetBtn);
-    rightPresets.add(fullPeriodBtn);
-
-    dateRow.add(leftDateControls, BorderLayout.CENTER);
-    dateRow.add(rightPresets, BorderLayout.EAST);
+    dateRow.add(dateRangePickerBar, BorderLayout.CENTER);
 
     // Bottom row: Name search + Activity comparison (=, >, <) + Sort + Reset
     JPanel bottomRow = new JPanel(new BorderLayout(10, 4));
@@ -204,11 +167,10 @@ public final class UserActivityPanel extends JPanel {
     JPanel rightSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightSort.setOpaque(false);
 
-    JButton resetBtn = ChatTheme.createSecondaryButton("Reset");
+    JButton resetBtn = ChatTheme.createSecondaryButton("Reset All");
     resetBtn.addActionListener(
         e -> {
-          fromDateField.setText("2025-01-01");
-          toDateField.setText(LocalDate.now().format(ChatTheme.DATE_FMT));
+          dateRangePickerBar.setDateRange(LocalDate.of(2025, 1, 1), LocalDate.now(), false);
           nameSearchField.setText("");
           operatorCombo.setSelectedIndex(0);
           thresholdField.setText("");
@@ -279,6 +241,7 @@ public final class UserActivityPanel extends JPanel {
         .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
     card.add(AdminUIComponents.wrapTableInScrollPane(activityTable), BorderLayout.CENTER);
+    activityTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     return card;
   }
 
@@ -297,10 +260,13 @@ public final class UserActivityPanel extends JPanel {
     return bar;
   }
 
-  private void setDateRange(String from, String to) {
-    fromDateField.setText(from);
-    toDateField.setText(to);
-    applyFiltersAndRefresh(false);
+  public void setDateRange(String from, String to) {
+    try {
+      LocalDate s = LocalDate.parse(from, ChatTheme.DATE_FMT);
+      LocalDate e = LocalDate.parse(to, ChatTheme.DATE_FMT);
+      dateRangePickerBar.setDateRange(s, e, true);
+    } catch (Exception ignored) {
+    }
   }
 
   private void wireEvents() {
@@ -322,12 +288,6 @@ public final class UserActivityPanel extends JPanel {
           }
         };
     nameSearchField.getDocument().addDocumentListener(docListener);
-    fromDateField.getDocument().addDocumentListener(docListener);
-    toDateField.getDocument().addDocumentListener(docListener);
-    AdminUIComponents.attachDateFieldValidationTriggers(
-        fromDateField, () -> applyFiltersAndRefresh(true));
-    AdminUIComponents.attachDateFieldValidationTriggers(
-        toDateField, () -> applyFiltersAndRefresh(true));
     thresholdField.getDocument().addDocumentListener(docListener);
 
     operatorCombo.addActionListener(
@@ -346,14 +306,13 @@ public final class UserActivityPanel extends JPanel {
   }
 
   private void applyFiltersAndRefresh(boolean showValidationAlert) {
-    LocalDate[] dateRange =
-        AdminUIComponents.parseAndValidateDateRange(
-            this, fromDateField, toDateField, showValidationAlert);
-    if (dateRange == null) {
-      return;
+    LocalDate fromDate = dateRangePickerBar.getStartDate();
+    LocalDate toDate = dateRangePickerBar.getEndDate();
+    if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+      LocalDate swap = fromDate;
+      fromDate = toDate;
+      toDate = swap;
     }
-    LocalDate fromDate = dateRange[0];
-    LocalDate toDate = dateRange[1];
     String fromText = fromDate == null ? "" : fromDate.format(ChatTheme.DATE_FMT);
     String toText = toDate == null ? "" : toDate.format(ChatTheme.DATE_FMT);
 

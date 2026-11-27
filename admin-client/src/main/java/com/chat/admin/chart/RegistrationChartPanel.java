@@ -1,8 +1,14 @@
 package com.chat.admin.chart;
 
-import com.chat.common.ui.ChatTheme;
+import com.chat.admin.controller.AdminAuthController;
 import com.chat.admin.model.AdminMockDataStore;
-import com.chat.admin.view.AdminUIComponents;
+import com.chat.admin.network.SocketClient;
+import com.chat.common.dto.common.YearRequest;
+import com.chat.common.dto.statistics.MonthlyCount;
+import com.chat.common.enums.ActionType;
+import com.chat.common.ui.ChatTheme;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -10,15 +16,17 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.text.NumberFormat;
+import java.util.List;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
@@ -28,16 +36,18 @@ import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 /**
- * Annual New User Registrations Bar Chart Panel (Task 10 / T016).
+ * Annual New User Registrations Bar Chart Panel (Requirement 1.2.6 / Issue #15 / [A6]).
  *
- * <p>Covers Requirement 1.2.6: Allow selecting a year and render a 12-month JFreeChart bar chart of
- * newly registered users for each month of the selected year.
+ * <p>Renders a 12-month JFreeChart bar chart of newly registered users for each month of the selected
+ * year using {@link ActionType#ADMIN_GET_MONTHLY_REGISTRATIONS}.
  */
 public final class RegistrationChartPanel extends JPanel {
   private static final String[] MONTHS = {
     "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   };
 
+  private final ObjectMapper mapper = new ObjectMapper();
+  private final SocketClient socketClient;
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
   private final JComboBox<Integer> yearCombo =
@@ -48,6 +58,12 @@ public final class RegistrationChartPanel extends JPanel {
   private JFreeChart barChart;
 
   public RegistrationChartPanel() {
+    this(AdminAuthController.getSharedSocketClient());
+  }
+
+  public RegistrationChartPanel(SocketClient socketClient) {
+    this.socketClient = socketClient;
+
     setLayout(new BorderLayout(0, 10));
     setBackground(ChatTheme.SURFACE_WHITE);
     setBorder(
@@ -69,11 +85,14 @@ public final class RegistrationChartPanel extends JPanel {
             updateChartForYear(selected);
           }
         });
+
     dataStore.addChangeListener(
         () -> {
-          Integer selected = (Integer) yearCombo.getSelectedItem();
-          if (selected != null) {
-            updateChartForYear(selected);
+          if (this.socketClient == null || !this.socketClient.isConnected()) {
+            Integer selected = (Integer) yearCombo.getSelectedItem();
+            if (selected != null) {
+              updateChartForYear(selected);
+            }
           }
         });
 
@@ -84,6 +103,18 @@ public final class RegistrationChartPanel extends JPanel {
   public void setSelectedYear(int year) {
     yearCombo.setSelectedItem(year);
     updateChartForYear(year);
+  }
+
+  public int getSelectedYear() {
+    Integer y = (Integer) yearCombo.getSelectedItem();
+    return y != null ? y : 2025;
+  }
+
+  public void refreshChart() {
+    Integer selected = (Integer) yearCombo.getSelectedItem();
+    if (selected != null) {
+      updateChartForYear(selected);
+    }
   }
 
   private JPanel buildHeaderRow() {
@@ -107,8 +138,14 @@ public final class RegistrationChartPanel extends JPanel {
     yearLbl.setFont(ChatTheme.FONT_BODY_BOLD);
     yearLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
+    JButton refreshBtn = ChatTheme.createSecondaryButton("Làm mới");
+    refreshBtn.setFont(ChatTheme.FONT_SMALL);
+    refreshBtn.setToolTipText("Cập nhật lại dữ liệu biểu đồ từ máy chủ");
+    refreshBtn.addActionListener(e -> refreshChart());
+
     controls.add(yearLbl);
     controls.add(yearCombo);
+    controls.add(refreshBtn);
 
     header.add(titleBox, BorderLayout.CENTER);
     header.add(controls, BorderLayout.EAST);
@@ -139,8 +176,8 @@ public final class RegistrationChartPanel extends JPanel {
     domainAxis.setLabelFont(ChatTheme.FONT_BODY_BOLD);
     domainAxis.setLabelPaint(ChatTheme.TEXT_SECONDARY);
     domainAxis.setTickLabelFont(ChatTheme.FONT_SMALL);
-    domainAxis.setTickLabelPaint(ChatTheme.TEXT_PRIMARY);
-    domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
+    domainAxis.setTickLabelPaint(ChatTheme.TEXT_SECONDARY);
+    domainAxis.setCategoryMargin(0.12);
 
     NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
     rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
@@ -201,10 +238,59 @@ public final class RegistrationChartPanel extends JPanel {
     return pill;
   }
 
-  private void updateChartForYear(int year) {
-    int[] values = dataStore.getMonthlyRegistrations(year);
-    dataset.clear();
+  public void updateChartForYear(int year) {
+    if (socketClient != null && socketClient.isConnected()) {
+      YearRequest req = new YearRequest(year);
+      socketClient
+          .sendAsync(ActionType.ADMIN_GET_MONTHLY_REGISTRATIONS, req)
+          .thenAccept(
+              response -> {
+                SwingUtilities.invokeLater(
+                    () -> {
+                      if (response != null && response.success() && response.data() != null) {
+                        try {
+                          List<MonthlyCount> list =
+                              mapper.readValue(
+                                  mapper.treeAsTokens(response.data()),
+                                  new TypeReference<>() {});
+                          populateFromMonthlyCounts(year, list);
+                          return;
+                        } catch (Exception ignored) {
+                        }
+                      }
+                      populateFromMockStore(year);
+                    });
+              })
+          .exceptionally(
+              ex -> {
+                SwingUtilities.invokeLater(() -> populateFromMockStore(year));
+                return null;
+              });
+    } else {
+      populateFromMockStore(year);
+    }
+  }
 
+  public void populateFromMonthlyCounts(int year, List<MonthlyCount> list) {
+    int[] values = new int[12];
+    if (list != null) {
+      for (MonthlyCount mc : list) {
+        int m = mc.month();
+        if (m >= 1 && m <= 12) {
+          values[m - 1] = (int) mc.count();
+        }
+      }
+    }
+    renderDataset(year, values);
+  }
+
+  private void populateFromMockStore(int year) {
+    int[] values = dataStore.getMonthlyRegistrations(year);
+    renderDataset(year, values);
+  }
+
+  private void renderDataset(int year, int[] values) {
+    dataset.clear();
     int total = 0;
     int maxVal = -1;
     int maxMonthIdx = 0;
@@ -220,7 +306,23 @@ public final class RegistrationChartPanel extends JPanel {
 
     double avg = values.length == 0 ? 0.0 : (double) total / values.length;
     annualTotalLabel.setText(NumberFormat.getIntegerInstance().format(total));
-    peakMonthLabel.setText(MONTHS[maxMonthIdx] + " (" + maxVal + ")");
+    peakMonthLabel.setText(MONTHS[maxMonthIdx] + " (" + Math.max(0, maxVal) + ")");
     monthlyAvgLabel.setText(String.format("%.1f users", avg));
+  }
+
+  public DefaultCategoryDataset getDataset() {
+    return dataset;
+  }
+
+  public JLabel getAnnualTotalLabel() {
+    return annualTotalLabel;
+  }
+
+  public JLabel getPeakMonthLabel() {
+    return peakMonthLabel;
+  }
+
+  public JLabel getMonthlyAvgLabel() {
+    return monthlyAvgLabel;
   }
 }
