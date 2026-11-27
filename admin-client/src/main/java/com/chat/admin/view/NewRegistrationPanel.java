@@ -22,9 +22,14 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -45,7 +50,9 @@ import javax.swing.table.DefaultTableModel;
  * New User Registrations Timeline Panel (Task 7 / Screen 7).
  *
  * <p>Covers Requirement 1.2.5 (Issue #14 [A5]): View newly registered users within a selected date
- * range (from date to date), sort by name or creation timestamp, and filter by name.
+ * range (from date to date), sort by name or creation timestamp, and filter by name. Includes
+ * enhanced UX with dynamic quick presets, active pill highlights, calendar picker popup, and
+ * duration indicators.
  */
 public final class NewRegistrationPanel extends JPanel {
   private static final String[] COLUMNS = {
@@ -66,7 +73,9 @@ public final class NewRegistrationPanel extends JPanel {
   private final JTextField nameSearchField =
       ChatTheme.createSearchField("Filter by full name or username...", 18);
   private final JTextField startDateField = AdminUIComponents.createDateField("2025-01-01");
-  private final JTextField endDateField = AdminUIComponents.createDateField("2025-12-31");
+  private final JTextField endDateField =
+      AdminUIComponents.createDateField(LocalDate.now().format(ChatTheme.DATE_FMT));
+
   private final JComboBox<String> sortCombo =
       ChatTheme.createComboBox(
           new String[] {
@@ -87,8 +96,11 @@ public final class NewRegistrationPanel extends JPanel {
 
   private final JLabel matchingRegistrationsValueLabel = new JLabel("0 accounts");
   private final JLabel activeSignupsValueLabel = new JLabel("0 active");
-  private final JLabel activeDateWindowValueLabel = new JLabel("2025-01-01 → 2025-12-31");
+  private final JLabel activeDateWindowValueLabel = new JLabel("All Time");
   private final JLabel footerSummaryLabel = new JLabel("Showing 0 newly registered accounts");
+
+  private final List<JButton> presetButtons = new ArrayList<>();
+  private JButton activePresetButton = null;
 
   public NewRegistrationPanel() {
     this(AdminAuthController.getSharedSocketClient());
@@ -148,49 +160,67 @@ public final class NewRegistrationPanel extends JPanel {
   private JPanel buildFilterToolbar() {
     JPanel card = ChatTheme.createCardPanel(new BorderLayout(0, 10));
 
-    // Top row: Date range inputs + quick range presets
+    // Top row: Date range inputs + Calendar buttons + Dynamic quick presets
     JPanel dateRow = new JPanel(new BorderLayout(10, 4));
     dateRow.setOpaque(false);
 
     JPanel leftDateControls =
-        new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
+        new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 6, 2));
     leftDateControls.setOpaque(false);
 
     JLabel startLbl = new JLabel("Start Date:");
     startLbl.setFont(ChatTheme.FONT_BODY_BOLD);
     startLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
+    JButton startCalBtn = createCalendarButton(startDateField);
+
     JLabel endLbl = new JLabel("End Date:");
     endLbl.setFont(ChatTheme.FONT_BODY_BOLD);
     endLbl.setForeground(ChatTheme.TEXT_SECONDARY);
 
+    JButton endCalBtn = createCalendarButton(endDateField);
+
     leftDateControls.add(startLbl);
     leftDateControls.add(startDateField);
+    leftDateControls.add(startCalBtn);
     leftDateControls.add(endLbl);
     leftDateControls.add(endDateField);
+    leftDateControls.add(endCalBtn);
 
     JPanel rightPresets =
-        new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.RIGHT, 6, 2));
+        new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.RIGHT, 4, 2));
     rightPresets.setOpaque(false);
 
-    JLabel presetLbl = new JLabel("Quick Presets:");
+    JLabel presetLbl = new JLabel("⚡ Nhanh:");
     presetLbl.setFont(ChatTheme.FONT_SMALL);
     presetLbl.setForeground(ChatTheme.TEXT_MUTED);
-
-    JButton q1Btn = ChatTheme.createSecondaryButton("Q1 2025");
-    q1Btn.addActionListener(e -> setDateRange("2025-01-01", "2025-03-31"));
-
-    JButton mayBtn = ChatTheme.createSecondaryButton("May 2025");
-    mayBtn.addActionListener(e -> setDateRange("2025-05-01", "2025-05-31"));
-
-    JButton fullYearBtn = ChatTheme.createSecondaryButton("All 2025–2026");
-    fullYearBtn.addActionListener(
-        e -> setDateRange("2025-01-01", LocalDate.now().format(ChatTheme.DATE_FMT)));
-
     rightPresets.add(presetLbl);
-    rightPresets.add(q1Btn);
-    rightPresets.add(mayBtn);
-    rightPresets.add(fullYearBtn);
+
+    LocalDate today = LocalDate.now();
+
+    JButton todayBtn = createPresetButton("Hôm nay", today, today);
+    JButton d7Btn = createPresetButton("7 ngày", today.minusDays(6), today);
+    JButton d30Btn = createPresetButton("30 ngày", today.minusDays(29), today);
+    JButton monthBtn = createPresetButton("Tháng này", today.withDayOfMonth(1), today);
+    JButton yearBtn = createPresetButton("Năm nay", today.withDayOfYear(1), today);
+    JButton allBtn = createPresetButton("Toàn bộ", LocalDate.of(2025, 1, 1), today);
+
+    presetButtons.add(todayBtn);
+    presetButtons.add(d7Btn);
+    presetButtons.add(d30Btn);
+    presetButtons.add(monthBtn);
+    presetButtons.add(yearBtn);
+    presetButtons.add(allBtn);
+
+    rightPresets.add(todayBtn);
+    rightPresets.add(d7Btn);
+    rightPresets.add(d30Btn);
+    rightPresets.add(monthBtn);
+    rightPresets.add(yearBtn);
+    rightPresets.add(allBtn);
+
+    // Default select "Toàn bộ"
+    highlightPresetButton(allBtn);
 
     dateRow.add(leftDateControls, BorderLayout.CENTER);
     dateRow.add(rightPresets, BorderLayout.EAST);
@@ -218,6 +248,7 @@ public final class NewRegistrationPanel extends JPanel {
           startDateField.setText("2025-01-01");
           endDateField.setText(LocalDate.now().format(ChatTheme.DATE_FMT));
           sortCombo.setSelectedIndex(0);
+          highlightPresetButton(allBtn);
           applyFiltersAndRefresh(false);
         });
 
@@ -230,6 +261,76 @@ public final class NewRegistrationPanel extends JPanel {
     card.add(dateRow, BorderLayout.NORTH);
     card.add(searchSortRow, BorderLayout.SOUTH);
     return card;
+  }
+
+  private JButton createCalendarButton(JTextField targetField) {
+    JButton btn = ChatTheme.createSecondaryButton("📅");
+    btn.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 12));
+    btn.setPreferredSize(new Dimension(34, 28));
+    btn.setMargin(new Insets(1, 1, 1, 1));
+    btn.setToolTipText("Mở lịch chọn ngày");
+    btn.addActionListener(
+        e -> {
+          LocalDate initial = parseDateOrNull(targetField.getText());
+          MiniCalendarPopup.showPopup(
+              btn,
+              initial,
+              date -> {
+                targetField.setText(date.format(ChatTheme.DATE_FMT));
+                clearPresetHighlight();
+                applyFiltersAndRefresh(false);
+              });
+        });
+    return btn;
+  }
+
+  private JButton createPresetButton(String title, LocalDate start, LocalDate end) {
+    JButton btn = new JButton(title);
+    btn.setFont(ChatTheme.FONT_SMALL);
+    btn.setMargin(new Insets(3, 8, 3, 8));
+    btn.setFocusPainted(false);
+    stylePresetButton(btn, false);
+
+    btn.addActionListener(
+        e -> {
+          startDateField.setText(start.format(ChatTheme.DATE_FMT));
+          endDateField.setText(end.format(ChatTheme.DATE_FMT));
+          highlightPresetButton(btn);
+          applyFiltersAndRefresh(false);
+        });
+    return btn;
+  }
+
+  private void highlightPresetButton(JButton target) {
+    activePresetButton = target;
+    for (JButton b : presetButtons) {
+      stylePresetButton(b, b == target);
+    }
+  }
+
+  private void clearPresetHighlight() {
+    activePresetButton = null;
+    for (JButton b : presetButtons) {
+      stylePresetButton(b, false);
+    }
+  }
+
+  private void stylePresetButton(JButton btn, boolean active) {
+    if (active) {
+      btn.setBackground(ChatTheme.PRIMARY);
+      btn.setForeground(Color.WHITE);
+      btn.setBorder(
+          BorderFactory.createCompoundBorder(
+              BorderFactory.createLineBorder(ChatTheme.PRIMARY, 1, true),
+              BorderFactory.createEmptyBorder(3, 8, 3, 8)));
+    } else {
+      btn.setBackground(ChatTheme.SURFACE_WHITE);
+      btn.setForeground(ChatTheme.TEXT_SECONDARY);
+      btn.setBorder(
+          BorderFactory.createCompoundBorder(
+              BorderFactory.createLineBorder(ChatTheme.BORDER, 1, true),
+              BorderFactory.createEmptyBorder(3, 8, 3, 8)));
+    }
   }
 
   private JPanel buildTableCard() {
@@ -273,6 +374,7 @@ public final class NewRegistrationPanel extends JPanel {
   public void setDateRange(String start, String end) {
     startDateField.setText(start);
     endDateField.setText(end);
+    clearPresetHighlight();
     applyFiltersAndRefresh(false);
   }
 
@@ -309,6 +411,8 @@ public final class NewRegistrationPanel extends JPanel {
         AdminUIComponents.parseAndValidateDateRange(
             this, startDateField, endDateField, showValidationAlert);
     if (dateRange == null) {
+      activeDateWindowValueLabel.setText("⚠️ Ngày bắt đầu phải ≤ ngày kết thúc");
+      activeDateWindowValueLabel.setForeground(ChatTheme.DANGER);
       return;
     }
     LocalDate startDate = dateRange[0];
@@ -350,7 +454,7 @@ public final class NewRegistrationPanel extends JPanel {
                               mapper.readValue(
                                   mapper.treeAsTokens(response.data()),
                                   new TypeReference<>() {});
-                          populateFromPageResult(pageResult, startText, endText);
+                          populateFromPageResult(pageResult, startDate, endDate, startText, endText);
                         } catch (Exception ex) {
                           populateFromMockStore(
                               query, startDate, endDate, sortIdx, startText, endText);
@@ -375,13 +479,17 @@ public final class NewRegistrationPanel extends JPanel {
   }
 
   private void populateFromPageResult(
-      PageResult<AdminUserInfo> pageResult, String startText, String endText) {
+      PageResult<AdminUserInfo> pageResult,
+      LocalDate startDate,
+      LocalDate endDate,
+      String startText,
+      String endText) {
     tableModel.setRowCount(0);
     long activeCount = 0;
     for (AdminUserInfo info : pageResult.items()) {
       var acc = info.account();
       var summary = acc.summary();
-      boolean isActive = summary.status() == AccountStatus.ACTIVE;
+      boolean isActive = summary.accountStatus() == AccountStatus.ACTIVE;
       if (isActive) {
         activeCount++;
       }
@@ -405,11 +513,21 @@ public final class NewRegistrationPanel extends JPanel {
 
     matchingRegistrationsValueLabel.setText(pageResult.totalItems() + " accounts");
     activeSignupsValueLabel.setText(activeCount + " active");
+
+    String durationText = "";
+    if (startDate != null && endDate != null && !startDate.isAfter(endDate)) {
+      long days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+      durationText = " (" + days + " ngày)";
+    }
+
     String windowDisplay =
         (startText.isEmpty() ? "Any" : startText)
             + " → "
-            + (endText.isEmpty() ? "Any" : endText);
+            + (endText.isEmpty() ? "Any" : endText)
+            + durationText;
     activeDateWindowValueLabel.setText(windowDisplay);
+    activeDateWindowValueLabel.setForeground(new Color(0x6366F1));
+
     footerSummaryLabel.setText(
         "Showing "
             + pageResult.items().size()
@@ -480,11 +598,21 @@ public final class NewRegistrationPanel extends JPanel {
 
     matchingRegistrationsValueLabel.setText(filtered.size() + " accounts");
     activeSignupsValueLabel.setText(activeCount + " active");
+
+    String durationText = "";
+    if (startDate != null && endDate != null && !startDate.isAfter(endDate)) {
+      long days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+      durationText = " (" + days + " ngày)";
+    }
+
     String windowDisplay =
         (startText.isEmpty() ? "Any" : startText)
             + " → "
-            + (endText.isEmpty() ? "Any" : endText);
+            + (endText.isEmpty() ? "Any" : endText)
+            + durationText;
     activeDateWindowValueLabel.setText(windowDisplay);
+    activeDateWindowValueLabel.setForeground(new Color(0x6366F1));
+
     footerSummaryLabel.setText(
         "Showing "
             + filtered.size()
@@ -494,6 +622,17 @@ public final class NewRegistrationPanel extends JPanel {
 
     if (tableModel.getRowCount() > 0) {
       registrationTable.setRowSelectionInterval(0, 0);
+    }
+  }
+
+  private static LocalDate parseDateOrNull(String text) {
+    if (text == null || text.isBlank() || text.contains("_")) {
+      return null;
+    }
+    try {
+      return LocalDate.parse(text.trim(), ChatTheme.DATE_FMT);
+    } catch (DateTimeParseException ignored) {
+      return null;
     }
   }
 

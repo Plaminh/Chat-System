@@ -1,5 +1,22 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-27 — UX Enhancement: Dynamic Presets & Calendar Popup for Issue #14: [A5]
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Enhance UX for date selection and quick presets in `NewRegistrationPanel` (Package 2: dynamic presets, active pill highlighting, lightweight Swing calendar popup, duration display).
+
+Changed:
+- Implemented `MiniCalendarPopup.java` in `admin-client`: lightweight, zero-external-dependency monthly calendar grid popup with prev/next navigation, today shortcut, and day selection callback.
+- Updated `NewRegistrationPanel.java` in `admin-client`:
+  - Added interactive `📅` calendar buttons for both start and end date fields.
+  - Replaced hardcoded static presets with dynamic relative presets: "Hôm nay", "7 ngày", "30 ngày", "Tháng này", "Năm nay", "Toàn bộ".
+  - Implemented segmented active pill highlighting for preset buttons with auto-clearing when manual date input is edited.
+  - Added dynamic duration calculation and inline validation badge (`(X ngày)`).
+- Tested and verified compilation and test pass across all modules.
+
+Verification: `mvn test` executed and passed cleanly (`BUILD SUCCESS`).
+
 ## 2026-11-27 — Implement Newly Registered User Timeline for Issue #14: [A5]
 
 Tool: Antigravity AI Assistant.
