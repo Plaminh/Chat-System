@@ -212,6 +212,7 @@ public final class FriendStatsPanel extends JPanel {
         .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
     card.add(AdminUIComponents.wrapTableInScrollPane(friendStatsTable), BorderLayout.CENTER);
+    friendStatsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     return card;
   }
 

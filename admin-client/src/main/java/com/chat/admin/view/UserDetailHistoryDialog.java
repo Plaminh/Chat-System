@@ -286,6 +286,7 @@ public final class UserDetailHistoryDialog extends JDialog {
 
     tab.add(topBar, BorderLayout.NORTH);
     tab.add(AdminUIComponents.wrapTableInScrollPane(loginTable), BorderLayout.CENTER);
+    loginTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     tab.add(paginationBar, BorderLayout.SOUTH);
     return tab;
   }
@@ -343,6 +344,7 @@ public final class UserDetailHistoryDialog extends JDialog {
 
     tab.add(kpiGrid, BorderLayout.NORTH);
     tab.add(AdminUIComponents.wrapTableInScrollPane(friendTable), BorderLayout.CENTER);
+    friendTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     return tab;
   }
 

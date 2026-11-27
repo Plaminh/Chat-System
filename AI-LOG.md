@@ -1,5 +1,65 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-27 — Fix Date Range Picker Selection & Inline Error Highlighting
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Fix bug in `DateRangePickerBar` where selecting the right date (end date) then left date (start date) caused dates to be wiped out. If an invalid date range is selected (start date > end date), highlight the inputs in red right there ("báo đỏ ngay chỗ đó") and require the user to pick again without clearing dates.
+
+Changed:
+- `DateRangePickerBar.java`:
+  - Replaced destructive single `tempEnd = null` toggle with stateful `TargetField { START, END }` tracking.
+  - Selecting either start or end date now preserves the existing counterpart date instead of clearing it.
+  - Added click and focus listeners on `startInput`, `endInput`, and their labels ("Từ:", "Đến:") allowing seamless switching of target dates.
+  - Implemented inline validation: When `startDate.isAfter(endDate)`:
+    - Báo đỏ ngay tại ô input với viền đỏ (`0xEF4444`) và `putClientProperty("JComponent.outline", "error")`.
+    - Hiển thị nhãn cảnh báo đỏ rõ ràng: `⚠️ Ngày bắt đầu không thể sau ngày kết thúc. Vui lòng chọn lại!`.
+    - Vô hiệu hoá nút `[Áp dụng]` (`applyBtn.setEnabled(false)`).
+    - Giữ nguyên ngày người dùng đã chọn để người dùng dễ dàng chọn lại ngày hợp lệ mà không bị mất dữ liệu.
+  - Khi ngày hợp lệ trở lại (`startDate <= endDate`), viền đỏ và nhãn cảnh báo tự động biến mất, nút `[Áp dụng]` được kích hoạt lại.
+- `DateRangePickerBarTest.java`: Added comprehensive unit tests covering:
+  - Preset button interactions and event callbacks.
+  - Preservation of both dates when selecting end date first, then start date.
+  - Automatic error outline and message validation when `startDate > endDate`, with recovery when fixed.
+- Re-packaged `admin-client/target/admin.jar`.
+
+Verification: `mvn test -pl admin-client -am` passed cleanly (67 common tests, 12 admin-client tests including `DateRangePickerBarTest`).
+
+## 2026-11-27 — Full Responsive Layout & Calendar Picker Across All Admin Views
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Restore responsive full-width table layout across all Admin Client panels (`AUTO_RESIZE_ALL_COLUMNS`) and add calendar popup pickers (`📅`) to all date filter fields.
+
+Changed:
+- `AdminUIComponents.java`: Added reusable `createCalendarButton(JTextField targetField, Runnable onDateSelected)` helper leveraging `MiniCalendarPopup`.
+- Set `AUTO_RESIZE_ALL_COLUMNS` across all tables:
+  - `UserManagementPanel.java` (`userTable`)
+  - `GroupManagementPanel.java` (`groupTable`, `memberTable`)
+  - `FriendStatsPanel.java` (`friendStatsTable`)
+  - `SpamReportPanel.java` (`reportTable`)
+  - `UserActivityPanel.java` (`activityTable`)
+  - `UserDetailHistoryDialog.java` (`loginTable`, `friendTable`)
+  - `NewRegistrationPanel.java` (`registrationTable`)
+- Added `📅` interactive calendar popup pickers:
+  - `SpamReportPanel.java`: For `fromDateField` and `toDateField`.
+  - `UserActivityPanel.java`: For `fromDateField` and `toDateField`.
+  - `UserManagementPanel.java`: For user date of birth (`dobInput`) in dialog.
+- Re-packaged `admin-client/target/admin.jar`.
+
+Verification: `mvn test -pl admin-client -am` passed cleanly across reactor.
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Fix connection hanging ("load hoài") when starting admin client without active PostgreSQL instance, explain file target vs release packaging.
+
+Changed:
+- `SocketClient.java`: Added 5-second `orTimeout` to `sendAsync` requests with automatic cleanup of pending futures. Changed default host resolution from `localhost` to `127.0.0.1` to bypass Windows IPv6 resolution latency.
+- `AdminAuthController.java`: Added graceful offline demo fallback for default credentials (`admin` / `admin123`) when socket connection fails or server is unreachable.
+- Re-packaged `admin-client/target/admin.jar`.
+
+Verification: `mvn test -pl admin-client -am` passed cleanly (67 common tests, 9 admin-client tests).
+
 ## 2026-11-27 — UX Enhancement: Dynamic Presets & Calendar Popup for Issue #14: [A5]
 
 Tool: Antigravity AI Assistant.

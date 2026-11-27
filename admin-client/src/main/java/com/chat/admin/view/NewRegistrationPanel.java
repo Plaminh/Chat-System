@@ -72,9 +72,11 @@ public final class NewRegistrationPanel extends JPanel {
 
   private final JTextField nameSearchField =
       ChatTheme.createSearchField("Filter by full name or username...", 18);
-  private final JTextField startDateField = AdminUIComponents.createDateField("2025-01-01");
-  private final JTextField endDateField =
-      AdminUIComponents.createDateField(LocalDate.now().format(ChatTheme.DATE_FMT));
+  private final DateRangePickerBar dateRangePickerBar =
+      new DateRangePickerBar(
+          LocalDate.of(2025, 1, 1),
+          LocalDate.now(),
+          (s, e) -> applyFiltersAndRefresh(false));
 
   private final JComboBox<String> sortCombo =
       ChatTheme.createComboBox(
@@ -98,9 +100,6 @@ public final class NewRegistrationPanel extends JPanel {
   private final JLabel activeSignupsValueLabel = new JLabel("0 active");
   private final JLabel activeDateWindowValueLabel = new JLabel("All Time");
   private final JLabel footerSummaryLabel = new JLabel("Showing 0 newly registered accounts");
-
-  private final List<JButton> presetButtons = new ArrayList<>();
-  private JButton activePresetButton = null;
 
   public NewRegistrationPanel() {
     this(AdminAuthController.getSharedSocketClient());
@@ -160,70 +159,10 @@ public final class NewRegistrationPanel extends JPanel {
   private JPanel buildFilterToolbar() {
     JPanel card = ChatTheme.createCardPanel(new BorderLayout(0, 10));
 
-    // Top row: Date range inputs + Calendar buttons + Dynamic quick presets
+    // Top row: Unified Date Range Picker Bar (Bar + Presets)
     JPanel dateRow = new JPanel(new BorderLayout(10, 4));
     dateRow.setOpaque(false);
-
-    JPanel leftDateControls =
-        new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 6, 2));
-    leftDateControls.setOpaque(false);
-
-    JLabel startLbl = new JLabel("Start Date:");
-    startLbl.setFont(ChatTheme.FONT_BODY_BOLD);
-    startLbl.setForeground(ChatTheme.TEXT_SECONDARY);
-
-    JButton startCalBtn = createCalendarButton(startDateField);
-
-    JLabel endLbl = new JLabel("End Date:");
-    endLbl.setFont(ChatTheme.FONT_BODY_BOLD);
-    endLbl.setForeground(ChatTheme.TEXT_SECONDARY);
-
-    JButton endCalBtn = createCalendarButton(endDateField);
-
-    leftDateControls.add(startLbl);
-    leftDateControls.add(startDateField);
-    leftDateControls.add(startCalBtn);
-    leftDateControls.add(endLbl);
-    leftDateControls.add(endDateField);
-    leftDateControls.add(endCalBtn);
-
-    JPanel rightPresets =
-        new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.RIGHT, 4, 2));
-    rightPresets.setOpaque(false);
-
-    JLabel presetLbl = new JLabel("⚡ Nhanh:");
-    presetLbl.setFont(ChatTheme.FONT_SMALL);
-    presetLbl.setForeground(ChatTheme.TEXT_MUTED);
-    rightPresets.add(presetLbl);
-
-    LocalDate today = LocalDate.now();
-
-    JButton todayBtn = createPresetButton("Hôm nay", today, today);
-    JButton d7Btn = createPresetButton("7 ngày", today.minusDays(6), today);
-    JButton d30Btn = createPresetButton("30 ngày", today.minusDays(29), today);
-    JButton monthBtn = createPresetButton("Tháng này", today.withDayOfMonth(1), today);
-    JButton yearBtn = createPresetButton("Năm nay", today.withDayOfYear(1), today);
-    JButton allBtn = createPresetButton("Toàn bộ", LocalDate.of(2025, 1, 1), today);
-
-    presetButtons.add(todayBtn);
-    presetButtons.add(d7Btn);
-    presetButtons.add(d30Btn);
-    presetButtons.add(monthBtn);
-    presetButtons.add(yearBtn);
-    presetButtons.add(allBtn);
-
-    rightPresets.add(todayBtn);
-    rightPresets.add(d7Btn);
-    rightPresets.add(d30Btn);
-    rightPresets.add(monthBtn);
-    rightPresets.add(yearBtn);
-    rightPresets.add(allBtn);
-
-    // Default select "Toàn bộ"
-    highlightPresetButton(allBtn);
-
-    dateRow.add(leftDateControls, BorderLayout.CENTER);
-    dateRow.add(rightPresets, BorderLayout.EAST);
+    dateRow.add(dateRangePickerBar, BorderLayout.CENTER);
 
     // Bottom row: Name search + Sort selector + Reset
     JPanel searchSortRow = new JPanel(new BorderLayout(10, 4));
@@ -245,10 +184,8 @@ public final class NewRegistrationPanel extends JPanel {
     resetBtn.addActionListener(
         e -> {
           nameSearchField.setText("");
-          startDateField.setText("2025-01-01");
-          endDateField.setText(LocalDate.now().format(ChatTheme.DATE_FMT));
+          dateRangePickerBar.setDateRange(LocalDate.of(2025, 1, 1), LocalDate.now(), false);
           sortCombo.setSelectedIndex(0);
-          highlightPresetButton(allBtn);
           applyFiltersAndRefresh(false);
         });
 
@@ -261,76 +198,6 @@ public final class NewRegistrationPanel extends JPanel {
     card.add(dateRow, BorderLayout.NORTH);
     card.add(searchSortRow, BorderLayout.SOUTH);
     return card;
-  }
-
-  private JButton createCalendarButton(JTextField targetField) {
-    JButton btn = ChatTheme.createSecondaryButton("📅");
-    btn.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 12));
-    btn.setPreferredSize(new Dimension(34, 28));
-    btn.setMargin(new Insets(1, 1, 1, 1));
-    btn.setToolTipText("Mở lịch chọn ngày");
-    btn.addActionListener(
-        e -> {
-          LocalDate initial = parseDateOrNull(targetField.getText());
-          MiniCalendarPopup.showPopup(
-              btn,
-              initial,
-              date -> {
-                targetField.setText(date.format(ChatTheme.DATE_FMT));
-                clearPresetHighlight();
-                applyFiltersAndRefresh(false);
-              });
-        });
-    return btn;
-  }
-
-  private JButton createPresetButton(String title, LocalDate start, LocalDate end) {
-    JButton btn = new JButton(title);
-    btn.setFont(ChatTheme.FONT_SMALL);
-    btn.setMargin(new Insets(3, 8, 3, 8));
-    btn.setFocusPainted(false);
-    stylePresetButton(btn, false);
-
-    btn.addActionListener(
-        e -> {
-          startDateField.setText(start.format(ChatTheme.DATE_FMT));
-          endDateField.setText(end.format(ChatTheme.DATE_FMT));
-          highlightPresetButton(btn);
-          applyFiltersAndRefresh(false);
-        });
-    return btn;
-  }
-
-  private void highlightPresetButton(JButton target) {
-    activePresetButton = target;
-    for (JButton b : presetButtons) {
-      stylePresetButton(b, b == target);
-    }
-  }
-
-  private void clearPresetHighlight() {
-    activePresetButton = null;
-    for (JButton b : presetButtons) {
-      stylePresetButton(b, false);
-    }
-  }
-
-  private void stylePresetButton(JButton btn, boolean active) {
-    if (active) {
-      btn.setBackground(ChatTheme.PRIMARY);
-      btn.setForeground(Color.WHITE);
-      btn.setBorder(
-          BorderFactory.createCompoundBorder(
-              BorderFactory.createLineBorder(ChatTheme.PRIMARY, 1, true),
-              BorderFactory.createEmptyBorder(3, 8, 3, 8)));
-    } else {
-      btn.setBackground(ChatTheme.SURFACE_WHITE);
-      btn.setForeground(ChatTheme.TEXT_SECONDARY);
-      btn.setBorder(
-          BorderFactory.createCompoundBorder(
-              BorderFactory.createLineBorder(ChatTheme.BORDER, 1, true),
-              BorderFactory.createEmptyBorder(3, 8, 3, 8)));
-    }
   }
 
   private JPanel buildTableCard() {
@@ -353,6 +220,7 @@ public final class NewRegistrationPanel extends JPanel {
         .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
     card.add(AdminUIComponents.wrapTableInScrollPane(registrationTable), BorderLayout.CENTER);
+    registrationTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     return card;
   }
 
@@ -372,51 +240,41 @@ public final class NewRegistrationPanel extends JPanel {
   }
 
   public void setDateRange(String start, String end) {
-    startDateField.setText(start);
-    endDateField.setText(end);
-    clearPresetHighlight();
-    applyFiltersAndRefresh(false);
+    LocalDate s = parseDateOrNull(start);
+    LocalDate e = parseDateOrNull(end);
+    dateRangePickerBar.setDateRange(s, e, true);
   }
 
   private void wireEvents() {
-    DocumentListener docListener =
-        new DocumentListener() {
-          @Override
-          public void insertUpdate(DocumentEvent e) {
-            applyFiltersAndRefresh(false);
-          }
+    nameSearchField
+        .getDocument()
+        .addDocumentListener(
+            new DocumentListener() {
+              @Override
+              public void insertUpdate(DocumentEvent e) {
+                applyFiltersAndRefresh(false);
+              }
 
-          @Override
-          public void removeUpdate(DocumentEvent e) {
-            applyFiltersAndRefresh(false);
-          }
+              @Override
+              public void removeUpdate(DocumentEvent e) {
+                applyFiltersAndRefresh(false);
+              }
 
-          @Override
-          public void changedUpdate(DocumentEvent e) {
-            applyFiltersAndRefresh(false);
-          }
-        };
-    nameSearchField.getDocument().addDocumentListener(docListener);
-    startDateField.getDocument().addDocumentListener(docListener);
-    endDateField.getDocument().addDocumentListener(docListener);
-    AdminUIComponents.attachDateFieldValidationTriggers(
-        startDateField, () -> applyFiltersAndRefresh(true));
-    AdminUIComponents.attachDateFieldValidationTriggers(
-        endDateField, () -> applyFiltersAndRefresh(true));
+              @Override
+              public void changedUpdate(DocumentEvent e) {
+                applyFiltersAndRefresh(false);
+              }
+            });
     sortCombo.addActionListener(e -> applyFiltersAndRefresh(false));
   }
 
   public void applyFiltersAndRefresh(boolean showValidationAlert) {
-    LocalDate[] dateRange =
-        AdminUIComponents.parseAndValidateDateRange(
-            this, startDateField, endDateField, showValidationAlert);
-    if (dateRange == null) {
-      activeDateWindowValueLabel.setText("⚠️ Ngày bắt đầu phải ≤ ngày kết thúc");
-      activeDateWindowValueLabel.setForeground(ChatTheme.DANGER);
-      return;
-    }
-    LocalDate startDate = dateRange[0];
-    LocalDate endDate = dateRange[1];
+    LocalDate rawStart = dateRangePickerBar.getStartDate();
+    LocalDate rawEnd = dateRangePickerBar.getEndDate();
+    final LocalDate startDate =
+        (rawStart != null && rawEnd != null && rawStart.isAfter(rawEnd)) ? rawEnd : rawStart;
+    final LocalDate endDate =
+        (rawStart != null && rawEnd != null && rawStart.isAfter(rawEnd)) ? rawStart : rawEnd;
     String startText = startDate == null ? "" : startDate.format(ChatTheme.DATE_FMT);
     String endText = endDate == null ? "" : endDate.format(ChatTheme.DATE_FMT);
 

@@ -158,6 +158,7 @@ public final class UserManagementPanel extends JPanel {
         .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
     card.add(AdminUIComponents.wrapTableInScrollPane(userTable), BorderLayout.CENTER);
+    userTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
     JPanel tableFooter = new JPanel(new BorderLayout());
     tableFooter.setBackground(ChatTheme.SURFACE_WHITE);
@@ -412,6 +413,11 @@ public final class UserManagementPanel extends JPanel {
       genderInput.setSelectedItem(existingUser.getGender());
     }
 
+    JPanel dobRow = new JPanel(new BorderLayout(4, 0));
+    dobRow.setOpaque(false);
+    dobRow.add(dobInput, BorderLayout.CENTER);
+    dobRow.add(AdminUIComponents.createCalendarButton(dobInput, null), BorderLayout.EAST);
+
     String[] labels = {
       "Username (*):",
       "Full Name (*):",
@@ -421,7 +427,7 @@ public final class UserManagementPanel extends JPanel {
       "Gender:"
     };
     java.awt.Component[] fields = {
-      usernameInput, fullNameInput, emailInput, addressInput, dobInput, genderInput
+      usernameInput, fullNameInput, emailInput, addressInput, dobRow, genderInput
     };
 
     GridBagConstraints gbc = new GridBagConstraints();

@@ -23,6 +23,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Objects;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -142,6 +143,35 @@ public final class AdminUIComponents {
         }
       }
     };
+  }
+
+  public static JButton createCalendarButton(JTextField targetField, Runnable onDateSelected) {
+    JButton btn = createSecondaryButton("📅");
+    btn.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 12));
+    btn.setPreferredSize(new Dimension(34, 28));
+    btn.setMargin(new Insets(1, 1, 1, 1));
+    btn.setToolTipText("Mở lịch chọn ngày");
+    btn.addActionListener(
+        e -> {
+          LocalDate initial = null;
+          String text = targetField.getText();
+          if (text != null && !text.isBlank() && !text.contains("_")) {
+            try {
+              initial = LocalDate.parse(text.trim(), DATE_FMT);
+            } catch (DateTimeParseException ignored) {
+            }
+          }
+          MiniCalendarPopup.showPopup(
+              btn,
+              initial,
+              date -> {
+                targetField.setText(date.format(DATE_FMT));
+                if (onDateSelected != null) {
+                  onDateSelected.run();
+                }
+              });
+        });
+    return btn;
   }
 
   public static JTextField createDateField(String initialValue) {

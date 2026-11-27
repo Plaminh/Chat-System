@@ -47,8 +47,11 @@ public final class SpamReportPanel extends JPanel {
   private final AdminMockDataStore dataStore = AdminMockDataStore.getInstance();
   private final JTextField usernameFilterField =
       ChatTheme.createSearchField("Filter by reported or reporting username...", 15);
-  private final JTextField fromDateField = AdminUIComponents.createDateField("2025-01-01");
-  private final JTextField toDateField = AdminUIComponents.createDateField("2025-12-31");
+  private final DateRangePickerBar dateRangePickerBar =
+      new DateRangePickerBar(
+          LocalDate.of(2025, 1, 1),
+          LocalDate.now(),
+          (s, e) -> applyFiltersAndRefresh(false));
   private final JComboBox<String> sortCombo =
       ChatTheme.createComboBox(
           new String[] {
@@ -118,7 +121,16 @@ public final class SpamReportPanel extends JPanel {
   }
 
   private JPanel buildFilterToolbar() {
-    JPanel card = ChatTheme.createCardPanel(new BorderLayout(10, 6));
+    JPanel card = ChatTheme.createCardPanel(new BorderLayout(0, 10));
+
+    // Top row: Unified Date Range Picker Bar (Bar + Presets)
+    JPanel dateRow = new JPanel(new BorderLayout(10, 4));
+    dateRow.setOpaque(false);
+    dateRow.add(dateRangePickerBar, BorderLayout.CENTER);
+
+    // Bottom row: Username filter + Sort + Reset
+    JPanel bottomRow = new JPanel(new BorderLayout(10, 4));
+    bottomRow.setOpaque(false);
 
     JPanel leftFilters = new JPanel(AdminUIComponents.createWrapFlowLayout(FlowLayout.LEFT, 8, 2));
     leftFilters.setOpaque(false);
@@ -126,31 +138,17 @@ public final class SpamReportPanel extends JPanel {
     JLabel userLbl = new JLabel("Username:");
     userLbl.setFont(ChatTheme.FONT_BODY_BOLD);
     userLbl.setForeground(ChatTheme.TEXT_SECONDARY);
-
-    JLabel fromLbl = new JLabel("From:");
-    fromLbl.setFont(ChatTheme.FONT_BODY_BOLD);
-    fromLbl.setForeground(ChatTheme.TEXT_SECONDARY);
-
-    JLabel toLbl = new JLabel("To:");
-    toLbl.setFont(ChatTheme.FONT_BODY_BOLD);
-    toLbl.setForeground(ChatTheme.TEXT_SECONDARY);
-
     leftFilters.add(userLbl);
     leftFilters.add(usernameFilterField);
-    leftFilters.add(fromLbl);
-    leftFilters.add(fromDateField);
-    leftFilters.add(toLbl);
-    leftFilters.add(toDateField);
 
     JPanel rightSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
     rightSort.setOpaque(false);
 
-    JButton resetBtn = ChatTheme.createSecondaryButton("Reset");
+    JButton resetBtn = ChatTheme.createSecondaryButton("Reset All");
     resetBtn.addActionListener(
         e -> {
           usernameFilterField.setText("");
-          fromDateField.setText("2025-01-01");
-          toDateField.setText("2025-12-31");
+          dateRangePickerBar.setDateRange(LocalDate.of(2025, 1, 1), LocalDate.now(), false);
           sortCombo.setSelectedIndex(0);
           applyFiltersAndRefresh(false);
         });
@@ -158,8 +156,11 @@ public final class SpamReportPanel extends JPanel {
     rightSort.add(sortCombo);
     rightSort.add(resetBtn);
 
-    card.add(leftFilters, BorderLayout.CENTER);
-    card.add(rightSort, BorderLayout.EAST);
+    bottomRow.add(leftFilters, BorderLayout.CENTER);
+    bottomRow.add(rightSort, BorderLayout.EAST);
+
+    card.add(dateRow, BorderLayout.NORTH);
+    card.add(bottomRow, BorderLayout.SOUTH);
     return card;
   }
 
@@ -181,6 +182,7 @@ public final class SpamReportPanel extends JPanel {
         .setCellRenderer(AdminUIComponents.createStatusBadgeRenderer());
 
     card.add(AdminUIComponents.wrapTableInScrollPane(reportTable), BorderLayout.CENTER);
+    reportTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     return card;
   }
 
@@ -222,12 +224,6 @@ public final class SpamReportPanel extends JPanel {
           }
         };
     usernameFilterField.getDocument().addDocumentListener(docListener);
-    fromDateField.getDocument().addDocumentListener(docListener);
-    toDateField.getDocument().addDocumentListener(docListener);
-    AdminUIComponents.attachDateFieldValidationTriggers(
-        fromDateField, () -> applyFiltersAndRefresh(true));
-    AdminUIComponents.attachDateFieldValidationTriggers(
-        toDateField, () -> applyFiltersAndRefresh(true));
     sortCombo.addActionListener(e -> applyFiltersAndRefresh(false));
 
     reportTable
@@ -241,14 +237,13 @@ public final class SpamReportPanel extends JPanel {
   }
 
   private void applyFiltersAndRefresh(boolean showValidationAlert) {
-    LocalDate[] dateRange =
-        AdminUIComponents.parseAndValidateDateRange(
-            this, fromDateField, toDateField, showValidationAlert);
-    if (dateRange == null) {
-      return;
+    LocalDate fromDate = dateRangePickerBar.getStartDate();
+    LocalDate toDate = dateRangePickerBar.getEndDate();
+    if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+      LocalDate swap = fromDate;
+      fromDate = toDate;
+      toDate = swap;
     }
-    LocalDate fromDate = dateRange[0];
-    LocalDate toDate = dateRange[1];
 
     String query =
         usernameFilterField.getText() == null
