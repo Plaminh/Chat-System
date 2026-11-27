@@ -1175,4 +1175,20 @@ Changed: `RequestHandler` now marks its two-argument constructor `@Autowired`, b
 
 Kept: `common`, repositories, schema, client `SocketClient` classes, and the existing 4-space style of the touched files (no Spotless apply).
 
-By hand: `mvn clean verify` passed with the Docker database running: 182 tests, none skipped, including all 31 repository tests. The six-client test was confirmed to time out with the old pool. `server.jar` started and answered PING with PONG, malformed JSON with INVALID_JSON, an unknown action with UNKNOWN_ACTION, ADMIN_LIST_USERS before login with UNAUTHENTICATED, and REGISTER with UNSUPPORTED_OPERATION. Not committed; the issue owner must review and commit with their own Git account.
+Rejected: Commit and push; the issue owner must review and commit with their own Git account.
+
+By hand: `mvn clean verify` passed with the Docker database running: 182 tests, none skipped, including all 31 repository tests. The six-client test was confirmed to time out with the old pool. `server.jar` started and answered PING with PONG, malformed JSON with INVALID_JSON, an unknown action with UNKNOWN_ACTION, ADMIN_LIST_USERS before login with UNAUTHENTICATED, and REGISTER with UNSUPPORTED_OPERATION.
+
+## 2026-11-27 - Fix the four required login (U5) defects before review
+
+Tool: Claude Code (Claude Opus 5.5).
+
+Asked for: Review U5 login/logout on `dev` against the issue and `Final_Project_1.pdf`, then fix the four defects marked as required. Later also the four recommended items, which the developer then asked to undo.
+
+Changed: `LoginHandler` closes the previous session with `SessionLifecycle.end` when LOGIN arrives on an already authenticated connection, so a repeated login no longer leaves an open `login_history` row; if `SessionLifecycle.begin` throws, it ends the half-started session and rethrows. `SessionLifecycle.begin` stores the login history id in the session right after `recordLogin`, before `recordAppOpen`, so `end` can always close the row. `LoginPanel` disables Sign In while a request is pending and reconnects the `SocketClient` before sending LOGIN when the server was down at startup or the connection was lost. `UserApplication` waits at most 2 seconds for the LOGOUT reply when the window closes. An interrupted Spotless run also reformatted `LogoutHandler.java` (import order and one wrapped line); that change is still in the working tree.
+
+Kept: `common`, the database schema, error codes, and the existing formatting of `LoginHandler`, `SessionLifecycle`, `LoginPanel` and `UserApplication`.
+
+Rejected: The four recommended items, which were written and then reverted at the developer's request: checking the password before the account status; recording APP_OPEN and presence only for role USER (the admin client shares LOGIN, and `script/seed.sql` gives `admin_dev` `app_open` rows, so the team must decide); the server integration test `LoginLogoutIntegrationTest`; Spotless formatting of the issue's files. Adding email to `UserSummary` in `common`. Posting the review comment on issue #4. Commit and push; the developer who merges must review and commit with their own Git account.
+
+By hand: `mvn clean verify` passed with the Docker database running: 188 tests, none skipped. The built `server.jar` passed 23 TCP checks against the database, using temporary accounts that were deleted afterwards: the three error codes, no `login_history` for failed logins, one `login_history` row and one `app_open` per login, ONLINE and OFFLINE presence to a friend, a repeated LOGIN closing the earlier row, and `logged_out_at` after LOGOUT and after a dropped connection. A headless run of the real `LoginPanel` showed "Could not connect to the server." with no server, re-enabled Sign In, then reconnected and opened the workspace. After the revert, the developer rebuilt the project, ran the server and the user client by hand following the manual test steps from this session, and reported that the login flow works. Screenshots for the issue are the developer's to attach.

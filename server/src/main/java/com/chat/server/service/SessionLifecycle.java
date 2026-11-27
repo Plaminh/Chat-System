@@ -38,8 +38,9 @@ public class SessionLifecycle {
 
   public void begin(SessionContext session, long databaseUserId) {
     long loginHistoryId = loginHistory.recordLogin(databaseUserId);
-    activityLogs.recordAppOpen(databaseUserId);
+    // Keep the id before any later step can fail, so end() can always close this row.
     session.setDatabaseSession(databaseUserId, loginHistoryId);
+    activityLogs.recordAppOpen(databaseUserId);
     registry.bindSession(session);
     broadcastPresence(databaseUserId, PresenceStatus.ONLINE);
   }

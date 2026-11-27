@@ -64,8 +64,18 @@ public class LoginHandler implements ActionHandler {
       return error(request, ErrorCode.INVALID_CREDENTIALS, "Invalid username/email or password");
     }
 
+    if (session.isAuthenticated()) {
+      // A second LOGIN on the same connection must close the previous login_history row first.
+      sessionLifecycle.end(session);
+    }
     session.authenticate(account.userId(), account.username(), account.role());
-    sessionLifecycle.begin(session, account.userId());
+    try {
+      sessionLifecycle.begin(session, account.userId());
+    } catch (RuntimeException exception) {
+      // Do not leave the connection authenticated when recording the login failed.
+      sessionLifecycle.end(session);
+      throw exception;
+    }
 
     UserSummary summary =
         new UserSummary(

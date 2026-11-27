@@ -5,8 +5,8 @@ import com.chat.common.dto.ResponseEnvelope;
 import com.chat.common.enums.ActionType;
 import com.chat.common.exception.ProtocolValidationException;
 import com.chat.server.handler.ActionHandler;
-import com.chat.server.session.SessionContext;
 import com.chat.server.service.SessionLifecycle;
+import com.chat.server.session.SessionContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +29,6 @@ public class LogoutHandler implements ActionHandler {
   public ResponseEnvelope handle(RequestEnvelope request, SessionContext session)
       throws ProtocolValidationException {
     sessionLifecycle.end(session);
-    return new ResponseEnvelope(
-        request.requestId(), true, mapper.createObjectNode(), null, null);
+    return new ResponseEnvelope(request.requestId(), true, mapper.createObjectNode(), null, null);
   }
 }

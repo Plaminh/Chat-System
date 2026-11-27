@@ -14,6 +14,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.concurrent.TimeUnit;
 
 public final class UserApplication {
   private UserApplication() {}
@@ -45,6 +46,9 @@ public final class UserApplication {
             if (socketClient.isConnected()) {
               socketClient
                   .sendAsync(com.chat.common.enums.ActionType.LOGOUT, null)
+                  // Exit even if the server never answers; closing the socket still makes the
+                  // server record the logout time through its disconnect path.
+                  .orTimeout(2, TimeUnit.SECONDS)
                   .whenComplete(
                       (response, error) -> {
                         socketClient.close();

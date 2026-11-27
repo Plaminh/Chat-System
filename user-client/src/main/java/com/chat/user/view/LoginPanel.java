@@ -15,6 +15,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -42,6 +44,7 @@ public final class LoginPanel extends JPanel {
   private final JTextField usernameField = ChatTheme.createTextField(32);
   private final JPasswordField passwordField = new JPasswordField(32);
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.CENTER);
+  private final JButton signInButton = ChatTheme.createPrimaryButton("Sign In");
 
   public LoginPanel(
       UserSessionState sessionState,
@@ -73,7 +76,20 @@ public final class LoginPanel extends JPanel {
             socketClient == null
                 ? CompletableFuture.failedFuture(
                     new IllegalStateException("Socket client is not configured"))
-                : socketClient.sendAsync(ActionType.LOGIN, request));
+                : CompletableFuture.runAsync(() -> connectIfNeeded(socketClient))
+                    .thenCompose(ignored -> socketClient.sendAsync(ActionType.LOGIN, request)));
+  }
+
+  /** Reconnects when the server was down at startup or the connection was lost. */
+  private static void connectIfNeeded(SocketClient socketClient) {
+    if (socketClient.isConnected()) {
+      return;
+    }
+    try {
+      socketClient.connect();
+    } catch (IOException exception) {
+      throw new UncheckedIOException(exception);
+    }
   }
 
   LoginPanel(
@@ -116,6 +132,8 @@ public final class LoginPanel extends JPanel {
       return;
     }
 
+    // One request at a time: a second click would record a second login on the server.
+    signInButton.setEnabled(false);
     loginSender
         .apply(new LoginRequest(username, new String(passwordCopy)))
         .whenComplete(
@@ -126,6 +144,7 @@ public final class LoginPanel extends JPanel {
   }
 
   private void handleLoginResponse(ResponseEnvelope response, Throwable error) {
+    signInButton.setEnabled(true);
     if (error != null) {
       showFeedback("Could not connect to the server.", ChatTheme.DANGER);
       return;
@@ -221,7 +240,6 @@ public final class LoginPanel extends JPanel {
     form.add(Box.createVerticalStrut(ChatTheme.SPACE_XS));
     form.add(createFormWrapper(feedbackLabel, 20, BorderLayout.CENTER));
 
-    JButton signInButton = ChatTheme.createPrimaryButton("Sign In");
     signInButton.addActionListener(event -> submitSignIn());
     form.add(Box.createVerticalStrut(10));
     form.add(createFormWrapper(signInButton, 42, BorderLayout.CENTER));
