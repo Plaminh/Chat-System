@@ -168,6 +168,18 @@ public final class AuthHandlerTestSupport {
             int totalPages = (int) ((filtered.size() + page.size() - 1) / page.size());
             return new PageResult<>(paged, page.page(), page.size(), filtered.size(), totalPages);
         }
+
+        @Override
+        public long[] countMonthlyRegistrations(int year) {
+            long[] counts = new long[12];
+            for (User u : usersById.values()) {
+                if (u.createdAt() != null && u.createdAt().getYear() == year) {
+                    int month = u.createdAt().getMonthValue();
+                    counts[month - 1]++;
+                }
+            }
+            return counts;
+        }
     }
 
     public static class StubLoginHistoryRepository extends LoginHistoryRepository {

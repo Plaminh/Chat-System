@@ -1,5 +1,32 @@
 # AI-LOG.md — Java Chat System (CSC13008)
 
+## 2026-11-27 — Implement Issue #15: [A6] Annual Registration Chart (Requirement 1.2.6)
+
+Tool: Antigravity AI Assistant.
+
+Asked for: Implement Issue #15 [A6] Biểu đồ số lượng người dùng đăng ký mới theo 12 tháng (Requirement 1.2.6) following the Spec-Kit workflow on branch `feature/admin-client-v2-a6`.
+
+Changed:
+- Created Spec-Kit documentation under `specs/006-admin-client-v2/admin-registration-chart/`:
+  - `spec.md`: User stories, acceptance criteria, and edge cases.
+  - `plan.md`: Technical context and constitution compliance checks.
+  - `research.md`: Architectural decisions, action matrix alignment.
+  - `data-model.md`: DTO models (`YearRequest`, `MonthlyCount`).
+  - `contracts/registration-chart-contracts.md`: Protocol request/response specifications.
+  - `checklists/requirements.md`: Verification checklist.
+  - `tasks.md`: Phased task breakdown and completion tracking.
+- Server (`server` module):
+  - Created `AdminGetMonthlyRegistrationsHandler.java` handling `ActionType.ADMIN_GET_MONTHLY_REGISTRATIONS`. Decodes `YearRequest`, queries `userRepository.countMonthlyRegistrations(year)`, and produces 12 `MonthlyCount` entries (months 1..12).
+  - Updated `AuthHandlerTestSupport.java` with in-memory monthly registration calculation for unit tests.
+  - Created `AdminGetMonthlyRegistrationsHandlerTest.java` verifying 12-month series output, zero-count month filling, and authorization rejection for non-admin/unauthenticated callers.
+- Admin Client (`admin-client` module):
+  - Updated `RegistrationChartPanel.java` to connect with `SocketClient.sendAsync(ADMIN_GET_MONTHLY_REGISTRATIONS, new YearRequest(year))` with smooth offline fallback to `AdminMockDataStore`.
+  - Added a "Làm mới" (Refresh) button to the chart header allowing on-demand chart re-querying.
+  - Created `RegistrationChartPanelTest.java` testing JFreeChart dataset updating, month series binding, and metric calculation (Annual Total, Peak Month, Monthly Average).
+- Re-packaged `admin-client/target/admin.jar`.
+
+Verification: `mvn test -pl server,admin-client -am` passed cleanly (67 common tests, 16 admin-client tests, 19 server tests).
+
 ## 2026-11-27 — Fix Date Range Picker Selection & Inline Error Highlighting
 
 Tool: Antigravity AI Assistant.
