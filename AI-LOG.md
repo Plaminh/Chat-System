@@ -1797,3 +1797,41 @@ Kept: All other entries.
 Rejected: Rewriting the merge commits; restoring "Common V2 Foundation" (2026-11-10, commit `c7630ca`), which was removed together with its code by revert commit `fe06525`; commit and push.
 
 By hand: The entries were lost in merge commit `eaeb514` (2026-11-24, "synchronize origin/dev into feature/admin-client-v2"), which resolved the `AI-LOG.md` conflict by keeping only the `origin/dev` side. No later commit restored them. The developer must review and commit.
+
+## 2026-11-27 — Review fixes for A5, A6 and A9 admin screens (issues #14, #19, #20)
+
+Tool: Claude Code (Claude Opus 5.5).
+
+Asked for: Check issues #14 [A5], #19 [A6] and #20 [A9] against their acceptance criteria and `Final_Project_1.pdf` (admin items 5, 6 and 9), then fix the defects found.
+
+Changed:
+- `NewRegistrationPanel` (A5): a failed, timed-out or unconnected request now clears the table and shows the error instead of filling it from `AdminMockDataStore`; REGISTERED AT is shown in Vietnam time (`Asia/Ho_Chi_Minh`) instead of the raw UTC value, which was 7 hours early; DELETED accounts show "Deleted" instead of "Locked"; the list is paged 50 rows at a time with Prev/Next and Refresh instead of a silent 100-row cap; "Active New Accounts" counts the whole period through a second `ADMIN_LIST_USERS` request with `accountStatus = ACTIVE`; a reversed date range is reported instead of being swapped silently; a late response to an older request is ignored.
+- `RegistrationChartPanel` (A6) and `ActivityChartPanel` (A9): errors are shown with an empty chart instead of sample figures from `AdminMockDataStore`; both open on the current year in Vietnam time and offer it and the four years before it, instead of a fixed 2024–2026 list that opened on 2025; `setSelectedYear` sends one request instead of two; a year without data shows "—" as the peak month; requests time out after 5 seconds and late responses are ignored.
+- Added `ChartYears` for the year list, also used by the "Sync Both Charts to Year" combo in `AdminMainFrame`.
+- Tests: rewrote `NewRegistrationPanelTest` to run headless against a scripted server (no sample data when disconnected or on a server error, Vietnam time, status names, paging and active total, reversed range); added error, current-year and empty-year tests to both chart tests; added `ChartYearsTest`.
+
+Kept: The server handlers and repositories, which already met the criteria (inclusive Vietnam-time ranges, 12 months with zeros, distinct `app_open` users); `common`; the shared `DateRangePickerBar` and its fixed 2025-01-01 "Toàn bộ" preset, which A3 and A7 also use; the dead reversed-range check in `AdminListUsersHandler`.
+
+Rejected: Running `spotless:apply` on whole files, which would reformat unrelated lines; changing whether admin accounts are counted, which the team must decide (A5 and A6 include ADMIN accounts, and A9 counts admins because the admin client's LOGIN records `app_open`); commit and push.
+
+By hand: Root `mvn -o clean verify` passed with PostgreSQL running (common 67, admin-client 32 with 1 skipped, user-client 64, server 99 with none skipped). google-java-format 1.30.0 dry-run shows no new violations on the changed lines; the remaining ones in these files were already there. The screens were not driven by hand against a live server. Final review remains with the developers.
+
+## 2026-11-27 — Count only USER accounts in admin user lists and statistics
+
+Tool: Claude Code (Claude Opus 5.5).
+
+Asked for: Based on `Final_Project_1.pdf`, propose and apply how the admin screens treat administrator accounts. The team chose: `ADMIN_LIST_USERS` returns only USER accounts (A1 and A5), new-registration counts leave administrators out (A6), and signing in to the Admin Console is not an app open (A8 and A9).
+
+Changed:
+- `UserRepository.findForAdmin` adds `u.role = 'user'`, so `ADMIN_LIST_USERS` (A1 user management and A5 new registrations) lists only USER accounts.
+- `UserRepository.countMonthlyRegistrations` (A6) and `countRegistrations` add `role = 'user'`, so the chart still matches A5 for a one-month range.
+- `SessionLifecycle.begin` records `app_open` only when the session role is USER; `login_history` is still written for every login, which admin item 2 needs.
+- `script/seed.sql`: removed activity row 1001, the `app_open` of `admin_dev`.
+- Local Docker database only: deleted the 10 existing `app_open` rows of admin accounts (1 from the seed, 9 from Admin Console sign-ins during testing).
+- Tests: `SessionLifecycleTest` (a USER sign-in records `app_open`; an ADMIN sign-in records login history but no `app_open`); `UserRepositoryTest.leavesAdministratorsOutOfTheAdminListAndRegistrationCounts`.
+
+Kept: The schema, which already has `users.role`; `common`, so `AdminUserFilter` keeps its shape; the A9 query `countMonthlyActiveUsers`, which no longer sees admin `app_open` rows; the admin `group_chat` seed row 1009, which is not an app open.
+
+Rejected: A `role` field in `AdminUserFilter` (a protocol change); filtering only in the statistics queries while still writing admin `app_open` rows; commit and push.
+
+By hand: The reasons from the assignment: it separates an administrator subsystem from a user subsystem; "Đăng ký tài khoản" exists only for users; and admin item 8 lists "mở ứng dụng" together with chatting, so the app is the user chat app. Other databases built from the old seed still hold the admin `app_open` row until they are reseeded or cleaned with the same `DELETE`. Root `mvn -o clean verify` passed with PostgreSQL running (common 67, admin-client 32 with 1 skipped, user-client 64, server 102 with none skipped). A live `server.jar` on the Docker database passed 18/18 protocol checks against direct SQL: `admin_dev` signs in with a `login_history` row and no `app_open`, and every admin session is closed after LOGOUT; `ADMIN_LIST_USERS` for 2026 returns the same 30 USER accounts as SQL and no ADMIN account; a single day is inclusive; a reversed range returns `VALIDATION_FAILED`; `ADMIN_GET_MONTHLY_REGISTRATIONS` and `ADMIN_GET_MONTHLY_ACTIVE_USERS` return 12 months that match SQL in Vietnam time, and each month of A6 equals the A5 total for that month; two `alice_sample` sign-ins add two `app_open` rows while A9 still counts her once that month. Those two sign-ins remain in the local database. Final review remains with the developers.
