@@ -1130,3 +1130,25 @@ Changed: Added 21 server-only records in `server/.../model` and 12 repositories 
 Rejected: Services, request handlers, BCrypt hashing, session/presence handling, and error-code mapping (later CORE/feature work); schema changes; Testcontainers or other new dependencies; push (the developer asked for commits only).
 
 By hand: `mvn clean verify` with JDK 25.0.5 passed 160 tests (Common 67, Admin 2, User 52, Server 39), including the 31 repository tests against the Docker database with none skipped. With an unreachable database port the 31 repository tests were skipped, not failed. Seed row counts were unchanged after the test runs. All new Java files pass Google Java Format 1.30.0 dry-run. The developer chose Vietnam time for date filters, keeping soft-deleted accounts in statistics, and the assignment-only sort fields, and must review the queries before committing.
+
+## 2026-11-24 - Fix server CORE defects after merging issue #3
+
+Tool: Claude Code (Claude Opus 5.5).
+
+Asked for: Review the merged `feature/server-core` work against issue #3 and fix the defects found.
+
+Changed: `RequestHandler` now marks its two-argument constructor `@Autowired`, because Spring could not choose between the two constructors and `server.jar` stopped at startup with "No default constructor found". `ActionDispatcher` maps `DuplicateKeyException` to `ALREADY_EXISTS` for REGISTER, UPDATE_PROFILE, SEND_FRIEND_REQUEST, BLOCK_USER, ADMIN_CREATE_USER and ADMIN_UPDATE_USER, and to `CONFLICT` otherwise. It also maps `IllegalArgumentException` to `VALIDATION_FAILED`. `SessionContext` and `OnlineSessionRegistry` use the database `long` user id instead of `UUID`. The registry gains `bindSession`/`unbindSession`, so a handler that only receives a `SessionContext` can mark its socket online. `TcpSocketServer` gives each connection its own worker thread (up to 256), because the previous pool served only 4 connections at once. Tests: updated user ids, added dispatcher tests for both duplicate-key mappings and for the illegal-argument mapping, plus socket integration tests for a targeted event with two clients and for six simultaneous clients.
+
+Kept: `common`, repositories, schema, client `SocketClient` classes, and the existing 4-space style of the touched files (no Spotless apply).
+
+By hand: `mvn clean verify` passed with the Docker database running: 182 tests, none skipped, including all 31 repository tests. The six-client test was confirmed to time out with the old pool. `server.jar` started and answered PING with PONG, malformed JSON with INVALID_JSON, an unknown action with UNKNOWN_ACTION, ADMIN_LIST_USERS before login with UNAUTHENTICATED, and REGISTER with UNSUPPORTED_OPERATION. Not committed; the issue owner must review and commit with their own Git account.
+
+## 2026-11-28 - Merge dev into feature/user-client-v2
+
+Tool: Copilot SDK in VS Code.
+
+Asked for: Resolve the in-progress merge of `origin/dev` into `feature/user-client-v2`.
+
+Changed: Combined duplicate-key error handling while preserving REGISTER's specific message, kept the session registry compatible with `long` user IDs, and updated the remaining registry test that still used `UUID`. Preserved the other staged changes from the merge.
+
+By hand: `mvn -pl server -am -Dtest=ActionDispatcherTest,OnlineSessionRegistryTest,TcpSocketServerIntegrationTest -Dsurefire.failIfNoSpecifiedTests=false test` passed all 17 targeted tests. Merge completed locally; not pushed.
