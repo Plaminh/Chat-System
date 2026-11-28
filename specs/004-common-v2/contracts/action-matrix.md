@@ -11,7 +11,7 @@
 | LOGIN | Public | `LoginRequest` | `AuthenticationResult` | INVALID_CREDENTIALS, ACCOUNT_LOCKED, ACCOUNT_DELETED | users/login_history/session registry |
 | LOGOUT | User/Admin | Empty object `{}` | Empty object `{}` | UNAUTHENTICATED | login_history/session registry |
 | CHANGE_PASSWORD | User/Admin | `PasswordChangeRequest` | Empty object `{}` | INVALID_CREDENTIALS | users; does not recover encryption keys |
-| REQUEST_PASSWORD_RESET | Public | `PasswordRecoveryRequest` (email only) | Empty object `{}`, non-enumerating | none | Server generates/hashes/persists a random password and sends email; failure/rollback deferred |
+| REQUEST_PASSWORD_RESET | Public | `PasswordRecoveryRequest` (email only) | Empty object `{}`, non-enumerating | VALIDATION_FAILED, INTERNAL_ERROR | Server generates/hashes/persists a random password and sends SMTP email in one transaction; unknown email returns the same success, and mail failure rolls back |
 | RESET_PASSWORD | Public | Deprecated `PasswordResetRequest` | Empty object `{}` | UNSUPPORTED_OPERATION or legacy-compatible outcome | compatibility identifier only; not the assignment recovery flow |
 
 ## Profile and social

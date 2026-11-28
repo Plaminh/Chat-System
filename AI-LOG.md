@@ -1161,6 +1161,18 @@ Asked for: Implement U2 account-profile loading and updates using the existing a
 
 Changed: Added `GET_PROFILE` and `UPDATE_PROFILE` server handlers using the existing JDBC-backed `UserRepository`; enforce USER authorization, validate profile input, return `ALREADY_EXISTS` for another account's email, and read the updated profile back from PostgreSQL. Connected the user client's Profile screen to `SocketClient` for loading and saving real profile data, with server errors shown in the UI and no sample-data fallback. Added handler and client tests, PostgreSQL integration tests for persistence and duplicate email, and `huongdan.md` with startup and manual test steps. Also corrected server session handling to use the database's `long` user ID, matching the existing session API.
 
-Kept: `common`, database schema, module boundaries, and protocol DTOs/actions. No commit, push, screenshot, or merge to `dev`; the developer will commit using their own Git account.
+Kept: `common`, database schema, module boundaries, and protocol DTOs/actions. At the developer's request, committed and pushed the U2 implementation as `0e8f7db` to `feature/user-client-v2` using the configured developer Git identity; `huongdan.md` was excluded. No screenshot or merge to `dev`.
 
 By hand: `mvn clean verify` completed successfully; PostgreSQL-dependent repository integration tests were skipped when the local database was unavailable. Focused Spotless checks passed for the new/changed U2 tests and profile panel files. The app still needs manual runtime testing with PostgreSQL available.
+
+## 2026-11-28 - Implement U3 password recovery
+
+Tool: Copilot SDK in VS Code.
+
+Asked for: Implement the email-only `REQUEST_PASSWORD_RESET` flow, preserve the deprecated `RESET_PASSWORD` action as unused, connect `PasswordRecoveryDialog` to the server, and add a Vietnamese U3 test guide.
+
+Changed: Added a server handler that validates the email, generates a secure random password, stores only its BCrypt hash, and sends the plaintext temporary password through an SMTP sender inside one transaction. Unknown emails return the same empty success response; SMTP failures throw so the transaction rolls back. SMTP configuration is read from the ignored local `server.properties`; no credentials were created or committed. Connected the client dialog through `SocketClient`, added focused handler/UI and PostgreSQL rollback tests, clarified the action matrix, and appended the U3 guide to `huongdan.md`.
+
+Kept: `common`, database schema, action/DTO definitions, and the four-module architecture. U3 remains uncommitted; no screenshot or merge to `dev`.
+
+By hand: `mvn clean verify` passed (169 tests passed, 36 PostgreSQL-dependent tests skipped, including the U2/U3 persistence tests). Focused Spotless checks passed for U3 Java files. Manual SMTP delivery and database rollback still need verification with a reachable PostgreSQL instance and valid local SMTP settings.

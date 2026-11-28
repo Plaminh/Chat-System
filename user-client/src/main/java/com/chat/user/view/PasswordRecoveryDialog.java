@@ -1,11 +1,18 @@
 package com.chat.user.view;
 
+import com.chat.common.dto.ResponseEnvelope;
+import com.chat.common.dto.auth.PasswordRecoveryRequest;
+import com.chat.common.enums.ActionType;
 import com.chat.common.ui.ChatTheme;
+import com.chat.user.network.SocketClient;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Window;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -13,16 +20,30 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 public final class PasswordRecoveryDialog extends JPanel {
   private final JTextField emailField = ChatTheme.createTextField(30);
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.CENTER);
+  private final JButton submitButton = ChatTheme.createPrimaryButton("Request Temporary Password");
+  private final Function<PasswordRecoveryRequest, CompletableFuture<ResponseEnvelope>>
+      requestSender;
   private JDialog dialog;
+  private boolean requestInFlight;
   private boolean requestSubmitted;
 
-  public PasswordRecoveryDialog() {
+  public PasswordRecoveryDialog(SocketClient socketClient) {
+    this(
+        request ->
+            Objects.requireNonNull(socketClient, "socketClient")
+                .sendAsync(ActionType.REQUEST_PASSWORD_RESET, request));
+  }
+
+  PasswordRecoveryDialog(
+      Function<PasswordRecoveryRequest, CompletableFuture<ResponseEnvelope>> requestSender) {
     super(new BorderLayout());
+    this.requestSender = Objects.requireNonNull(requestSender, "requestSender");
     buildContent();
   }
 
@@ -49,6 +70,10 @@ public final class PasswordRecoveryDialog extends JPanel {
   }
 
   void submitRecoveryRequest() {
+    if (requestInFlight) {
+      return;
+    }
+
     String email = emailField.getText().trim();
     if (email.isEmpty()) {
       showFeedback("Enter your email address.", ChatTheme.DANGER);
@@ -59,13 +84,25 @@ public final class PasswordRecoveryDialog extends JPanel {
       return;
     }
 
-    requestSubmitted = true;
-    showFeedback(
-        "<html><div style='text-align:center'>Password recovery request received.<br>"
-            + "In the completed system, a temporary password will be generated and sent<br>"
-            + "to the registered email address.<br>It can then be used to sign in and change the "
-            + "password.</div></html>",
-        ChatTheme.SUCCESS);
+    requestSubmitted = false;
+    requestInFlight = true;
+    emailField.setEnabled(false);
+    submitButton.setEnabled(false);
+    showFeedback("Submitting password recovery request...", ChatTheme.TEXT_MUTED);
+
+    CompletableFuture<ResponseEnvelope> pending;
+    try {
+      pending = requestSender.apply(new PasswordRecoveryRequest(email));
+    } catch (RuntimeException exception) {
+      SwingUtilities.invokeLater(() -> handleResponse(null, exception));
+      return;
+    }
+    if (pending == null) {
+      SwingUtilities.invokeLater(() -> handleResponse(null, new IllegalStateException()));
+      return;
+    }
+    pending.whenComplete(
+        (response, error) -> SwingUtilities.invokeLater(() -> handleResponse(response, error)));
   }
 
   private void buildContent() {
@@ -98,7 +135,6 @@ public final class PasswordRecoveryDialog extends JPanel {
 
     JButton cancelButton = ChatTheme.createSecondaryButton("Back to Sign In");
     cancelButton.addActionListener(event -> closeDialog());
-    JButton submitButton = ChatTheme.createPrimaryButton("Request Temporary Password");
     submitButton.addActionListener(event -> submitRecoveryRequest());
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.CENTER, ChatTheme.SPACE_SM, 0));
     actions.setOpaque(false);
@@ -130,6 +166,22 @@ public final class PasswordRecoveryDialog extends JPanel {
 
   private boolean isValidEmail(String email) {
     return email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
+  }
+
+  private void handleResponse(ResponseEnvelope response, Throwable error) {
+    requestInFlight = false;
+    emailField.setEnabled(true);
+    submitButton.setEnabled(true);
+    if (error != null || response == null || !response.success()) {
+      showFeedback(
+          "Could not process the password recovery request. Please try again later.",
+          ChatTheme.DANGER);
+      return;
+    }
+
+    requestSubmitted = true;
+    showFeedback(
+        "If the address is registered, a temporary password will be sent.", ChatTheme.SUCCESS);
   }
 
   private void showFeedback(String message, Color color) {

@@ -66,7 +66,7 @@ public final class UserApplication {
             sessionState,
             () -> showWorkspace(frame, sessionState, socketClient),
             () -> showRegistrationDialog(frame, socketClient),
-            () -> showRecoveryDialog(frame),
+            () -> showRecoveryDialog(frame, socketClient),
             socketClient);
     frame.setContentPane(loginPanel);
     frame.setVisible(true);
@@ -93,7 +93,7 @@ public final class UserApplication {
             sessionState,
             () -> showWorkspace(frame, sessionState, socketClient),
             () -> showRegistrationDialog(frame, socketClient),
-            () -> showRecoveryDialog(frame),
+            () -> showRecoveryDialog(frame, socketClient),
             socketClient);
     frame.setContentPane(loginPanel);
     frame.setTitle("Chat System - User Client");
@@ -105,7 +105,7 @@ public final class UserApplication {
     new RegistrationDialog(socketClient).createDialog(frame).setVisible(true);
   }
 
-  private static void showRecoveryDialog(JFrame frame) {
-    new PasswordRecoveryDialog().createDialog(frame).setVisible(true);
+  private static void showRecoveryDialog(JFrame frame, SocketClient socketClient) {
+    new PasswordRecoveryDialog(socketClient).createDialog(frame).setVisible(true);
   }
 }
