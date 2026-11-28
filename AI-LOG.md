@@ -1185,6 +1185,6 @@ Asked for: Implement authenticated password changes with the existing `CHANGE_PA
 
 Changed: Added a server handler that verifies the authenticated user's current BCrypt password, validates the new password, and persists its BCrypt hash through `UserRepository`. Connected the profile dialog to `SocketClient`, added focused handler/UI tests and PostgreSQL persistence tests, and appended U4 startup and manual test instructions to `huongdan.md`.
 
-Kept: `common`, database schema, action/DTO definitions, and the four-module architecture. U4 is uncommitted; `huongdan.md` remains untracked and excluded from commits. No screenshot or merge to `dev`.
+Kept: `common`, database schema, action/DTO definitions, and the four-module architecture. U4 was committed and pushed as `2518c71` to `feature/user-client-v2`; `huongdan.md` remains untracked and excluded from commits. No screenshot or merge to `dev`.
 
 By hand: `mvn clean verify` passed (215 tests run, 38 PostgreSQL-dependent tests skipped, including both U4 persistence tests). Manual testing with PostgreSQL and login using the new/old passwords remains to be done.

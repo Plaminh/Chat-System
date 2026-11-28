@@ -277,7 +277,7 @@ public final class ProfileSettingsPanel extends JPanel {
     JPanel passwordCard = ChatTheme.createCardPanel();
     JLabel passwordInfo =
         new JLabel(
-            "<html><b>Account Password</b><br>Change your password using the sample form.</html>");
+            "<html><b>Account Password</b><br>Change your account password securely.</html>");
     passwordInfo.setFont(ChatTheme.FONT_BODY);
     passwordInfo.setForeground(ChatTheme.TEXT_SECONDARY);
     JButton changePasswordButton = ChatTheme.createPrimaryButton("Change Password");
