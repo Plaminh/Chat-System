@@ -1,12 +1,19 @@
 package com.chat.user.view;
 
+import com.chat.common.dto.ResponseEnvelope;
+import com.chat.common.dto.auth.PasswordChangeRequest;
+import com.chat.common.enums.ActionType;
 import com.chat.common.ui.ChatTheme;
+import com.chat.user.network.SocketClient;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Window;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -14,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 public final class ChangePasswordDialog extends JPanel {
@@ -21,11 +29,23 @@ public final class ChangePasswordDialog extends JPanel {
   private final JPasswordField newPasswordField = new JPasswordField(24);
   private final JPasswordField confirmPasswordField = new JPasswordField(24);
   private final JLabel feedbackLabel = new JLabel(" ", SwingConstants.CENTER);
+  private final JButton submitButton = ChatTheme.createPrimaryButton("Change Password");
+  private final Function<PasswordChangeRequest, CompletableFuture<ResponseEnvelope>> requestSender;
   private JDialog dialog;
+  private boolean requestInProgress;
   private boolean changeSubmitted;
 
-  public ChangePasswordDialog() {
+  public ChangePasswordDialog(SocketClient socketClient) {
+    this(
+        request ->
+            Objects.requireNonNull(socketClient, "socketClient")
+                .sendAsync(ActionType.CHANGE_PASSWORD, request));
+  }
+
+  ChangePasswordDialog(
+      Function<PasswordChangeRequest, CompletableFuture<ResponseEnvelope>> requestSender) {
     super(new BorderLayout());
+    this.requestSender = Objects.requireNonNull(requestSender, "requestSender");
     buildContent();
   }
 
@@ -61,6 +81,10 @@ public final class ChangePasswordDialog extends JPanel {
   }
 
   void submitChange() {
+    if (requestInProgress) {
+      return;
+    }
+
     char[] current = currentPasswordField.getPassword();
     char[] next = newPasswordField.getPassword();
     char[] confirmation = confirmPasswordField.getPassword();
@@ -68,26 +92,44 @@ public final class ChangePasswordDialog extends JPanel {
     boolean newBlank = isBlank(next);
     boolean confirmationBlank = isBlank(confirmation);
     boolean matches = Arrays.equals(next, confirmation);
-    Arrays.fill(current, '\0');
-    Arrays.fill(next, '\0');
-    Arrays.fill(confirmation, '\0');
-    currentPasswordField.setText("");
-    newPasswordField.setText("");
-    confirmPasswordField.setText("");
-
+    changeSubmitted = false;
     if (currentBlank || newBlank || confirmationBlank) {
+      clearPasswordFields(current, next, confirmation);
       showFeedback("Complete all password fields.", ChatTheme.DANGER);
       return;
     }
     if (!matches) {
+      clearPasswordFields(current, next, confirmation);
       showFeedback("The new password and confirmation do not match.", ChatTheme.DANGER);
       return;
     }
+    if (next.length < 8) {
+      clearPasswordFields(current, next, confirmation);
+      showFeedback("New password must contain at least 8 characters.", ChatTheme.DANGER);
+      return;
+    }
 
-    changeSubmitted = true;
-    showFeedback(
-        "Sample password change requested; the server password was not changed.",
-        ChatTheme.SUCCESS);
+    PasswordChangeRequest request =
+        new PasswordChangeRequest(new String(current), new String(next));
+    clearPasswordFields(current, next, confirmation);
+    requestInProgress = true;
+    setPasswordFieldsEnabled(false);
+    submitButton.setEnabled(false);
+    showFeedback("Changing password...", ChatTheme.TEXT_MUTED);
+
+    CompletableFuture<ResponseEnvelope> pending;
+    try {
+      pending = requestSender.apply(request);
+    } catch (RuntimeException exception) {
+      SwingUtilities.invokeLater(() -> handleResponse(null, exception));
+      return;
+    }
+    if (pending == null) {
+      SwingUtilities.invokeLater(() -> handleResponse(null, new IllegalStateException()));
+      return;
+    }
+    pending.whenComplete(
+        (response, error) -> SwingUtilities.invokeLater(() -> handleResponse(response, error)));
   }
 
   private void buildContent() {
@@ -110,7 +152,6 @@ public final class ChangePasswordDialog extends JPanel {
     feedbackLabel.setForeground(ChatTheme.DANGER);
     JButton cancelButton = ChatTheme.createSecondaryButton("Cancel");
     cancelButton.addActionListener(event -> closeDialog());
-    JButton submitButton = ChatTheme.createPrimaryButton("Confirm Sample Change");
     submitButton.addActionListener(event -> submitChange());
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     actions.setOpaque(false);
@@ -151,6 +192,42 @@ public final class ChangePasswordDialog extends JPanel {
       }
     }
     return true;
+  }
+
+  private void clearPasswordFields(char[]... values) {
+    for (char[] value : values) {
+      Arrays.fill(value, '\0');
+    }
+    currentPasswordField.setText("");
+    newPasswordField.setText("");
+    confirmPasswordField.setText("");
+  }
+
+  private void setPasswordFieldsEnabled(boolean enabled) {
+    currentPasswordField.setEnabled(enabled);
+    newPasswordField.setEnabled(enabled);
+    confirmPasswordField.setEnabled(enabled);
+  }
+
+  private void handleResponse(ResponseEnvelope response, Throwable error) {
+    requestInProgress = false;
+    setPasswordFieldsEnabled(true);
+    submitButton.setEnabled(true);
+    if (error != null || response == null) {
+      showFeedback("Could not change password. Please try again later.", ChatTheme.DANGER);
+      return;
+    }
+    if (!response.success()) {
+      showFeedback(
+          response.message() == null || response.message().isBlank()
+              ? "Could not change password."
+              : response.message(),
+          ChatTheme.DANGER);
+      return;
+    }
+
+    changeSubmitted = true;
+    showFeedback("Password changed successfully.", ChatTheme.SUCCESS);
   }
 
   private void showFeedback(String message, Color color) {

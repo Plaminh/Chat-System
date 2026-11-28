@@ -1,8 +1,6 @@
 package com.chat.user.view;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.chat.common.dto.ResponseEnvelope;
 import com.chat.common.dto.user.UpdateProfileRequest;
@@ -151,27 +149,6 @@ class ProfileSettingsPanelTest {
     assertEquals(current, session.getProfile());
     assertEquals("Email already exists", panel.getFeedbackLabel().getText());
     assertEquals("Unsaved Name", panel.getFullNameField().getText());
-  }
-
-  @Test
-  void changePasswordSampleRequiresMatchingValuesAndClearsInputs() {
-    ChangePasswordDialog dialog = new ChangePasswordDialog();
-    dialog.getCurrentPasswordField().setText("current");
-    dialog.getNewPasswordField().setText("next");
-    dialog.getConfirmPasswordField().setText("mismatch");
-
-    dialog.submitChange();
-
-    assertTrue(dialog.getFeedbackLabel().getText().contains("do not match"));
-    assertFalse(dialog.isChangeSubmitted());
-
-    dialog.getCurrentPasswordField().setText("current");
-    dialog.getNewPasswordField().setText("next");
-    dialog.getConfirmPasswordField().setText("next");
-    dialog.submitChange();
-
-    assertTrue(dialog.isChangeSubmitted());
-    assertEquals(0, dialog.getNewPasswordField().getPassword().length);
   }
 
   private ProfileSettingsPanel newPanel(UserSessionState session, ProfileResponse getProfile) {

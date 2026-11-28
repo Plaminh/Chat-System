@@ -330,7 +330,7 @@ public final class ProfileSettingsPanel extends JPanel {
   }
 
   private void showChangePasswordDialog() {
-    ChangePasswordDialog changePasswordDialog = new ChangePasswordDialog();
+    ChangePasswordDialog changePasswordDialog = new ChangePasswordDialog(socketClient);
     changePasswordDialog.createDialog(SwingUtilities.getWindowAncestor(this)).setVisible(true);
   }
 

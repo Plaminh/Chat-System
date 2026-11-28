@@ -1173,6 +1173,18 @@ Asked for: Implement the email-only `REQUEST_PASSWORD_RESET` flow, preserve the 
 
 Changed: Added a server handler that validates the email, generates a secure random password, stores only its BCrypt hash, and sends the plaintext temporary password through an SMTP sender inside one transaction. Unknown emails return the same empty success response; SMTP failures throw so the transaction rolls back. SMTP configuration is read from the ignored local `server.properties`; no credentials were created or committed. Connected the client dialog through `SocketClient`, added focused handler/UI and PostgreSQL rollback tests, clarified the action matrix, and appended the U3 guide to `huongdan.md`.
 
-Kept: `common`, database schema, action/DTO definitions, and the four-module architecture. U3 remains uncommitted; no screenshot or merge to `dev`.
+Kept: `common`, database schema, action/DTO definitions, and the four-module architecture. At the developer's request, committed and pushed U3 as `eec5b77` to `feature/user-client-v2`; `huongdan.md` and `server.properties` were excluded. No screenshot or merge to `dev`.
 
 By hand: `mvn clean verify` passed (169 tests passed, 36 PostgreSQL-dependent tests skipped, including the U2/U3 persistence tests). Focused Spotless checks passed for U3 Java files. Manual SMTP delivery and database rollback still need verification with a reachable PostgreSQL instance and valid local SMTP settings.
+
+## 2026-11-28 - Implement U4 password change
+
+Tool: Copilot SDK in VS Code.
+
+Asked for: Implement authenticated password changes with the existing `CHANGE_PASSWORD` action and `PasswordChangeRequest`, connect `ChangePasswordDialog` to the server, and add a Vietnamese U4 test guide.
+
+Changed: Added a server handler that verifies the authenticated user's current BCrypt password, validates the new password, and persists its BCrypt hash through `UserRepository`. Connected the profile dialog to `SocketClient`, added focused handler/UI tests and PostgreSQL persistence tests, and appended U4 startup and manual test instructions to `huongdan.md`.
+
+Kept: `common`, database schema, action/DTO definitions, and the four-module architecture. U4 is uncommitted; `huongdan.md` remains untracked and excluded from commits. No screenshot or merge to `dev`.
+
+By hand: `mvn clean verify` passed (215 tests run, 38 PostgreSQL-dependent tests skipped, including both U4 persistence tests). Manual testing with PostgreSQL and login using the new/old passwords remains to be done.
