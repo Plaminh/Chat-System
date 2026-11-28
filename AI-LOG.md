@@ -1152,3 +1152,15 @@ Asked for: Resolve the in-progress merge of `origin/dev` into `feature/user-clie
 Changed: Combined duplicate-key error handling while preserving REGISTER's specific message, kept the session registry compatible with `long` user IDs, and updated the remaining registry test that still used `UUID`. Preserved the other staged changes from the merge.
 
 By hand: `mvn -pl server -am -Dtest=ActionDispatcherTest,OnlineSessionRegistryTest,TcpSocketServerIntegrationTest -Dsurefire.failIfNoSpecifiedTests=false test` passed all 17 targeted tests. Merge completed locally; not pushed.
+
+## 2026-11-28 - Implement U2 profile updates
+
+Tool: Copilot SDK in VS Code.
+
+Asked for: Implement U2 account-profile loading and updates using the existing actions and DTOs, plus a Vietnamese guide for running and manually testing the application.
+
+Changed: Added `GET_PROFILE` and `UPDATE_PROFILE` server handlers using the existing JDBC-backed `UserRepository`; enforce USER authorization, validate profile input, return `ALREADY_EXISTS` for another account's email, and read the updated profile back from PostgreSQL. Connected the user client's Profile screen to `SocketClient` for loading and saving real profile data, with server errors shown in the UI and no sample-data fallback. Added handler and client tests, PostgreSQL integration tests for persistence and duplicate email, and `huongdan.md` with startup and manual test steps. Also corrected server session handling to use the database's `long` user ID, matching the existing session API.
+
+Kept: `common`, database schema, module boundaries, and protocol DTOs/actions. No commit, push, screenshot, or merge to `dev`; the developer will commit using their own Git account.
+
+By hand: `mvn clean verify` completed successfully; PostgreSQL-dependent repository integration tests were skipped when the local database was unavailable. Focused Spotless checks passed for the new/changed U2 tests and profile panel files. The app still needs manual runtime testing with PostgreSQL available.

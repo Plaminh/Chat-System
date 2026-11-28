@@ -10,7 +10,6 @@ import com.chat.server.repository.UserActivityLogRepository;
 import com.chat.server.session.OnlineSessionRegistry;
 import com.chat.server.session.SessionContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -56,26 +55,21 @@ public class SessionLifecycle {
     session.clearDatabaseSession();
     session.clear();
 
-    if (databaseUserId != null
-        && !registry.isUserOnline(userUuid(databaseUserId))) {
+    if (databaseUserId != null && !registry.isUserOnline(databaseUserId)) {
       broadcastPresence(databaseUserId, PresenceStatus.OFFLINE);
     }
   }
 
   private void broadcastPresence(long databaseUserId, PresenceStatus status) {
     List<Long> friendIds = friendships.findFriendIds(databaseUserId);
-    PresenceUpdate payload =
-        new PresenceUpdate(databaseUserId, status, OffsetDateTime.now());
+    PresenceUpdate payload = new PresenceUpdate(databaseUserId, status, OffsetDateTime.now());
     EventEnvelope event =
-        new EventEnvelope(UUID.randomUUID().toString(), MessageType.PRESENCE_CHANGED,
+        new EventEnvelope(
+            UUID.randomUUID().toString(),
+            MessageType.PRESENCE_CHANGED,
             mapper.valueToTree(payload));
     for (Long friendId : friendIds) {
-      registry.sendToUser(userUuid(friendId), event);
+      registry.sendToUser(friendId, event);
     }
-  }
-
-  public static UUID userUuid(long databaseUserId) {
-    return UUID.nameUUIDFromBytes(
-        ("chat-user-" + databaseUserId).getBytes(StandardCharsets.UTF_8));
   }
 }

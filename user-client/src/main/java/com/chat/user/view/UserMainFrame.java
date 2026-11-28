@@ -1,13 +1,14 @@
 package com.chat.user.view;
 
-import com.chat.user.component.UserNavigationSidebar;
 import com.chat.common.ui.ChatTheme;
+import com.chat.user.component.UserNavigationSidebar;
 import com.chat.user.controller.FriendsController;
 import com.chat.user.model.Conversation;
 import com.chat.user.model.FriendEntry;
 import com.chat.user.model.GroupConversation;
 import com.chat.user.model.UserProfile;
 import com.chat.user.model.UserSessionState;
+import com.chat.user.network.SocketClient;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -49,6 +50,7 @@ public final class UserMainFrame extends JPanel {
   }
 
   private final UserSessionState sessionState;
+  private final SocketClient socketClient;
   private final CardLayout cardLayout = new CardLayout();
   private final JPanel cardContainer = new JPanel(cardLayout);
   private final UserNavigationSidebar navigationSidebar;
@@ -67,13 +69,19 @@ public final class UserMainFrame extends JPanel {
   private Runnable signOutHandler = () -> {};
 
   public UserMainFrame(UserSessionState sessionState, Runnable signOutHandler) {
-    this(sessionState);
-    this.signOutHandler = Objects.requireNonNull(signOutHandler, "signOutHandler");
+    this(sessionState, signOutHandler, null);
   }
 
   public UserMainFrame(UserSessionState sessionState) {
+    this(sessionState, () -> {}, null);
+  }
+
+  public UserMainFrame(
+      UserSessionState sessionState, Runnable signOutHandler, SocketClient socketClient) {
     super(new BorderLayout());
     this.sessionState = Objects.requireNonNull(sessionState, "sessionState");
+    this.socketClient = socketClient;
+    this.signOutHandler = Objects.requireNonNull(signOutHandler, "signOutHandler");
     navigationSidebar =
         new UserNavigationSidebar(
             sessionState.getProfile().fullName(),
@@ -108,6 +116,10 @@ public final class UserMainFrame extends JPanel {
     }
     activeDestination = destination;
     cardLayout.show(cardContainer, destination.name());
+    JComponent destinationView = views.get(destination);
+    if (destinationView instanceof ProfileSettingsPanel profileSettingsPanel) {
+      profileSettingsPanel.refreshProfile();
+    }
     headerTitle.setText(destination.label());
     headerBreadcrumb.setText("Console  \u203a  Workspace  \u203a  " + destination.label());
     navigationSidebar.setActiveDestination(destination);
@@ -267,7 +279,7 @@ public final class UserMainFrame extends JPanel {
             blockedByMeUsernames,
             this::confirmGroupMemberAction,
             this::openGroupChat);
-    ProfileSettingsPanel profilePanel = new ProfileSettingsPanel(sessionState);
+    ProfileSettingsPanel profilePanel = new ProfileSettingsPanel(sessionState, socketClient);
 
     registerView(Destination.CHATS, chatWorkspace);
     registerView(Destination.FRIENDS, friendsPanel);

@@ -9,11 +9,11 @@ import com.chat.user.view.RegistrationDialog;
 import com.chat.user.view.UserMainFrame;
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 public final class UserApplication {
   private UserApplication() {}
@@ -48,10 +48,11 @@ public final class UserApplication {
                   .whenComplete(
                       (response, error) -> {
                         socketClient.close();
-                        SwingUtilities.invokeLater(() -> {
-                          frame.dispose();
-                          System.exit(0);
-                        });
+                        SwingUtilities.invokeLater(
+                            () -> {
+                              frame.dispose();
+                              System.exit(0);
+                            });
                       });
             } else {
               frame.dispose();
@@ -74,7 +75,8 @@ public final class UserApplication {
   private static void showWorkspace(
       JFrame frame, UserSessionState sessionState, SocketClient socketClient) {
     frame.setContentPane(
-        new UserMainFrame(sessionState, () -> showLogin(frame, sessionState, socketClient)));
+        new UserMainFrame(
+            sessionState, () -> showLogin(frame, sessionState, socketClient), socketClient));
     frame.setTitle("Chat System - User Client");
     frame.revalidate();
     frame.repaint();

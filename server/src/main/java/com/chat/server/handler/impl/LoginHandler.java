@@ -14,12 +14,11 @@ import com.chat.common.protocol.ProtocolValidator;
 import com.chat.server.handler.ActionHandler;
 import com.chat.server.model.User;
 import com.chat.server.repository.UserRepository;
-import com.chat.server.session.SessionContext;
 import com.chat.server.service.SessionLifecycle;
+import com.chat.server.session.SessionContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.OffsetDateTime;
 import java.util.Optional;
-import java.util.UUID;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
@@ -46,8 +45,7 @@ public class LoginHandler implements ActionHandler {
       throws ProtocolValidationException {
     LoginRequest payload = ProtocolValidator.decodePayload(mapper, request, LoginRequest.class);
 
-    Optional<User> user =
-        users.findByUsername(payload.username());
+    Optional<User> user = users.findByUsername(payload.username());
     if (user.isEmpty() && payload.username().contains("@")) {
       user = users.findByEmail(payload.username());
     }
@@ -65,8 +63,7 @@ public class LoginHandler implements ActionHandler {
       return error(request, ErrorCode.INVALID_CREDENTIALS, "Invalid username/email or password");
     }
 
-    UUID sessionUserId = SessionLifecycle.userUuid(account.userId());
-    session.authenticate(sessionUserId, account.username(), account.role());
+    session.authenticate(account.userId(), account.username(), account.role());
     sessionLifecycle.begin(session, account.userId());
 
     UserSummary summary =
@@ -76,8 +73,7 @@ public class LoginHandler implements ActionHandler {
             account.fullName(),
             AccountStatus.ACTIVE,
             PresenceStatus.ONLINE);
-    AuthenticationResult result =
-        new AuthenticationResult(summary, OffsetDateTime.now());
+    AuthenticationResult result = new AuthenticationResult(summary, OffsetDateTime.now());
     return new ResponseEnvelope(request.requestId(), true, mapper.valueToTree(result), null, null);
   }
 

@@ -7,6 +7,7 @@ import com.chat.common.enums.ActionType;
 import com.chat.common.protocol.JsonLineReader;
 import com.chat.common.protocol.ProtocolConstants;
 import com.chat.common.protocol.ProtocolValidator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -94,6 +95,10 @@ public final class SocketClient implements AutoCloseable {
             future.completeExceptionally(ex);
         }
         return future;
+    }
+
+    public <T> T decodeData(JsonNode data, Class<T> dataType) throws JsonProcessingException {
+        return mapper.treeToValue(data, dataType);
     }
 
     private void listenLoop() {
